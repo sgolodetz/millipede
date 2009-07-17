@@ -27,3 +27,6 @@ ADD_EXECUTABLE(test-ITK-3.14.0 ${sources})
 
 # Specify the necessary libraries to link
 TARGET_LINK_LIBRARIES(test-ITK-3.14.0 ITKAlgorithms ITKCommon ITKIO)
+
+# Specify things to install
+INSTALL(TARGETS test-ITK-3.14.0 DESTINATION bin)

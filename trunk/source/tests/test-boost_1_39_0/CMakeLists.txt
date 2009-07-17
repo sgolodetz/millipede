@@ -13,3 +13,6 @@ INCLUDE_DIRECTORIES(${millipede_SOURCE_DIR}/../libraries/boost_1_39_0)
 
 # Specify the target
 ADD_EXECUTABLE(test-boost_1_39_0 ${sources})
+
+# Specify things to install
+INSTALL(TARGETS test-boost_1_39_0 DESTINATION bin)
