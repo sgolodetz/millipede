@@ -4,14 +4,14 @@ Last Updated by Stuart Golodetz on 17/07/09
 
 1. Extract boost_1_39_0.tar.gz into the libraries directory.
 
-On Windows:
+	On Windows:
 
-a) Just extract it using something like the shareware version of WinRAR.
+	a) Just extract it using something like the shareware version of WinRAR.
 
-On Linux:
+	On Linux:
 
-a) Change to the libraries directory.
-b) Run "tar xzf setup/boost_1_39_0/boost_1_39_0.tar.gz".
+	a) Change to the libraries directory.
+	b) Run "tar xzf setup/boost_1_39_0/boost_1_39_0.tar.gz".
 
 2. If you only need the header-only Boost libraries, that's it! Otherwise, you'll need to use bjam. The original instructions for doing this can be found here:
 
