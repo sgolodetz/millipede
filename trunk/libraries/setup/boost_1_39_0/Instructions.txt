@@ -1,0 +1,22 @@
+Boost 1.39.0 Setup Instructions
+Last Updated by Stuart Golodetz on 17/07/09
+-------------------------------------------
+
+1. Extract boost_1_39_0.tar.gz into the libraries directory.
+
+On Windows:
+
+a) Just extract it using something like the shareware version of WinRAR.
+
+On Linux:
+
+a) Change to the libraries directory.
+b) Run "tar xzf setup/boost_1_39_0.tar.gz".
+
+2. If you only need the header-only Boost libraries, that's it! Otherwise, you'll need to use bjam. The original instructions for doing this can be found here:
+
+http://www.boost.org/doc/libs/1_39_0/more/getting_started/index.html
+
+(If they're no longer there by this point, the Getting Started instructions for the latest version of Boost will hopefully suffice. Search for it on the main page at www.boost.org.)
+
+Note: The compiled libraries can take up a LOT of disk space (several Gb) - make sure you have enough available first.
