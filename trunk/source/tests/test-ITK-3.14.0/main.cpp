@@ -37,7 +37,7 @@ int main()
 
 	// Set up the file reader.
 	UCFileReader::Pointer reader = UCFileReader::New();
-	reader->SetFileName(millipede::Config::tests_path() + "/test-ITK-3.14.0/test.bmp");
+	reader->SetFileName("../resources/test.bmp");
 
 	// Set up the caster.
 	UCToRealCaster::Pointer caster = UCToRealCaster::New();
