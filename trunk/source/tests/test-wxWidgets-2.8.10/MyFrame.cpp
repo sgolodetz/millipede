@@ -33,8 +33,8 @@ MyFrame::MyFrame(const wxString& title, int width, int height)
 
 	m_canvas = new MyGLCanvas(main, width, height, attribList);
 	mainSizer->Add(m_canvas);
-	wxSpinCtrl *spin = new wxSpinCtrl(main, wxID_OK, wxT("1"), wxDefaultPosition, wxDefaultSize, 1, 100, 1);
-	mainSizer->Add(spin);
+	//wxSpinCtrl *spin = new wxSpinCtrl(main, wxID_OK, wxT("1"), wxDefaultPosition, wxDefaultSize, 1, 100, 1);
+	//mainSizer->Add(spin);
 
 	// Setup menus.
 	wxMenu *fileMenu = new wxMenu;

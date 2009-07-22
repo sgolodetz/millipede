@@ -20,8 +20,11 @@ MyGLCanvas.h
 SOURCE_GROUP(.cpp FILES ${sources})
 SOURCE_GROUP(.h FILES ${headers})
 
+# Find OpenGL
+FIND_PACKAGE(OpenGL)
+
 # Find wxWidgets
-FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS base core gl)
+FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS gl core base)
 IF(wxWidgets_FOUND)
 	INCLUDE(${wxWidgets_USE_FILE})
 ELSE(wxWidgets_FOUND)
@@ -45,7 +48,8 @@ IF(MSVC_IDE)
 ENDIF(MSVC_IDE)
 
 # Specify the necessary libraries to link
-TARGET_LINK_LIBRARIES(${targetname} ${wxWidgets_LIBRARIES} opengl32)
+TARGET_LINK_LIBRARIES(${targetname} ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARY})
 
 # Specify things to install
 INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
+
