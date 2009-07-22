@@ -2,3 +2,4 @@
 
 ADD_SUBDIRECTORY(test-boost_1_39_0)
 ADD_SUBDIRECTORY(test-ITK-3.14.0)
+ADD_SUBDIRECTORY(test-waterfall)

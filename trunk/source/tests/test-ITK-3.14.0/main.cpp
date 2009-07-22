@@ -1,8 +1,6 @@
 #include <boost/lexical_cast.hpp>
 using boost::lexical_cast;
 
-#include <millipede-config.h>		// the millipede configuration header
-
 #include "itkCastImageFilter.h"
 #include "itkGradientAnisotropicDiffusionImageFilter.h"
 #include "itkGradientMagnitudeImageFilter.h"
