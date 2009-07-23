@@ -52,4 +52,3 @@ TARGET_LINK_LIBRARIES(${targetname} ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARY})
 
 # Specify things to install
 INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
-
