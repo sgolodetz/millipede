@@ -1,0 +1,1 @@
+ghc -XFlexibleInstances -XFlexibleContexts -O2 --make run.hs
