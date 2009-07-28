@@ -1,4 +1,4 @@
-module Waterfall(waterfall,Tree(Node),Edge,Mergable(union),ListMergable) where
+module Waterfall(waterfall,Tree(Node),Edge,Mergable(union)) where
 
 import List (sortBy)
 data Tree a = Node a [Edge a] 
@@ -71,11 +71,9 @@ join r ((e,b):es) w
     es'' = (es' ++ getEdges e)
     (Node r' es', w') = join r es w
 
+flag :: Bool -> MergeFlag
 flag True = LessEq
 flag False = Greater
-
-assert False x = x
-assert True _ = error "Error" 
 
 -- Auxillary functions 
 
@@ -86,15 +84,6 @@ cmpEdge ((x,w1),b1) ((y,w2),b2)
 
 type Region = [Char]
 
-
-class ListMergable a where
-  listMerge :: [a] -> [a] -> [a]
-
-instance ListMergable a where
-  listMerge a b = a
-
-instance ListMergable a => Mergable [a] where
-  union = listMerge
 
 
 getRegion :: Edge a -> a
@@ -108,7 +97,7 @@ weightOf (Node r es,w) = w
 
 ---- Stuff for testing ----------
 
-main = ((putStr.show). waterfall) tree1
+--main = ((putStr.show). waterfall) tree1
 
 tree1 = Node ("a") -- should merge [abci] [jk] [mldefgh]
     [(Node ("b") [(Node ("c") [(Node "n" [],1)],6)] ,5)
