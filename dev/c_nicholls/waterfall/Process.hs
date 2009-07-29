@@ -7,7 +7,8 @@ module Process(
   Adjacency,Point
   	) where
 
-import SkewBinomialQueue(Queue,insert,fromList,merge,getMin,toList)
+
+import SkewHeap (Heap,fromList,merge,insert,getMin,toList  )
 import Data.Array.IO
 import Data.Array.Unboxed       (IArray, Ix, UArray, amap, bounds, elems, listArray, (!)	)
 import List(sort,sortBy)
@@ -43,7 +44,7 @@ neighbours arr  (a,b) (x,y) =  f ls'
 
                
 ---- IO Array Functions ----            
-fillIn :: (MArray a Int IO) => Tree (Queue Voxel) -> a Point Int -> IO (a Point Int)
+fillIn :: Tree (Heap Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
 fillIn (Node rs es) ar = do
   {let rs' = toList rs
   ;let x = avg rs'
@@ -53,7 +54,7 @@ fillIn (Node rs es) ar = do
   }
 
 arrayToTree :: (MArray a [(Int, Voxel)] IO ) =>
-               a Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Queue Voxel))
+               a Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Heap Voxel))
 arrayToTree arr miss (n,(v,p))  = do
   { --print p
   ;ls <-readArray arr p
@@ -78,9 +79,15 @@ getAdjacencyList arr = do
   ;print (c*d-1)
   ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr []
   }
-
-pickNAdjacencys :: ( MArray IOArray [(Int,Voxel)] IO	) =>
-              Int-> Point ->Queue Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> [Adjacency] -> IO (IOArray Point [(Int,Voxel)])
+{--
+getRowOfAdjacencies :: Int -> Int ->UArray Point Int -> IOArray Point [(Int,Voxel)] -> IO (Heap Adjacency, IOArray Point [(Int,Voxel)])
+getRowOfAdjacencies x n arr ls = do
+  {let cells = [(x,i) | i <- 0..n]
+   ;let ns = map (\p -> neighbours arr p (snd$bounds arr)) cells
+   ;let ns' = sort ns
+   ;let 
+--}
+pickNAdjacencys ::  Int-> Point ->Heap Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> [Adjacency] -> IO (IOArray Point [(Int,Voxel)])
 pickNAdjacencys 0 is es ar ls end    = do {return $!  ls}
 pickNAdjacencys n is h ar ls end = do
   {
@@ -99,8 +106,8 @@ pickNAdjacencys n is h ar ls end = do
      else do {	pickNAdjacencys n is h' ar ls end}
   }
 
-filter' :: (MArray IOArray [(Int, Voxel)] IO) => IOArray Point [(Int,Voxel)]-> [Adjacency]-> [Adjacency]-> IO ([Adjacency])
-filter' br [] ls = do{ return $!  ls}
+filter' :: IOArray Point [(Int,Voxel)]-> [Adjacency]-> [Adjacency]-> IO ([Adjacency])
+filter' br ls [] = do{ return $!  ls}
 filter' br ls ((a,b,(c,d)):xs) = do
   {l <- readArray br d
   ;if l == [] 
@@ -109,7 +116,7 @@ filter' br ls ((a,b,(c,d)):xs) = do
   }
 
 ---  Main  -------------  
-output :: (Point, Point) -> Tree (Queue Voxel) -> IO (UArray Point Word16)
+output :: (Point, Point) -> Tree (Heap Voxel) -> IO (UArray Point Word16)
 output bounds tree = do
   {arr <- newArray bounds 0 :: IO (IOUArray Point Int)
   ;arrr <- fillIn tree arr
@@ -120,8 +127,8 @@ output bounds tree = do
 
 
 --- Other Functions ---------
-instance Ord a => Mergable (Queue a) where
-  union = SkewBinomialQueue.merge
+instance Ord a => Mergable (Heap a) where
+  union = merge
 
 freeze' :: ( MArray a Int IO, IArray UArray Int) => a Point Int -> IO (UArray Point Int)
 freeze' = freeze
