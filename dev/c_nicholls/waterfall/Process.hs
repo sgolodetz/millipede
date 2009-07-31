@@ -1,9 +1,8 @@
 module Process(
-  size,
   bounds,
   output,
   getAdjacencyList,
-  arrayToTree,freeze'',
+  arrayToNode,freeze'',
   Adjacency,Point
   	) where
 
@@ -13,7 +12,7 @@ import Data.Array.IO
 import Data.Array.Unboxed       (IArray, Ix, UArray, amap, bounds, elems, listArray, (!)	)
 import List(sort,sortBy)
 import Data.Word                (Word8, Word16)
-import Waterfall(waterfall,Tree(Node),Edge,Mergable(union))
+import Waterfall(waterfall,Node,mkNode,Edge,mkEdge,Mergable(union),getRegion,getEdges,getNode,getWeight)
 import PGM
   ( pgmToArray,
     pgmsToArrays,
@@ -31,37 +30,38 @@ type Voxel = (Int,Point)
 
 
 neighbours :: UArray Point Int -> Point -> Point -> [Adjacency]
-neighbours arr  (a,b) (x,y) =  f ls'
+neighbours   arr  (a,b) (x,y) = neighbours' arr  (a,b) (x,y) ls'
   where
     ls' = filter (\(c,d) -> 0<=c&&0<=d&&c<x&&d<y) ls
     ls = [(a,b+1),(a+1,b),(a,b-1),(a-1,b),(a+1,b+1),(a-1,b-1),(a+1,b-1),(a-1,b+1)]
-    f [] =  []
-    f (p:ps) = 
+
+neighbours' :: UArray Point Int -> Point -> Point -> [Point] -> [Adjacency]
+neighbours' arr  (a,b) (x,y) [] =  []
+neighbours' arr  (a,b) (x,y) (p:ps) = 
       let v1 = arr!(a,b) in
       let v2 = arr! p in
-      let rs = f ps in
+      let rs = neighbours' arr  (a,b) (x,y) ps in
       ((abs (v1-v2), (v1,(a,b)),(v2,p) ):rs)
 
                
 ---- IO Array Functions ----            
-fillIn :: Tree (Heap Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
-fillIn (Node rs es) ar = do
-  {let rs' = toList rs
+fillIn :: Node (Heap Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
+fillIn node ar = do
+  {let rs' = toList (getRegion node)
   ;let x = avg rs'
   ;mapM (\v -> writeArray ar (snd v) x) rs'
-  ;ar' <- foldR (fillIn.fst) ar es
+  ;ar' <- foldR (fillIn.getNode) ar (getEdges node)
   ;return $!  ar
   }
 
-arrayToTree :: (MArray a [(Int, Voxel)] IO ) =>
-               a Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Heap Voxel))
-arrayToTree arr miss (n,(v,p))  = do
+arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Heap Voxel))
+arrayToNode arr miss (n,(v,p))  = do
   { --print p
   ;ls <-readArray arr p
   ;let ls' = remove miss ls
   ;let ls'' = remove p ls'
-  ;es <- mapM  (arrayToTree arr p) ls''
-  ;return $!  ((Node (fromList [(v,p)]) es),n)
+  ;es <- mapM  (arrayToNode arr p) ls''
+  ;return $! mkEdge (mkNode(fromList [(v,p)]) es) n
   }
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
@@ -79,14 +79,7 @@ getAdjacencyList arr = do
   ;print (c*d-1)
   ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr []
   }
-{--
-getRowOfAdjacencies :: Int -> Int ->UArray Point Int -> IOArray Point [(Int,Voxel)] -> IO (Heap Adjacency, IOArray Point [(Int,Voxel)])
-getRowOfAdjacencies x n arr ls = do
-  {let cells = [(x,i) | i <- 0..n]
-   ;let ns = map (\p -> neighbours arr p (snd$bounds arr)) cells
-   ;let ns' = sort ns
-   ;let 
---}
+
 pickNAdjacencys ::  Int-> Point ->Heap Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> [Adjacency] -> IO (IOArray Point [(Int,Voxel)])
 pickNAdjacencys 0 is es ar ls end    = do {return $!  ls}
 pickNAdjacencys n is h ar ls end = do
@@ -98,12 +91,12 @@ pickNAdjacencys n is h ar ls end = do
      then do
        {writeArray ls (snd a) ((w,b):l1)
        ;writeArray ls (snd b) ((w,a):l2)
-       ; let ns = neighbours ar (snd b) is
-       ;l <- filter' ls [] ns
+       ;let ns = neighbours ar (snd b) is
+       ;l <- (filter' ls [] ns)
        ;let h'' = merge h' (fromList l)
        ;pickNAdjacencys (n-1) is h'' ar ls ((w,a,b):end) 
        }
-     else do {	pickNAdjacencys n is h' ar ls end}
+     else do {(pickNAdjacencys n is h' ar ls end)}
   }
 
 filter' :: IOArray Point [(Int,Voxel)]-> [Adjacency]-> [Adjacency]-> IO ([Adjacency])
@@ -116,7 +109,7 @@ filter' br ls ((a,b,(c,d)):xs) = do
   }
 
 ---  Main  -------------  
-output :: (Point, Point) -> Tree (Heap Voxel) -> IO (UArray Point Word16)
+output :: (Point, Point) -> Node (Heap Voxel) -> IO (UArray Point Word16)
 output bounds tree = do
   {arr <- newArray bounds 0 :: IO (IOUArray Point Int)
   ;arrr <- fillIn tree arr
@@ -136,8 +129,6 @@ freeze' = freeze
 freeze'' :: ( MArray a b IO, IArray UArray b) => a Point b -> IO (UArray Point b)
 freeze'' = freeze
 
-size :: Tree a-> Int
-size (Node rs es) = 1 + sum(map (size.fst) es)
     
 foldR            :: (Monad m) => (a -> b -> m b) -> b -> [a] -> m b
 foldR f a []     = return $!  a

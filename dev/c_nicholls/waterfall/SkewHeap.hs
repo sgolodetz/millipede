@@ -7,7 +7,7 @@ module SkewHeap
   ,toList
   ) where
   
-data Heap a = Node a (Heap a) (Heap a) | Leaf
+data Heap a = Node !a !(Heap a) !(Heap a) | Leaf
 
 findMin :: Heap a -> a
 findMin (Node a l r) = a
@@ -23,7 +23,7 @@ fromList :: Ord a => [a] -> Heap a
 fromList as = foldl (\y x -> merge (single x) y) Leaf as
 
 insert :: Ord a => Heap a -> a -> Heap a
-insert h a = merge h (single a)
+insert h a = id (merge h (single a))
 
 single :: Ord a => a -> Heap a
 single a = Node a Leaf Leaf
