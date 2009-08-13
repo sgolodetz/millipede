@@ -15,9 +15,26 @@ class MinimumSpanningTree : public IAdjacencyGraph<Node,EdgeValue>
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef shared_ptr<const IAdjacencyGraph<Node,EdgeValue> > IAdjacencyGraph_CPtr;
-	typedef shared_ptr<AdjacencyGraph<Node,EdgeValue> > AdjacencyGraph_Ptr;
-	typedef shared_ptr<const AdjacencyGraph<Node,EdgeValue> > AdjacencyGraph_CPtr;
+	typedef IAdjacencyGraph<Node,EdgeValue> IAdjacencyGraphT;
+	typedef shared_ptr<const IAdjacencyGraphT> IAdjacencyGraph_CPtr;
+	typedef IAdjacencyGraphT::Edge Edge;
+	typedef IAdjacencyGraphT::Node_CPtr Node_CPtr;
+
+	typedef AdjacencyGraph<Node,EdgeValue> AdjacencyGraphT;
+	typedef shared_ptr<AdjacencyGraphT> AdjacencyGraph_Ptr;
+	typedef shared_ptr<const AdjacencyGraphT> AdjacencyGraph_CPtr;
+	typedef typename AdjacencyGraphT::Node Node;
+	typedef typename AdjacencyGraphT::Node_Ptr Node_Ptr;
+
+	//#################### NESTED CLASSES ####################
+private:
+	struct EdgeValueAsc
+	{
+		bool operator()(const Edge& lhs, const Edge& rhs) const
+		{
+			return lhs.value() < rhs.value();
+		}
+	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:

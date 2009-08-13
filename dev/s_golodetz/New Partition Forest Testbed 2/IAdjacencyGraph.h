@@ -41,16 +41,16 @@ public:
 	};
 
 	//#################### TYPEDEFS ####################
-protected:
+public:
+	typedef EdgeValue EdgeValue;
+	typedef Node Node;
 	typedef shared_ptr<const Node> Node_CPtr;
 
+private:
 	typedef Iterator<Edge> EdgeIterator;
 	typedef Iterator<std::pair<int,Node_CPtr> > NodeCIterator;
 
 public:
-	typedef Node Node;
-	typedef EdgeValue EdgeValue;
-
 	typedef shared_ptr<EdgeIterator> EdgeIterator_Ptr;
 	typedef shared_ptr<NodeCIterator> NodeCIterator_Ptr;
 

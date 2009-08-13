@@ -24,8 +24,10 @@ template <typename Node, typename EdgeValue>
 class AdjacencyGraph : public IAdjacencyGraph<Node,EdgeValue>
 {
 	//#################### TYPEDEFS ####################
-private:
+public:
 	typedef shared_ptr<Node> Node_Ptr;
+
+private:
 	typedef std::map<int,Node_Ptr> NodeMap;
 
 	// Tags

@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DisjointSetForest.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Exception.h"
 				>
 			</File>
@@ -216,6 +220,10 @@
 			>
 			<File
 				RelativePath=".\AdjacencyGraph.tpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DisjointSetForest.tpp"
 				>
 			</File>
 			<File

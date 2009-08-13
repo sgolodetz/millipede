@@ -96,6 +96,9 @@ typedef IPF::LeafLayer LeafLayer;
 typedef IPF::LeafLayer_Ptr LeafLayer_Ptr;
 typedef IPF::NodeHandle NodeHandle;
 
+typedef MinimumSpanningTree<Branch,int> MST;
+typedef shared_ptr<MST> MST_Ptr;
+
 class VoxelGraphHigherValue : public LeafLayer
 {
 	//#################### PRIVATE VARIABLES ####################
@@ -179,6 +182,8 @@ try
 	branches->add_edge(0, 6, 6);
 	branches->add_edge(2, 8, 8);
 	branches->add_edge(6, 8, 8);
+
+	MST_Ptr mst(new MST(branches));
 
 	IPF ipf(leaves, branches);
 	ipf.clone_above_layer(1);
