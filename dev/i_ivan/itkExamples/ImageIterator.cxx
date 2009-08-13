@@ -18,7 +18,7 @@ int main() {
 	ImageIOType::Pointer gdcmImageIO = ImageIOType::New();
 	//ImageType::RegionType inputRegion;
 	ReaderType::Pointer reader = ReaderType::New();
-	reader->SetFileName("/home/scratch/images/IM50");
+	reader->SetFileName("images/IM50");
 	reader->SetImageIO(gdcmImageIO);
 
 	try {
@@ -50,7 +50,7 @@ int main() {
 	}
 
 	WriterType::Pointer writer = WriterType::New();
-	writer->SetFileName("IM50-iterator.dcm");
+	writer->SetFileName("images-results/IM50-iterator.dcm");
 	writer->SetInput(outputImage);
 
 	writer->UseInputMetaDataDictionaryOff();

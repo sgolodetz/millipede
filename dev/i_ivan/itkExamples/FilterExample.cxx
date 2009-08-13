@@ -40,7 +40,7 @@ int main() {
 	filter->SetLowerThreshold(70);
 	filter->SetUpperThreshold(100);
 	filter->Update();
-	writer->SetFileName("images-ribs/IM50.dcm");
+	writer->SetFileName("images-results/IM50.dcm");
 
 	writer->UseInputMetaDataDictionaryOff();
 	writer->SetImageIO(gdcmImageIO);
