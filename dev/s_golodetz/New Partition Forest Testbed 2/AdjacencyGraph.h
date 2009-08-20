@@ -57,6 +57,7 @@ public:
 	//#################### NESTED CLASSES ####################
 private:
 	class AdjEdgesIter;
+	template <typename T, typename Map, typename Iter> class AdjNodesIter;
 	class AllEdgesIter;
 	template <typename T, typename Map, typename Iter> class AllNodesIter;
 
@@ -85,9 +86,12 @@ public:
 	void add_edge(int u, int v, const EdgeValue& value);
 	void add_node(int n, const Node_Ptr& node);
 	EdgeIterator_Ptr adjacent_edges(int n) const;
+	NodeIterator_Ptr adjacent_nodes(int n);
+	NodeCIterator_Ptr adjacent_nodes(int n) const;
 	EdgeIterator_Ptr edges() const;
 	bool has_edge(int u, int v) const;
 	bool has_node(int n) const;
+	int node_count() const;
 	NodeIterator_Ptr nodes();
 	NodeCIterator_Ptr nodes() const;
 	void remove_edge(int u, int v);

@@ -2,6 +2,8 @@
 
 #include "MinimumSpanningTree.h"
 #include "PartitionForest.h"
+#include "PFWaterfallEdge.h"
+#include "Waterfall.h"
 using namespace mp;
 
 struct Voxel
@@ -87,6 +89,7 @@ struct RegionProperties
 };
 
 typedef PartitionForest<RegionProperties, VoxelProperties, VoxelIDConverter> IPF;
+typedef shared_ptr<IPF> IPF_Ptr;
 typedef IPF::Branch Branch;
 typedef shared_ptr<Branch> Branch_Ptr;
 typedef IPF::BranchLayer BranchLayer;
@@ -98,6 +101,9 @@ typedef IPF::NodeHandle NodeHandle;
 
 typedef MinimumSpanningTree<Branch,int> MST;
 typedef shared_ptr<MST> MST_Ptr;
+
+typedef PFWaterfallEdge<RegionProperties, VoxelProperties, VoxelIDConverter> PFWE;
+typedef shared_ptr<PFWE> PFWE_Ptr;
 
 class VoxelGraphHigherValue : public LeafLayer
 {
@@ -142,6 +148,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	EdgeIterator_Ptr adjacent_edges(int n) const	{ /* NYI */ throw 23; }
+	NodeCIterator_Ptr adjacent_nodes(int n) const	{ /* NYI */ throw 23; }
 	EdgeIterator_Ptr edges() const					{ /* NYI */ throw 23; }
 
 	bool has_edge(int u, int v) const
@@ -155,6 +162,7 @@ public:
 		return 0 <= n && n < static_cast<int>(m_nodes.size());
 	}
 
+	int node_count() const							{ /* NYI */ throw 23; }
 	NodeCIterator_Ptr nodes() const					{ /* NYI */ throw 23; }
 };
 
@@ -167,71 +175,49 @@ void add_branch_node(const BranchLayer_Ptr& layer, const std::set<int>& children
 int main()
 try
 {
-	std::vector<VoxelProperties> voxels;
-	voxels.push_back(23);	voxels.push_back(1);	voxels.push_back(2);
-	voxels.push_back(3);	voxels.push_back(4);	voxels.push_back(5);
-	voxels.push_back(6);	voxels.push_back(7);	voxels.push_back(8);
-	LeafLayer_Ptr leaves(new VoxelGraphHigherValue(voxels, 3, 3, 1));
+	std::vector<VoxelProperties> voxels(56, 0);
+	LeafLayer_Ptr leaves(new VoxelGraphHigherValue(voxels, 7, 8, 1));
 
 	BranchLayer_Ptr branches(new BranchLayer);
-	{ int c[] = {0,1,3,4};		std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
-	{ int c[] = {2,5};			std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
-	{ int c[] = {6,7};			std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
-	{ int c[] = {8};			std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
-	branches->add_edge(0, 2, 2);
-	branches->add_edge(0, 6, 6);
-	branches->add_edge(2, 8, 8);
-	branches->add_edge(6, 8, 8);
+	{ int c[] = {0,1,2,7,8,9};						std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {3,4,5,10,11,12,13};				std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {6};								std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {14,21,28,29,35,36,37,42,43,44};	std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {15,16,17,22,23,30};				std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {18,19,26,33};						std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {20,27,34,41};						std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {24,25};							std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {31,38};							std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {32,39,46};							std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {40,47,48,54,55};					std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {45,52};							std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {49,50,51};							std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	{ int c[] = {53};								std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(branches, children); }
+	branches->add_edge(0, 3, 3);
+	branches->add_edge(3, 6, 2);
+	branches->add_edge(3, 15, 20);
+	branches->add_edge(14, 15, 4);
+	branches->add_edge(14, 49, 2);
+	branches->add_edge(15, 24, 10);
+	branches->add_edge(18, 20, 4);
+	branches->add_edge(18, 32, 20);
+	branches->add_edge(18, 40, 4);
+	branches->add_edge(24, 31, 5);
+	branches->add_edge(31, 32, 5);
+	branches->add_edge(32, 45, 4);
+	branches->add_edge(32, 53, 2);
 
-	MST_Ptr mst(new MST(branches));
+	IPF_Ptr ipf(new IPF(leaves, branches));
+	MST mst(ipf->get_branch_layer(1));
+	PFWE_Ptr waterfallTree = PFWE::construct_waterfall_tree(mst, ipf);
 
-	IPF ipf(leaves, branches);
-	ipf.clone_above_layer(1);
-	ipf.merge_tree_roots(2,8);
-	ipf.clone_above_layer(2);
-	ipf.merge_tree_roots(0,6);
-	ipf.clone_above_layer(3);
-	ipf.merge_tree_roots(0,2);
-
-	const Branch& branch = ipf.get_branch(NodeHandle(1,1));
-	const Leaf& leaf = ipf.get_leaf(8);
-
-	return 0;
-
-#if 0
-	BranchLayer_Ptr graph(new BranchLayer);
-	{ int c[] = {0,1,3,4};		std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(graph, children); }
-	{ int c[] = {2,5};			std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(graph, children); }
-	{ int c[] = {6,7};			std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(graph, children); }
-	{ int c[] = {8};			std::set<int> children(c, c+sizeof(c)/sizeof(int));		add_branch_node(graph, children); }
-	graph->add_edge(0, 2, 23);
-	Branch& b = (*graph)(0);
-	int e1 = (*graph)(2,0);
-	std::cout << e1 << std::endl;
-	graph->replace_edge(2, 0, 9);
-	int e2 = (*graph)(0,2);
-	std::cout << e2 << std::endl;
-	graph->add_edge(6, 2, 84);
-	graph->add_edge(6, 8, 51);
-	BranchLayer::EdgeIterator_Ptr it = graph->adjacent_edges(2);
-	//BranchLayer::EdgeIterator_Ptr it = graph->edges();
-	while(it->has_next())
+	while(ipf->get_branch_layer(ipf->highest_layer()).node_count() > 1)
 	{
-		const BranchLayer::Edge& e = it->next();
-		std::cout << e.u() << ' ' << e.v() << ' ' << e.value() << '\n';
-	}
-	BranchLayer::NodeIterator_Ptr jt = graph->nodes();
-	while(jt->has_next())
-	{
-		std::pair<int,shared_ptr<Branch> > n = jt->next();
-		std::cout << n.first << '\n';
+		ipf->clone_above_layer(ipf->highest_layer());
+		Waterfall::iterate(waterfallTree);
 	}
 
-	typedef MinimumSpanningTree<Branch,int> MST;
-	MST mst(graph);
-
 	return 0;
-#endif
 }
 catch(Exception& e)
 {

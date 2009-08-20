@@ -178,6 +178,14 @@
 				RelativePath=".\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Waterfall.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WaterfallEdge.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name=".h"
@@ -214,6 +222,18 @@
 				RelativePath=".\PartitionForest.h"
 				>
 			</File>
+			<File
+				RelativePath=".\PFWaterfallEdge.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Waterfall.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WaterfallEdge.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name=".tpp"
@@ -232,6 +252,10 @@
 			</File>
 			<File
 				RelativePath=".\PartitionForest.tpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PFWaterfallEdge.tpp"
 				>
 			</File>
 		</Filter>

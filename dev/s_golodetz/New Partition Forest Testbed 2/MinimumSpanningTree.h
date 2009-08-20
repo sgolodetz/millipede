@@ -42,7 +42,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit MinimumSpanningTree(const IAdjacencyGraph_CPtr& graph);
+	explicit MinimumSpanningTree(const IAdjacencyGraphT& graph);
 
 	//#################### PUBLIC OPERATORS ####################
 public:
@@ -53,9 +53,11 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	EdgeIterator_Ptr adjacent_edges(int n) const	{ return m_mst->adjacent_edges(n); }
+	NodeCIterator_Ptr adjacent_nodes(int n) const	{ return AdjacencyGraph_CPtr(m_mst)->adjacent_nodes(n); }
 	EdgeIterator_Ptr edges() const					{ return m_mst->edges(); }
 	bool has_edge(int u, int v) const				{ return m_mst->has_edge(u, v); }
 	bool has_node(int n) const						{ return m_mst->has_node(n); }
+	int node_count() const							{ return m_mst->node_count(); }
 	NodeCIterator_Ptr nodes() const					{ return AdjacencyGraph_CPtr(m_mst)->nodes(); }
 };
 

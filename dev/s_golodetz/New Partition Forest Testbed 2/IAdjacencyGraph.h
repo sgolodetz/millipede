@@ -67,9 +67,11 @@ public:
 	//#################### PUBLIC ABSTRACT METHODS ####################
 public:
 	virtual EdgeIterator_Ptr adjacent_edges(int n) const = 0;
+	virtual NodeCIterator_Ptr adjacent_nodes(int n) const = 0;
 	virtual EdgeIterator_Ptr edges() const = 0;
 	virtual bool has_edge(int u, int v) const = 0;
 	virtual bool has_node(int n) const = 0;
+	virtual int node_count() const = 0;
 	virtual NodeCIterator_Ptr nodes() const = 0;
 
 	//#################### PROTECTED METHODS ####################

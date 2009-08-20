@@ -67,7 +67,7 @@ public:
 private:
 	void check_branch_layer(int layer) const;
 	bool has_branch_layer(int layer) const;
-	const Branch& lookup_branch(const NodeHandle& nh) const;
+	int lookup_branch_index(const NodeHandle& nh) const;
 	void recalculate_properties(const NodeHandle& nh);
 };
 

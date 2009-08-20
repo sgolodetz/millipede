@@ -60,6 +60,41 @@ public:
 };
 
 AdjacencyGraph_HEADER
+template <typename T, typename Map, typename Iter>
+class AdjacencyGraph_THIS::AdjNodesIter : public Iterator<std::pair<int,shared_ptr<T> > >
+{
+	//#################### PRIVATE VARIABLES ####################
+private:
+	int m_curNode;
+	EdgeIterator_Ptr m_adjEdgesIt;
+	Map& m_nodes;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	AdjNodesIter(int curNode, const EdgeIterator_Ptr& adjEdgesIt, Map& nodes)
+	:	m_curNode(curNode), m_adjEdgesIt(adjEdgesIt), m_nodes(nodes)
+	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	bool has_next() const
+	{
+		return m_adjEdgesIt->has_next();
+	}
+
+	std::pair<int,shared_ptr<T> > next()
+	{
+		Edge adjEdge = m_adjEdgesIt->next();
+
+		int otherNode;
+		if(adjEdge.u() != m_curNode)	otherNode = adjEdge.u();
+		else							otherNode = adjEdge.v();
+
+		return *m_nodes.find(otherNode);
+	}
+};
+
+AdjacencyGraph_HEADER
 class AdjacencyGraph_THIS::AllEdgesIter : public Iterator<Edge>
 {
 	//#################### PRIVATE VARIABLES ####################
@@ -198,6 +233,20 @@ AdjacencyGraph_THIS::adjacent_edges(int n) const
 }
 
 AdjacencyGraph_HEADER
+typename AdjacencyGraph_THIS::NodeIterator_Ptr
+AdjacencyGraph_THIS::adjacent_nodes(int n)
+{
+	return NodeIterator_Ptr(new AdjNodesIter<Node,NodeMap,NodeMap::iterator>(n, adjacent_edges(n), m_nodes));
+}
+
+AdjacencyGraph_HEADER
+typename AdjacencyGraph_THIS::NodeCIterator_Ptr
+AdjacencyGraph_THIS::adjacent_nodes(int n) const
+{
+	return NodeCIterator_Ptr(new AdjNodesIter<const Node,const NodeMap,NodeMap::const_iterator>(n, adjacent_edges(n), m_nodes));
+}
+
+AdjacencyGraph_HEADER
 typename AdjacencyGraph_THIS::EdgeIterator_Ptr
 AdjacencyGraph_THIS::edges() const
 {
@@ -220,6 +269,12 @@ AdjacencyGraph_HEADER
 bool AdjacencyGraph_THIS::has_node(int n) const
 {
 	return m_nodes.find(n) != m_nodes.end();
+}
+
+AdjacencyGraph_HEADER
+int AdjacencyGraph_THIS::node_count() const
+{
+	return static_cast<int>(m_nodes.size());
 }
 
 AdjacencyGraph_HEADER

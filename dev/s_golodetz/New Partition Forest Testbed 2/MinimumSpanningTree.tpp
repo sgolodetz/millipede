@@ -13,7 +13,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 template <typename Node, typename EdgeValue>
-MinimumSpanningTree<Node,EdgeValue>::MinimumSpanningTree(const IAdjacencyGraph_CPtr& graph)
+MinimumSpanningTree<Node,EdgeValue>::MinimumSpanningTree(const IAdjacencyGraphT& graph)
 :	m_mst(new AdjacencyGraphT)
 {
 	// Build a minimum spanning tree using Kruskal's algorithm.
@@ -21,14 +21,14 @@ MinimumSpanningTree<Node,EdgeValue>::MinimumSpanningTree(const IAdjacencyGraph_C
 	// Step 1:	Extract and sort the edges.
 	std::vector<Edge> edges;
 
-	IAdjacencyGraphT::EdgeIterator_Ptr eit = graph->edges();
+	IAdjacencyGraphT::EdgeIterator_Ptr eit = graph.edges();
 	while(eit->has_next()) edges.push_back(eit->next());
 
 	std::sort(edges.begin(), edges.end(), EdgeValueAsc());
 
 	// Step 2:	Extract the nodes and add them to the MST and a disjoint set forest.
 	DisjointSetForest<> forest;
-	IAdjacencyGraphT::NodeCIterator_Ptr nit = graph->nodes();
+	IAdjacencyGraphT::NodeCIterator_Ptr nit = graph.nodes();
 	while(nit->has_next())
 	{
 		std::pair<int,Node_CPtr> p = nit->next();

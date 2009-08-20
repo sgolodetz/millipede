@@ -165,7 +165,7 @@ PartitionForest_THIS::get_branch(const NodeHandle& nh) const
 
 	BranchLayer& layer = *m_branchLayers[nh.layer-1];
 	if(layer.has_node(nh.index)) return layer(nh.index);
-	else return lookup_branch(nh);
+	else return layer(lookup_branch_index(nh));
 }
 
 PartitionForest_HEADER
@@ -214,18 +214,22 @@ void PartitionForest_THIS::merge_siblings(int layer, const std::vector<int>& ind
 PartitionForest_HEADER
 void PartitionForest_THIS::merge_tree_roots(int u, int v)
 {
-	// Step 1:	Check that the roots are adjacent to each other.
+	// Step 1:	Lookup the actual indices of the roots we want to merge.
+	u = lookup_branch_index(NodeHandle(highest_layer(), u));
+	v = lookup_branch_index(NodeHandle(highest_layer(), v));
+
+	// Step 2:	Check that the roots are adjacent to each other.
 	BranchLayer& rootLayer = *m_branchLayers[m_branchLayers.size()-1];
 	if(!rootLayer.has_edge(u,v)) throw Exception("The tree roots cannot be merged because they are not adjacent");
 
-	// Step 2:	Remove the edge between them.
+	// Step 3:	Remove the edge between them.
 	rootLayer.remove_edge(u,v);
 
-	// Step 3:	Order the roots by index.
+	// Step 4:	Order the roots by index.
 	int smaller = u <= v ? u : v;
 	int larger = u <= v ? v : u;
 
-	// Step 4:	Move the children of the larger root to the smaller root and recalculate the properties.
+	// Step 5:	Move the children of the larger root to the smaller root and recalculate the properties.
 	Branch& smallerRoot = rootLayer(smaller);
 	Branch& largerRoot = rootLayer(larger);
 	for(std::set<int>::const_iterator it=largerRoot.m_children.begin(), iend=largerRoot.m_children.end(); it!=iend; ++it)
@@ -237,15 +241,15 @@ void PartitionForest_THIS::merge_tree_roots(int u, int v)
 	}
 	recalculate_properties(NodeHandle(highest_layer(), smaller));
 
-	// Step 5:	Cache all the edges adjacent to the larger root.
+	// Step 6:	Cache all the edges adjacent to the larger root.
 	std::vector<BranchLayer::Edge> edges;
 	BranchLayer::EdgeIterator_Ptr edgeIt = rootLayer.adjacent_edges(larger);
 	while(edgeIt->has_next()) edges.push_back(edgeIt->next());
 
-	// Step 6:	Remove the larger root from the graph.
+	// Step 7:	Remove the larger root from the graph.
 	rootLayer.remove_node(larger);
 
-	// Step 7:	Add all the cached edges back into the graph, replacing the index of the larger root with
+	// Step 8:	Add all the cached edges back into the graph, replacing the index of the larger root with
 	//			that of the smaller root in each case. In some cases, there may be an existing edge with
 	//			the same endpoints (because the smaller and larger roots were both adjacent to a given
 	//			node) - in that case, a decision must be made as to which to keep, based on the edge weights.
@@ -286,24 +290,23 @@ bool PartitionForest_THIS::has_branch_layer(int layer) const
 }
 
 PartitionForest_HEADER
-const typename PartitionForest_THIS::Branch&
-PartitionForest_THIS::lookup_branch(const NodeHandle& nh) const
+int PartitionForest_THIS::lookup_branch_index(const NodeHandle& nh) const
 {
 	check_branch_layer(nh.layer);
 
 	Node *cur = &(*m_leafLayer)(nh.index);
-	Branch *curBranch = NULL;
+	int index = nh.index;
 	for(int i=1; i<=nh.layer; ++i)
 	{
 		int parent = cur->parent();
 		if(parent != -1)
 		{
-			curBranch = &(*m_branchLayers[i-1])(parent);
-			cur = curBranch;
+			cur = &(*m_branchLayers[i-1])(parent);
+			index = parent;
 		}
 		else throw Exception(OSSWrapper() << "Lookup of branch (" << nh.layer << ',' << nh.index << ") failed");
 	}
-	return *curBranch;	// note: since nh.layer >= 1, at least one iteration of the above loop is guaranteed
+	return index;
 }
 
 PartitionForest_HEADER
