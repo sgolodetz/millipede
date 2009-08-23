@@ -227,6 +227,26 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RegionProperties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Voxel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VoxelGraphHigherValue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VoxelIDConverter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VoxelProperties.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Waterfall.h"
 				>
 			</File>

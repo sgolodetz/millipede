@@ -4,154 +4,11 @@
  ***/
 
 #include <boost/lexical_cast.hpp>
-#include <boost/pointer_cast.hpp>
 
 #define AdjacencyGraph_HEADER	template <typename Node, typename EdgeValue>
 #define AdjacencyGraph_THIS		AdjacencyGraph<Node,EdgeValue>
 
 namespace mp {
-
-//#################### NESTED CLASSES ####################
-AdjacencyGraph_HEADER
-class AdjacencyGraph_THIS::AdjEdgesIter : public Iterator<Edge>
-{
-	//#################### TYPEDEFS ####################
-private:
-	typedef typename EdgeTable::index<source>::type EdgeTableBySrc;
-	typedef typename EdgeTable::index<dest>::type EdgeTableByDest;
-	typedef typename EdgeTableBySrc::const_iterator SrcIter;
-	typedef typename EdgeTableByDest::const_iterator DestIter;
-
-	//#################### PRIVATE VARIABLES ####################
-private:
-	SrcIter m_srcBegin, m_srcEnd, m_srcIt;
-	DestIter m_destBegin, m_destEnd, m_destIt;
-
-	//#################### CONSTRUCTORS ####################
-public:
-	AdjEdgesIter(const SrcIter& srcBegin, const SrcIter& srcEnd, const DestIter& destBegin, const DestIter& destEnd)
-	:	m_srcBegin(srcBegin), m_srcEnd(srcEnd), m_srcIt(srcBegin),
-		m_destBegin(destBegin), m_destEnd(destEnd), m_destIt(destBegin)
-	{}
-
-	//#################### PUBLIC METHODS ####################
-public:
-	bool has_next() const
-	{
-		return m_srcIt != m_srcEnd || m_destIt != m_destEnd;
-	}
-
-	Edge next()
-	{
-		if(m_srcIt != m_srcEnd)
-		{
-			const Edge& ret = *m_srcIt;
-			++m_srcIt;
-			return ret;
-		}
-		else if(m_destIt != m_destEnd)
-		{
-			const Edge& ret = *m_destIt;
-			++m_destIt;
-			return ret;
-		}
-		else throw Exception("Trying to read more adjacent edges than actually exist");
-	}
-};
-
-AdjacencyGraph_HEADER
-template <typename T, typename Map, typename Iter>
-class AdjacencyGraph_THIS::AdjNodesIter : public Iterator<std::pair<int,shared_ptr<T> > >
-{
-	//#################### PRIVATE VARIABLES ####################
-private:
-	int m_curNode;
-	EdgeIterator_Ptr m_adjEdgesIt;
-	Map& m_nodes;
-
-	//#################### CONSTRUCTORS ####################
-public:
-	AdjNodesIter(int curNode, const EdgeIterator_Ptr& adjEdgesIt, Map& nodes)
-	:	m_curNode(curNode), m_adjEdgesIt(adjEdgesIt), m_nodes(nodes)
-	{}
-
-	//#################### PUBLIC METHODS ####################
-public:
-	bool has_next() const
-	{
-		return m_adjEdgesIt->has_next();
-	}
-
-	std::pair<int,shared_ptr<T> > next()
-	{
-		Edge adjEdge = m_adjEdgesIt->next();
-
-		int otherNode;
-		if(adjEdge.u() != m_curNode)	otherNode = adjEdge.u();
-		else							otherNode = adjEdge.v();
-
-		return *m_nodes.find(otherNode);
-	}
-};
-
-AdjacencyGraph_HEADER
-class AdjacencyGraph_THIS::AllEdgesIter : public Iterator<Edge>
-{
-	//#################### PRIVATE VARIABLES ####################
-private:
-	const EdgeTable& m_edges;
-	typename EdgeTable::const_iterator m_it;
-
-	//#################### CONSTRUCTORS ####################
-public:
-	explicit AllEdgesIter(const EdgeTable& edges)
-	:	m_edges(edges), m_it(m_edges.begin())
-	{}
-
-	//#################### PUBLIC METHODS ####################
-public:
-	bool has_next() const
-	{
-		return m_it != m_edges.end();
-	}
-
-	Edge next()
-	{
-		const Edge& ret = *m_it;
-		++m_it;
-		return ret;
-	}
-};
-
-AdjacencyGraph_HEADER
-template <typename T, typename Map, typename Iter>
-class AdjacencyGraph_THIS::AllNodesIter : public Iterator<std::pair<int,shared_ptr<T> > >
-{
-	//#################### PRIVATE VARIABLES ####################
-private:
-	Map& m_nodes;
-	Iter m_it;
-
-	//#################### CONSTRUCTORS ####################
-public:
-	explicit AllNodesIter(Map& nodes)
-	:	m_nodes(nodes), m_it(m_nodes.begin())
-	{}
-
-	//#################### PUBLIC METHODS ####################
-public:
-	bool has_next() const
-	{
-		return m_it != m_nodes.end();
-	}
-
-	std::pair<int,shared_ptr<T> > next()
-	{
-		std::pair<int,shared_ptr<T> > ret = std::make_pair(m_it->first, m_it->second);
-		++m_it;
-		return ret;
-	}
-};
 
 //#################### CONSTRUCTORS ####################
 AdjacencyGraph_HEADER
@@ -328,6 +185,148 @@ void AdjacencyGraph_THIS::replace_edge(int u, int v, const EdgeValue& value)
 	if(it != m_edges.end()) m_edges.replace(it, Edge(smaller, larger, value));
 	else throw Exception(OSSWrapper() << "No edge exists between " << smaller << " and " << larger);
 }
+
+//#################### NESTED CLASSES ####################
+AdjacencyGraph_HEADER
+class AdjacencyGraph_THIS::AdjEdgesIter : public Iterator<Edge>
+{
+	//#################### TYPEDEFS ####################
+private:
+	typedef typename EdgeTable::index<source>::type EdgeTableBySrc;
+	typedef typename EdgeTable::index<dest>::type EdgeTableByDest;
+	typedef typename EdgeTableBySrc::const_iterator SrcIter;
+	typedef typename EdgeTableByDest::const_iterator DestIter;
+
+	//#################### PRIVATE VARIABLES ####################
+private:
+	SrcIter m_srcBegin, m_srcEnd, m_srcIt;
+	DestIter m_destBegin, m_destEnd, m_destIt;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	AdjEdgesIter(const SrcIter& srcBegin, const SrcIter& srcEnd, const DestIter& destBegin, const DestIter& destEnd)
+	:	m_srcBegin(srcBegin), m_srcEnd(srcEnd), m_srcIt(srcBegin),
+		m_destBegin(destBegin), m_destEnd(destEnd), m_destIt(destBegin)
+	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	bool has_next() const
+	{
+		return m_srcIt != m_srcEnd || m_destIt != m_destEnd;
+	}
+
+	Edge next()
+	{
+		if(m_srcIt != m_srcEnd)
+		{
+			const Edge& ret = *m_srcIt;
+			++m_srcIt;
+			return ret;
+		}
+		else if(m_destIt != m_destEnd)
+		{
+			const Edge& ret = *m_destIt;
+			++m_destIt;
+			return ret;
+		}
+		else throw Exception("Trying to read more adjacent edges than actually exist");
+	}
+};
+
+AdjacencyGraph_HEADER
+template <typename T, typename Map, typename Iter>
+class AdjacencyGraph_THIS::AdjNodesIter : public Iterator<std::pair<int,shared_ptr<T> > >
+{
+	//#################### PRIVATE VARIABLES ####################
+private:
+	int m_curNode;
+	EdgeIterator_Ptr m_adjEdgesIt;
+	Map& m_nodes;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	AdjNodesIter(int curNode, const EdgeIterator_Ptr& adjEdgesIt, Map& nodes)
+	:	m_curNode(curNode), m_adjEdgesIt(adjEdgesIt), m_nodes(nodes)
+	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	bool has_next() const
+	{
+		return m_adjEdgesIt->has_next();
+	}
+
+	std::pair<int,shared_ptr<T> > next()
+	{
+		Edge adjEdge = m_adjEdgesIt->next();
+
+		int otherNode;
+		if(adjEdge.u() != m_curNode)	otherNode = adjEdge.u();
+		else							otherNode = adjEdge.v();
+
+		return *m_nodes.find(otherNode);
+	}
+};
+
+AdjacencyGraph_HEADER
+class AdjacencyGraph_THIS::AllEdgesIter : public Iterator<Edge>
+{
+	//#################### PRIVATE VARIABLES ####################
+private:
+	const EdgeTable& m_edges;
+	typename EdgeTable::const_iterator m_it;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	explicit AllEdgesIter(const EdgeTable& edges)
+	:	m_edges(edges), m_it(m_edges.begin())
+	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	bool has_next() const
+	{
+		return m_it != m_edges.end();
+	}
+
+	Edge next()
+	{
+		const Edge& ret = *m_it;
+		++m_it;
+		return ret;
+	}
+};
+
+AdjacencyGraph_HEADER
+template <typename T, typename Map, typename Iter>
+class AdjacencyGraph_THIS::AllNodesIter : public Iterator<std::pair<int,shared_ptr<T> > >
+{
+	//#################### PRIVATE VARIABLES ####################
+private:
+	Map& m_nodes;
+	Iter m_it;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	explicit AllNodesIter(Map& nodes)
+	:	m_nodes(nodes), m_it(m_nodes.begin())
+	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	bool has_next() const
+	{
+		return m_it != m_nodes.end();
+	}
+
+	std::pair<int,shared_ptr<T> > next()
+	{
+		std::pair<int,shared_ptr<T> > ret = std::make_pair(m_it->first, m_it->second);
+		++m_it;
+		return ret;
+	}
+};
 
 }
 
