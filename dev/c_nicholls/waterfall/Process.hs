@@ -1,15 +1,16 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Process(
   bounds,
   output,
   getAdjacencyList,
   arrayToNode,freeze'',
   Adjacency,Point
-  	) where
+    ) where
 
 
 import SkewHeap (Heap,fromList,merge,insert,getMin,toList  )
 import Data.Array.IO
-import Data.Array.Unboxed       (IArray, Ix, UArray, amap, bounds, elems, listArray, (!)	)
+import Data.Array.Unboxed       (IArray, Ix, UArray, amap, bounds, elems, listArray, (!)  )
 import List(sort,sortBy)
 import Data.Word                (Word8, Word16)
 import Waterfall(waterfall,Node,mkNode,Edge,mkEdge,Mergable(union),getRegion,getEdges,getNode,getWeight)
@@ -33,7 +34,7 @@ neighbours :: UArray Point Int -> Point -> Point -> [Adjacency]
 neighbours   arr  (a,b) (x,y) = neighbours' arr  (a,b) (x,y) ls'
   where
     ls' = filter (\(c,d) -> 0<=c&&0<=d&&c<x&&d<y) ls
-    ls = [(a,b+1),(a+1,b),(a,b-1),(a-1,b),(a+1,b+1),(a-1,b-1),(a+1,b-1),(a-1,b+1)]
+    ls = [(a,b+1),(a+1,b),(a,b-1),(a-1,b)]--,(a+1,b+1),(a-1,b-1),(a+1,b-1),(a-1,b+1)]
 
 neighbours' :: UArray Point Int -> Point -> Point -> [Point] -> [Adjacency]
 neighbours' arr  (a,b) (x,y) [] =  []
@@ -73,8 +74,8 @@ remove p ((w,(v,a)):ps)
 getAdjacencyList :: (IArray UArray Int) =>  UArray Point Int -> IO (IOArray Point [(Int,Voxel)])
 getAdjacencyList arr = do 
   {let ((a,b),(c,d)) = bounds arr
-  ;brr <- newArray ((a,b),(c,d)) [] :: IO (IOArray Point [(Int,Voxel)]	)
-  ;writeArray brr (0,0) [(0,(0,(0,0)))]	
+  ;brr <- newArray ((a,b),(c,d)) [] :: IO (IOArray Point [(Int,Voxel)]  )
+  ;writeArray brr (0,0) [(0,(0,(0,0)))] 
   ;let e = neighbours arr (0,0) (c,d)
   ;print (c*d-1)
   ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr []

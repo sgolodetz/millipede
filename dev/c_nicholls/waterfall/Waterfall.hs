@@ -1,8 +1,9 @@
-module Waterfall(waterfall,mkNode,Node,Edge,mkEdge,Mergable(union),getRegion,getEdges,getNode,getWeight) where
+{-# LANGUAGE  FlexibleInstances #-}
+module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergable(union),getRegion,getEdges,getNode,getWeight) where
 
 import List (sortBy)
 data Node a = Node !a ![Edge a] 
-data Edge a = Edge (Node a) Int
+data Edge a = Edge Int (Node a) 
 
 -- f applied to an edge returns the edge after merging. The boolean value indicates 
 -- whether or not the edge contained a regional minimum amongst its children
@@ -12,30 +13,32 @@ class Mergable a where
 
 waterfall :: Mergable a => Node a -> Node a
 waterfall (Node r []) = Node r []
-waterfall (Node r es) = (getNode.fst.f) (Edge (Node r es) (maximum [i| Edge t i <- es]))
+waterfall (Node r es) = (getNode.fst.f) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
   
 f :: Mergable a => Edge a -> (Edge a,Bool)
-f n@(Edge (Node r [])w) = (n,False)
-f (Edge (Node r es) w) = 
-  let es'' = sortBy cmpEdge (map f es) in
-  let (e,b) = head es'' in 
+f n@(Edge w (Node r [])) = (n,False)
+f (Edge w (Node r es) ) = 
+  let ((e,b):es') = sortBy cmpEdge (map f es) in
   let w' = getWeight e in 
-  let es''' = (e,False):tail es'' in 
-  let cond =  (b==True && (w'<=w)) in 
-    case cond of 
-    True   ->  (join r es''' w, True)
-    False  ->  (join r es''  w, flag (w'>=w)) 
+    case (b==True && (w'<=w)) of 
+    True   ->  (join r ((e,False): es') w, True)
+    False  ->  (join r ((e,b): es')  w, flag (w'>=w)) 
     
 
+{--
+recurse: es''
+merge the minimum child
+merge the non
+--}
 join ::  Mergable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
-join r [] w = Edge (Node r []) w
-join r ((Edge n v,b):es) w 
- | b == False  = Edge (Node r''  es'')  w'
- | otherwise = Edge (Node r' ((Edge n v):es')) w'
+join r [] w = Edge w (Node r [])
+join r ((Edge v n,b):es) w 
+ | b   =        Edge w' (Node r' ((Edge v n ):es')) 
+ | otherwise  = Edge w' (Node r''  es'') 
   where
     r'' = (id (union r' (getRegion n)))
     es'' = (es' ++ getEdges n)
-    Edge (Node r' es') w' = join r es w
+    Edge w' (Node r' es') = join r es w
 
 
 -- Auxillary functions 
@@ -48,16 +51,16 @@ flag True = False
 flag False = True
 
 cmpEdge :: Mergable a =>(Edge a,Bool) -> (Edge a,Bool) -> Ordering
-cmpEdge ((Edge x w1),b1) ((Edge y w2),b2) 
+cmpEdge ((Edge w1 x),b1) ((Edge w2 y),b2) 
   | w1 == w2 = compare b2 b1
   | otherwise = compare w1 w2
 
 type Region = [Char]
 
 getNode :: Edge a -> Node a
-getNode (Edge n w) = n
+getNode (Edge w n) = n
 
-getWeight (Edge n w) = w
+getWeight (Edge w n ) = w
 
 getRegion :: Node a -> a
 getRegion (Node r es) = r
@@ -70,8 +73,11 @@ mkNode :: Mergable a =>a -> [Edge a]->  Node a
 mkNode a es = Node a es
 
 mkEdge :: Mergable a => Node a -> Int -> Edge a
-mkEdge n v = Edge n v
+mkEdge n v = Edge v n
 
+
+instance Mergable [Char] where
+  union a b  = a ++ b
 ---- Stuff for testing ----------
 
   {- f:

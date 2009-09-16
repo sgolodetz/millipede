@@ -11,18 +11,18 @@ main = do
   {t0 <- getCurrentTime
   ;putStrLn "Reading file"
   ;args <- getArgs
-  ;Right (ar:as) <- 	pgmsFromFile (head args)
+  ;Right (ar:as) <-   pgmsFromFile (head args)
   ;t1 <- timeSince t0
   ;putStrLn "Generating MST"
   ;es <- getAdjacencyList  ar
   ;t2 <- timeSince t1
-  ;putStrLn "Making Tree"	
+  ;putStrLn "Making Tree" 
 
   ;edge <- arrayToNode es (-1,-1) (0,(0,(0,0)))
   ;t3 <- timeSince t2
   ;putStrLn "Doing Waterfall"
   ;let bs = bounds ar
-  ;let trees = (take 5$!drop 1 $! iterate (waterfall$!)$!getNode edge)
+  ;let trees = (take 6$!drop 1 $! iterate (waterfall$!)$!getNode edge)
   ;t4 <- timeSince t3
   ;putStrLn "Converting output"
   ;ars <- mapM (output bs) trees
@@ -37,7 +37,7 @@ main = do
 save n [a] =do {arrayToFile ("output"++show n++".pgm") a}
 save n (a:as) = do 
   {putStrLn ("Saving file "++show n)
-  ;arrayToFile ("output"++show n++".pgm") a
+  ;arrayToFile ("./output/output"++show n++".pgm") a
   ;save (n+1) as
   }
 
