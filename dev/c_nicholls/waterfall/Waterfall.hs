@@ -1,5 +1,5 @@
 {-# LANGUAGE  FlexibleInstances #-}
-module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergable(union),getRegion,getEdges,getNode,getWeight) where
+module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight) where
 
 import List (sortBy)
 data Node a = Node !a ![Edge a] 
@@ -8,14 +8,14 @@ data Edge a = Edge Int (Node a)
 -- f applied to an edge returns the edge after merging. The boolean value indicates 
 -- whether or not the edge contained a regional minimum amongst its children
 
-class Mergable a where
+class Mergeable a where
   union :: a -> a -> a
 
-waterfall :: Mergable a => Node a -> Node a
+waterfall :: Mergeable a => Node a -> Node a
 waterfall (Node r []) = Node r []
-waterfall (Node r es) = (getNode.fst.f) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
+waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
   
--- f :: Mergable a => Edge a -> (Edge a,Bool)
+-- f :: Mergeable a => Edge a -> (Edge a,Bool)
 -- f n@(Edge w (Node r [])) = (n,False)
 -- f (Edge w (Node r es) ) = 
 --   let ((e,b):es') = sortBy cmpEdge (map f es) in
@@ -23,44 +23,64 @@ waterfall (Node r es) = (getNode.fst.f) (Edge  (maximum [i| Edge i t <- es]) (No
 --     case (b==True && (w'<=w)) of 
 --     True   ->  (join r ((e,False): es') w, True)
 --     False  ->  (join r ((e,b): es')  w, flag (w'>=w)) 
-    
   
-f :: Mergable a => Edge a -> (Edge a,Bool)
-f n@(Edge w (Node r [])) = (n,False)
-f (Edge w (Node r es) ) = 
-  let w' = getWeight e in 
-    case (b==True && (w'<=w)) of 
-    True   ->  (join r ((e,False): es') w, True)
-    False  ->  (join r ((e,b): es')  w, flag (w'>=w)) 
-  where ((e,b):es') = sortBy cmpEdge (map f es)
-    
+mergeChildren :: Mergeable a => Edge a -> (Edge a,Bool)
+mergeChildren n@(Edge w (Node r [])) = (n,False)
+mergeChildren (Edge w (Node r es) ) 
+  | (b && w'<=w) = (join r ((e,False): es') w, True)
+  | otherwise    = (join r ((e,b): es')  w, (w'<w)) 
+  where 
+    ((e,b):es') = sortBy cmpEdge (map mergeChildren es)
+    w' = getWeight e 
 
 {--
 recurse: es''
 merge the minimum child
 merge the non
 --}
-join ::  Mergable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
+
+-- join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
+-- join r [] w = Edge w (Node r [])
+-- join r ((Edge v n,b):es) w 
+--  | b   =        Edge w' (Node r' ((Edge v n ):es')) 
+--  | otherwise  = Edge w' (Node r''  es'') 
+--   where
+--     r'' = (union r' (getRegion n))
+--     es'' = (es' ++ getEdges n)
+--     Edge w' (Node r' es') = join r es w
+
+
+join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 join r [] w = Edge w (Node r [])
 join r ((Edge v n,b):es) w 
  | b   =        Edge w' (Node r' ((Edge v n ):es')) 
  | otherwise  = Edge w' (Node r''  es'') 
   where
-    r'' = (id (union r' (getRegion n)))
+    r'' = (union r' (getRegion n))
     es'' = (es' ++ getEdges n)
     Edge w' (Node r' es') = join r es w
+
+extractEdgeRegions :: [Edge a] -> ([a],[Edge a])
+extractEdgeRegions [] = ([],[])
+extractEdgeRegions ((Edge v n):es) =
+  ( (getRegion n):as, (getChildren n)++bs )
+  where (as,bs) = split xs
+
+
+
+split :: [(a,Bool)] -> ([a],[a])
+split [] = ([],[])
+split ((x,b):xs)
+  | b =( x:as,bs)
+  | otherwise = (as,x:bs)
+  where (as,bs) = split xs
+
 
 
 -- Auxillary functions 
 
 
-
-
-flag :: Bool -> Bool
-flag True = False
-flag False = True
-
-cmpEdge :: Mergable a =>(Edge a,Bool) -> (Edge a,Bool) -> Ordering
+cmpEdge :: Mergeable a =>(Edge a,Bool) -> (Edge a,Bool) -> Ordering
 cmpEdge ((Edge w1 x),b1) ((Edge w2 y),b2) 
   | w1 == w2 = compare b2 b1
   | otherwise = compare w1 w2
@@ -79,14 +99,14 @@ getEdges :: Node a-> [Edge a]
 getEdges (Node r es) = es
 
 
-mkNode :: Mergable a =>a -> [Edge a]->  Node a
+mkNode :: Mergeable a =>a -> [Edge a]->  Node a
 mkNode a es = Node a es
 
-mkEdge :: Mergable a => Node a -> Int -> Edge a
+mkEdge :: Mergeable a => Node a -> Int -> Edge a
 mkEdge n v = Edge v n
 
 
-instance Mergable [Char] where
+instance Mergeable [Char] where
   union a b  = a ++ b
 ---- Stuff for testing ----------
 

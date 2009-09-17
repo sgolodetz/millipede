@@ -13,7 +13,7 @@ import Data.Array.IO
 import Data.Array.Unboxed       (IArray, Ix, UArray, amap, bounds, elems, listArray, (!)  )
 import List(sort,sortBy)
 import Data.Word                (Word8, Word16)
-import Waterfall(waterfall,Node,mkNode,Edge,mkEdge,Mergable(union),getRegion,getEdges,getNode,getWeight)
+import Waterfall(waterfall,Node,mkNode,Edge,mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight)
 import PGM
   ( pgmToArray,
     pgmsToArrays,
@@ -121,7 +121,7 @@ output bounds tree = do
 
 
 --- Other Functions ---------
-instance Ord a => Mergable (Heap a) where
+instance Ord a => Mergeable (Heap a) where
   union = merge
 
 freeze' :: ( MArray a Int IO, IArray UArray Int) => a Point Int -> IO (UArray Point Int)
