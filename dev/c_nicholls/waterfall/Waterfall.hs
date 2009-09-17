@@ -15,14 +15,24 @@ waterfall :: Mergable a => Node a -> Node a
 waterfall (Node r []) = Node r []
 waterfall (Node r es) = (getNode.fst.f) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
   
+-- f :: Mergable a => Edge a -> (Edge a,Bool)
+-- f n@(Edge w (Node r [])) = (n,False)
+-- f (Edge w (Node r es) ) = 
+--   let ((e,b):es') = sortBy cmpEdge (map f es) in
+--   let w' = getWeight e in 
+--     case (b==True && (w'<=w)) of 
+--     True   ->  (join r ((e,False): es') w, True)
+--     False  ->  (join r ((e,b): es')  w, flag (w'>=w)) 
+    
+  
 f :: Mergable a => Edge a -> (Edge a,Bool)
 f n@(Edge w (Node r [])) = (n,False)
 f (Edge w (Node r es) ) = 
-  let ((e,b):es') = sortBy cmpEdge (map f es) in
   let w' = getWeight e in 
     case (b==True && (w'<=w)) of 
     True   ->  (join r ((e,False): es') w, True)
     False  ->  (join r ((e,b): es')  w, flag (w'>=w)) 
+  where ((e,b):es') = sortBy cmpEdge (map f es)
     
 
 {--

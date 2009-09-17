@@ -1,0 +1,47 @@
+Student Conference Abstract
+
+There are many applications for image segmentation in the world of
+medical imaging; for example, feature identification and
+classification, 3D visualisation, and volume estimation. All these
+help when working with CAT scans and each require knowledge of where
+key anatomical features are found in the image.
+
+In order to locate any such features, the image needs to be
+segmented. That is, pixels of similar greyscale values get grouped
+together in the same region. Most algorithms tend to over-segment
+images significantly, leading to far more regions than can be handled
+sensibly. This effect is partly due to problems such as indistinct
+boundaries between features and the variation present between
+different images, and partly due to the algorithms not having any
+knowledge of the context in which the segmentation takes place.
+
+Figure 1 illustrates (on a CAT scan) the results of a common
+segmentation algorithm, the watershed. The image is clearly
+over-segmented and not much more useful than the original for the
+purposes mentioned earlier.
+
+The over-segmented image can be processed further by grouping together
+those regions that feature similar grey values. This technique is
+known as the waterfall algorithm. It yields a hierarchy called a
+partition forest, which is a more comprehensive data structure that
+can be used subsequently in the process of feature identification. The
+waterfall algorithm is widely used and can produce good results.
+
+Figure 2 illustrates the various layers that result from applying the
+waterfall algorithm repeatedly to the segmentation shown in Figure 1.
+
+[some generalities about how waterfall works]
+
+I present a new data structure for the waterfall algorithm that
+simplifies the process and improves efficiency compared to current
+implementations. It is based on a recursive-tree data structure and a
+recursive relation on the nodes rather than the conventional iterative
+transformations.
+
+[some details about the new data structure]
+
+Production of partition forests has many applications outside of the
+field of medical imaging, for instance, binary space partitioning in
+3D map rendering for games.
+
+[some results, and possibly something about validation]
