@@ -1,9 +1,9 @@
-\documentclass[a4paper]{article}
+\documentclass{ouclprgsc}
 
-\addtolength{\textwidth}{40mm}
-\addtolength{\oddsidemargin}{-20mm}
-\addtolength{\textheight}{40mm}
-\addtolength{\topmargin}{-20mm}
+%\addtolength{\textwidth}{40mm}
+%\addtolength{\oddsidemargin}{-20mm}
+%\addtolength{\textheight}{40mm}
+%\addtolength{\topmargin}{-20mm}
 
 \usepackage{ifpdf}
 \usepackage{subfigure}
@@ -14,13 +14,12 @@ Alternative waterfall
 }
 \author{Chris Nicholls, Irina Voiculescu and Stuart Golodetz
 }
-\date{Oxford University Computing Laboratory}
+\institute{Oxford University Computing Laboratory}
 
 \begin{document}
 
 \maketitle
-\thispagestyle{empty}
-\pagestyle{plain}
+\pagestyle{empty}
 
 
 
@@ -87,7 +86,7 @@ geographical metaphor. The image is regarded as a landscape, with each
 grey value being associated to a terrain height. The valleys are in
 the darker areas, whereas the lighter areas are regarded as peaks.
 
-The waterfall algorithm~\cite{beucher, marcotegui} can be imagined as a flooding
+The waterfall algorithm~\cite{beucher,marcotegui} can be imagined as a flooding
 process. The water falls into (low) catchment basins and gradually
 fills them up to the nearest boundaries. When two adjacent basins have
 been filled up to the boundary between them, they get joined (and the
