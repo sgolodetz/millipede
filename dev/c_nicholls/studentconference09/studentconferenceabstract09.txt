@@ -58,9 +58,9 @@ The collection of regional minimum edges of a graph G is a connected
 subgraph of G whose edges have the same weight as each other, and
 whose adjacent edges in G have strictly higher weights. The waterfall
 algorithm relies heavily on finding these regional minimum edges,
-eliding them and rebuilding the MST -- a process which is relatively
-complex and hard to implement, and which also requires careful
-implementation of the MST.
+eliding them and rebuilding the MST -- a process which not only
+requires careful implementation of the MST but, more importantly, is
+relatively complex and hard to implement.
 
 In this paper we present a new data structure for the waterfall
 algorithm that simplifies the process and improves efficiency compared
