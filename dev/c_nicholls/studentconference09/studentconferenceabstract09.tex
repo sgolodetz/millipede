@@ -1,4 +1,4 @@
-\documentclass{ouclprgsc}
+\documentclass[12pt]{ouclprgsc}
 
 %\addtolength{\textwidth}{40mm}
 %\addtolength{\oddsidemargin}{-20mm}
@@ -10,7 +10,7 @@
 \usepackage{epsfig}
 
 \title{\LARGE \bf
-Alternative waterfall
+A simpler approach to waterfall
 }
 \author{Chris Nicholls, Irina Voiculescu and Stuart Golodetz
 }
@@ -23,26 +23,21 @@ Alternative waterfall
 
 
 
-There are many applications for image segmentation in the world of
-medical imaging, for example, feature identification and
-classification, 3D visualisation, and volume estimation. All these
-help when working with CAT scans and each require knowledge of where
-key anatomical features are found in the image.
-
-In order to locate any such features, the image needs to be
-segmented. That is, pixels of similar greyscale values get grouped
-together in one region. Most algorithms tend to over-segment images
-significantly, leading to far more regions than can be handled
-sensibly. This effect is partly due to problems such as indistinct
-boundaries between features and the variation present between
-different images, and partly due to the algorithms not having any
+Most applications of image segmentations of CAT scans require
+knowledge of where key anatomical features are found in the image. In
+order to locate any such features, pixels of similar greyscale values
+need to have been grouped together in one region. Most algorithms tend
+to over-segment images significantly, leading to far more regions than
+can be handled sensibly. This effect is due to problems such as
+indistinct boundaries between features, the variation present between
+different images, but mostly due to the algorithms not having any
 knowledge of the context in which the segmentation takes place.
 
 %---
 \begin{figure}
 \centering
 \ifpdf
-        {\epsfig{file=oversegmentedimage.png, height=.2\linewidth}}%
+        {\epsfig{file=oversegmentedimage.png, height=.15\linewidth}}%
 \else
         % TODO
 \fi
@@ -54,21 +49,22 @@ knowledge of the context in which the segmentation takes place.
 Figure~\ref{fig:oversegmented} illustrates (on a CAT scan) the results
 of a common segmentation algorithm, the watershed. The image is
 clearly over-segmented and hence not much more useful than the
-original for the purposes mentioned earlier.
-
-This over-segmented image can be processed further by grouping
-together those regions that feature similar grey values. This
-technique is known as the waterfall algorithm. It yields a hierarchy
-called a partition forest, which is a more comprehensive data
-structure that can be used subsequently in the process of feature
-identification. The waterfall algorithm is widely used and can produce
-good results.
+original for the purposes mentioned earlier. This over-segmented image
+can be processed further by grouping together regions featuring
+similar grey values. This technique is known as the {\em waterfall\/}
+algorithm. It yields a partition forest hierarchy, which is a
+comprehensive data structure which can be used subsequently in the
+process of feature identification. The waterfall algorithm is widely
+used and can produce good results.
+Figure~\ref{fig:waterfall} illustrates the various layers that result
+from applying the waterfall algorithm repeatedly to the segmentation
+shown in Figure~\ref{fig:oversegmented}.
 
 %---
 \begin{figure}
 \centering
 \ifpdf
-        {\epsfig{file=partitionhierarchy_4.png, height=.5\linewidth}}%
+        {\epsfig{file=partitionhierarchy_4.png, height=.3\linewidth}}%
 \else
         % TODO
 \fi
@@ -77,30 +73,27 @@ good results.
 \end{figure}
 %---
 
-Figure~\ref{fig:waterfall} illustrates the various layers that result
-from applying the waterfall algorithm repeatedly to the segmentation
-shown in Figure~\ref{fig:oversegmented}.
 
 Both the watershed and the waterfall algorithms are based on a
 geographical metaphor. The image is regarded as a landscape, with each
 grey value being associated to a terrain height. The valleys are in
 the darker areas, whereas the lighter areas are regarded as peaks.
 
-The waterfall algorithm~\cite{beucher,marcotegui} can be imagined as a flooding
-process. The water falls into (low) catchment basins and gradually
-fills them up to the nearest boundaries. When two adjacent basins have
-been filled up to the boundary between them, they get joined (and the
-boundary gets removed). This process continues until the whole image
-becomes a single basin. The intermediate stages of the process can be
-regarded as intermediate segmentations of the image, with each basin
-representing a region, and each inter-basin peak representing a
-boundary between regions.
+The waterfall algorithm~\cite{beucher,marcotegui} can be imagined as a
+flooding process. The water falls into (low) catchment basins and
+gradually fills them up to the nearest boundaries. When two adjacent
+basins have been filled up to the boundary between them, they get
+joined (and the boundary gets removed). This process continues until
+the whole image becomes a single basin. The intermediate stages of the
+process can be regarded as intermediate segmentations of the image,
+with each basin representing a region, and each inter-basin peak
+representing a boundary between regions.
 
-The traditional implementation of this algorithm \cite{marcotegui} involves the
-construction of a Minimum Spanning Tree (MST) and the gradual elision
-of some of its edges. Its nodes are the local minima and maxima of the
-plateaus in the landscape, whereas its edges are the relative
-difference in height between these. (In actual fact it is the
+The traditional implementation of this algorithm \cite{marcotegui}
+involves the construction of a Minimum Spanning Tree (MST) and the
+gradual elision of some of its edges. Its nodes are the local minima
+and maxima of the plateaus in the landscape, whereas its edges are the
+relative difference in height between these. (In actual fact it is the
 landscape formed by the gradient of the original image that is used,
 rather than the raw image.)
 
@@ -118,13 +111,20 @@ to current implementations. It is based on a recursive-tree data
 structure and a recursive relation on the nodes rather than the
 conventional iterative transformations.
 
-[some details about the new data structure]
+The main advantage of our approach to the waterfall problem is that
+the algorithm uses a single data structure (the MST) and a single loop
+to walk it. The recursive loop can be written in pure functional
+style. It walks (bottom-up) the MST and, in a single pass, merges
+regions that belong together.
+The waterfall algorithm thus improved produces similar layers of
+segmented images, combined in a hierarchical structure that can be
+processed for feature identification.
 
-Production of partition forests has many applications outside of the
-field of medical imaging, for instance, binary space partitioning in
-3D map rendering for games.
+Production of partition forests in this manner also has many
+applications outside of the field of medical imaging, for instance,
+binary space partitioning in 3D map rendering for games.
 
-[some results, and possibly something about validation]
+
 
 \begin{thebibliography}{2}
 
