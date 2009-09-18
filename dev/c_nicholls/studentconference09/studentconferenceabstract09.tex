@@ -54,8 +54,7 @@ can be processed further by grouping together regions featuring
 similar grey values. This technique is known as the {\em waterfall\/}
 algorithm. It yields a partition forest hierarchy, which is a
 comprehensive data structure which can be used subsequently in the
-process of feature identification. The waterfall algorithm is widely
-used and can produce good results.
+process of feature identification.
 Figure~\ref{fig:waterfall} illustrates the various layers that result
 from applying the waterfall algorithm repeatedly to the segmentation
 shown in Figure~\ref{fig:oversegmented}.
@@ -64,7 +63,7 @@ shown in Figure~\ref{fig:oversegmented}.
 \begin{figure}
 \centering
 \ifpdf
-        {\epsfig{file=partitionhierarchy_4.png, height=.3\linewidth}}%
+        {\epsfig{file=partitionhierarchy_4.png, height=.32\linewidth}}%
 \else
         % TODO
 \fi
@@ -76,26 +75,24 @@ shown in Figure~\ref{fig:oversegmented}.
 
 Both the watershed and the waterfall algorithms are based on a
 geographical metaphor. The image is regarded as a landscape, with each
-grey value being associated to a terrain height. The valleys are in
-the darker areas, whereas the lighter areas are regarded as peaks.
+grey value being proportional to the terrain height. 
+%
+The valleys are
+in the darker areas, whereas the lighter areas are regarded as peaks.
 
-The waterfall algorithm~\cite{beucher,marcotegui} can be imagined as a
-flooding process. The water falls into (low) catchment basins and
-gradually fills them up to the nearest boundaries. When two adjacent
-basins have been filled up to the boundary between them, they get
-joined (and the boundary gets removed). This process continues until
-the whole image becomes a single basin. The intermediate stages of the
-process can be regarded as intermediate segmentations of the image,
-with each basin representing a region, and each inter-basin peak
-representing a boundary between regions.
+The waterfall algorithm~\cite{beucher,marcotegui} can then be imagined
+as a flooding process. The water falls into (low) catchment basins and
+gradually fills them up to the nearest boundaries, sometimes spilling
+into adjacent regions. This process continues until the whole image
+becomes a single basin. The intermediate stages of the process can be
+regarded as intermediate segmentations of the image, with each basin
+representing a region.
 
 The traditional implementation of this algorithm \cite{marcotegui}
 involves the construction of a Minimum Spanning Tree (MST) and the
 gradual elision of some of its edges. Its nodes are the local minima
 and maxima of the plateaus in the landscape, whereas its edges are the
-relative difference in height between these. (In actual fact it is the
-landscape formed by the gradient of the original image that is used,
-rather than the raw image.)
+relative difference in height between these.
 
 The collection of regional minimum edges of a graph $G$ is a connected
 subgraph of $G$ whose edges have the same weight as each other, and
@@ -113,12 +110,11 @@ conventional iterative transformations.
 
 The main advantage of our approach to the waterfall problem is that
 the algorithm uses a single data structure (the MST) and a single loop
-to walk it. The recursive loop can be written in pure functional
-style. It walks (bottom-up) the MST and, in a single pass, merges
-regions that belong together.
-The waterfall algorithm thus improved produces similar layers of
-segmented images, combined in a hierarchical structure that can be
-processed for feature identification.
+to walk it, which can be written in pure functional style. It walks
+(bottom-up) the MST and, in a single pass, merges regions that belong
+together.  The waterfall algorithm, thus improved, produces similar
+layers of segmented images, combined in a hierarchical structure that
+can be processed for feature identification.
 
 Production of partition forests in this manner also has many
 applications outside of the field of medical imaging, for instance,
