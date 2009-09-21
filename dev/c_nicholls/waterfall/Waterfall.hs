@@ -34,7 +34,8 @@ markChildren (Edge w (Node r es) )
     w' = getWeight e 
 
 
--- Initial join function
+-- Initial join function 
+-- (should recurse only once because the tree is built bottom-up)
 --
 -- join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 -- join r [] w = Edge w (Node r [])
@@ -45,6 +46,24 @@ markChildren (Edge w (Node r es) )
 --     r'' = (union r' (getRegion n))
 --     es'' = (es' ++ getEdges n)
 --     Edge w' (Node r' es') = join r es w
+
+
+-- join function with fold instead of recursion
+--
+-- r is the region in the current node;
+-- w is the weight of the edge into the current node;
+-- ebs are the (bool-labelled) edges from the current node to its children;
+--
+-- select the False-labelled edges, find the nodes at the end of them and 
+-- merge r into the regions of those nodes; this gives a bigger region, newr;
+--
+-- take the children (edges) of those nodes, into es, and make them
+-- children of the current node (whose region was r);
+--
+-- the newly-created node has an edge of (unchanged) weight w coming into it, 
+-- and is made of the new region, newr; 
+-- as edges it has all the old True-labelled edges, as well as the edges 
+-- of the children who have merged into r.
 
 
 join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
