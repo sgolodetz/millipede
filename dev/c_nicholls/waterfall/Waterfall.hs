@@ -19,7 +19,7 @@ waterfall :: Mergeable a => Node a -> Node a
 waterfall (Node r []) = Node r []
 waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
   
--- f was the initial mergeChildren function
+-- f was the initial mergeChildren function (now known as mergeChildren)
 --
 -- f :: Mergeable a => Edge a -> (Edge a,Bool)
 -- f n@(Edge w (Node r [])) = (n,False)
