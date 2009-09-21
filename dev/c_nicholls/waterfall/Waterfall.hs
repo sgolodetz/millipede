@@ -5,16 +5,22 @@ import List (sortBy)
 data Node a = Node !a ![Edge a] 
 data Edge a = Edge Int (Node a) 
 
--- f applied to an edge returns the edge after merging. The boolean value indicates 
--- whether or not the edge contained a regional minimum amongst its children
+-- mergeChildren applied to an edge returns the edge after merging;
+-- the boolean value indicates whether or not the edge contained 
+-- a regional minimum amongst its children.
 
 class Mergeable a where
   union :: a -> a -> a
 
+-- waterfall creates a (hypothetical) edge into the root of the MST
+-- and then proceeds to call the main mergeChildren function.
+
 waterfall :: Mergeable a => Node a -> Node a
 waterfall (Node r []) = Node r []
-waterfall (Node r es) = (getNode.fst.markChildren) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
+waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (maximum [i| Edge i t <- es]) (Node r es))
   
+-- f was the initial mergeChildren function
+--
 -- f :: Mergeable a => Edge a -> (Edge a,Bool)
 -- f n@(Edge w (Node r [])) = (n,False)
 -- f (Edge w (Node r es) ) = 
@@ -23,14 +29,21 @@ waterfall (Node r es) = (getNode.fst.markChildren) (Edge  (maximum [i| Edge i t 
 --     case (b==True && (w'<=w)) of 
 --     True   ->  (join r ((e,False): es') w, True)
 --     False  ->  (join r ((e,b): es')  w, flag (w'>=w)) 
-  
-markChildren :: Mergeable a => Edge a -> (Edge a,Bool)
-markChildren n@(Edge w (Node r [])) = (n,False)
-markChildren (Edge w (Node r es) ) 
+
+
+-- mergeChildren walks the tree bottom-up and labels each edge
+-- with True or False depending on whether the child has been joined
+-- with a regional minimum below it (see also long explanation below)
+--
+-- it also calls the join function when regions need merging. 
+
+mergeChildren :: Mergeable a => Edge a -> (Edge a,Bool)
+mergeChildren n@(Edge w (Node r [])) = (n,False)
+mergeChildren (Edge w (Node r es) ) 
   | (b && w'<=w) = (join r ((e,False): es') w, True)
   | otherwise    = (join r ((e,b): es')  w, (w'<w)) 
   where 
-    ((e,b):es') = sortBy cmpEdge (map markChildren es)
+    ((e,b):es') = sortBy cmpEdge (map mergeChildren es)
     w' = getWeight e 
 
 
@@ -48,7 +61,7 @@ markChildren (Edge w (Node r es) )
 --     Edge w' (Node r' es') = join r es w
 
 
--- join function with fold instead of recursion
+-- join function, with fold instead of recursion
 --
 -- r is the region in the current node;
 -- w is the weight of the edge into the current node;
@@ -161,7 +174,7 @@ instance Mergeable [Char] where
 ---- Stuff for testing ----------
 
 
-  {- f (a.k.a. markChildren):
+  {- f (a.k.a. mergeChildren):
 
 To combine all the correct edges: From a given Node, with weight w
 leading to it, we first apply f to each of its chlidren to get the
