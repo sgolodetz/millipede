@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, BangPatterns #-}
 module Process(
   bounds,
   output,
@@ -31,14 +31,14 @@ type Voxel = (Int,Point)
 
 
 neighbours :: UArray Point Int -> Point -> Point -> [Adjacency]
-neighbours   arr  (a,b) (x,y) = neighbours' arr  (a,b) (x,y) ls'
+neighbours   !arr  !(a,b) !(x,y) = neighbours' arr  (a,b) (x,y) ls'
   where
     ls' = filter (\(c,d) -> 0<=c&&0<=d&&c<x&&d<y) ls
     ls = [(a,b+1),(a+1,b),(a,b-1),(a-1,b)]--,(a+1,b+1),(a-1,b-1),(a+1,b-1),(a-1,b+1)]
 
 neighbours' :: UArray Point Int -> Point -> Point -> [Point] -> [Adjacency]
-neighbours' arr  (a,b) (x,y) [] =  []
-neighbours' arr  (a,b) (x,y) (p:ps) = 
+neighbours' !arr  !(a,b) !(x,y) [] =  []
+neighbours' !arr  !(a,b) !(x,y) !(p:ps) = 
       let v1 = arr!(a,b) in
       let v2 = arr! p in
       let rs = neighbours' arr  (a,b) (x,y) ps in
@@ -47,7 +47,7 @@ neighbours' arr  (a,b) (x,y) (p:ps) =
                
 ---- IO Array Functions ----            
 fillIn :: Node (Heap Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
-fillIn node ar = do
+fillIn !node !ar = do
   {let rs' = toList (getRegion node)
   ;let x = avg rs'
   ;mapM (\v -> writeArray ar (snd v) x) rs'
@@ -56,7 +56,7 @@ fillIn node ar = do
   }
 
 arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Heap Voxel))
-arrayToNode arr miss (n,(v,p))  = do
+arrayToNode !arr !miss (n,(v,p))  = do
   { --print p
   ;ls <-readArray arr p
   ;let ls' = remove miss ls
@@ -72,7 +72,7 @@ remove p ((w,(v,a)):ps)
   | otherwise = ((w,(v,a)):remove p ps)
 
 getAdjacencyList :: (IArray UArray Int) =>  UArray Point Int -> IO (IOArray Point [(Int,Voxel)])
-getAdjacencyList arr = do 
+getAdjacencyList !arr = do 
   {let ((a,b),(c,d)) = bounds arr
   ;brr <- newArray ((a,b),(c,d)) [] :: IO (IOArray Point [(Int,Voxel)]  )
   ;writeArray brr (0,0) [(0,(0,(0,0)))] 
@@ -82,8 +82,8 @@ getAdjacencyList arr = do
   }
 
 pickNAdjacencys ::  Int-> Point ->Heap Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> [Adjacency] -> IO (IOArray Point [(Int,Voxel)])
-pickNAdjacencys 0 is es ar ls end    = do {return $!  ls}
-pickNAdjacencys n is h ar ls end = do
+pickNAdjacencys 0 !is !es !ar !ls !end    = do {return $!  ls}
+pickNAdjacencys n !is !h !ar !ls !end = do
   {
   ;let ((w,a,b),h') = getMin h
   ;l1 <- readArray ls  (snd a)

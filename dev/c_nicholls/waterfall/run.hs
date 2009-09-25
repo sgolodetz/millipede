@@ -1,43 +1,48 @@
-import Process(bounds,output,getAdjacencyList,arrayToNode,freeze'')
+import Process(bounds,output,getAdjacencyList,arrayToNode)
 import PGM(arraysToFile,
   arrayToFile,
   pgmsFromFile)
 import Waterfall(waterfall,getNode)
+import Dendragram(dendragram)
 import Data.Time.Clock(getCurrentTime,diffUTCTime,NominalDiffTime)
 
 import System(getArgs)
 
 main = do 
-  {t0 <- getCurrentTime
-  ;putStrLn "Reading file"
-  ;args <- getArgs
-  ;Right (ar:as) <-   pgmsFromFile (head args)
-  ;t1 <- timeSince t0
-  ;putStrLn "Generating MST"
-  ;es <- getAdjacencyList  ar
-  ;t2 <- timeSince t1
-  ;putStrLn "Making Tree" 
-
-  ;edge <- arrayToNode es (-1,-1) (0,(0,(0,0)))
-  ;t3 <- timeSince t2
-  ;putStrLn "Doing Waterfall"
-  ;let bs = bounds ar
-  ;let trees = (take 6$!drop 1 $! iterate (waterfall$!)$!getNode edge)
-  ;t4 <- timeSince t3
-  ;putStrLn "Converting output"
-  ;ars <- mapM (output bs) trees
-  ;t5 <- timeSince t4
-  ;save 1 (ars)
-  ;t4 <- timeSince t5
-  ;putStrLn "Done"
-  ;timeSince t0
-  }
+  t0 <- getCurrentTime
+  putStrLn "Reading file"
+  args <- getArgs
+  Right (ar:as) <-   pgmsFromFile (head args)
+  
+  t1 <- timeSince t0
+  putStrLn "Generating MST"
+  es <- getAdjacencyList  ar
+  
+  t2 <- timeSince t1
+  putStrLn "Making Tree" 
+  edge <- arrayToNode es (-1,-1) (0,(0,(0,0)))
+  
+  t3 <- timeSince t2
+  putStrLn "Doing Waterfall"
+  let bs = bounds ar
+  let trees = (take 1 $!drop 1 $! iterate (waterfall$!)$!getNode edge)
+  
+  t4 <- seq (head trees) (timeSince t3)
+  putStrLn "Converting output"
+  ars <- mapM (output bs) trees
+  
+  t5 <- timeSince t4
+  save 1 (ars)
+  t4 <- timeSince t5
+  putStrLn "Done"
+  timeSince t0
+  
 
 
 save n [a] =do {arrayToFile ("output"++show n++".pgm") a}
 save n (a:as) = do 
   {putStrLn ("Saving file "++show n)
-  ;arrayToFile ("./output/output"++show n++".pgm") a
+  ;arrayToFile ("/home/scratch/output/output"++show n++".pgm") a
   ;save (n+1) as
   }
 

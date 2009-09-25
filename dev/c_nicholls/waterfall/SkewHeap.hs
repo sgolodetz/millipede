@@ -1,12 +1,9 @@
-module SkewHeap 
-  (Heap
-  ,fromList
-  ,merge
-  ,insert
-  ,getMin
-  ,toList
-  ) where
-  
+
+
+import System.Random
+import Data.List(unfoldr,sort)
+ 
+ 
 data Heap a = Node !a !(Heap a) !(Heap a) | Leaf
 
 findMin :: Heap a -> a
@@ -22,8 +19,7 @@ merge a@(Node x l1 r1) b@(Node y l2 r2)
 fromList :: Ord a => [a] -> Heap a
 fromList as = foldl (\y x -> merge (single x) y) Leaf as
 
-insert :: Ord a => Heap a -> a -> Heap a
-insert h a = id (merge h (single a))
+
 
 single :: Ord a => a -> Heap a
 single a = Node a Leaf Leaf
@@ -37,5 +33,10 @@ toList Leaf = []
 toList a = x:toList b
   where (x,b) = getMin a
 
-
-
+main = do 
+    seed  <- newStdGen
+    let rs = toList.fromList $randomlist (2*512*512) seed
+    print (sum rs)
+ 
+randomlist :: Int -> StdGen -> [Int]
+randomlist n = take n . unfoldr (Just . random)
