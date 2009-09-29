@@ -61,7 +61,8 @@ mergeChildren (Edge w (Node r es) )
 --     Edge w' (Node r' es') = join r es w
 
 
--- join function, with fold instead of recursion
+
+- join function, with fold instead of recursion
 --
 -- r is the region in the current node;
 -- w is the weight of the edge into the current node;
