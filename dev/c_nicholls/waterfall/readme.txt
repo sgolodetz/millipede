@@ -1,7 +1,16 @@
 ghc -XFlexibleInstances -XFlexibleContexts -O2 --make run.hs
 # make sure there is an `output' directory locally
 ./run test200x200.pgm 
+./run test400.pgm 
+./run test512.pgm 
 xv output/output*
+
+
+# run with increased heap space
+./run test512.pgm +RTS -H1G
+
+# run with both heap and stack increased
+./run test512.pgm +RTS -H1G -K100M
 
 
 # profiling options
