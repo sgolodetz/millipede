@@ -1,5 +1,5 @@
 {-# LANGUAGE  FlexibleInstances #-}
-module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight) where
+module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight,size) where
 
 import List (sortBy)
 data Node a = Node !a ![Edge a] 
@@ -62,7 +62,7 @@ mergeChildren (Edge w (Node r es) )
 
 
 
-- join function, with fold instead of recursion
+-- join function, with fold instead of recursion
 --
 -- r is the region in the current node;
 -- w is the weight of the edge into the current node;
@@ -84,10 +84,10 @@ join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 join r ebs w =
    (Edge w (Node newr newes))
    where 
-   	 (rs, es) = extractEdgeRegions (filterFalse ebs) 
-         newr = foldl union r rs  
-         oldes = filterTrue ebs   
-         newes = oldes ++ es       
+     (rs, es) = extractEdgeRegions (filterFalse ebs) 
+     newr = foldl union r rs  
+     oldes = filterTrue ebs   
+     newes = oldes ++ es       
 
 
 -- Prepare for absorbing the regions in the children of a node
@@ -211,4 +211,17 @@ or if
 -}  
     
 
+instance  Show (Node a) where
+  show t = show' 1 (Edge 0 t) ++"\n"
+  
+show' :: Int -> Edge a -> [Char]
+show' n (Edge k (Node r [])) = show k++"->"++ show "!" 
+show' n (Edge k (Node r ts)) = show k++ " -> " ++ show "!"   ++ (concat$map (( ("\n"++(f  n "    "))++).(show' (n+1))) ts)
+  where 
+    f 0 t = ""
+    f (n+1) t = t ++ f n t 
 
+
+
+size :: Node a -> Int
+size (Node a es) =  1+ sum (map (size.getNode) es) 

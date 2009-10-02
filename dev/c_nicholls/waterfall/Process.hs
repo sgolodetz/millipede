@@ -87,7 +87,7 @@ getAdjacencyList arr = do
   ;brr <- newArray ((a,b),(c,d)) [] :: IO (IOArray Point [(Int,Voxel)]  )
   ;writeArray brr (0,0) [(0,(0,(0,0)))] 
   ;let e = neighbours arr (0,0) (c,d)
-  ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr []
+  ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr 
   }
 
 -- add n more edges to the MST (where n=c*d-1, i.e. the number of nodes);
@@ -120,7 +120,7 @@ pickNAdjacencys n is h ar ls   = do
        ;let ns = neighbours ar (snd b) is
        ;l <- (filter' ls [] ns)
        ;let h'' = merge h' (fromList l)
-       ;pickNAdjacencys (n-1) is h'' ar ls ((w,a,b)) 
+       ;pickNAdjacencys (n-1) is h'' ar ls 
        }
      else do {(pickNAdjacencys n is h' ar ls)}
   }
