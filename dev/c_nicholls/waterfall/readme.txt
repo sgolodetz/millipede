@@ -24,3 +24,11 @@ ghc -O2 -prof -auto-all --make run
 # some info is in run.prof and some can be plotted with
 
 hp2ps -c  run && evince run.ps
+
+
+# to compile and use the GUI slide bar interface
+# (relies on having 6 images in the output directory)
+
+ghc --make gui
+./gui
+

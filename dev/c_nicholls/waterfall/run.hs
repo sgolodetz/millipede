@@ -25,7 +25,7 @@ main = do
   t3 <- timeSince t2
   putStrLn "Doing Waterfall"
   let bs = bounds ar
-  let trees = (take 1 $!drop 1 $! iterate (waterfall$!)$!getNode edge)
+  let trees = (take 6 $!drop 1 $! iterate (waterfall$!)$!getNode edge)
   
   t4 <- seq (head trees) (timeSince t3)
   putStrLn "Converting output"
@@ -38,11 +38,12 @@ main = do
   timeSince t0
   
 
+path="./output/output"
 
-save n [a] =do {arrayToFile ("output"++show n++".pgm") a}
+save n [a] =do {arrayToFile (path++show n++".pgm") a}
 save n (a:as) = do 
   {putStrLn ("Saving file "++show n)
-  ;arrayToFile ("/home/scratch/output/output"++show n++".pgm") a
+  ;arrayToFile (path++show n++".pgm") a
   ;save (n+1) as
   }
 

@@ -7,6 +7,8 @@ import Data.Word                (Word8, Word16)
 import Graphics.UI.Gtk
 import Graphics.UI.Gtk.Glade
 
+path="./output/output"
+
 main :: IO ()
 main  = do
   initGUI
@@ -14,7 +16,7 @@ main  = do
   window <- xmlGetWidget xml castToWindow "window1"
   onDestroy window mainQuit
  
-  images <- mapM (\n -> pixbufNewFromFile  ("/home/scratch/output/output" ++ show n ++ ".pgm")) [1..50]
+  images <- mapM (\n -> pixbufNewFromFile  (path ++ show n ++ ".pgm")) [1..6]
   image <- xmlGetWidget xml castToImage "image1"
 
   
@@ -33,6 +35,6 @@ main  = do
   
 
 setImage image pixbuffs x= do
-  imageSetFromPixbuf image (pixbuffs !! (max 0$min 49 (fromEnum x)))
+  imageSetFromPixbuf image (pixbuffs !! (max 0$min 5 (fromEnum x)))
 
 
