@@ -41,3 +41,7 @@ hp2ps -c  run && evince run.ps
 ghc --make gui
 ./gui
 
+
+# more on profiling at
+
+http://www.haskell.org/ghc/docs/latest/html/users_guide/prof-heap.html#retainer-prof
