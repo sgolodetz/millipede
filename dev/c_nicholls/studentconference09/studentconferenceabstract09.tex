@@ -1,4 +1,4 @@
-\documentclass[12pt]{ouclprgsc}
+\documentclass{ouclprgsc}
 
 %\addtolength{\textwidth}{40mm}
 %\addtolength{\oddsidemargin}{-20mm}
@@ -23,59 +23,89 @@ A simpler approach to waterfall
 
 
 
-Most applications of image segmentations of CAT scans require
-knowledge of where key anatomical features are found in the image. In
-order to locate any such features, pixels of similar greyscale values
-need to have been grouped together in one region. Most algorithms tend
-to over-segment images significantly, leading to far more regions than
+Most applications of image segmentations of Computerised Tomography
+(CT) scans require knowledge of where key anatomical features are
+found in the image. 
+
+@@@
+
+ - segmentation is
+ - waterfall algorithm for segmentation 
+ - existing implementation (arguably overly complicated)
+ - we have a better, simpler one
+ - we will illustrate it on CT scans
+
+
+Typically, the waterfall algorithm takes as input the output of
+another algorithm, the watershed, introduced by Beucher and
+Lantuejoul~\cite{beucher79}. 
+
+ - say what the watershed does
+
+@@@ A typical problem of the watershed algorithm is that it tends to
+over-segment images significantly, leading to far more regions than
 can be handled sensibly. This effect is due to problems such as
 indistinct boundaries between features, the variation present between
 different images, but mostly due to the algorithms not having any
 knowledge of the context in which the segmentation takes place.
 
+due to
+ - noise in the image
+ - spurious local minima
+
+
+%---
 %---
 \begin{figure}
 \centering
 \ifpdf
-        {\epsfig{file=oversegmentedimage.png, height=.175\linewidth}}%
+        \subfigure{\epsfig{file=image0.png, width=.240\linewidth}}%
+        \hspace{1mm}%
+        \subfigure{\epsfig{file=image5.png, width=.240\linewidth}}%
 \else
         % TODO
 \fi
-\caption{Example of oversegmented image}
+\caption{Example of oversegmentation, output by applying the watershed
+  algorithm to an axial slice of a CT volume. The individual regions
+  are small and do not correspond to any anatomic features.}
 \label{fig:oversegmented}
 \end{figure}
-%---
 
-Figure~\ref{fig:oversegmented} illustrates (on a CAT scan) the results
+Figure~\ref{fig:oversegmented} illustrates (on a CT scan) the results
 of a common segmentation algorithm, the watershed. The image is
 clearly over-segmented and hence not much more useful than the
-original for the purposes mentioned earlier. This over-segmented image
-can be processed further by grouping together regions featuring
-similar grey values. This technique is known as the {\em waterfall\/}
-algorithm. It yields a partition forest hierarchy, which is a
-comprehensive data structure which can be used subsequently in the
-process of feature identification.
-Figure~\ref{fig:waterfall} illustrates the various layers that result
-from applying the waterfall algorithm repeatedly to the segmentation
-shown in Figure~\ref{fig:oversegmented}.
+original for the purposes mentioned earlier. 
+
+The waterfall algorithm is an iterative process which can extract
+useful structure from this initial segmentation. The algorithm yields
+a partition forest hierarchy, which is a comprehensive data structure
+which can be used subsequently in the process of feature
+identification.  Figure~\ref{fig:waterfall} illustrates the various
+layers that result from applying the waterfall algorithm to the
+segmentation shown in Figure~\ref{fig:oversegmented}.  Each iteration
+of the algorithm yields a higher-level grouping of the regions in the
+previous layer.
 
 %---
 \begin{figure}
 \centering
 \ifpdf
-        \subfigure{\epsfig{file=image0.png, height=.175\linewidth}}%
-        \hspace{4mm}%
-        \subfigure{\epsfig{file=image5.png, height=.175\linewidth}}%
-        \hspace{4mm}%
-        \subfigure{\epsfig{file=image4.png, height=.175\linewidth}}%
-        \hspace{4mm}%
-        \subfigure{\epsfig{file=image2.png, height=.175\linewidth}}%
-        \hspace{4mm}%
-        \subfigure{\epsfig{file=image1.png, height=.175\linewidth}}%
+%        \subfigure{\epsfig{file=image0.png, height=.175\linewidth}}%
+%        \hspace{4mm}%
+%        \subfigure{\epsfig{file=image5.png, width=.240\linewidth}}%
+%        \hspace{1mm}%
+        \subfigure{\epsfig{file=image4.png, width=.260\linewidth}}%
+        \hspace{1mm}%
+        \subfigure{\epsfig{file=image2.png, width=.260\linewidth}}%
+        \hspace{1mm}%
+        \subfigure{\epsfig{file=image1.png, width=.260\linewidth}}%
 \else
         % TODO
 \fi
-\caption{Hierarchy of segmentations}
+\caption{Hierarchy of segmentations produced by applying the waterfall
+  algorithm to the output of the watershed illustrated in
+  Figure~\ref{fig:oversegmented}, showing regions merging
+  successively.}
 \label{fig:waterfall}
 \end{figure}
 %---
@@ -88,7 +118,7 @@ grey value being proportional to the terrain height.
 The valleys are
 in the darker areas, whereas the lighter areas are regarded as peaks.
 
-The waterfall algorithm~\cite{beucher,marcotegui} can then be imagined
+The waterfall algorithm~\cite{beucher94,marcotegui} can then be imagined
 as a flooding process. The water falls into (low) catchment basins and
 gradually fills them up to the nearest boundaries, sometimes spilling
 into adjacent regions. This process continues until the whole image
@@ -98,9 +128,11 @@ representing a region.
 
 The traditional implementation of this algorithm \cite{marcotegui}
 involves the construction of a Minimum Spanning Tree (MST) and the
-gradual elision of some of its edges. Its nodes are the local minima
-and maxima of the plateaus in the landscape, whereas its edges are the
-relative difference in height between these.
+gradual elision of some of its edges. 
+Its nodes are initially the regions of the watershed output and its
+edges are the lowest pass points on the boundaries between these
+regions; the nodes and edges in subsequent layers are derived from
+these intitial ones through a merging process.
 
 The collection of regional minimum edges of a graph $G$ is a connected
 subgraph of $G$ whose edges have the same weight as each other, and
@@ -117,12 +149,24 @@ structure and a recursive relation on the nodes rather than the
 conventional iterative transformations.
 
 The main advantage of our approach to the waterfall problem is that
-the algorithm uses a single data structure (the MST) and a single loop
-to walk it, which can be written in pure functional style. It walks
-(bottom-up) the MST and, in a single pass, merges regions that belong
-together.  The waterfall algorithm, thus improved, produces similar
-layers of segmented images, combined in a hierarchical structure that
-can be processed for feature identification.
+the algorithm uses a single loop to walk the MST and is therefore
+simpler to implement. For each iteration, it walks the MST bottom-up
+in a single pass and merges regions that belong together. The
+waterfall algorithm, thus improved, produces similar layers of
+segmented images, combined in a hierarchical structure that can be
+processed for feature identification.
+
+A further advantage of our approach is that the algorithm can can be
+written in pure functional style. In particular, we have implemented
+it in Haskell. For this reason, the memory requirements are not
+directly comparable to existing imperative implementations, but we are
+about to integrate this new approach into an existing C++ code base.
+
+We are also in the process of constructing a formal proof of
+correctness, which we hope to present at a later date. We have tested
+both algorithms on a number of small, measurable test cases and found
+that they produce the same output. Empirical tests indicate that this
+is also true of larger test cases, such as axial slices of CT volumes.
 
 Production of partition forests in this manner also has many
 applications outside of the field of medical imaging, for instance,
@@ -132,10 +176,15 @@ binary space partitioning in 3D map rendering for games.
 
 \begin{thebibliography}{2}
 
-\bibitem{beucher}{Serge Beucher. {\em Watershed, hierarchical
+\bibitem{beucher94}{Serge Beucher. {\em Watershed, hierarchical
     segmentation and waterfall algorithm}. In Mathematical Morphology
   and its Applications to Image Processing, Proc.\ ISMM 94, pages
-  69-76, Fontainebleau, France, 1994. Kluwer Ac. Publ.}
+  69-76, Fontainebleau, France, 1994. Kluwer Ac.\ Publ.}
+
+\bibitem{beucher79}{S.\ Beucher, C.\ Lantuejoul. {\em Use of
+    watersheds in contour detection}. International Workshop on image
+  processing, real-time edge and motion detection/estimation, Rennes,
+  France, Sept.\ 1979.}
 
 \bibitem{marcotegui}{Beatriz Marcotegui and Serge Beucher, {\em Fast
     Implementation of Waterfall Based on Graph}. In Mathematical
