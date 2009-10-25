@@ -1,10 +1,10 @@
-# CMakeLists.txt for apps/MAST
+# CMakeLists.txt for apps/mast
 
 ############################
 # Specify the project name #
 ############################
 
-SET(targetname MAST)
+SET(targetname mast)
 
 #############################
 # Specify the project files #
