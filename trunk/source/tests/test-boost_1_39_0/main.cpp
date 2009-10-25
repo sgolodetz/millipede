@@ -1,3 +1,8 @@
+/***
+ * test-boost_1_39_0: main.cpp
+ * Copyright Stuart Golodetz, 2009. All rights reserved.
+ ***/
+
 #include <iostream>
 
 #include <boost/shared_ptr.hpp>

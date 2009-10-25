@@ -1,6 +1,14 @@
 # CMakeLists.txt for common
 
-# Specify the project files
+##########################################
+# Specify the project files by directory #
+##########################################
+
+SET(adts_headers adts/DisjointSetForest.h)
+SET(adts_templates adts/DisjointSetForest.tpp)
+
+SET(exceptions_headers exceptions/Exception.h)
+
 SET(io_util_sources io/util/OSSWrapper.cpp)
 SET(io_util_headers io/util/OSSWrapper.h)
 
@@ -16,33 +24,52 @@ ipfs/construction/WaterfallEdge.h
 
 SET(ipfs_construction_templates)
 
+#################################################################
+# Collect the project files into sources, headers and templates #
+#################################################################
+
 SET(sources
 ${io_util_sources}
 ${ipfs_construction_sources}
 )
 
 SET(headers
+${adts_headers}
+${exceptions_headers}
 ${io_util_headers}
 ${ipfs_construction_headers}
 )
 
 SET(templates
+${adts_templates}
 ${ipfs_construction_templates}
 )
 
-# Specify the source groups
+#############################
+# Specify the source groups #
+#############################
+
+SOURCE_GROUP(adts\\.h FILES ${adts_headers})
+SOURCE_GROUP(adts\\.tpp FILES ${adts_templates})
+SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
 SOURCE_GROUP(io\\util\\.cpp FILES ${io_util_sources})
 SOURCE_GROUP(io\\util\\.h FILES ${io_util_headers})
 SOURCE_GROUP(ipfs\\construction\\.cpp FILES ${ipfs_construction_sources})
 SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
 SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
 
-# Specify the necessary paths
+###############################
+# Specify the necessary paths #
+###############################
+
 INCLUDE_DIRECTORIES(
 ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
 )
 
-# Specify the target and where to put it
+##########################################
+# Specify the target and where to put it #
+##########################################
+
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/lib/common)
 ADD_LIBRARY(common ${sources} ${headers} ${templates})
 IF(MSVC_IDE)

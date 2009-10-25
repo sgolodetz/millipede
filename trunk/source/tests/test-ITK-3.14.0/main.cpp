@@ -1,3 +1,8 @@
+/***
+ * test-ITK-3.14.0: main.cpp
+ * Copyright Stuart Golodetz, 2009. All rights reserved.
+ ***/
+
 #include <boost/lexical_cast.hpp>
 using boost::lexical_cast;
 
