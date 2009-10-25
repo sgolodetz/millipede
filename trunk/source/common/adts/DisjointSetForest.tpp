@@ -35,7 +35,7 @@ void DisjointSetForest_THIS::add_node(int x, const T& value)
 DisjointSetForest_HEADER
 void DisjointSetForest_THIS::add_nodes(const std::map<int,T>& nodes)
 {
-	for(std::map<int,T>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+	for(typename std::map<int,T>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{
 		m_nodes.insert(std::make_pair(it->first, Node(it->second, it->first)));
 	}
@@ -91,7 +91,7 @@ DisjointSetForest_HEADER
 typename DisjointSetForest_THIS::Node&
 DisjointSetForest_THIS::get_node(int x) const
 {
-	std::map<int,Node>::iterator it = m_nodes.find(x);
+	typename std::map<int,Node>::iterator it = m_nodes.find(x);
 	if(it != m_nodes.end()) return it->second;
 	else throw Exception(OSSWrapper() << "No such node: " << x);
 }
