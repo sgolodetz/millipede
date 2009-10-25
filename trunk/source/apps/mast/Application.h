@@ -17,9 +17,9 @@ public:
 	bool OnInit();
 };
 
-DECLARE_APP(Application)
-IMPLEMENT_APP(Application)
-
 }
+
+DECLARE_APP(mp::Application)
+IMPLEMENT_APP(mp::Application)
 
 #endif
