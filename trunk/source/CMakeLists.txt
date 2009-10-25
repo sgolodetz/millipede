@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(millipede)
 
-# ADD_SUBDIRECTORY(apps)
+ADD_SUBDIRECTORY(apps)
 ADD_SUBDIRECTORY(common)
 
 OPTION(BUILD_TESTS "Build the test applications?" OFF)
