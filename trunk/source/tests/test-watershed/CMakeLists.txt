@@ -1,0 +1,79 @@
+# CMakeLists.txt for tests/test-watershed
+
+############################
+# Specify the project name #
+############################
+
+SET(targetname test-watershed)
+
+#############################
+# Specify the project files #
+#############################
+
+SET(sources main.cpp)
+
+#############################
+# Specify the source groups #
+#############################
+
+SOURCE_GROUP(.cpp FILES ${sources})
+
+###############################
+# Specify the necessary paths #
+###############################
+
+INCLUDE_DIRECTORIES(
+${millipede_SOURCE_DIR}/..
+${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
+)
+
+############
+# Find ITK #
+############
+
+FIND_PACKAGE(ITK)
+IF(ITK_FOUND)
+	INCLUDE(${ITK_USE_FILE})
+ELSE(ITK_FOUND)
+	MESSAGE(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
+ENDIF(ITK_FOUND)
+
+##########################################
+# Specify the target and where to put it #
+##########################################
+
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/bin/tests/${targetname}/bin)
+ADD_EXECUTABLE(${targetname} ${sources})
+IF(MSVC_IDE)
+	# A hack to get around the "Debug" and "Release" directories Visual Studio tries to add
+    SET_TARGET_PROPERTIES(${targetname} PROPERTIES PREFIX "../")
+    SET_TARGET_PROPERTIES(${targetname} PROPERTIES IMPORT_PREFIX "../")
+ENDIF(MSVC_IDE)
+
+###########################################
+# Specify the necessary libraries to link #
+###########################################
+
+TARGET_LINK_LIBRARIES(${targetname} common ITKAlgorithms ITKCommon ITKIO)
+
+##########################
+# Specify resource files #
+##########################
+
+SET(resources
+)
+
+#########################################
+# Copy resource files to the build tree #
+#########################################
+
+FOREACH(resource ${resources})
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
+ENDFOREACH(resource)
+
+#############################
+# Specify things to install #
+#############################
+
+INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
+INSTALL(FILES ${resources} DESTINATION bin/tests/${targetname}/resources)

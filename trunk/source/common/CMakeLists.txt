@@ -20,9 +20,12 @@ ipfs/construction/WaterfallEdge.cpp
 SET(ipfs_construction_headers
 ipfs/construction/Waterfall.h
 ipfs/construction/WaterfallEdge.h
+ipfs/construction/Watershed.h
 )
 
-SET(ipfs_construction_templates)
+SET(ipfs_construction_templates
+ipfs/construction/Watershed.tpp
+)
 
 #################################################################
 # Collect the project files into sources, headers and templates #
