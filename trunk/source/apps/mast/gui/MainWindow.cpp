@@ -13,7 +13,7 @@ namespace mp {
 MainWindow::MainWindow(const std::string& title)
 :	wxFrame(NULL, wxID_ANY, string_to_wxString(title), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER))
 {
-	// NYI
+	setup_menus();
 }
 
 //#################### PUBLIC METHODS ####################

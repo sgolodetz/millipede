@@ -13,7 +13,11 @@ SET(targetname mast)
 SET(mast_sources Application.cpp)
 SET(mast_headers Application.h)
 
-SET(gui_sources gui/MainWindow.cpp)
+SET(gui_sources
+gui/MainWindow.cpp
+gui/MainWindow_Menus.cpp
+)
+
 SET(gui_headers gui/MainWindow.h)
 
 SET(util_sources util/StringConversion.cpp)

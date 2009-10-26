@@ -6,7 +6,7 @@
 #ifndef H_MAST_APPLICATION
 #define H_MAST_APPLICATION
 
-#include <wx/wx.h>
+#include <wx/app.h>
 
 namespace mp {
 
