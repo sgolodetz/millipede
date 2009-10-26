@@ -4,16 +4,14 @@
 SET(targetname test-waterfall)
 
 # Specify the project files
-SET(sources
-main.cpp
-)
+SET(sources main.cpp)
 
 # Specify the source groups
 SOURCE_GROUP(.cpp FILES ${sources})
 
 # Specify the necessary paths
 INCLUDE_DIRECTORIES(
-${millipede_SOURCE_DIR}/..
+${millipede_SOURCE_DIR}
 ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
 )
 

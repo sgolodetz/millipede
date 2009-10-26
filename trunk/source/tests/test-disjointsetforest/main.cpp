@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#include <source/common/adts/DisjointSetForest.h>
+#include <common/adts/DisjointSetForest.h>
 using namespace mp;
 
 int main()

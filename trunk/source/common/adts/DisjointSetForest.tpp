@@ -6,8 +6,8 @@
 #define DisjointSetForest_HEADER	template <typename T>
 #define DisjointSetForest_THIS		DisjointSetForest<T>
 
-#include <source/common/exceptions/Exception.h>
-#include <source/common/io/util/OSSWrapper.h>
+#include <common/exceptions/Exception.h>
+#include <common/io/util/OSSWrapper.h>
 
 namespace mp {
 

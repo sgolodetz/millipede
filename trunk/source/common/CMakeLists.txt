@@ -4,14 +4,29 @@
 # Specify the project files by directory #
 ##########################################
 
+##
 SET(adts_headers adts/DisjointSetForest.h)
 SET(adts_templates adts/DisjointSetForest.tpp)
 
+##
+SET(dicom_util_sources dicom/util/WindowSettings.cpp)
+SET(dicom_util_headers dicom/util/WindowSettings.h)
+
+##
 SET(exceptions_headers exceptions/Exception.h)
 
-SET(io_util_sources io/util/OSSWrapper.cpp)
-SET(io_util_headers io/util/OSSWrapper.h)
+##
+SET(io_util_sources
+io/util/OSSWrapper.cpp
+io/util/VolumeChoice.cpp
+)
 
+SET(io_util_headers
+io/util/OSSWrapper.h
+io/util/VolumeChoice.h
+)
+
+##
 SET(ipfs_construction_sources
 ipfs/construction/Waterfall.cpp
 ipfs/construction/WaterfallEdge.cpp
@@ -23,21 +38,21 @@ ipfs/construction/WaterfallEdge.h
 ipfs/construction/Watershed.h
 )
 
-SET(ipfs_construction_templates
-ipfs/construction/Watershed.tpp
-)
+SET(ipfs_construction_templates ipfs/construction/Watershed.tpp)
 
 #################################################################
 # Collect the project files into sources, headers and templates #
 #################################################################
 
 SET(sources
+${dicom_util_sources}
 ${io_util_sources}
 ${ipfs_construction_sources}
 )
 
 SET(headers
 ${adts_headers}
+${dicom_util_headers}
 ${exceptions_headers}
 ${io_util_headers}
 ${ipfs_construction_headers}
@@ -52,11 +67,22 @@ ${ipfs_construction_templates}
 # Specify the source groups #
 #############################
 
+##
 SOURCE_GROUP(adts\\.h FILES ${adts_headers})
 SOURCE_GROUP(adts\\.tpp FILES ${adts_templates})
+
+##
+SOURCE_GROUP(dicom\\util\\.cpp FILES ${dicom_util_sources})
+SOURCE_GROUP(dicom\\util\\.h FILES ${dicom_util_headers})
+
+##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
+
+##
 SOURCE_GROUP(io\\util\\.cpp FILES ${io_util_sources})
 SOURCE_GROUP(io\\util\\.h FILES ${io_util_headers})
+
+##
 SOURCE_GROUP(ipfs\\construction\\.cpp FILES ${ipfs_construction_sources})
 SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
 SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
@@ -66,6 +92,7 @@ SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
 ###############################
 
 INCLUDE_DIRECTORIES(
+${millipede_SOURCE_DIR}
 ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
 )
 

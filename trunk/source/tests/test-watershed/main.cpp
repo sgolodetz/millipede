@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <source/common/ipfs/construction/Watershed.h>
+#include <common/ipfs/construction/Watershed.h>
 using namespace mp;
 
 template <typename PixelType>

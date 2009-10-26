@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 
-#include <source/common/ipfs/construction/Waterfall.h>
+#include <common/ipfs/construction/Waterfall.h>
 using namespace mp;
 
 class TestWE : public WaterfallEdge

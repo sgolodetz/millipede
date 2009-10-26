@@ -23,7 +23,7 @@ SOURCE_GROUP(.cpp FILES ${sources})
 ###############################
 
 INCLUDE_DIRECTORIES(
-${millipede_SOURCE_DIR}/..
+${millipede_SOURCE_DIR}
 ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
 )
 

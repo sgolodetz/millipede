@@ -14,8 +14,8 @@
 #include "itkImageRegionConstIteratorWithIndex.h"
 #include "itkNeighborhoodIterator.h"
 
-#include <source/common/adts/DisjointSetForest.h>
-#include <source/common/exceptions/Exception.h>
+#include <common/adts/DisjointSetForest.h>
+#include <common/exceptions/Exception.h>
 
 namespace mp {
 
