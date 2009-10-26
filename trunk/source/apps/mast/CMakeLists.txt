@@ -10,9 +10,11 @@ SET(targetname mast)
 # Specify the project files by directory #
 ##########################################
 
+##
 SET(mast_sources Application.cpp)
 SET(mast_headers Application.h)
 
+##
 SET(gui_sources
 gui/MainWindow.cpp
 gui/MainWindow_Menus.cpp
@@ -20,8 +22,13 @@ gui/MainWindow_Menus.cpp
 
 SET(gui_headers gui/MainWindow.h)
 
+##
 SET(util_sources util/StringConversion.cpp)
 SET(util_headers util/StringConversion.h)
+
+#################################################################
+# Collect the project files into sources, headers and templates #
+#################################################################
 
 SET(sources
 ${mast_sources}
@@ -35,14 +42,22 @@ ${gui_headers}
 ${util_headers}
 )
 
+SET(templates
+)
+
 #############################
 # Specify the source groups #
 #############################
 
+##
 SOURCE_GROUP(.cpp FILES ${mast_sources})
 SOURCE_GROUP(.h FILES ${mast_headers})
+
+##
 SOURCE_GROUP(gui\\.cpp FILES ${gui_sources})
 SOURCE_GROUP(gui\\.h FILES ${gui_headers})
+
+##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 

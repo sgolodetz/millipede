@@ -17,10 +17,11 @@ void MainWindow::setup_menus()
 	fileMenu->AppendSubMenu(fileOpenMenu, wxT("&Open"));
 		fileOpenMenu->Append(MENUID_FILE_OPEN_DICOMDIR, wxT("&DICOMDIR...\tCtrl+Shift+O"));
 		fileOpenMenu->Append(MENUID_FILE_OPEN_MODEL, wxT("&Model...\tCtrl+O"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_SETTINGS, wxT("&Settings File...\tCtrl+Alt+O"));
+		fileOpenMenu->Append(MENUID_FILE_OPEN_VOLUMECHOICE, wxT("&Volume Choice...\tCtrl+Alt+O"));
 	wxMenu *fileSaveMenu = new wxMenu;
 	fileMenu->AppendSubMenu(fileSaveMenu, wxT("&Save"));
 		fileSaveMenu->Append(MENUID_FILE_SAVE_MODEL, wxT("&Model...\tCtrl+S"));
+		fileSaveMenu->Append(MENUID_FILE_SAVE_VOLUMECHOICE, wxT("&Volume Choice...\tCtrl+Alt+S"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("E&xit\tAlt+F4"));
 
