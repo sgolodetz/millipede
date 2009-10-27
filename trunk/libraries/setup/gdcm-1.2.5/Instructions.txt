@@ -25,15 +25,16 @@ Last Updated by Stuart Golodetz on 27/10/09
 
 BUILD_TESTING		OFF
 GDCM_BUILD_EXAMPLES	OFF
-GDCM_BUILD_SHARED_LIBS	ON (essential on Linux)
+GDCM_BUILD_SHARED_LIBS	OFF
 
 	b) The created solution (GDCM.sln) will be in the bin directory. Open it, and build the ALL_BUILD project.
 
 	On Linux:
 
 	a) Make a subdirectory of gdcm-1.2.5 called bin (this will be a sibling of the source directory) and change to it.
-	b) Run "ccmake ../source" and set the options as per the instructions for Windows above.
+	b) Run "ccmake ../source" and set the options as per the instructions for Windows above (except for GDCM_BUILD_SHARED_LIBS, which should be set to ON).
 	c) Run "make".
+
 5. On Linux only, you additionally need to run "make install". This will put all the shared object files (dynamic libraries) in gdcm-1.2.5/install. These need to be copied to /usr/lib/ so that executables can find them.
 
 ***
@@ -47,4 +48,3 @@ Alternatively you can just set the LD_LIBRARY_PATH using export.
 
 Note: To simplify this process (since the whole situation described is bound to occur), I've actually added a script file to run the program correctly. To invoke it, just run the program using "./test-gdcm-1.2.5.sh" (you'll first need to make it executable after each build using "chmod 755 test-gdcm-1.2.5.sh"). This is still clearly not the preferable way of doing things on a computer to which you have root access. If you happen to be working on an OUCL computer, I suggest asking Ian if he could install the libraries into /usr/lib for you.
 ***
-
