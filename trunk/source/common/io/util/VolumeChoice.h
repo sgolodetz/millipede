@@ -16,13 +16,13 @@ class VolumeChoice
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	std::string m_patientHandle, m_studyHandle, m_seriesHandle;
-	int m_maxX, m_maxY, m_maxZ, m_minX, m_minY, m_minZ;
+	std::string m_filePrefix, m_patientHandle, m_studyHandle, m_seriesHandle;
+	int m_minX, m_minY, m_minZ, m_maxX, m_maxY, m_maxZ;
 	WindowSettings m_windowSettings;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	// TODO
+	VolumeChoice(const std::string& filePrefix, const std::string& patientHandle, const std::string& studyHandle, const std::string& seriesHandle, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, const WindowSettings& windowSettings);
 };
 
 }
