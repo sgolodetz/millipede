@@ -1,0 +1,36 @@
+GDCM 1.2.5 Setup Instructions
+Last Updated by Stuart Golodetz on 27/10/09
+-------------------------------------------
+
+1. Create a gdcm-1.2.5 subdirectory in the libraries directory.
+
+2. Extract gdcm-1.2.5.tar.gz into the gdcm-1.2.5 directory.
+
+	On Windows:
+
+	a) Just extract it using something like the shareware version of WinRAR.
+
+	On Linux:
+
+	a) Change to the libraries/gdcm-1.2.5 directory.
+	b) Run "tar xzf ../setup/gdcm-1.2.5/gdcm-1.2.5.tar.gz".
+
+3. Rename the new gdcm-1.2.5 subdirectory of gdcm-1.2.5 to 'source'.
+
+4. Configure GDCM using CMake and then build it.
+
+	On Windows:
+
+	a) Use the CMake GUI. Set the source and bin directories to those in the gdcm-1.2.5 directory. The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and bin called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building GDCM, I recommend:
+
+BUILD_TESTING		OFF
+GDCM_BUILD_EXAMPLES	OFF
+GDCM_BUILD_SHARED_LIBS	OFF
+
+	b) The created solution (GDCM.sln) will be in the bin directory. Open it, and build the ALL_BUILD project.
+
+	On Linux:
+
+	a) Make a subdirectory of gdcm-1.2.5 called bin (this will be a sibling of the source directory) and change to it.
+	b) Run "ccmake ../source" and set the options as per the instructions for Windows above.
+	c) Run "make".
