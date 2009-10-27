@@ -23,7 +23,7 @@ try
 	LineIO::read_checked_line(is, "{");
 
 	std::string filePrefix, patientHandle, studyHandle, seriesHandle;
-	int maxX, maxY, maxZ, minX, minY, minZ;
+	int minX, minY, minZ, maxX, maxY, maxZ;
 	WindowSettings windowSettings;
 
 	std::string line;

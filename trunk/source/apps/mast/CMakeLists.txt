@@ -83,6 +83,7 @@ ENDIF(wxWidgets_FOUND)
 ###############################
 
 INCLUDE_DIRECTORIES(
+${millipede_SOURCE_DIR}
 ${millipede_SOURCE_DIR}/apps
 )
 
@@ -105,7 +106,7 @@ ENDIF(MSVC_IDE)
 # Specify the necessary libraries to link #
 ###########################################
 
-TARGET_LINK_LIBRARIES(${targetname} ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARY})
+TARGET_LINK_LIBRARIES(${targetname} common ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARY})
 
 #############################
 # Specify things to install #

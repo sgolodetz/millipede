@@ -16,8 +16,15 @@ SET(dicom_util_headers dicom/util/WindowSettings.h)
 SET(exceptions_headers exceptions/Exception.h)
 
 ##
-SET(io_files_sources io/files/VolumeChoiceFile.cpp)
-SET(io_files_headers io/files/VolumeChoiceFile.h)
+SET(io_files_sources
+io/files/VolumeChoiceFile.cpp
+io/files/DICOMDIRFile.cpp
+)
+
+SET(io_files_headers
+io/files/VolumeChoiceFile.h
+io/files/DICOMDIRFile.h
+)
 
 ##
 SET(io_sections_sources io/sections/VolumeChoiceSection.cpp)
