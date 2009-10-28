@@ -20,6 +20,8 @@ class Map
 	//#################### TYPEDEFS ####################
 private:
 	typedef std::map<Key,Value,Pred,Alloc> BaseMap;
+	typedef typename BaseMap::iterator BaseIter;
+	typedef typename BaseMap::const_iterator BaseCIter;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -66,14 +68,14 @@ public:
 
 	optional<Value&> get(const Key& key)
 	{
-		BaseMap::iterator it = m_base.find(key);
+		BaseIter it = m_base.find(key);
 		if(it != m_base.end()) return it->second;
 		else return boost::none;
 	}
 
 	optional<const Value&> get(const Key& key) const
 	{
-		BaseMap::const_iterator it = m_base.find(key);
+		BaseCIter it = m_base.find(key);
 		if(it != m_base.end()) return it->second;
 		else return boost::none;
 	}
@@ -85,7 +87,7 @@ public:
 
 	void set(const Key& key, const Value& value)
 	{
-		BaseMap::iterator it = m_base.find(key);
+		BaseIter it = m_base.find(key);
 		if(it != m_base.end()) it->second = value;
 		else m_base.insert(std::make_pair(key, value));
 	}
