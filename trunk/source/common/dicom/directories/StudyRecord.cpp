@@ -22,8 +22,10 @@ StudyRecord::StudyRecord(const std::string& studyDescription, const std::string&
 void StudyRecord::add_series_record(const SeriesRecord_CPtr& seriesRecord)
 {
 	assert(seriesRecord != NULL);
-	bool succeeded = m_seriesRecords.insert(std::make_pair(seriesRecord->key(), seriesRecord)).second;
-	if(!succeeded) throw Exception("Series already exists: " + seriesRecord->key());
+	if(!m_seriesRecords.insert(seriesRecord->key(), seriesRecord))
+	{
+		throw Exception("Series already exists: " + seriesRecord->key());
+	}
 }
 
 std::string StudyRecord::key() const
@@ -40,12 +42,12 @@ int StudyRecord::series_count() const
 
 const SeriesRecord& StudyRecord::series_record(const std::string& seriesKey) const
 {
-	std::map<std::string,SeriesRecord_CPtr>::const_iterator it = m_seriesRecords.find(seriesKey);
-	if(it != m_seriesRecords.end()) return *it->second;
+	optional<const SeriesRecord_CPtr&> ret = m_seriesRecords.get(seriesKey);
+	if(ret) return **ret;
 	else throw Exception("Series not found: " + seriesKey);
 }
 
-const std::map<std::string,SeriesRecord_CPtr>& StudyRecord::series_records() const
+const Map<std::string,SeriesRecord_CPtr>& StudyRecord::series_records() const
 {
 	return m_seriesRecords;
 }

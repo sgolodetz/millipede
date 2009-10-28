@@ -6,11 +6,12 @@
 #ifndef H_MILLIPEDE_PATIENTRECORD
 #define H_MILLIPEDE_PATIENTRECORD
 
-#include <map>
 #include <string>
 
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
+
+#include <common/adts/Map.h>
 
 namespace mp {
 
@@ -22,7 +23,7 @@ class PatientRecord
 	//#################### PRIVATE METHODS ####################
 private:
 	std::string m_patientsName;
-	std::map<std::string,StudyRecord_CPtr> m_studyRecords;
+	Map<std::string,StudyRecord_CPtr> m_studyRecords;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -35,7 +36,7 @@ public:
 	const std::string& patients_name() const;
 	int study_count() const;
 	const StudyRecord& study_record(const std::string& studyKey) const;
-	const std::map<std::string,StudyRecord_CPtr>& study_records() const;
+	const Map<std::string,StudyRecord_CPtr>& study_records() const;
 };
 
 //#################### TYPEDEFS ####################

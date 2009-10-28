@@ -5,7 +5,11 @@
 ##########################################
 
 ##
-SET(adts_headers adts/DisjointSetForest.h)
+SET(adts_headers
+adts/DisjointSetForest.h
+adts/Map.h
+)
+
 SET(adts_templates adts/DisjointSetForest.tpp)
 
 ##

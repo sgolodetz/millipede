@@ -6,11 +6,12 @@
 #ifndef H_MILLIPEDE_STUDYRECORD
 #define H_MILLIPEDE_STUDYRECORD
 
-#include <map>
 #include <string>
 
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
+
+#include <common/adts/Map.h>
 
 namespace mp {
 
@@ -22,7 +23,7 @@ class StudyRecord
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::string m_studyDescription, m_studyID, m_studyInstanceUID;
-	std::map<std::string,SeriesRecord_CPtr> m_seriesRecords;
+	Map<std::string,SeriesRecord_CPtr> m_seriesRecords;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -34,7 +35,7 @@ public:
 	std::string key() const;
 	int series_count() const;
 	const SeriesRecord& series_record(const std::string& seriesKey) const;
-	const std::map<std::string,SeriesRecord_CPtr>& series_records() const;
+	const Map<std::string,SeriesRecord_CPtr>& series_records() const;
 };
 
 //#################### TYPEDEFS ####################

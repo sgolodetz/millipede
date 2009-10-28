@@ -23,6 +23,10 @@ gui/MainWindow_Menus.cpp
 SET(gui_headers gui/MainWindow.h)
 
 ##
+SET(gui_dialogs_sources gui/dialogs/VolumeChooserDialog.cpp)
+SET(gui_dialogs_headers gui/dialogs/VolumeChooserDialog.h)
+
+##
 SET(util_sources util/StringConversion.cpp)
 SET(util_headers util/StringConversion.h)
 
@@ -33,12 +37,14 @@ SET(util_headers util/StringConversion.h)
 SET(sources
 ${mast_sources}
 ${gui_sources}
+${gui_dialogs_sources}
 ${util_sources}
 )
 
 SET(headers
 ${mast_headers}
 ${gui_headers}
+${gui_dialogs_headers}
 ${util_headers}
 )
 
@@ -56,6 +62,10 @@ SOURCE_GROUP(.h FILES ${mast_headers})
 ##
 SOURCE_GROUP(gui\\.cpp FILES ${gui_sources})
 SOURCE_GROUP(gui\\.h FILES ${gui_headers})
+
+##
+SOURCE_GROUP(gui\\dialogs\\.cpp FILES ${gui_dialogs_sources})
+SOURCE_GROUP(gui\\dialogs\\.h FILES ${gui_dialogs_headers})
 
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
