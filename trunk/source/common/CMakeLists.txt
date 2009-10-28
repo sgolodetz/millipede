@@ -9,6 +9,22 @@ SET(adts_headers adts/DisjointSetForest.h)
 SET(adts_templates adts/DisjointSetForest.tpp)
 
 ##
+SET(dicom_directories_sources
+dicom/directories/DICOMDirectory.cpp
+dicom/directories/PatientRecord.cpp
+dicom/directories/SeriesRecord.cpp
+dicom/directories/StudyRecord.cpp
+)
+
+##
+SET(dicom_directories_headers
+dicom/directories/DICOMDirectory.h
+dicom/directories/PatientRecord.h
+dicom/directories/SeriesRecord.h
+dicom/directories/StudyRecord.h
+)
+
+##
 SET(dicom_util_sources dicom/util/WindowSettings.cpp)
 SET(dicom_util_headers dicom/util/WindowSettings.h)
 
@@ -66,6 +82,7 @@ SET(ipfs_construction_templates ipfs/construction/Watershed.tpp)
 #################################################################
 
 SET(sources
+${dicom_directories_sources}
 ${dicom_util_sources}
 ${io_files_sources}
 ${io_sections_sources}
@@ -75,6 +92,7 @@ ${ipfs_construction_sources}
 
 SET(headers
 ${adts_headers}
+${dicom_directories_headers}
 ${dicom_util_headers}
 ${exceptions_headers}
 ${io_files_headers}
@@ -96,6 +114,10 @@ ${ipfs_construction_templates}
 ##
 SOURCE_GROUP(adts\\.h FILES ${adts_headers})
 SOURCE_GROUP(adts\\.tpp FILES ${adts_templates})
+
+##
+SOURCE_GROUP(dicom\\directories\\.cpp FILES ${dicom_directories_sources})
+SOURCE_GROUP(dicom\\directories\\.h FILES ${dicom_directories_headers})
 
 ##
 SOURCE_GROUP(dicom\\util\\.cpp FILES ${dicom_util_sources})
@@ -121,6 +143,17 @@ SOURCE_GROUP(io\\util\\.tpp FILES ${io_util_templates})
 SOURCE_GROUP(ipfs\\construction\\.cpp FILES ${ipfs_construction_sources})
 SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
 SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
+
+#############
+# Find GDCM #
+#############
+
+FIND_PACKAGE(GDCM REQUIRED)
+IF(GDCM_FOUND)
+	INCLUDE(${GDCM_USE_FILE})
+ELSE(GDCM_FOUND)
+	MESSAGE(FATAL_ERROR "GDCM not found. Please set GDCM_DIR.")
+ENDIF(GDCM_FOUND)
 
 ###############################
 # Specify the necessary paths #

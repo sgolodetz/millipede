@@ -6,11 +6,16 @@
 #ifndef H_MILLIPEDE_DICOMDIRFILE
 #define H_MILLIPEDE_DICOMDIRFILE
 
+#include <string>
+
+#include <common/dicom/directories/DICOMDirectory.h>
+
 namespace mp {
 
 struct DICOMDIRFile
 {
-	// TODO
+	//#################### LOADING METHODS ####################
+	static DICOMDirectory load(const std::string& filename);
 };
 
 }
