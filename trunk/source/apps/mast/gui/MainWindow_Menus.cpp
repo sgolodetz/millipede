@@ -6,8 +6,33 @@
 #include "MainWindow.h"
 
 #include <wx/menu.h>
+#include <wx/msgdlg.h>
+
+#include <common/exceptions/Exception.h>
+#include <mast/gui/dialogs/VolumeChooserDialog.h>
+#include <mast/util/IOUtil.h>
+#include <mast/util/StringConversion.h>
 
 namespace mp {
+
+//#################### LOCAL CONSTANTS ####################
+enum
+{
+	MENUID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	MENUID_EDIT_CLEARUNDOHISTORY,
+	MENUID_EDIT_REDO,
+	MENUID_EDIT_UNDO,
+	MENUID_FILE_EXIT,
+	MENUID_FILE_OPEN,
+	MENUID_FILE_OPEN_DICOMDIR,
+	MENUID_FILE_OPEN_MODEL,
+	MENUID_FILE_OPEN_VOLUMECHOICE,
+	MENUID_FILE_REPLACE_VOLUMECHOICESECTION,
+	MENUID_FILE_SAVE_MODEL,
+	MENUID_FILE_SAVE_VOLUMECHOICE,
+	MENUID_HELP_ABOUT,
+	MENUID_TOOLS_FEATURESQUANTIFIER,
+};
 
 //#################### PRIVATE METHODS ####################
 void MainWindow::setup_menus()
@@ -50,5 +75,43 @@ void MainWindow::setup_menus()
 
 	SetMenuBar(m_menuBar);
 }
+
+//#################### EVENT HANDLERS ####################
+
+//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
+void MainWindow::OnMenuFileExit(wxCommandEvent&)
+{
+	Close();
+}
+
+void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
+{
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open DICOMDIR", "DICOMDIR Files|DICOMDIR");
+	if(dialog->ShowModal() == wxID_OK)
+	{
+		std::string path = wxString_to_string(dialog->GetPath());
+		try
+		{
+			check_file_exists(path);
+
+			// Display a volume chooser dialog to allow the user to choose which volume to load.
+			VolumeChooserDialog dialog(path);
+			dialog.ShowModal();
+
+			// TODO
+		}
+		catch(Exception& e)
+		{
+			wxMessageBox(string_to_wxString(e.cause()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+		}
+	}
+}
+
+//#################### EVENT TABLE ####################
+BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
+	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnMenuFileExit)
+	EVT_MENU(MENUID_FILE_OPEN_DICOMDIR, MainWindow::OnMenuFileOpenDICOMDIR)
+END_EVENT_TABLE()
 
 }

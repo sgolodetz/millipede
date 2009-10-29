@@ -12,26 +12,6 @@ namespace mp {
 
 class MainWindow : public wxFrame
 {
-	//#################### CONSTANTS ####################
-private:
-	enum
-	{
-		MENUID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-		MENUID_EDIT_CLEARUNDOHISTORY,
-		MENUID_EDIT_REDO,
-		MENUID_EDIT_UNDO,
-		MENUID_FILE_EXIT,
-		MENUID_FILE_OPEN,
-		MENUID_FILE_OPEN_DICOMDIR,
-		MENUID_FILE_OPEN_MODEL,
-		MENUID_FILE_OPEN_VOLUMECHOICE,
-		MENUID_FILE_REPLACE_VOLUMECHOICESECTION,
-		MENUID_FILE_SAVE_MODEL,
-		MENUID_FILE_SAVE_VOLUMECHOICE,
-		MENUID_HELP_ABOUT,
-		MENUID_TOOLS_FEATURESQUANTIFIER,
-	};
-
 	//#################### PRIVATE VARIABLES ####################
 private:
 	wxMenuBar *m_menuBar;
@@ -48,6 +28,15 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void setup_menus();
+
+	//#################### EVENT HANDLERS ####################
+public:
+	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
+	void OnMenuFileExit(wxCommandEvent&);
+	void OnMenuFileOpenDICOMDIR(wxCommandEvent&);
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
 
 }

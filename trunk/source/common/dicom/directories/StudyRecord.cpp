@@ -31,7 +31,7 @@ void StudyRecord::add_series_record(const SeriesRecord_CPtr& seriesRecord)
 std::string StudyRecord::key() const
 {
 	std::ostringstream oss;
-	oss << m_studyDescription << " (" << m_studyInstanceUID << ", " << m_studyID << ')';
+	oss << m_studyID << " (" << m_studyDescription << ", " << m_studyInstanceUID << ')';
 	return oss.str();
 }
 

@@ -27,8 +27,15 @@ SET(gui_dialogs_sources gui/dialogs/VolumeChooserDialog.cpp)
 SET(gui_dialogs_headers gui/dialogs/VolumeChooserDialog.h)
 
 ##
-SET(util_sources util/StringConversion.cpp)
-SET(util_headers util/StringConversion.h)
+SET(util_sources
+util/IOUtil.cpp
+util/StringConversion.cpp
+)
+
+SET(util_headers
+util/IOUtil.h
+util/StringConversion.h
+)
 
 #################################################################
 # Collect the project files into sources, headers and templates #
@@ -71,6 +78,17 @@ SOURCE_GROUP(gui\\dialogs\\.h FILES ${gui_dialogs_headers})
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
+#############
+# Find GDCM #
+#############
+
+FIND_PACKAGE(GDCM REQUIRED)
+IF(GDCM_FOUND)
+	INCLUDE(${GDCM_USE_FILE})
+ELSE(GDCM_FOUND)
+	MESSAGE(FATAL_ERROR "GDCM not found. Please set GDCM_DIR.")
+ENDIF(GDCM_FOUND)
+
 ###############
 # Find OpenGL #
 ###############
@@ -95,6 +113,7 @@ ENDIF(wxWidgets_FOUND)
 INCLUDE_DIRECTORIES(
 ${millipede_SOURCE_DIR}
 ${millipede_SOURCE_DIR}/apps
+${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
 )
 
 ##########################################
@@ -116,7 +135,7 @@ ENDIF(MSVC_IDE)
 # Specify the necessary libraries to link #
 ###########################################
 
-TARGET_LINK_LIBRARIES(${targetname} common ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARY})
+TARGET_LINK_LIBRARIES(${targetname} common gdcm ${OPENGL_LIBRARY} ${wxWidgets_LIBRARIES})
 
 #############################
 # Specify things to install #
