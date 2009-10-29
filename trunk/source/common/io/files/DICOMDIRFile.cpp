@@ -5,6 +5,8 @@
 
 #include "DICOMDIRFile.h"
 
+#include <boost/algorithm/string/trim.hpp>
+
 #include <gdcmDicomDir.h>
 #include <gdcmDicomDirImage.h>
 #include <gdcmDicomDirPatient.h>
@@ -51,6 +53,7 @@ DICOMDirectory DICOMDIRFile::load(const std::string& filename)
 			for(gdcm::DicomDirSerie *serie=study->GetFirstSerie(); serie!=NULL; serie=study->GetNextSerie())
 			{
 				std::string seriesNumber = serie->GetEntryValue(0x0020, 0x0011);
+				boost::trim(seriesNumber);
 				SeriesRecord_Ptr seriesRecord(new SeriesRecord(seriesNumber));
 
 				// Add the image filenames to the series record.

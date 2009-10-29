@@ -20,4 +20,12 @@ VolumeChoice VolumeChoiceFile::load(const std::string& filename)
 	return VolumeChoiceSection::load(is);
 }
 
+//#################### SAVING METHODS ####################
+void VolumeChoiceFile::save(const std::string& filename, const VolumeChoice& volumeChoice)
+{
+	std::ofstream os(filename.c_str());
+	if(os.fail()) throw Exception("Could not open " + filename + " for writing");
+	VolumeChoiceSection::save(os, volumeChoice);
+}
+
 }

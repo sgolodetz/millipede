@@ -30,6 +30,8 @@ public:
 	void add_image_filename(const std::string& imageFilename);
 	int image_count() const;
 	const std::vector<std::string>& image_filenames() const;
+	int image_height() const;
+	int image_width() const;
 	std::string key() const;
 	const std::string& series_number() const;
 };

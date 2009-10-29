@@ -28,6 +28,18 @@ const std::vector<std::string>& SeriesRecord::image_filenames() const
 	return m_imageFilenames;
 }
 
+int SeriesRecord::image_height() const
+{
+	// FIXME: This should be loaded in from the image header.
+	return 512;
+}
+
+int SeriesRecord::image_width() const
+{
+	// FIXME: This should be loaded in from the image header.
+	return 512;
+}
+
 std::string SeriesRecord::key() const
 {
 	return m_seriesNumber;

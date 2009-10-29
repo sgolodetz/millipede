@@ -14,6 +14,9 @@ struct VolumeChoiceFile
 {
 	//#################### LOADING METHODS ####################
 	static VolumeChoice load(const std::string& filename);
+
+	//#################### SAVING METHODS ####################
+	static void save(const std::string& filename, const VolumeChoice& volumeChoice);
 };
 
 }

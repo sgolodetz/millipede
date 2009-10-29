@@ -12,17 +12,15 @@
 
 namespace mp {
 
-class VolumeChoice
+struct VolumeChoice
 {
-	//#################### PRIVATE VARIABLES ####################
-private:
-	std::string m_filePrefix, m_patientHandle, m_studyHandle, m_seriesHandle;
-	int m_minX, m_minY, m_minZ, m_maxX, m_maxY, m_maxZ;
-	WindowSettings m_windowSettings;
+	//#################### PUBLIC VARIABLES ####################
+	std::string filePrefix, patientKey, studyKey, seriesKey;
+	int minX, minY, minZ, maxX, maxY, maxZ;
+	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-public:
-	VolumeChoice(const std::string& filePrefix, const std::string& patientHandle, const std::string& studyHandle, const std::string& seriesHandle, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, const WindowSettings& windowSettings);
+	VolumeChoice(const std::string& filePrefix_, const std::string& patientKey_, const std::string& studyKey_, const std::string& seriesKey_, int minX_, int minY_, int minZ_, int maxX_, int maxY_, int maxZ_, const WindowSettings& windowSettings_);
 };
 
 }

@@ -70,4 +70,25 @@ catch(bad_lexical_cast&)
 	throw Exception("One of the volume choice properties was of the wrong type");
 }
 
+//#################### SAVING METHODS ####################
+void VolumeChoiceSection::save(std::ostream& os, const VolumeChoice& volumeChoice)
+{
+	os << "VolumeChoice\n";
+	os << "{\n";
+
+	FieldIO::write_typed_field(os, "\tPrefix", volumeChoice.filePrefix);
+	FieldIO::write_typed_field(os, "\tPatient", volumeChoice.patientKey);
+	FieldIO::write_typed_field(os, "\tStudy", volumeChoice.studyKey);
+	FieldIO::write_typed_field(os, "\tSeries", volumeChoice.seriesKey);
+	FieldIO::write_typed_field(os, "\tMinX", volumeChoice.minX);
+	FieldIO::write_typed_field(os, "\tMinY", volumeChoice.minY);
+	FieldIO::write_typed_field(os, "\tMinZ", volumeChoice.minZ);
+	FieldIO::write_typed_field(os, "\tMaxX", volumeChoice.maxX);
+	FieldIO::write_typed_field(os, "\tMaxY", volumeChoice.maxY);
+	FieldIO::write_typed_field(os, "\tMaxZ", volumeChoice.maxZ);
+	os << "\tWindow = " << volumeChoice.windowSettings.centre() << ' ' << volumeChoice.windowSettings.width() << '\n';
+
+	os << "}\n";
+}
+
 }

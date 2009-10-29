@@ -14,6 +14,9 @@ struct VolumeChoiceSection
 {
 	//#################### LOADING METHODS ####################
 	static VolumeChoice load(std::istream& is);
+
+	//#################### SAVING METHODS ####################
+	static void save(std::ostream& os, const VolumeChoice& volumeChoice);
 };
 
 }

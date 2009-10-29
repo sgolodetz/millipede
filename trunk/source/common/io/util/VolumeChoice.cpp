@@ -8,10 +8,10 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-VolumeChoice::VolumeChoice(const std::string& filePrefix, const std::string& patientHandle, const std::string& studyHandle, const std::string& seriesHandle,
-						   int minX, int minY, int minZ, int maxX, int maxY, int maxZ, const WindowSettings& windowSettings)
-:	m_filePrefix(filePrefix), m_patientHandle(patientHandle), m_studyHandle(studyHandle), m_seriesHandle(seriesHandle),
-	m_minX(minX), m_minY(minY), m_minZ(minZ), m_maxX(maxX), m_maxY(maxY), m_maxZ(maxZ), m_windowSettings(windowSettings)
+VolumeChoice::VolumeChoice(const std::string& filePrefix_, const std::string& patientKey_, const std::string& studyKey_, const std::string& seriesKey_,
+						   int minX_, int minY_, int minZ_, int maxX_, int maxY_, int maxZ_, const WindowSettings& windowSettings_)
+:	filePrefix(filePrefix_), patientKey(patientKey_), studyKey(studyKey_), seriesKey(seriesKey_),
+	minX(minX_), minY(minY_), minZ(minZ_), maxX(maxX_), maxY(maxY_), maxZ(maxZ_), windowSettings(windowSettings_)
 {}
 
 }
