@@ -9,6 +9,7 @@
 #include <wx/msgdlg.h>
 
 #include <common/exceptions/Exception.h>
+#include <common/io/files/VolumeLoader.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
 #include <mast/util/IOUtil.h>
 #include <mast/util/StringConversion.h>
@@ -19,9 +20,6 @@ namespace mp {
 enum
 {
 	MENUID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-	MENUID_EDIT_CLEARUNDOHISTORY,
-	MENUID_EDIT_REDO,
-	MENUID_EDIT_UNDO,
 	MENUID_FILE_EXIT,
 	MENUID_FILE_OPEN,
 	MENUID_FILE_OPEN_DICOMDIR,
@@ -31,7 +29,6 @@ enum
 	MENUID_FILE_SAVE_MODEL,
 	MENUID_FILE_SAVE_VOLUMECHOICE,
 	MENUID_HELP_ABOUT,
-	MENUID_TOOLS_FEATURESQUANTIFIER,
 };
 
 //#################### PRIVATE METHODS ####################
@@ -52,25 +49,11 @@ void MainWindow::setup_menus()
 	fileMenu->AppendSeparator();
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("E&xit\tAlt+F4"));
 
-	wxMenu *editMenu = new wxMenu;
-	editMenu->Append(MENUID_EDIT_UNDO, wxT("&Undo\tCtrl+Z"));
-	editMenu->Append(MENUID_EDIT_REDO, wxT("&Redo\tCtrl+Y"));
-	editMenu->AppendSeparator();
-	editMenu->Append(MENUID_EDIT_CLEARUNDOHISTORY, wxT("&Clear Undo History"));
-
-	m_viewMenu = new wxMenu;
-
-	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->Append(MENUID_TOOLS_FEATURESQUANTIFIER, wxT("Features &Quantifier...\tCtrl+Q"));
-
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MENUID_HELP_ABOUT, wxT("&About...\tF2"));
 
 	m_menuBar = new wxMenuBar;
 	m_menuBar->Append(fileMenu, wxT("&File"));
-	m_menuBar->Append(editMenu, wxT("&Edit"));
-	m_menuBar->Append(m_viewMenu, wxT("&View"));
-	m_menuBar->Append(toolsMenu, wxT("&Tools"));
 	m_menuBar->Append(helpMenu, wxT("&Help"));
 
 	SetMenuBar(m_menuBar);
@@ -98,7 +81,11 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 			VolumeChooserDialog dialog(path);
 			dialog.ShowModal();
 
-			// TODO
+			if(dialog.volume_choice())
+			{
+				VolumeLoader loader;
+				// TODO
+			}
 		}
 		catch(Exception& e)
 		{

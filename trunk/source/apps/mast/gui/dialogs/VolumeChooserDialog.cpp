@@ -152,6 +152,12 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 	Centre();
 }
 
+//#################### PUBLIC METHODS ####################
+const boost::optional<VolumeChoice>& VolumeChooserDialog::volume_choice() const
+{
+	return m_volumeChoice;
+}
+
 //#################### PRIVATE METHODS ####################
 bool VolumeChooserDialog::construct_volume_choice()
 {

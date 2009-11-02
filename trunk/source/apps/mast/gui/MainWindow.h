@@ -15,7 +15,6 @@ class MainWindow : public wxFrame
 	//#################### PRIVATE VARIABLES ####################
 private:
 	wxMenuBar *m_menuBar;
-	wxMenu *m_viewMenu;
 
 	//#################### CONSTRUCTORS ####################
 public:

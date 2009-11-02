@@ -43,7 +43,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	// TODO
+	const boost::optional<VolumeChoice>& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

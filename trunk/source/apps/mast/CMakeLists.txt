@@ -78,6 +78,21 @@ SOURCE_GROUP(gui\\dialogs\\.h FILES ${gui_dialogs_headers})
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
+##############
+# Find Boost #
+##############
+
+SET(Boost_ADDITIONAL_VERSIONS "1.39" "1.39.0")
+SET(BOOST_ROOT ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0)
+SET(Boost_USE_STATIC_LIBS ON)
+FIND_PACKAGE(BOOST 1.39.0 REQUIRED COMPONENTS thread)
+IF(Boost_FOUND)
+	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+	LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+ELSE(Boost_FOUND)
+	MESSAGE(FATAL_ERROR "Boost not found. Please set the directories manually using the advanced view in CMake.")
+ENDIF(Boost_FOUND)
+
 #############
 # Find GDCM #
 #############
@@ -88,6 +103,17 @@ IF(GDCM_FOUND)
 ELSE(GDCM_FOUND)
 	MESSAGE(FATAL_ERROR "GDCM not found. Please set GDCM_DIR.")
 ENDIF(GDCM_FOUND)
+
+############
+# Find ITK #
+############
+
+FIND_PACKAGE(ITK)
+IF(ITK_FOUND)
+	INCLUDE(${ITK_USE_FILE})
+ELSE(ITK_FOUND)
+	MESSAGE(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
+ENDIF(ITK_FOUND)
 
 ###############
 # Find OpenGL #
@@ -113,7 +139,6 @@ ENDIF(wxWidgets_FOUND)
 INCLUDE_DIRECTORIES(
 ${millipede_SOURCE_DIR}
 ${millipede_SOURCE_DIR}/apps
-${millipede_SOURCE_DIR}/../libraries/boost_1_39_0
 )
 
 ##########################################
@@ -135,7 +160,7 @@ ENDIF(MSVC_IDE)
 # Specify the necessary libraries to link #
 ###########################################
 
-TARGET_LINK_LIBRARIES(${targetname} common gdcm ${OPENGL_LIBRARY} ${wxWidgets_LIBRARIES})
+TARGET_LINK_LIBRARIES(${targetname} common ${Boost_LIBRARIES} gdcm ${OPENGL_LIBRARY} ${wxWidgets_LIBRARIES})
 
 #############################
 # Specify things to install #
