@@ -44,7 +44,7 @@ enum
 struct SeriesData : wxTreeItemData
 {
 	SeriesData(int imageWidth_, int imageHeight_, int imageCount_)
-	:	imageWidth(imageWidth_), imageHeight(imageHeight_), imageCount(imageCount_)
+	:	imageHeight(imageHeight_), imageWidth(imageWidth_), imageCount(imageCount_)
 	{}
 
 	const int imageHeight;
