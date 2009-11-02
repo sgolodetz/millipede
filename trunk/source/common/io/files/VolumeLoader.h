@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_VOLUMELOADER
 #define H_MILLIPEDE_VOLUMELOADER
 
+#include <string>
+
 #include <boost/thread/mutex.hpp>
 
 #include <itkImage.h>
@@ -16,13 +18,24 @@ class VolumeLoader
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	int m_progress;
-	boost::mutex m_progressMutex;
+	bool m_aborted;
+	int m_max;
+	mutable int m_progress;
+	mutable boost::mutex m_mutex;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	VolumeLoader();
 
 	//#################### PUBLIC METHODS ####################
 public:
-	// TODO
+	void abort();
+	bool aborted() const;
+	// FIXME
+	void load();
+	int max() const;
 	int progress() const;
+	std::string status() const;
 };
 
 }

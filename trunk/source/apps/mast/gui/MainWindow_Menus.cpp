@@ -5,6 +5,9 @@
 
 #include "MainWindow.h"
 
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
+
 #include <wx/menu.h>
 #include <wx/msgdlg.h>
 
@@ -83,8 +86,9 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 
 			if(dialog.volume_choice())
 			{
-				VolumeLoader loader;
-				// TODO
+				VolumeLoader_Ptr loader(new VolumeLoader);
+				boost::thread volumeLoaderThread(boost::bind(&MainWindow::volume_loader_thread, this, loader));
+				show_progress_dialog(loader);
 			}
 		}
 		catch(Exception& e)
