@@ -52,6 +52,7 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonAboutWindows(wxCommandEvent&);
 	void OnButtonOK(wxCommandEvent&);
 	void OnButtonSave(wxCommandEvent&);
 
