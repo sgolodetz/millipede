@@ -64,7 +64,7 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 	SetSizer(sizer);
 
 	// Set up the tree control.
-	m_tree = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxSize(400,400), wxTR_HAS_BUTTONS|wxTR_SINGLE);
+	m_tree = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxSize(400,300), wxTR_HAS_BUTTONS|wxTR_SINGLE);
 	sizer->Add(m_tree, 0, wxALIGN_CENTER_HORIZONTAL);
 	wxTreeItemId rootID = m_tree->AddRoot(wxT("DICOMDIR"));
 
@@ -114,7 +114,7 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 	// Set up the image window settings controls.
 	sizer->AddSpacer(10);
 
-	m_autoWindowCheckbox = new wxCheckBox(this, CHECKBOXID_AUTOWINDOW, wxT("Use Automatic Window Settings"));
+	m_autoWindowCheckbox = new wxCheckBox(this, CHECKBOXID_AUTOWINDOW, wxT("Use Automatic Window Settings (Brightness/Contrast)"));
 	m_autoWindowCheckbox->SetValue(true);
 	sizer->Add(m_autoWindowCheckbox);
 
