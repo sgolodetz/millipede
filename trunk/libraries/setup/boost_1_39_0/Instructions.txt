@@ -1,5 +1,5 @@
 Boost 1.39.0 Setup Instructions
-Last Updated by Stuart Golodetz on 02/11/09
+Last Updated by Stuart Golodetz on 03/11/09
 -------------------------------------------
 
 1. Extract boost_1_39_0.tar.gz into the libraries directory.
@@ -33,6 +33,6 @@ bjam --libdir=..\boost_1_39_0\lib --includedir=..\boost_1_39_0\include --with-da
 
 Linux:
 
-bjam --libdir=../boost_1_39_0/lib --includedir=../boost_1_39_0/include --with-date_time --with-filesystem --with-thread --build-type=complete toolset=gcc install
+./bjam --libdir=../boost_1_39_0/lib --includedir=../boost_1_39_0/include --with-date_time --with-filesystem --with-thread --build-type=complete toolset=gcc install
 
 4. (Optional) Remove the boost-setup directory as it is no longer needed.
