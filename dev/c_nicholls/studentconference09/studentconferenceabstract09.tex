@@ -21,37 +21,36 @@ A simpler approach to waterfall
 \maketitle
 \pagestyle{empty}
 
+It is often useful to be able to automatically identify particular
+features in a set of images. One particualr application is in
+the treatment of cancer, where algorithms can be used to aid the
+detection and classification of tumours. A pair of algorithms
+called the watershed and waterfall algorithms have been shown
+to be effective and in this paper~\cite{golodetz}, we present a new implementation
+of the Waterfall algorithm, much simplified from other existing
+implimentations.  (@@@ does that make sense? )
 
-
-Most applications of image segmentations of Computerised Tomography
-(CT) scans require knowledge of where key anatomical features are
-found in the image. 
 
 @@@
 
  - segmentation is
- - waterfall algorithm for segmentation 
+ - waterfall algorithm for segmentation
  - existing implementation (arguably overly complicated)
  - we have a better, simpler one
  - we will illustrate it on CT scans
 
 
-Typically, the waterfall algorithm takes as input the output of
-another algorithm, the watershed, introduced by Beucher and
-Lantuejoul~\cite{beucher79}. 
+The watershed algorithm, introduced by Beucher and
+Lantuejoul~\cite{beucher79}, takes an image as input and produces a segmentation of this image, grouping together regions of pixels deemed to be similar.
+Usually, 'similar' refers similarity in the values of pixels, though other approaches are possible.
+When working with CT scans we try to group regions of the same tissue.
 
- - say what the watershed does
 
 @@@ A typical problem of the watershed algorithm is that it tends to
 over-segment images significantly, leading to far more regions than
-can be handled sensibly. This effect is due to problems such as
-indistinct boundaries between features, the variation present between
-different images, but mostly due to the algorithms not having any
-knowledge of the context in which the segmentation takes place.
-
-due to
- - noise in the image
- - spurious local minima
+can be handled sensibly. This effect is due to problems such as image
+noise and spurious boundaries,but mostly due to the algorithms not
+having any knowledge of the context in which the segmentation takes place.
 
 
 %---
@@ -74,7 +73,7 @@ due to
 Figure~\ref{fig:oversegmented} illustrates (on a CT scan) the results
 of a common segmentation algorithm, the watershed. The image is
 clearly over-segmented and hence not much more useful than the
-original for the purposes mentioned earlier. 
+original for picking out features.
 
 The waterfall algorithm is an iterative process which can extract
 useful structure from this initial segmentation. The algorithm yields
@@ -113,7 +112,7 @@ previous layer.
 
 Both the watershed and the waterfall algorithms are based on a
 geographical metaphor. The image is regarded as a landscape, with each
-grey value being proportional to the terrain height. 
+grey value being proportional to the terrain height.
 %
 The valleys are
 in the darker areas, whereas the lighter areas are regarded as peaks.
@@ -128,15 +127,15 @@ representing a region.
 
 The traditional implementation of this algorithm \cite{marcotegui}
 involves the construction of a Minimum Spanning Tree (MST) and the
-gradual elision of some of its edges. 
+gradual elision of some of its edges.
 Its nodes are initially the regions of the watershed output and its
 edges are the lowest pass points on the boundaries between these
 regions; the nodes and edges in subsequent layers are derived from
 these intitial ones through a merging process.
 
-The collection of regional minimum edges of a graph $G$ is a connected
-subgraph of $G$ whose edges have the same weight as each other, and
-whose adjacent edges in $G$ have strictly higher weights. The
+The collection of regional minimum edges of a graph $ is a connected
+subgraph of $ whose edges have the same weight as each other, and
+whose adjacent edges in $ have strictly higher weights. The
 waterfall algorithm relies heavily on finding these regional minimum
 edges, eliding them and rebuilding the MST -- a process which not only
 requires careful implementation of the MST but, more importantly, is
@@ -193,3 +192,4 @@ binary space partitioning in 3D map rendering for games.
 \end{thebibliography}
 
 \end{document}
+
