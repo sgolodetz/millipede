@@ -119,6 +119,8 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 	m_autoWindowCheckbox->SetValue(true);
 	sizer->Add(m_autoWindowCheckbox);
 
+	sizer->AddSpacer(10);
+
 	wxButton *aboutWindowsButton = new wxButton(this, BUTTONID_ABOUTWINDOWS, wxT("About Windows..."));
 	sizer->Add(aboutWindowsButton);
 

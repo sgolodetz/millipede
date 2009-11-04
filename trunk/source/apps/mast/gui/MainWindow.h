@@ -41,6 +41,7 @@ public:
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuFileOpenDICOMDIR(wxCommandEvent&);
+	void OnMenuHelpAbout(wxCommandEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

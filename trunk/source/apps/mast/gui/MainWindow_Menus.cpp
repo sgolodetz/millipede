@@ -5,6 +5,8 @@
 
 #include "MainWindow.h"
 
+#include <sstream>
+
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 
@@ -98,11 +100,27 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 	}
 }
 
+void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
+{
+	std::ostringstream oss;
+	oss << "MAST (the Millipede Automatic Segmentation Tool) is a program I am developing as part of "
+		<< "my computing doctorate at Oxford University, under the watchful guidance and supervision "
+		<< "of Dr Stephen Cameron and Dr Irina Voiculescu. I am extremely grateful to both of them for "
+		<< "their help and support throughout.\n"
+		<< '\n'
+		<< "MAST is the successor application to FAST, the automatic segmentation tool which I wrote "
+		<< "to accompany my centipede image processing library.\n"
+		<< '\n'
+		<< "- Stuart Golodetz, November 2009";
+	wxMessageBox(string_to_wxString(oss.str()), wxT("About MAST"), wxOK|wxCENTRE, this);
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_FILE_OPEN_DICOMDIR, MainWindow::OnMenuFileOpenDICOMDIR)
+	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
 END_EVENT_TABLE()
 
 }
