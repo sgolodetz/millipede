@@ -6,6 +6,7 @@
 %\addtolength{\topmargin}{-20mm}
 
 \usepackage{ifpdf}
+\usepackage{ifthen}
 \usepackage{subfigure}
 \usepackage{epsfig}
 
@@ -21,16 +22,7 @@ A simpler approach to waterfall
 \maketitle
 \pagestyle{empty}
 
-It is often useful to be able to automatically identify particular
-features in a set of images. One particualr application is in
-the treatment of cancer, where algorithms can be used to aid the
-detection and classification of tumours. A pair of algorithms
-called the watershed and waterfall algorithms have been shown
-to be effective and in this paper~\cite{golodetz}, we present a new implementation
-of the Waterfall algorithm, much simplified from other existing
-implimentations.  (@@@ does that make sense? )
-
-
+\iffalse
 @@@
 
  - segmentation is
@@ -39,19 +31,31 @@ implimentations.  (@@@ does that make sense? )
  - we have a better, simpler one
  - we will illustrate it on CT scans
 
+It is useful to be able to identify particular features in a set of
+images automatically. One application is in the treatment of cancer,
+where algorithms can be used to aid the detection and classification
+of organ and tumour tissue. This is the main motivation for this
+project, although the algorithm presented is a generic one, with many
+applications.
+\fi
+
+ This project is motivated by the need to {\em segment\/} greyscale
+ images originating from computerised tomography (CT) scanners. That
+ is, we would like to fit contours around organ tissue featured in
+ each image. A pair of algorithms called the watershed and waterfall
+ algorithms have been shown to be effective for this
+ purpose~\cite{golodetz}, although other approaches exist. This paper
+ presents a new, simplified, implementation of the {\em waterfall\/}
+ algorithm.
 
 The watershed algorithm, introduced by Beucher and
-Lantuejoul~\cite{beucher79}, takes an image as input and produces a segmentation of this image, grouping together regions of pixels deemed to be similar.
-Usually, 'similar' refers similarity in the values of pixels, though other approaches are possible.
-When working with CT scans we try to group regions of the same tissue.
-
-
-@@@ A typical problem of the watershed algorithm is that it tends to
-over-segment images significantly, leading to far more regions than
-can be handled sensibly. This effect is due to problems such as image
-noise and spurious boundaries,but mostly due to the algorithms not
-having any knowledge of the context in which the segmentation takes place.
-
+Lantuejoul~\cite{beucher79}, produces a segmentation of an image,
+grouping together regions of pixels deemed to be similar. Usually,
+`similar' refers to similarity in the greyscale values, though other
+approaches are possible. A typical problem of the watershed algorithm
+is that it over-segments images significantly, leading to far more
+regions than can be handled sensibly, as illustrated in
+Figure~\ref{fig:oversegmented}.
 
 %---
 %---
@@ -64,27 +68,22 @@ having any knowledge of the context in which the segmentation takes place.
 \else
         % TODO
 \fi
-\caption{Example of oversegmentation, output by applying the watershed
+\caption{Example of over-segmentation, output by applying the watershed
   algorithm to an axial slice of a CT volume. The individual regions
   are small and do not correspond to any anatomic features.}
 \label{fig:oversegmented}
 \end{figure}
-
-Figure~\ref{fig:oversegmented} illustrates (on a CT scan) the results
-of a common segmentation algorithm, the watershed. The image is
-clearly over-segmented and hence not much more useful than the
-original for picking out features.
-
+%---
+\vspace{-5mm}
 The waterfall algorithm is an iterative process which can extract
-useful structure from this initial segmentation. The algorithm yields
+further structure from this initial segmentation. The waterfall yields
 a partition forest hierarchy, which is a comprehensive data structure
-which can be used subsequently in the process of feature
-identification.  Figure~\ref{fig:waterfall} illustrates the various
-layers that result from applying the waterfall algorithm to the
-segmentation shown in Figure~\ref{fig:oversegmented}.  Each iteration
-of the algorithm yields a higher-level grouping of the regions in the
-previous layer.
-
+which can be used subsequently for feature identification.
+Figure~\ref{fig:waterfall} illustrates the various layers that result
+from applying the waterfall algorithm to the segmentation shown in
+Figure~\ref{fig:oversegmented}.  Each iteration of the algorithm
+yields a higher-level grouping of the regions in the previous layer.
+\vspace{-5mm}
 %---
 \begin{figure}
 \centering
@@ -109,7 +108,6 @@ previous layer.
 \end{figure}
 %---
 
-
 Both the watershed and the waterfall algorithms are based on a
 geographical metaphor. The image is regarded as a landscape, with each
 grey value being proportional to the terrain height.
@@ -125,17 +123,17 @@ becomes a single basin. The intermediate stages of the process can be
 regarded as intermediate segmentations of the image, with each basin
 representing a region.
 
-The traditional implementation of this algorithm \cite{marcotegui}
-involves the construction of a Minimum Spanning Tree (MST) and the
-gradual elision of some of its edges.
-Its nodes are initially the regions of the watershed output and its
-edges are the lowest pass points on the boundaries between these
-regions; the nodes and edges in subsequent layers are derived from
-these intitial ones through a merging process.
+An implementation of this algorithm proposed by Marcotegui and
+Beucher~\cite{marcotegui} involves the construction of a Minimum
+Spanning Tree (MST) and the gradual elision of some of its edges.  Its
+nodes are initially the regions of the watershed output and its edges
+are the lowest pass points on the boundaries between these regions;
+the nodes and edges in subsequent layers are derived from these
+initial ones through a merging process.
 
-The collection of regional minimum edges of a graph $ is a connected
-subgraph of $ whose edges have the same weight as each other, and
-whose adjacent edges in $ have strictly higher weights. The
+The collection of regional minimum edges of a graph $G$ is a connected
+subgraph of $G$ whose edges have the same weight as each other, and
+whose adjacent edges in $G$ have strictly higher weights. The
 waterfall algorithm relies heavily on finding these regional minimum
 edges, eliding them and rebuilding the MST -- a process which not only
 requires careful implementation of the MST but, more importantly, is
@@ -167,23 +165,29 @@ both algorithms on a number of small, measurable test cases and found
 that they produce the same output. Empirical tests indicate that this
 is also true of larger test cases, such as axial slices of CT volumes.
 
-Production of partition forests in this manner also has many
-applications outside of the field of medical imaging, for instance,
-binary space partitioning in 3D map rendering for games.
+Production of partition forests in this manner has many applications
+outside of the field of medical imaging, for instance, binary space
+partitioning in 3D map rendering for games.
 
 
 
 \begin{thebibliography}{2}
+ 	
 
-\bibitem{beucher94}{Serge Beucher. {\em Watershed, hierarchical
-    segmentation and waterfall algorithm}. In Mathematical Morphology
-  and its Applications to Image Processing, Proc.\ ISMM 94, pages
-  69-76, Fontainebleau, France, 1994. Kluwer Ac.\ Publ.}
+\bibitem{golodetz}{Stuart Golodetz, Irina Voiculescu and Stephen
+  Cameron.  {\em Region Analysis of Abdominal CT Scans using Image
+    Partition Forests}. In Proceedings of CSTST 2008 pages
+  432-7. October 2008.}
 
 \bibitem{beucher79}{S.\ Beucher, C.\ Lantuejoul. {\em Use of
     watersheds in contour detection}. International Workshop on image
   processing, real-time edge and motion detection/estimation, Rennes,
   France, Sept.\ 1979.}
+
+\bibitem{beucher94}{Serge Beucher. {\em Watershed, hierarchical
+    segmentation and waterfall algorithm}. In Mathematical Morphology
+  and its Applications to Image Processing, Proc.\ ISMM 94, pages
+  69-76, Fontainebleau, France, 1994. Kluwer Ac.\ Publ.}
 
 \bibitem{marcotegui}{Beatriz Marcotegui and Serge Beucher, {\em Fast
     Implementation of Waterfall Based on Graph}. In Mathematical
