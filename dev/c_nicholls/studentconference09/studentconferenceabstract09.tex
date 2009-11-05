@@ -76,7 +76,7 @@ Figure~\ref{fig:oversegmented}.
 %---
 \vspace{-5mm}
 %
-The waterfall algorithm is an iterative process which can extract
+The waterfall algorithm~\cite{beucher94,marcotegui} is an iterative process which can extract
 further structure from an initial watershed segmentation. The
 waterfall yields a partition forest hierarchy, which is a
 comprehensive data structure which  can subsequently be used  for
@@ -119,7 +119,7 @@ coordinates.
 The valleys are
 in the darker areas, whereas the lighter areas are regarded as peaks.
 
-The waterfall algorithm~\cite{beucher94,marcotegui} can then be imagined
+The waterfall algorithm can then be imagined
 as a flooding process. The water falls into (low) catchment basins and
 gradually fills them up to the nearest boundaries, sometimes spilling
 into adjacent regions. This process continues until the whole image
@@ -140,7 +140,7 @@ of $G$ whose edges have the same weight as each other, and whose
 adjacent edges in $G$ have strictly higher weights. The waterfall
 algorithm relies heavily on finding these regional minimum edges,
 eliding them and rebuilding the MST -- a process which not only
-requires careful implementation of the MST but, more importantly, is
+requires careful implementation of the MST but, crucially, is
 relatively complex and hard to implement.
 
 \iffalse
