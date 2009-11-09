@@ -19,7 +19,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 VolumeLoader::VolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice)
-:	m_aborted(false), m_dicomdir(dicomdir), m_volumeChoice(volumeChoice)
+:	m_dicomdir(dicomdir), m_volumeChoice(volumeChoice), m_aborted(false)
 {}
 
 //#################### PUBLIC METHODS ####################
