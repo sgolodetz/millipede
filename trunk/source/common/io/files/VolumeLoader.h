@@ -50,6 +50,10 @@ public:
 	int progress() const;
 	std::string status() const;
 	const Volume_Ptr& volume();
+
+	//#################### PRIVATE METHODS ####################
+private:
+	static std::string read_header_field(const itk::Image<signed int,2>::Pointer& image, const std::string& key);
 };
 
 }
