@@ -21,11 +21,11 @@
 namespace mp {
 
 //#################### LOADING METHODS ####################
-DICOMDirectory DICOMDIRFile::load(const std::string& filename)
+DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 {
 	// Note: The hex values in this function are DICOM tags - they can be looked up in the DICOM standard.
 
-	DICOMDirectory ret;
+	DICOMDirectory_Ptr ret(new DICOMDirectory);
 
 	// Load in the DICOMDIR.
 	gdcm::DicomDir dicomdir;
@@ -47,6 +47,10 @@ DICOMDirectory DICOMDIRFile::load(const std::string& filename)
 			std::string studyDescription = study->GetEntryValue(0x0008, 0x1030);
 			std::string studyID = study->GetEntryValue(0x0020, 0x0010);
 			std::string studyInstanceUID = study->GetEntryValue(0x0020, 0x000d);
+
+			// Sanitize values (bleurgh - this really shouldn't be necessary).
+			studyInstanceUID = studyInstanceUID.substr(0, studyInstanceUID.find_first_of('\0'));
+
 			StudyRecord_Ptr studyRecord(new StudyRecord(studyDescription, studyID, studyInstanceUID));
 
 			// Add the series to the study record.
@@ -69,7 +73,7 @@ DICOMDirectory DICOMDIRFile::load(const std::string& filename)
 			patientRecord->add_study_record(studyRecord);
 		}
 
-		ret.add_patient_record(patientRecord);
+		ret->add_patient_record(patientRecord);
 	}
 
 	return ret;

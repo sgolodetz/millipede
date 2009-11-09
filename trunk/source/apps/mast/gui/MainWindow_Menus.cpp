@@ -88,7 +88,7 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 
 			if(dialog.volume_choice())
 			{
-				VolumeLoader_Ptr loader(new VolumeLoader);
+				VolumeLoader_Ptr loader(new VolumeLoader(dialog.dicomdir(), *dialog.volume_choice()));
 				boost::thread volumeLoaderThread(boost::bind(&MainWindow::volume_loader_thread, this, loader));
 				show_progress_dialog(loader);
 			}

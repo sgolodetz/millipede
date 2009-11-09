@@ -33,6 +33,10 @@ SET(dicom_util_sources dicom/util/WindowSettings.cpp)
 SET(dicom_util_headers dicom/util/WindowSettings.h)
 
 ##
+SET(dicom_volumes_sources dicom/volumes/Volume.cpp)
+SET(dicom_volumes_headers dicom/volumes/Volume.h)
+
+##
 SET(exceptions_headers
 exceptions/Exception.h
 exceptions/FileNotFoundException.h
@@ -93,6 +97,7 @@ SET(ipfs_construction_templates ipfs/construction/Watershed.tpp)
 SET(sources
 ${dicom_directories_sources}
 ${dicom_util_sources}
+${dicom_volumes_sources}
 ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
@@ -103,6 +108,7 @@ SET(headers
 ${adts_headers}
 ${dicom_directories_headers}
 ${dicom_util_headers}
+${dicom_volumes_headers}
 ${exceptions_headers}
 ${io_files_headers}
 ${io_sections_headers}
@@ -131,6 +137,10 @@ SOURCE_GROUP(dicom\\directories\\.h FILES ${dicom_directories_headers})
 ##
 SOURCE_GROUP(dicom\\util\\.cpp FILES ${dicom_util_sources})
 SOURCE_GROUP(dicom\\util\\.h FILES ${dicom_util_headers})
+
+##
+SOURCE_GROUP(dicom\\volumes\\.cpp FILES ${dicom_volumes_sources})
+SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
 
 ##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})

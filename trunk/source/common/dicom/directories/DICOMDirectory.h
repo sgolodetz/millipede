@@ -32,6 +32,10 @@ public:
 	const std::vector<PatientRecord_CPtr>& patient_records() const;
 };
 
+//#################### TYPEDEFS ####################
+typedef shared_ptr<DICOMDirectory> DICOMDirectory_Ptr;
+typedef shared_ptr<const DICOMDirectory> DICOMDirectory_CPtr;
+
 }
 
 #endif

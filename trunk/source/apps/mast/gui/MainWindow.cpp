@@ -5,6 +5,7 @@
 
 #include "MainWindow.h"
 
+#include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 
 #include <common/io/files/VolumeLoader.h>
@@ -35,7 +36,15 @@ void MainWindow::show_progress_dialog(const VolumeLoader_Ptr& loader)
 	{
 		if(!dialog.Update(loader->progress(), string_to_wxString(loader->status())))
 		{
+			// The user clicked Cancel.
 			loader->abort();
+			break;
+		}
+
+		if(loader->aborted())
+		{
+			// The loading process failed (i.e. the loader aborted itself).
+			wxMessageBox(string_to_wxString(loader->status()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
 			break;
 		}
 	}

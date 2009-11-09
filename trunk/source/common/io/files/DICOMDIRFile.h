@@ -15,7 +15,7 @@ namespace mp {
 struct DICOMDIRFile
 {
 	//#################### LOADING METHODS ####################
-	static DICOMDirectory load(const std::string& filename);
+	static DICOMDirectory_Ptr load(const std::string& filename);
 };
 
 }

@@ -70,10 +70,10 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 	wxTreeItemId rootID = m_tree->AddRoot(wxT("DICOMDIR"));
 
 	// Load the DICOMDIR.
-	DICOMDirectory dicomdir = DICOMDIRFile::load(dicomdirFilename);
+	m_dicomdir = DICOMDIRFile::load(dicomdirFilename);
 
 	// Add the DICOMDIR data to the tree control.
-	const std::vector<PatientRecord_CPtr> patientRecords = dicomdir.patient_records();
+	const std::vector<PatientRecord_CPtr> patientRecords = m_dicomdir->patient_records();
 	for(size_t i=0, patientCount=patientRecords.size(); i<patientCount; ++i)
 	{
 		wxTreeItemId patientID = m_tree->AppendItem(rootID, string_to_wxString(patientRecords[i]->patients_name()));
@@ -159,6 +159,11 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 }
 
 //#################### PUBLIC METHODS ####################
+DICOMDirectory_CPtr VolumeChooserDialog::dicomdir() const
+{
+	return m_dicomdir;
+}
+
 const boost::optional<VolumeChoice>& VolumeChooserDialog::volume_choice() const
 {
 	return m_volumeChoice;

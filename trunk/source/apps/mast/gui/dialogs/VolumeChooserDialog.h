@@ -9,6 +9,8 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
+using boost::shared_ptr;
 
 #include <wx/checkbox.h>
 #include <wx/dialog.h>
@@ -20,10 +22,15 @@
 
 namespace mp {
 
+//#################### FORWARD DECLARATIONS ####################
+typedef shared_ptr<class DICOMDirectory> DICOMDirectory_Ptr;
+typedef shared_ptr<const class DICOMDirectory> DICOMDirectory_CPtr;
+
 class VolumeChooserDialog : public wxDialog
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
+	DICOMDirectory_Ptr m_dicomdir;
 	std::string m_filePrefix;
 	boost::optional<VolumeChoice> m_volumeChoice;
 
@@ -43,6 +50,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	DICOMDirectory_CPtr dicomdir() const;
 	const boost::optional<VolumeChoice>& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################

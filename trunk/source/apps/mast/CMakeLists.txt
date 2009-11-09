@@ -160,7 +160,7 @@ ENDIF(MSVC_IDE)
 # Specify the necessary libraries to link #
 ###########################################
 
-TARGET_LINK_LIBRARIES(${targetname} common ${Boost_LIBRARIES} gdcm ${OPENGL_LIBRARY} ${wxWidgets_LIBRARIES})
+TARGET_LINK_LIBRARIES(${targetname} common ${Boost_LIBRARIES} gdcm ITKAlgorithms ITKCommon ITKIO ${OPENGL_LIBRARY} ${wxWidgets_LIBRARIES})
 
 #############################
 # Specify things to install #
