@@ -26,10 +26,6 @@ private:
 public:
 	explicit MainWindow(const std::string& title);
 
-	//#################### PUBLIC METHODS ####################
-public:
-	void setup();
-
 	//#################### PRIVATE METHODS ####################
 private:
 	void setup_menus();

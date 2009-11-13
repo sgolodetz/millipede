@@ -7,23 +7,19 @@
 
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
+#include <wx/sizer.h>
 
 #include <common/io/files/VolumeLoader.h>
 #include <mast/util/StringConversion.h>
+#include "PartitionWindow.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
 MainWindow::MainWindow(const std::string& title)
-:	wxFrame(NULL, wxID_ANY, string_to_wxString(title), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxMAXIMIZE_BOX | wxRESIZE_BORDER))
+:	wxFrame(NULL, wxID_ANY, string_to_wxString(title), wxDefaultPosition, wxSize(600,400))
 {
 	setup_menus();
-}
-
-//#################### PUBLIC METHODS ####################
-void MainWindow::setup()
-{
-	// NYI
 }
 
 //#################### PRIVATE METHODS ####################
@@ -48,17 +44,19 @@ void MainWindow::show_progress_dialog(const VolumeLoader_Ptr& loader)
 			break;
 		}
 	}
+
+	if(!loader->aborted())
+	{
+		// Create a window for the user to interact with the new volume.
+		PartitionWindow *partitionWindow = new PartitionWindow("Untitled", loader->volume());
+		partitionWindow->Show(true);
+	}
 }
 
 void MainWindow::volume_loader_thread(const VolumeLoader_Ptr& loader)
 {
 	loader->load();
 	while(loader->progress() != loader->max() && !loader->aborted());
-
-	if(!loader->aborted())
-	{
-		// TODO: Create a window with the new volume
-	}
 }
 
 }

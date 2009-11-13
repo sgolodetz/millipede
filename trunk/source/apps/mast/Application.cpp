@@ -5,7 +5,7 @@
 
 #include "Application.h"
 
-#include <mast/gui/MainWindow.h>
+#include <mast/gui/windows/MainWindow.h>
 
 namespace mp {
 
@@ -14,7 +14,6 @@ bool Application::OnInit()
 {
 	MainWindow *window = new MainWindow("MAST - Millipede Automatic Segmentation Tool");
 	window->Show();
-	window->setup();
 	return true;
 }
 
