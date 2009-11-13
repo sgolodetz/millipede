@@ -15,20 +15,36 @@ SET(mast_sources Application.cpp)
 SET(mast_headers Application.h)
 
 ##
+SET(gui_base_sources gui/base/CanvasEventHandler.cpp)
+SET(gui_base_headers gui/base/CanvasEventHandler.h)
+
+##
 SET(gui_dialogs_sources gui/dialogs/VolumeChooserDialog.cpp)
 SET(gui_dialogs_headers gui/dialogs/VolumeChooserDialog.h)
 
 ##
 SET(gui_windows_main_sources
 gui/windows/main/MainWindow.cpp
-gui/windows/main/MainWindow_Menus.cpp
+gui/windows/main/MainWindow_Events.cpp
 )
 
 SET(gui_windows_main_headers gui/windows/main/MainWindow.h)
 
 ##
-SET(gui_windows_partition_sources gui/windows/partition/PartitionWindow.cpp)
-SET(gui_windows_partition_headers gui/windows/partition/PartitionWindow.h)
+SET(gui_windows_partition_sources
+gui/windows/partition/BaseCanvasEventHandler.cpp
+gui/windows/partition/PartitionCanvasEventHandler.cpp
+gui/windows/partition/PartitionWindow.cpp
+gui/windows/partition/PartitionWindow_Events.cpp
+gui/windows/partition/StratumCanvasEventHandler.cpp
+)
+
+SET(gui_windows_partition_headers
+gui/windows/partition/BaseCanvasEventHandler.h
+gui/windows/partition/PartitionCanvasEventHandler.h
+gui/windows/partition/PartitionWindow.h
+gui/windows/partition/StratumCanvasEventHandler.h
+)
 
 ##
 SET(util_sources
@@ -47,6 +63,7 @@ util/StringConversion.h
 
 SET(sources
 ${mast_sources}
+${gui_base_sources}
 ${gui_dialogs_sources}
 ${gui_windows_main_sources}
 ${gui_windows_partition_sources}
@@ -55,6 +72,7 @@ ${util_sources}
 
 SET(headers
 ${mast_headers}
+${gui_base_headers}
 ${gui_dialogs_headers}
 ${gui_windows_main_headers}
 ${gui_windows_partition_headers}
@@ -71,6 +89,10 @@ SET(templates
 ##
 SOURCE_GROUP(.cpp FILES ${mast_sources})
 SOURCE_GROUP(.h FILES ${mast_headers})
+
+##
+SOURCE_GROUP(gui\\base\\.cpp FILES ${gui_base_sources})
+SOURCE_GROUP(gui\\base\\.h FILES ${gui_base_headers})
 
 ##
 SOURCE_GROUP(gui\\dialogs\\.cpp FILES ${gui_dialogs_sources})

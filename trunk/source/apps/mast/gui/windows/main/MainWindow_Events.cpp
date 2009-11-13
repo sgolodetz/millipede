@@ -1,5 +1,5 @@
 /***
- * mast: MainWindow_Menus.cpp
+ * mast: MainWindow_Events.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 

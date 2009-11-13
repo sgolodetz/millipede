@@ -9,13 +9,15 @@
 #include <wx/stattext.h>
 
 #include <mast/util/StringConversion.h>
+#include "PartitionCanvasEventHandler.h"
+#include "StratumCanvasEventHandler.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume)
+PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_oldViewLocation(-1, -1), m_viewLocation(-1, -1), m_volume(volume)
+	m_oldViewLocation(-1, -1), m_viewLocation(new ViewLocation(-1, -1)), m_volume(volume)
 {
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	SetSizer(sizer);
@@ -38,8 +40,9 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	};
 
 	// Top left
-	m_stratumCanvas = new wxGLCanvas(top, wxID_ANY, attribList, wxDefaultPosition, wxSize(512, 512), wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS);
-	// TODO: Event handler
+	m_stratumCanvas = new wxGLCanvas(top, context, wxID_ANY, wxDefaultPosition, wxSize(CANVAS_WIDTH, CANVAS_HEIGHT),
+									 wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS, wxGLCanvasName, attribList);
+	m_stratumCanvas->SetEventHandler(new StratumCanvasEventHandler);
 	topSizer->Add(m_stratumCanvas);
 
 	// Top middle
@@ -56,8 +59,9 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	wxPanel *right = new wxPanel(top);
 	wxBoxSizer *rightSizer = new wxBoxSizer(wxVERTICAL);
 	right->SetSizer(rightSizer);
-		m_partitionCanvas = new wxGLCanvas(right, wxID_ANY, attribList, wxDefaultPosition, wxSize(512, 512), wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS);
-		// TODO: Event handler
+		m_partitionCanvas = new wxGLCanvas(right, get_context(), wxID_ANY, wxDefaultPosition, wxSize(CANVAS_WIDTH, CANVAS_HEIGHT),
+										   wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS, wxGLCanvasName, attribList);
+		m_partitionCanvas->SetEventHandler(new PartitionCanvasEventHandler);
 		rightSizer->Add(m_partitionCanvas);
 
 		wxPanel *bottom = new wxPanel(right);
@@ -80,10 +84,42 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 
 	Show();
 
-	// Set the OpenGL contexts for the canvases.
-	wxGLContext *context = new wxGLContext(m_stratumCanvas);
-	m_stratumCanvas->SetCurrent(*context);
-	m_partitionCanvas->SetCurrent(*context);
+	setup_canvas(m_stratumCanvas);
+	setup_canvas(m_partitionCanvas);
+}
+
+//#################### PUBLIC METHODS ####################
+wxGLContext *PartitionWindow::get_context() const
+{
+	return m_stratumCanvas->GetContext();
+}
+
+//#################### PRIVATE METHODS ####################
+void PartitionWindow::setup_canvas(wxGLCanvas *canvas)
+{
+	canvas->SetCurrent();
+
+	// Enable back-face culling.
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
+	glEnable(GL_CULL_FACE);
+
+	// Set up the z-buffer.
+	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_DEPTH_TEST);
+
+	// Set up alpha testing.
+	glAlphaFunc(GL_NOTEQUAL, 0);
+	glEnable(GL_ALPHA_TEST);
+
+	glClearColor(0, 0, 0, 0);
+
+	glViewport(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glOrtho(0, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0.0, 2048.0);
 }
 
 }
