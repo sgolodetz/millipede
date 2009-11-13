@@ -70,11 +70,6 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 		rightSizer->Add(bottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	topSizer->Add(right);
 
-	// Set the OpenGL contexts for the canvases.
-	wxGLContext *context = new wxGLContext(m_stratumCanvas);
-	m_stratumCanvas->SetCurrent(*context);
-	m_partitionCanvas->SetCurrent(*context);
-
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Construct the bottom half
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,6 +77,13 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	// TODO
 
 	sizer->Fit(this);
+
+	Show();
+
+	// Set the OpenGL contexts for the canvases.
+	wxGLContext *context = new wxGLContext(m_stratumCanvas);
+	m_stratumCanvas->SetCurrent(*context);
+	m_partitionCanvas->SetCurrent(*context);
 }
 
 }
