@@ -10,8 +10,8 @@
 #include <wx/sizer.h>
 
 #include <common/io/files/VolumeLoader.h>
+#include <mast/gui/windows/partition/PartitionWindow.h>
 #include <mast/util/StringConversion.h>
-#include "PartitionWindow.h"
 
 namespace mp {
 

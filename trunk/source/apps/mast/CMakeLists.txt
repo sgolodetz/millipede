@@ -19,16 +19,16 @@ SET(gui_dialogs_sources gui/dialogs/VolumeChooserDialog.cpp)
 SET(gui_dialogs_headers gui/dialogs/VolumeChooserDialog.h)
 
 ##
-SET(gui_windows_sources
-gui/windows/MainWindow.cpp
-gui/windows/MainWindow_Menus.cpp
-gui/windows/PartitionWindow.cpp
+SET(gui_windows_main_sources
+gui/windows/main/MainWindow.cpp
+gui/windows/main/MainWindow_Menus.cpp
 )
 
-SET(gui_windows_headers
-gui/windows/MainWindow.h
-gui/windows/PartitionWindow.h
-)
+SET(gui_windows_main_headers gui/windows/main/MainWindow.h)
+
+##
+SET(gui_windows_partition_sources gui/windows/partition/PartitionWindow.cpp)
+SET(gui_windows_partition_headers gui/windows/partition/PartitionWindow.h)
 
 ##
 SET(util_sources
@@ -48,14 +48,16 @@ util/StringConversion.h
 SET(sources
 ${mast_sources}
 ${gui_dialogs_sources}
-${gui_windows_sources}
+${gui_windows_main_sources}
+${gui_windows_partition_sources}
 ${util_sources}
 )
 
 SET(headers
 ${mast_headers}
 ${gui_dialogs_headers}
-${gui_windows_headers}
+${gui_windows_main_headers}
+${gui_windows_partition_headers}
 ${util_headers}
 )
 
@@ -75,8 +77,12 @@ SOURCE_GROUP(gui\\dialogs\\.cpp FILES ${gui_dialogs_sources})
 SOURCE_GROUP(gui\\dialogs\\.h FILES ${gui_dialogs_headers})
 
 ##
-SOURCE_GROUP(gui\\windows\\.cpp FILES ${gui_windows_sources})
-SOURCE_GROUP(gui\\windows\\.h FILES ${gui_windows_headers})
+SOURCE_GROUP(gui\\windows\\main\\.cpp FILES ${gui_windows_main_sources})
+SOURCE_GROUP(gui\\windows\\main\\.h FILES ${gui_windows_main_headers})
+
+##
+SOURCE_GROUP(gui\\windows\\partition\\.cpp FILES ${gui_windows_partition_sources})
+SOURCE_GROUP(gui\\windows\\partition\\.h FILES ${gui_windows_partition_headers})
 
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
