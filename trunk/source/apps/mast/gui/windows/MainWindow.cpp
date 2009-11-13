@@ -48,7 +48,7 @@ void MainWindow::show_progress_dialog(const VolumeLoader_Ptr& loader)
 	if(!loader->aborted())
 	{
 		// Create a window for the user to interact with the new volume.
-		PartitionWindow *partitionWindow = new PartitionWindow("Untitled", loader->volume());
+		PartitionWindow *partitionWindow = new PartitionWindow(this, "Untitled", loader->volume());
 		partitionWindow->Show(true);
 	}
 }
