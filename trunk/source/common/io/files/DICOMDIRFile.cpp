@@ -5,6 +5,7 @@
 
 #include "DICOMDIRFile.h"
 
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
 #include <gdcmDicomDir.h>
@@ -64,6 +65,8 @@ DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 				for(gdcm::DicomDirImage *image=serie->GetFirstImage(); image!=NULL; image=serie->GetNextImage())
 				{
 					std::string referencedFileID = image->GetEntryValue(0x0004, 0x1500);
+					boost::replace_all(referencedFileID, "\\", "/");
+					boost::trim(referencedFileID);
 					seriesRecord->add_image_filename(referencedFileID);
 				}
 
