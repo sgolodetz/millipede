@@ -19,6 +19,8 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
 	m_oldViewLocation(-1, -1), m_viewLocation(new ViewLocation(-1, -1)), m_volume(volume)
 {
+	Show();
+
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	SetSizer(sizer);
 
@@ -81,8 +83,6 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	// TODO
 
 	sizer->Fit(this);
-
-	Show();
 
 	setup_canvas(m_stratumCanvas);
 	setup_canvas(m_partitionCanvas);
