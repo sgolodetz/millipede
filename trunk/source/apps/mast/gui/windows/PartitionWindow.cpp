@@ -6,7 +6,6 @@
 #include "PartitionWindow.h"
 
 #include <wx/sizer.h>
-#include <wx/slider.h>
 #include <wx/stattext.h>
 
 #include <mast/util/StringConversion.h>
@@ -16,7 +15,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_volume(volume), m_viewLocation(-1, -1), m_oldViewLocation(-1, -1)
+	m_oldViewLocation(-1, -1), m_viewLocation(-1, -1), m_volume(volume)
 {
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	SetSizer(sizer);

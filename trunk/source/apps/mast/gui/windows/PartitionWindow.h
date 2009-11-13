@@ -12,6 +12,7 @@ using boost::shared_ptr;
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 #include <wx/listctrl.h>
+#include <wx/slider.h>
 
 namespace mp {
 
