@@ -5,6 +5,10 @@
 
 #include "Volume.h"
 
+#include <itkIntensityWindowingImageFilter.h>
+
+#include <common/dicom/util/WindowSettings.h>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -25,8 +29,16 @@ Volume::Size Volume::size() const
 
 Volume::WindowedImageCPointer Volume::windowed_image(const WindowSettings& windowSettings) const
 {
-	// NYI
-	throw 23;
+	typedef itk::IntensityWindowingImageFilter<BaseImage,WindowedImage> Windower;
+
+	Windower::Pointer windower = Windower::New();
+	windower->SetInput(m_baseImage);
+	windower->SetWindowLevel(windowSettings.width(), windowSettings.centre());
+	windower->SetOutputMinimum(0);
+	windower->SetOutputMaximum(255);
+	windower->Update();
+
+	return windower->GetOutput();
 }
 
 }
