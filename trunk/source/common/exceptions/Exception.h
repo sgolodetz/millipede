@@ -25,7 +25,7 @@ public:
 
 	//#################### DESTRUCTOR ####################
 public:
-	virtual ~Exception() {}
+	virtual ~Exception() throw() {}
 
 	//#################### PUBLIC METHODS ####################
 	virtual const std::string& cause() const
@@ -33,7 +33,7 @@ public:
 		return m_cause;
 	}
 
-	const char *what() const
+	const char *what() const throw()
 	{
 		return m_cause.c_str();
 	}

@@ -26,7 +26,7 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 	Volume::WindowedImage::SizeType size;
 
 	// Construct the x-y textures.
-	for(int z=0; z<volumeSize[2]; ++z)
+	for(unsigned int z=0; z<volumeSize[2]; ++z)
 	{
 		Extractor::Pointer extractor = Extractor::New();
 		extractor->SetInput(windowedImage);
@@ -48,7 +48,7 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 	}
 
 	// Construct the x-z textures.
-	for(int y=0; y<volumeSize[1]; ++y)
+	for(unsigned int y=0; y<volumeSize[1]; ++y)
 	{
 		Extractor::Pointer extractor = Extractor::New();
 		extractor->SetInput(windowedImage);
@@ -70,7 +70,7 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 	}
 
 	// Construct the y-z textures.
-	for(int x=0; x<volumeSize[0]; ++x)
+	for(unsigned int x=0; x<volumeSize[0]; ++x)
 	{
 		Extractor::Pointer extractor = Extractor::New();
 		extractor->SetInput(windowedImage);
