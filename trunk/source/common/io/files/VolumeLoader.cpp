@@ -156,13 +156,7 @@ try
 	boost::mutex::scoped_lock lock(m_mutex);
 	m_progress = max();
 }
-catch(Exception& e)
-{
-	boost::mutex::scoped_lock lock(m_mutex);
-	m_aborted = true;
-	m_status = e.cause();
-}
-catch(itk::ExceptionObject& e)
+catch(std::exception& e)
 {
 	boost::mutex::scoped_lock lock(m_mutex);
 	m_aborted = true;

@@ -93,9 +93,9 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 				show_progress_dialog(loader);
 			}
 		}
-		catch(Exception& e)
+		catch(std::exception& e)
 		{
-			wxMessageBox(string_to_wxString(e.cause()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+			wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
 		}
 	}
 }

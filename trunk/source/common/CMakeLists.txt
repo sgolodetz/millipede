@@ -33,8 +33,15 @@ SET(dicom_util_sources dicom/util/WindowSettings.cpp)
 SET(dicom_util_headers dicom/util/WindowSettings.h)
 
 ##
-SET(dicom_volumes_sources dicom/volumes/Volume.cpp)
-SET(dicom_volumes_headers dicom/volumes/Volume.h)
+SET(dicom_volumes_sources
+dicom/volumes/Volume.cpp
+dicom/volumes/VolumeTextureSet.cpp
+)
+
+SET(dicom_volumes_headers
+dicom/volumes/Volume.h
+dicom/volumes/VolumeTextureSet.h
+)
 
 ##
 SET(exceptions_headers

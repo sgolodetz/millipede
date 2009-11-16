@@ -6,11 +6,12 @@
 #ifndef H_MILLIPEDE_EXCEPTION
 #define H_MILLIPEDE_EXCEPTION
 
+#include <exception>
 #include <string>
 
 namespace mp {
 
-class Exception
+class Exception : public std::exception
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -30,6 +31,11 @@ public:
 	virtual const std::string& cause() const
 	{
 		return m_cause;
+	}
+
+	const char *what() const
+	{
+		return m_cause.c_str();
 	}
 };
 
