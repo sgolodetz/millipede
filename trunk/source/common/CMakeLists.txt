@@ -90,6 +90,24 @@ ipfs/construction/Watershed.h
 
 SET(ipfs_construction_templates ipfs/construction/Watershed.tpp)
 
+##
+SET(ogl_headers
+ogl/WrappedGL.h
+)
+
+##
+SET(textures_sources
+textures/Greyscale8ImageTexture.cpp
+textures/Texture.cpp
+textures/TextureFactory.cpp
+)
+
+SET(textures_headers
+textures/Greyscale8ImageTexture.h
+textures/Texture.h
+textures/TextureFactory.h
+)
+
 #################################################################
 # Collect the project files into sources, headers and templates #
 #################################################################
@@ -102,6 +120,7 @@ ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
 ${ipfs_construction_sources}
+${textures_sources}
 )
 
 SET(headers
@@ -114,6 +133,8 @@ ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
 ${ipfs_construction_headers}
+${ogl_headers}
+${textures_headers}
 )
 
 SET(templates
@@ -162,6 +183,13 @@ SOURCE_GROUP(io\\util\\.tpp FILES ${io_util_templates})
 SOURCE_GROUP(ipfs\\construction\\.cpp FILES ${ipfs_construction_sources})
 SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
 SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
+
+##
+SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
+
+##
+SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
+SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 
 ##############
 # Find Boost #

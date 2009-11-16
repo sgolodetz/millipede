@@ -8,14 +8,14 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-Volume::Volume(const ImagePointer& baseImage)
+Volume::Volume(const BaseImagePointer& baseImage)
 :	m_baseImage(baseImage)
 {}
 
 //#################### PUBLIC METHODS ####################
-Volume::ImageCPointer Volume::base_image() const
+Volume::BaseImageCPointer Volume::base_image() const
 {
-	return ImageCPointer(m_baseImage);
+	return BaseImageCPointer(m_baseImage);
 }
 
 Volume::Size Volume::size() const
@@ -23,7 +23,7 @@ Volume::Size Volume::size() const
 	return m_baseImage->GetLargestPossibleRegion().GetSize();
 }
 
-Volume::ImageCPointer Volume::windowed_image(const WindowSettings& windowSettings) const
+Volume::WindowedImageCPointer Volume::windowed_image(const WindowSettings& windowSettings) const
 {
 	// NYI
 	throw 23;
