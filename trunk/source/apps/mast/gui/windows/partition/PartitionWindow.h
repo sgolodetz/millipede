@@ -17,6 +17,8 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
+class PartitionCanvas;
+class StratumCanvas;
 typedef shared_ptr<class Volume> Volume_Ptr;
 
 class PartitionWindow : public wxFrame
@@ -44,13 +46,13 @@ private:
 	Volume_Ptr m_volume;
 
 	// Top Left
-	wxGLCanvas *m_stratumCanvas;
+	StratumCanvas *m_stratumCanvas;
 
 	// Top Middle
 	wxSlider *m_stratumSlider;
 
 	// Top Right
-	wxGLCanvas *m_partitionCanvas;
+	PartitionCanvas *m_partitionCanvas;
 	wxSlider *m_layerSlider;
 
 	// Bottom
@@ -67,7 +69,6 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void calculate_canvas_size();
-	void setup_canvas(wxGLCanvas *canvas);
 
 	//#################### EVENT HANDLERS ####################
 public:

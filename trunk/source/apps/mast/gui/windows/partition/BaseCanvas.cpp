@@ -32,4 +32,34 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	glEnd();
 }
 
+void BaseCanvas::setup()
+{
+	SetCurrent();
+
+	int width, height;
+	GetSize(&width, &height);
+
+	// Enable back-face culling.
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
+	glEnable(GL_CULL_FACE);
+
+	// Set up the z-buffer.
+	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_DEPTH_TEST);
+
+	// Set up alpha testing.
+	glAlphaFunc(GL_NOTEQUAL, 0);
+	glEnable(GL_ALPHA_TEST);
+
+	glClearColor(0, 0, 0, 0);
+
+	glViewport(0, 0, width, height);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glOrtho(0, width, height, 0, 0.0, 2048.0);
+}
+
 }

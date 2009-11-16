@@ -83,8 +83,8 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 
 	sizer->Fit(this);
 
-	setup_canvas(m_stratumCanvas);
-	setup_canvas(m_partitionCanvas);
+	m_stratumCanvas->setup();
+	m_partitionCanvas->setup();
 }
 
 //#################### PUBLIC METHODS ####################
@@ -103,33 +103,6 @@ void PartitionWindow::calculate_canvas_size()
 	Volume::Size volumeSize = m_volume->size();
 	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
-}
-
-void PartitionWindow::setup_canvas(wxGLCanvas *canvas)
-{
-	canvas->SetCurrent();
-
-	// Enable back-face culling.
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
-	glEnable(GL_CULL_FACE);
-
-	// Set up the z-buffer.
-	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_DEPTH_TEST);
-
-	// Set up alpha testing.
-	glAlphaFunc(GL_NOTEQUAL, 0);
-	glEnable(GL_ALPHA_TEST);
-
-	glClearColor(0, 0, 0, 0);
-
-	glViewport(0, 0, m_canvasWidth, m_canvasHeight);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glOrtho(0, m_canvasWidth, m_canvasHeight, 0, 0.0, 2048.0);
 }
 
 }

@@ -19,6 +19,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void render(wxPaintDC& dc) const;
+	void setup();
 };
 
 }
