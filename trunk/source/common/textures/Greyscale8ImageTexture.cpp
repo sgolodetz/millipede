@@ -5,7 +5,7 @@
 
 #include "Greyscale8ImageTexture.h"
 
-#include <gl/glu.h>
+#include <GL/glu.h>
 
 namespace mp {
 
