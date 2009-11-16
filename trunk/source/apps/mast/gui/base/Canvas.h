@@ -1,18 +1,22 @@
 /***
- * millipede: CanvasEventHandler.h
+ * millipede: Canvas.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_CANVASEVENTHANDLER
-#define H_MILLIPEDE_CANVASEVENTHANDLER
+#ifndef H_MILLIPEDE_CANVAS
+#define H_MILLIPEDE_CANVAS
 
 #include <wx/dcclient.h>
-#include <wx/event.h>
+#include <wx/glcanvas.h>
 
 namespace mp {
 
-class CanvasEventHandler : public wxEvtHandler
+class Canvas : public wxGLCanvas
 {
+	//#################### CONSTRUCTORS ####################
+public:
+	Canvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS);
+
 	//#################### PUBLIC ABSTRACT METHODS ####################
 public:
 	virtual void render(wxPaintDC& dc) const = 0;

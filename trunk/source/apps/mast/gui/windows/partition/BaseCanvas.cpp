@@ -1,16 +1,19 @@
 /***
- * millipede: BaseCanvasEventHandler.cpp
+ * millipede: BaseCanvas.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "BaseCanvasEventHandler.h"
-
-#include <wx/glcanvas.h>
+#include "BaseCanvas.h"
 
 namespace mp {
 
+//#################### CONSTRUCTORS ####################
+BaseCanvas::BaseCanvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
+:	Canvas(parent, context, attribList, id, pos, size, style)
+{}
+
 //#################### PUBLIC METHODS ####################
-void BaseCanvasEventHandler::render(wxPaintDC& dc) const
+void BaseCanvas::render(wxPaintDC& dc) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

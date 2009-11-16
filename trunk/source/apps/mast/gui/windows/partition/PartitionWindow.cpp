@@ -10,8 +10,8 @@
 
 #include <common/dicom/volumes/Volume.h>
 #include <mast/util/StringConversion.h>
-#include "PartitionCanvasEventHandler.h"
-#include "StratumCanvasEventHandler.h"
+#include "PartitionCanvas.h"
+#include "StratumCanvas.h"
 
 namespace mp {
 
@@ -45,9 +45,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	};
 
 	// Top left
-	m_stratumCanvas = new wxGLCanvas(top, context, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight),
-									 wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS, wxGLCanvasName, attribList);
-	m_stratumCanvas->SetEventHandler(new StratumCanvasEventHandler);
+	m_stratumCanvas = new StratumCanvas(top, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
 	topSizer->Add(m_stratumCanvas);
 
 	// Top middle
@@ -64,9 +62,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	wxPanel *right = new wxPanel(top);
 	wxBoxSizer *rightSizer = new wxBoxSizer(wxVERTICAL);
 	right->SetSizer(rightSizer);
-		m_partitionCanvas = new wxGLCanvas(right, get_context(), wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight),
-										   wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS, wxGLCanvasName, attribList);
-		m_partitionCanvas->SetEventHandler(new PartitionCanvasEventHandler);
+		m_partitionCanvas = new PartitionCanvas(right, get_context(), attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
 		rightSizer->Add(m_partitionCanvas);
 
 		wxPanel *bottom = new wxPanel(right);
