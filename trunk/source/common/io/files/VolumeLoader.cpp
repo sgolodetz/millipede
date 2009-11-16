@@ -16,6 +16,7 @@ using boost::lexical_cast;
 #include <itkJoinSeriesImageFilter.h>
 #include <itkMetaDataObject.h>
 #include <itkRegionOfInterestImageFilter.h>
+#include <itkShiftScaleImageFilter.h>
 
 #include <common/dicom/directories/DICOMDirectory.h>
 #include <common/dicom/volumes/Volume.h>
@@ -50,6 +51,7 @@ try
 	typedef itk::JoinSeriesImageFilter<Image2D,Image3D> Joiner;
 	typedef itk::ImageFileReader<Image2D> Reader;
 	typedef itk::RegionOfInterestImageFilter<Image2D,Image2D> RegionExtractor;
+	typedef itk::ShiftScaleImageFilter<Image2D,Image2D> ShiftScaler;
 
 	// Set up the desired region for each of the slices.
 	Image2D::RegionType region;
@@ -92,8 +94,31 @@ try
 		extractor->SetRegionOfInterest(region);
 		extractor->Update();
 
+		// Scale and shift the image to get the actual Hounsfield units.
+		double rescaleSlope = 1, rescaleIntercept = 0;	// default values in case they're not provided in the image file
+		try
+		{
+			rescaleSlope = lexical_cast<double>(read_header_field(reader->GetOutput(), "0028|1053"));
+			rescaleIntercept = lexical_cast<double>(read_header_field(reader->GetOutput(), "0028|1052"));
+		}
+		catch(bad_lexical_cast&)	{ throw Exception("The rescale slope/intercept for the slice were not of the appropriate type"); }
+
+		// Note:	The shift-scaler in ITK annoyingly does the shifting *before* the scaling, which is not what we want.
+		//			To avoid this, we split the transformation into two.
+		ShiftScaler::Pointer scaler = ShiftScaler::New();
+		scaler->SetInput(extractor->GetOutput());
+		scaler->SetScale(rescaleSlope);
+		scaler->SetShift(0);
+		scaler->Update();
+
+		ShiftScaler::Pointer shifter = ShiftScaler::New();
+		shifter->SetInput(scaler->GetOutput());
+		shifter->SetScale(1);
+		shifter->SetShift(rescaleIntercept);
+		shifter->Update();
+
 		// Store the image.
-		images[i] = extractor->GetOutput();
+		images[i] = shifter->GetOutput();
 		images[i]->SetMetaDataDictionary(reader->GetMetaDataDictionary());
 	}
 
