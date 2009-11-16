@@ -15,6 +15,7 @@ using boost::lexical_cast;
 #include <itkImageFileReader.h>
 #include <itkJoinSeriesImageFilter.h>
 #include <itkMetaDataObject.h>
+#include <itkRegionOfInterestImageFilter.h>
 
 #include <common/dicom/directories/DICOMDirectory.h>
 #include <common/dicom/volumes/Volume.h>
@@ -48,6 +49,18 @@ try
 	typedef itk::Image<signed int,3> Image3D;
 	typedef itk::JoinSeriesImageFilter<Image2D,Image3D> Joiner;
 	typedef itk::ImageFileReader<Image2D> Reader;
+	typedef itk::RegionOfInterestImageFilter<Image2D,Image2D> RegionExtractor;
+
+	// Set up the desired region for each of the slices.
+	Image2D::RegionType region;
+	Image2D::IndexType index;
+	index[0] = m_volumeChoice.minX;
+	index[1] = m_volumeChoice.minY;
+	Image2D::SizeType size;
+	size[0] = m_volumeChoice.maxX + 1 - m_volumeChoice.minX;
+	size[1] = m_volumeChoice.maxY + 1 - m_volumeChoice.minY;
+	region.SetIndex(index);
+	region.SetSize(size);
 
 	std::vector<std::string> imageFilenames = m_dicomdir->image_filenames(m_volumeChoice.patientKey, m_volumeChoice.studyKey, m_volumeChoice.seriesKey);
 	std::vector<Image2D::Pointer> images(imageFilenames.size());
@@ -72,7 +85,16 @@ try
 		ImageIO::Pointer gdcmImageIO = ImageIO::New();
 		reader->SetImageIO(gdcmImageIO);
 		reader->Update();
-		images[i] = reader->GetOutput();
+
+		// Extract the relevant sub-region.
+		RegionExtractor::Pointer extractor = RegionExtractor::New();
+		extractor->SetInput(reader->GetOutput());
+		extractor->SetRegionOfInterest(region);
+		extractor->Update();
+
+		// Store the image.
+		images[i] = extractor->GetOutput();
+		images[i]->SetMetaDataDictionary(reader->GetMetaDataDictionary());
 	}
 
 	// Make the images into a volume.
