@@ -8,6 +8,7 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
+#include <common/dicom/volumes/Volume.h>
 #include <mast/util/StringConversion.h>
 #include "PartitionCanvasEventHandler.h"
 #include "StratumCanvasEventHandler.h"
@@ -19,6 +20,8 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
 	m_oldViewLocation(-1, -1), m_viewLocation(new ViewLocation(-1, -1)), m_volume(volume)
 {
+	calculate_canvas_size();
+
 	Show();
 
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
@@ -42,7 +45,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	};
 
 	// Top left
-	m_stratumCanvas = new wxGLCanvas(top, context, wxID_ANY, wxDefaultPosition, wxSize(CANVAS_WIDTH, CANVAS_HEIGHT),
+	m_stratumCanvas = new wxGLCanvas(top, context, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight),
 									 wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS, wxGLCanvasName, attribList);
 	m_stratumCanvas->SetEventHandler(new StratumCanvasEventHandler);
 	topSizer->Add(m_stratumCanvas);
@@ -61,7 +64,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	wxPanel *right = new wxPanel(top);
 	wxBoxSizer *rightSizer = new wxBoxSizer(wxVERTICAL);
 	right->SetSizer(rightSizer);
-		m_partitionCanvas = new wxGLCanvas(right, get_context(), wxID_ANY, wxDefaultPosition, wxSize(CANVAS_WIDTH, CANVAS_HEIGHT),
+		m_partitionCanvas = new wxGLCanvas(right, get_context(), wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight),
 										   wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS, wxGLCanvasName, attribList);
 		m_partitionCanvas->SetEventHandler(new PartitionCanvasEventHandler);
 		rightSizer->Add(m_partitionCanvas);
@@ -95,6 +98,17 @@ wxGLContext *PartitionWindow::get_context() const
 }
 
 //#################### PRIVATE METHODS ####################
+void PartitionWindow::calculate_canvas_size()
+{
+	// We want our canvases to be at least 512x512, but beyond that their size should be dictated by the sizes
+	// of the images. We want to be able to show the images in axial (X-Y), sagittal (Y-Z) and coronal (X-Z)
+	// orientations, which dictates which dimensions we need to take into account for the canvas sizes.
+
+	Volume::Size volumeSize = m_volume->size();
+	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
+	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
+}
+
 void PartitionWindow::setup_canvas(wxGLCanvas *canvas)
 {
 	canvas->SetCurrent();
@@ -114,12 +128,12 @@ void PartitionWindow::setup_canvas(wxGLCanvas *canvas)
 
 	glClearColor(0, 0, 0, 0);
 
-	glViewport(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+	glViewport(0, 0, m_canvasWidth, m_canvasHeight);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glOrtho(0, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0.0, 2048.0);
+	glOrtho(0, m_canvasWidth, m_canvasHeight, 0, 0.0, 2048.0);
 }
 
 }

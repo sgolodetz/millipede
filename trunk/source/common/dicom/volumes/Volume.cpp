@@ -18,6 +18,11 @@ Volume::ImageCPointer Volume::base_image() const
 	return ImageCPointer(m_baseImage);
 }
 
+Volume::Size Volume::size() const
+{
+	return m_baseImage->GetLargestPossibleRegion().GetSize();
+}
+
 Volume::ImageCPointer Volume::windowed_image(const WindowSettings& windowSettings) const
 {
 	// NYI

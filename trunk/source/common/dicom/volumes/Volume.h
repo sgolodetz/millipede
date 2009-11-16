@@ -20,6 +20,7 @@ public:
 	typedef itk::Image<signed int,3> Image;
 	typedef Image::Pointer ImagePointer;
 	typedef Image::ConstPointer ImageCPointer;
+	typedef Image::SizeType Size;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -32,6 +33,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	ImageCPointer base_image() const;
+	Size size() const;
 	ImageCPointer windowed_image(const WindowSettings& windowSettings) const;
 };
 

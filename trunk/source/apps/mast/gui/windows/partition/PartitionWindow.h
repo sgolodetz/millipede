@@ -21,16 +21,6 @@ typedef shared_ptr<class Volume> Volume_Ptr;
 
 class PartitionWindow : public wxFrame
 {
-	//#################### ENUMERATIONS ####################
-private:
-	enum	// TEMPORARY
-	{
-		CANVAS_WIDTH = 512,
-		CANVAS_HEIGHT = 512,
-		IMAGE_WIDTH = 512,
-		IMAGE_HEIGHT = 512
-	};
-
 	//#################### NESTED CLASSES ####################
 private:
 	struct ViewLocation
@@ -47,6 +37,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
 	ViewLocation m_oldViewLocation;		// the stratum and layer which were being viewed before the user started scrolling the slider (-1 when not scrolling)
 	ViewLocation_Ptr m_viewLocation;
@@ -75,6 +66,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void calculate_canvas_size();
 	void setup_canvas(wxGLCanvas *canvas);
 
 	//#################### EVENT HANDLERS ####################
