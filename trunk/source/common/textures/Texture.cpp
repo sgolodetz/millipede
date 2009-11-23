@@ -5,7 +5,13 @@
 
 #include "Texture.h"
 
-#define GL_CLAMP_TO_EDGE 0x812F		// this wrapping mode is only defined in OpenGL 1.2, so it's not in the normal header (unfortunately)
+#ifndef GL_CLAMP_TO_EDGE
+	#define GL_CLAMP_TO_EDGE 0x812F		// this wrapping mode is only defined in OpenGL 1.2, so it's not necessarily in the header (unfortunately)
+#endif
+
+#ifndef GL_GENERATE_MIPMAP
+	#define GL_GENERATE_MIPMAP 0x8191	// this isn't in the normal header either
+#endif
 
 namespace mp {
 
