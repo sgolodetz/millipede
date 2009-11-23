@@ -26,7 +26,7 @@ void Greyscale8ImageTexture::reload_image() const
 	Image::SizeType size = m_image->GetLargestPossibleRegion().GetSize();
 
 	// Pad the image so that its dimensions are powers of two if necessary.
-	int desiredWidth = 1, desiredHeight = 1;
+	unsigned int desiredWidth = 1, desiredHeight = 1;
 	while(desiredWidth < size[0]) desiredWidth *= 2;
 	while(desiredHeight < size[1]) desiredHeight *= 2;
 	if(desiredWidth != size[0] || desiredHeight != size[1])
@@ -53,11 +53,11 @@ void Greyscale8ImageTexture::reload_image() const
 		paster->SetDestinationIndex(index);
 		paster->Update();
 
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 1, desiredWidth, desiredHeight, GL_LUMINANCE, GL_UNSIGNED_BYTE, paster->GetOutput()->GetBufferPointer());
+		glTexImage2D(GL_TEXTURE_2D, 0, 1, desiredWidth, desiredHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, paster->GetOutput()->GetBufferPointer());
 	}
 	else
 	{
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 1, size[0], size[1], GL_LUMINANCE, GL_UNSIGNED_BYTE, m_image->GetBufferPointer());
+		glTexImage2D(GL_TEXTURE_2D, 0, 1, size[0], size[1], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, m_image->GetBufferPointer());
 	}
 }
 
