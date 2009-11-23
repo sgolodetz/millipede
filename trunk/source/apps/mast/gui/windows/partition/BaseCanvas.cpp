@@ -5,6 +5,10 @@
 
 #include "BaseCanvas.h"
 
+#include <common/dicom/volumes/VolumeTextureSet.h>
+#include <common/textures/Texture.h>
+#include "ViewedVolumeModel.h"
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -22,18 +26,42 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glTranslated(0, 0, -256);
 
-	// Draw a cross to indicate that it's deliberate that no image is being displayed.
-	glColor3d(1,1,1);
-	glBegin(GL_LINES);
-		glVertex2d(0,0);
-		glVertex2d(511,511);
-		glVertex2d(511,0);
-		glVertex2d(0,511);
-	glEnd();
+	glPushAttrib(GL_ENABLE_BIT);
+
+	if(m_model && m_model->m_textureSet)
+	{
+		// TEMPORARY
+		Texture_CPtr texture = m_model->m_textureSet->xy_texture(0);
+
+		glEnable(GL_TEXTURE_2D);
+		texture->bind();
+		glColor3d(1,1,1);
+		glBegin(GL_QUADS);
+			glTexCoord2d(0,0);	glVertex2d(0,0);
+			glTexCoord2d(1,0);	glVertex2d(511,0);
+			glTexCoord2d(1,1);	glVertex2d(511,511);
+			glTexCoord2d(0,1);	glVertex2d(0,511);
+		glEnd();
+	}
+	else
+	{
+		// Draw a cross to indicate that it's deliberate that no image is being displayed.
+		glColor3d(1,1,1);
+		glBegin(GL_LINES);
+			glVertex2d(0,0);
+			glVertex2d(511,511);
+			glVertex2d(511,0);
+			glVertex2d(0,511);
+		glEnd();
+	}
+
+	glPopAttrib();
 }
 
-void BaseCanvas::setup()
+void BaseCanvas::setup(const ViewedVolumeModel_Ptr& model)
 {
+	m_model = model;
+
 	SetCurrent();
 
 	int width, height;

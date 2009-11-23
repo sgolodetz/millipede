@@ -9,17 +9,22 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/Volume.h>
+#include <common/dicom/volumes/VolumeTextureSet.h>
 #include <mast/util/StringConversion.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
+#include "ViewedVolumeModel.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, wxGLContext *context)
+PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_oldViewLocation(-1, -1), m_viewLocation(new ViewLocation(-1, -1)), m_volume(volume)
+	m_model(new ViewedVolumeModel), m_oldViewLocation(-1, -1), m_volumeChoice(volumeChoice)
 {
+	m_model->m_viewLocation.reset(new ViewedVolumeModel::ViewLocation(-1, -1));
+	m_model->m_volume = volume;
+
 	calculate_canvas_size();
 
 	Show();
@@ -81,10 +86,12 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 
 	// TODO
 
+	m_model->m_textureSet.reset(new VolumeTextureSet(m_model->m_volume, m_volumeChoice.windowSettings));
+
 	sizer->Fit(this);
 
-	m_stratumCanvas->setup();
-	m_partitionCanvas->setup();
+	m_stratumCanvas->setup(m_model);
+	m_partitionCanvas->setup(m_model);
 }
 
 //#################### PUBLIC METHODS ####################
@@ -100,7 +107,7 @@ void PartitionWindow::calculate_canvas_size()
 	// of the images. We want to be able to show the images in axial (X-Y), sagittal (Y-Z) and coronal (X-Z)
 	// orientations, which dictates which dimensions we need to take into account for the canvas sizes.
 
-	Volume::Size volumeSize = m_volume->size();
+	Volume::Size volumeSize = m_model->m_volume->size();
 	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
 }

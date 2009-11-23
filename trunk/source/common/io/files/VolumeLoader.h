@@ -50,6 +50,7 @@ public:
 	int progress() const;
 	std::string status() const;
 	const Volume_Ptr& volume();
+	const VolumeChoice& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

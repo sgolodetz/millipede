@@ -12,7 +12,9 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 Greyscale8ImageTexture::Greyscale8ImageTexture(const ImageCPointer& image, bool clamp)
 :	Texture(clamp), m_image(image)
-{}
+{
+	reload();
+}
 
 //#################### PROTECTED METHODS ####################
 void Greyscale8ImageTexture::reload_image() const

@@ -184,6 +184,11 @@ const Volume_Ptr& VolumeLoader::volume()
 	return m_volume;
 }
 
+const VolumeChoice& VolumeLoader::volume_choice() const
+{
+	return m_volumeChoice;
+}
+
 //#################### PRIVATE METHODS ####################
 std::string VolumeLoader::read_header_field(const itk::Image<signed int,2>::Pointer& image, const std::string& key)
 {

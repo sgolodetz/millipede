@@ -38,7 +38,7 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 
 		size[0] = volumeSize[0];
 		size[1] = volumeSize[1];
-		size[2] = 1;
+		size[2] = 0;
 		region.SetSize(size);
 
 		extractor->SetExtractionRegion(region);
@@ -59,7 +59,7 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 		region.SetIndex(index);
 
 		size[0] = volumeSize[0];
-		size[1] = 1;
+		size[1] = 0;
 		size[2] = volumeSize[2];
 		region.SetSize(size);
 
@@ -80,7 +80,7 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 		index[2] = 0;
 		region.SetIndex(index);
 
-		size[0] = 1;
+		size[0] = 0;
 		size[1] = volumeSize[1];
 		size[2] = volumeSize[2];
 		region.SetSize(size);
@@ -90,6 +90,25 @@ VolumeTextureSet::VolumeTextureSet(const Volume_CPtr& volume, const WindowSettin
 
 		m_yzTextures.push_back(TextureFactory::create_texture(extractor->GetOutput()));
 	}
+}
+
+//#################### PUBLIC METHODS ####################
+Texture_CPtr VolumeTextureSet::xy_texture(int n) const
+{
+	assert(0 <= n && n < static_cast<int>(m_xyTextures.size()));
+	return m_xyTextures[n];
+}
+
+Texture_CPtr VolumeTextureSet::xz_texture(int n) const
+{
+	assert(0 <= n && n < static_cast<int>(m_xzTextures.size()));
+	return m_xzTextures[n];
+}
+
+Texture_CPtr VolumeTextureSet::yz_texture(int n) const
+{
+	assert(0 <= n && n < static_cast<int>(m_yzTextures.size()));
+	return m_yzTextures[n];
 }
 
 }

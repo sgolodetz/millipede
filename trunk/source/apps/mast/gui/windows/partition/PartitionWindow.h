@@ -14,12 +14,16 @@ using boost::shared_ptr;
 #include <wx/listctrl.h>
 #include <wx/slider.h>
 
+#include <common/io/util/VolumeChoice.h>
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 class PartitionCanvas;
 class StratumCanvas;
+typedef shared_ptr<struct ViewedVolumeModel> ViewedVolumeModel_Ptr;
 typedef shared_ptr<class Volume> Volume_Ptr;
+typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
 class PartitionWindow : public wxFrame
 {
@@ -41,9 +45,9 @@ private:
 private:
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
+	ViewedVolumeModel_Ptr m_model;
 	ViewLocation m_oldViewLocation;		// the stratum and layer which were being viewed before the user started scrolling the slider (-1 when not scrolling)
-	ViewLocation_Ptr m_viewLocation;
-	Volume_Ptr m_volume;
+	VolumeChoice m_volumeChoice;
 
 	// Top Left
 	StratumCanvas *m_stratumCanvas;
@@ -60,7 +64,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, wxGLContext *context = NULL);
+	PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:

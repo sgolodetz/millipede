@@ -49,6 +49,7 @@ gui/windows/partition/BaseCanvas.h
 gui/windows/partition/PartitionCanvas.h
 gui/windows/partition/PartitionWindow.h
 gui/windows/partition/StratumCanvas.h
+gui/windows/partition/ViewedVolumeModel.h
 )
 
 ##
