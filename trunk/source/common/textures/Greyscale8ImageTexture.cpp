@@ -5,8 +5,6 @@
 
 #include "Greyscale8ImageTexture.h"
 
-#include <GL/glu.h>
-
 #include <itkPasteImageFilter.h>
 
 namespace mp {

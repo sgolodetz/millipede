@@ -55,8 +55,11 @@ void Texture::reload() const
 
 	glBindTexture(GL_TEXTURE_2D, id);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+	// Enable trilinear filtering for this texture when minifying.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	// Clamp the texture if necessary (useful for things like lightmaps, for example).
 	if(m_clamp)
