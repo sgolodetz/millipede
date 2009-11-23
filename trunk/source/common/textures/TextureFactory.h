@@ -21,11 +21,11 @@ class TextureFactory
 	//#################### TYPEDEFS ####################
 private:
 	typedef itk::Image<unsigned char,2> Greyscale8Image;
-	typedef itk::Image<unsigned char,2>::ConstPointer Greyscale8ImageCPointer;
+	typedef itk::Image<unsigned char,2>::Pointer Greyscale8ImagePointer;
 
 	//#################### PUBLIC METHODS ####################
 public:
-	static Texture_Ptr create_texture(const Greyscale8ImageCPointer& image, bool clamp = true);
+	static Texture_Ptr create_texture(const Greyscale8ImagePointer& image, bool clamp = true);
 
 	//#################### PRIVATE METHODS ####################
 private:

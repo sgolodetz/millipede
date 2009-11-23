@@ -20,15 +20,15 @@ class Greyscale8ImageTexture : public Texture
 	//#################### TYPEDEFS ####################
 private:
 	typedef itk::Image<unsigned char,2> Image;
-	typedef Image::ConstPointer ImageCPointer;
+	typedef Image::Pointer ImagePointer;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	ImageCPointer m_image;
+	ImagePointer m_image;
 
 	//#################### CONSTRUCTORS ####################
 protected:
-	Greyscale8ImageTexture(const ImageCPointer& image, bool clamp);
+	Greyscale8ImageTexture(const ImagePointer& image, bool clamp);
 
 	//#################### PROTECTED METHODS ####################
 protected:
