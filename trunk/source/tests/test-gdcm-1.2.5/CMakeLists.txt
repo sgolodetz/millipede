@@ -18,49 +18,29 @@ SET(sources main.cpp)
 
 SOURCE_GROUP(.cpp FILES ${sources})
 
-#############
-# Find GDCM #
-#############
+################################
+# Specify the libraries to use #
+################################
 
-FIND_PACKAGE(GDCM REQUIRED)
-IF(GDCM_FOUND)
-	INCLUDE(${GDCM_USE_FILE})
-ELSE(GDCM_FOUND)
-	MESSAGE(FATAL_ERROR "GDCM not found. Please set GDCM_DIR.")
-ENDIF(GDCM_FOUND)
-
-###############################
-# Specify the necessary paths #
-###############################
-
-INCLUDE_DIRECTORIES(
-)
+INCLUDE(${millipede_SOURCE_DIR}/UseGDCM.cmake)
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/bin/tests/${targetname}/bin)
-ADD_EXECUTABLE(${targetname} ${sources})
-IF(MSVC_IDE)
-	# A hack to get around the "Debug" and "Release" directories Visual Studio tries to add
-    SET_TARGET_PROPERTIES(${targetname} PROPERTIES PREFIX "../")
-    SET_TARGET_PROPERTIES(${targetname} PROPERTIES IMPORT_PREFIX "../")
-ENDIF(MSVC_IDE)
+INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 
-###########################################
-# Specify the necessary libraries to link #
-###########################################
+#################################
+# Specify the libraries to link #
+#################################
 
-TARGET_LINK_LIBRARIES(${targetname} gdcm)
+INCLUDE(${millipede_SOURCE_DIR}/LinkGDCM.cmake)
 
 ##########################
 # Specify resource files #
 ##########################
 
-SET(resources
-DICOMDIR
-)
+SET(resources DICOMDIR)
 
 #########################################
 # Copy resource files to the build tree #

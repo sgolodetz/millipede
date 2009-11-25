@@ -18,19 +18,11 @@ SET(sources main.cpp)
 
 SOURCE_GROUP(.cpp FILES ${sources})
 
-##############
-# Find Boost #
-##############
+################################
+# Specify the libraries to use #
+################################
 
-SET(Boost_ADDITIONAL_VERSIONS "1.39" "1.39.0")
-SET(BOOST_ROOT ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0)
-SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost 1.39.0 REQUIRED)
-IF(Boost_FOUND)
-	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-ELSE(Boost_FOUND)
-	MESSAGE(FATAL_ERROR "Boost not found. Please set the directories manually using the advanced view in CMake.")
-ENDIF(Boost_FOUND)
+INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
 
 ###############################
 # Specify the necessary paths #
@@ -44,17 +36,11 @@ ${millipede_SOURCE_DIR}
 # Specify the target and where to put it #
 ##########################################
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/bin/tests/${targetname}/bin)
-ADD_EXECUTABLE(${targetname} ${sources})
-IF(MSVC_IDE)
-	# A hack to get around the "Debug" and "Release" directories Visual Studio tries to add
-    SET_TARGET_PROPERTIES(${targetname} PROPERTIES PREFIX "../")
-    SET_TARGET_PROPERTIES(${targetname} PROPERTIES IMPORT_PREFIX "../")
-ENDIF(MSVC_IDE)
+INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 
-###########################################
-# Specify the necessary libraries to link #
-###########################################
+#################################
+# Specify the libraries to link #
+#################################
 
 TARGET_LINK_LIBRARIES(${targetname} common)
 

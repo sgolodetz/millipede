@@ -116,59 +116,14 @@ SOURCE_GROUP(gui\\windows\\partition\\.h FILES ${gui_windows_partition_headers})
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
-##############
-# Find Boost #
-##############
+################################
+# Specify the libraries to use #
+################################
 
-SET(Boost_ADDITIONAL_VERSIONS "1.39" "1.39.0")
-SET(BOOST_ROOT ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0)
-SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost 1.39.0 REQUIRED COMPONENTS thread)
-IF(Boost_FOUND)
-	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-	LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-ELSE(Boost_FOUND)
-	MESSAGE(FATAL_ERROR "Boost not found. Please set the directories manually using the advanced view in CMake.")
-ENDIF(Boost_FOUND)
-
-#############
-# Find GDCM #
-#############
-
-FIND_PACKAGE(GDCM REQUIRED)
-IF(GDCM_FOUND)
-	INCLUDE(${GDCM_USE_FILE})
-ELSE(GDCM_FOUND)
-	MESSAGE(FATAL_ERROR "GDCM not found. Please set GDCM_DIR.")
-ENDIF(GDCM_FOUND)
-
-############
-# Find ITK #
-############
-
-FIND_PACKAGE(ITK)
-IF(ITK_FOUND)
-	INCLUDE(${ITK_USE_FILE})
-ELSE(ITK_FOUND)
-	MESSAGE(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
-ENDIF(ITK_FOUND)
-
-###############
-# Find OpenGL #
-###############
-
-FIND_PACKAGE(OpenGL)
-
-##################
-# Find wxWidgets #
-##################
-
-FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS gl core base)
-IF(wxWidgets_FOUND)
-	INCLUDE(${wxWidgets_USE_FILE})
-ELSE(wxWidgets_FOUND)
-	MESSAGE(FATAL_ERROR "wxWidgets not found.")
-ENDIF(wxWidgets_FOUND)
+INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseGDCM.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseWxWidgets.cmake)
 
 ###############################
 # Specify the necessary paths #
@@ -194,11 +149,14 @@ IF(MSVC_IDE)
 	SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 ENDIF(MSVC_IDE)
 
-###########################################
-# Specify the necessary libraries to link #
-###########################################
+#################################
+# Specify the libraries to link #
+#################################
 
-TARGET_LINK_LIBRARIES(${targetname} common ${Boost_LIBRARIES} gdcm ITKAlgorithms ITKCommon ITKIO ${OPENGL_LIBRARY} ${wxWidgets_LIBRARIES})
+TARGET_LINK_LIBRARIES(${targetname} common)
+INCLUDE(${millipede_SOURCE_DIR}/LinkBoost.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/LinkWxWidgets.cmake)
 
 #############################
 # Specify things to install #
