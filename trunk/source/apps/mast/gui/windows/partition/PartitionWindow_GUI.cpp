@@ -22,6 +22,9 @@ enum
 {
 	ID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	BUTTONID_CREATE_TEXTURES,
+	BUTTONID_VIEW_XY,
+	BUTTONID_VIEW_XZ,
+	BUTTONID_VIEW_YZ,
 };
 
 }
@@ -86,13 +89,13 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	wxPanel *middle = new wxPanel(this);
 	wxBoxSizer *middleSizer = new wxBoxSizer(wxVERTICAL);
 	middle->SetSizer(middleSizer);
-		wxButton *viewXYButton = new wxButton(middle, wxID_ANY, wxT("View X-Y (usually Axial)"));
+		wxButton *viewXYButton = new wxButton(middle, BUTTONID_VIEW_XY, wxT("View X-Y (usually Axial)"));
 		middleSizer->Add(viewXYButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
-		wxButton *viewXZButton = new wxButton(middle, wxID_ANY, wxT("View X-Z (usually Coronal)"));
+		wxButton *viewXZButton = new wxButton(middle, BUTTONID_VIEW_XZ, wxT("View X-Z (usually Coronal)"));
 		middleSizer->Add(viewXZButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
-		wxButton *viewYZButton = new wxButton(middle, wxID_ANY, wxT("View Y-Z (usually Sagittal)"));
+		wxButton *viewYZButton = new wxButton(middle, BUTTONID_VIEW_YZ, wxT("View Y-Z (usually Sagittal)"));
 		middleSizer->Add(viewYZButton, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middle);
 
@@ -116,10 +119,31 @@ void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 	boost::thread textureCreatorThread(boost::bind(&PartitionWindow::texture_creator_thread, this));
 }
 
+void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
+{
+	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XY;
+	refresh_canvases();
+}
+
+void PartitionWindow::OnButtonViewXZ(wxCommandEvent&)
+{
+	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XZ;
+	refresh_canvases();
+}
+
+void PartitionWindow::OnButtonViewYZ(wxCommandEvent&)
+{
+	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_YZ;
+	refresh_canvases();
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	EVT_BUTTON(BUTTONID_CREATE_TEXTURES, PartitionWindow::OnButtonCreateTextures)
+	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionWindow::OnButtonViewXY)
+	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionWindow::OnButtonViewXZ)
+	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionWindow::OnButtonViewYZ)
 END_EVENT_TABLE()
 
 }

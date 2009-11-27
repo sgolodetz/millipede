@@ -6,6 +6,7 @@
 #include "BaseCanvas.h"
 
 #include <common/dicom/volumes/VolumeTextureSet.h>
+#include <common/exceptions/Exception.h>
 #include <common/textures/Texture.h>
 #include "ViewedVolumeModel.h"
 
@@ -31,7 +32,21 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	if(m_model && m_model->m_textureSet)
 	{
 		// TEMPORARY
-		Texture_CPtr texture = m_model->m_textureSet->xy_texture(0);
+		Texture_CPtr texture;
+		switch(m_model->m_viewOrientation)
+		{
+		case ViewedVolumeModel::ORIENT_XY:
+			texture = m_model->m_textureSet->xy_texture(m_model->m_viewLocation->z);
+			break;
+		case ViewedVolumeModel::ORIENT_XZ:
+			texture = m_model->m_textureSet->xz_texture(m_model->m_viewLocation->y);
+			break;
+		case ViewedVolumeModel::ORIENT_YZ:
+			texture = m_model->m_textureSet->yz_texture(m_model->m_viewLocation->x);
+			break;
+		default:
+			throw Exception("Unexpected view orientation");
+		}
 
 		glEnable(GL_TEXTURE_2D);
 		texture->bind();

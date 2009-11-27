@@ -19,6 +19,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	m_model(new ViewedVolumeModel), m_oldViewLocation(-1, -1, -1), m_volumeChoice(volumeChoice)
 {
 	m_model->m_viewLocation.reset(new ViewLocation(volumeChoice.minX, volumeChoice.minY, volumeChoice.minZ));
+	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XY;
 	m_model->m_volume = volume;
 
 	calculate_canvas_size();

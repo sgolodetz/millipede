@@ -17,6 +17,14 @@ typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
 struct ViewedVolumeModel
 {
+	//#################### ENUMERATIONS ####################
+	enum ViewOrientation
+	{
+		ORIENT_XY,
+		ORIENT_XZ,
+		ORIENT_YZ,
+	};
+
 	//#################### NESTED CLASSES ####################
 	struct ViewLocation
 	{
@@ -30,6 +38,7 @@ struct ViewedVolumeModel
 
 	//#################### PUBLIC VARIABLES ####################
 	ViewLocation_Ptr m_viewLocation;
+	ViewOrientation m_viewOrientation;
 	Volume_Ptr m_volume;
 	VolumeTextureSet_Ptr m_textureSet;
 };

@@ -69,6 +69,9 @@ private:
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	void OnButtonCreateTextures(wxCommandEvent&);
+	void OnButtonViewXY(wxCommandEvent&);
+	void OnButtonViewXZ(wxCommandEvent&);
+	void OnButtonViewYZ(wxCommandEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
