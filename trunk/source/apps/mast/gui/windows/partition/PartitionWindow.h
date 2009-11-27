@@ -46,6 +46,7 @@ private:
 
 	// Middle right
 	PartitionCanvas *m_partitionCanvas;
+	wxSlider *m_layerSlider;
 
 	// Bottom
 	wxListCtrl *m_regionInfo;

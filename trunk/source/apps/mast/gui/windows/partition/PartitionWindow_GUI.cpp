@@ -66,7 +66,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleLeftSizer->Add(m_stratumCanvas);
 
 		wxPanel *middleLeftBottom = new wxPanel(middleLeft);
-		wxFlexGridSizer *middleLeftBottomSizer = new wxFlexGridSizer(3, 2, 0, 0);
+		wxFlexGridSizer *middleLeftBottomSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
@@ -105,6 +105,15 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	middleRight->SetSizer(middleRightSizer);
 		m_partitionCanvas = new PartitionCanvas(middleRight, get_context(), attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
 		middleRightSizer->Add(m_partitionCanvas);
+
+		wxPanel *middleRightBottom = new wxPanel(middleRight);
+		wxFlexGridSizer *middleRightBottomSizer = new wxFlexGridSizer(0, 2, 0, 0);
+		middleRightBottom->SetSizer(middleRightBottomSizer);
+			wxStaticText *layerText = new wxStaticText(middleRightBottom, wxID_ANY, wxT("Layer: "));
+			middleRightBottomSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
+			m_layerSlider = new wxSlider(middleRightBottom, wxID_ANY, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			middleRightBottomSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
+		middleRightSizer->Add(middleRightBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleRight);
 
 	// TODO

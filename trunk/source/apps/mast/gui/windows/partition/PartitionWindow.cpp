@@ -18,7 +18,11 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
 	m_model(new ViewedVolumeModel), m_oldViewLocation(-1, -1, -1), m_volumeChoice(volumeChoice)
 {
+#if 0
 	m_model->m_viewLocation.reset(new ViewLocation(volumeChoice.minX, volumeChoice.minY, volumeChoice.minZ));
+#else
+	m_model->m_viewLocation.reset(new ViewLocation(256, 256, volumeChoice.minZ));
+#endif
 	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XY;
 	m_model->m_volume = volume;
 
