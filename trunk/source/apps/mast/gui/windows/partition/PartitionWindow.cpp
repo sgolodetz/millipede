@@ -10,16 +10,15 @@
 #include <mast/util/StringConversion.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
-#include "ViewedVolumeModel.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_model(new ViewedVolumeModel), m_oldViewLocation(-1, -1), m_volumeChoice(volumeChoice)
+	m_model(new ViewedVolumeModel), m_oldViewLocation(-1, -1, -1), m_volumeChoice(volumeChoice)
 {
-	m_model->m_viewLocation.reset(new ViewedVolumeModel::ViewLocation(-1, -1));
+	m_model->m_viewLocation.reset(new ViewLocation(volumeChoice.minX, volumeChoice.minY, volumeChoice.minZ));
 	m_model->m_volume = volume;
 
 	calculate_canvas_size();

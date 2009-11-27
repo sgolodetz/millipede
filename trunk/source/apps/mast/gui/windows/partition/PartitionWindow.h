@@ -15,30 +15,21 @@ using boost::shared_ptr;
 #include <wx/slider.h>
 
 #include <common/io/util/VolumeChoice.h>
+#include "ViewedVolumeModel.h"
 
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 class PartitionCanvas;
 class StratumCanvas;
-typedef shared_ptr<struct ViewedVolumeModel> ViewedVolumeModel_Ptr;
 typedef shared_ptr<class Volume> Volume_Ptr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
 class PartitionWindow : public wxFrame
 {
-	//#################### NESTED CLASSES ####################
-private:
-	struct ViewLocation
-	{
-		int stratum;
-		int layer;
-
-		ViewLocation(int stratum_, int layer_) : stratum(stratum_), layer(layer_) {}
-	};
-
 	//#################### TYPEDEFS ####################
 private:
+	typedef ViewedVolumeModel::ViewLocation ViewLocation;
 	typedef shared_ptr<ViewLocation> ViewLocation_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################

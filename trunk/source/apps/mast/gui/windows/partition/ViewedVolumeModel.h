@@ -20,10 +20,9 @@ struct ViewedVolumeModel
 	//#################### NESTED CLASSES ####################
 	struct ViewLocation
 	{
-		int stratum;
-		int layer;
+		int x, y, z;
 
-		ViewLocation(int stratum_, int layer_) : stratum(stratum_), layer(layer_) {}
+		ViewLocation(int x_, int y_, int z_) : x(x_), y(y_), z(z_) {}
 	};
 
 	//#################### TYPEDEFS ####################
@@ -34,6 +33,10 @@ struct ViewedVolumeModel
 	Volume_Ptr m_volume;
 	VolumeTextureSet_Ptr m_textureSet;
 };
+
+//#################### TYPEDEFS ####################
+typedef shared_ptr<ViewedVolumeModel> ViewedVolumeModel_Ptr;
+typedef shared_ptr<const ViewedVolumeModel> ViewedVolumeModel_CPtr;
 
 }
 
