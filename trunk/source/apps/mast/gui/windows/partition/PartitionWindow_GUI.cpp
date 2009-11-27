@@ -33,17 +33,8 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
 
-	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 5, 5);
 	SetSizer(sizer);
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~
-	// Construct the top panel
-	//~~~~~~~~~~~~~~~~~~~~~~~~
-
-	wxPanel *top = new wxPanel(this);
-	wxBoxSizer *topSizer = new wxBoxSizer(wxHORIZONTAL);
-	top->SetSizer(topSizer);
-	sizer->Add(top, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	int attribList[] =
 	{
@@ -54,79 +45,64 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	};
 
 	// Top left
-	wxPanel *topLeft = new wxPanel(top);
-	wxBoxSizer *topLeftSizer = new wxBoxSizer(wxVERTICAL);
-	topLeft->SetSizer(topLeftSizer);
-		wxButton *createTexturesButton = new wxButton(topLeft, BUTTONID_CREATE_TEXTURES, wxT("Create Textures"));
-		topLeftSizer->Add(createTexturesButton, 0, wxALIGN_CENTER_HORIZONTAL);
+	wxButton *createTexturesButton = new wxButton(this, BUTTONID_CREATE_TEXTURES, wxT("Create Textures"));
+	sizer->Add(createTexturesButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
-		m_stratumCanvas = new StratumCanvas(topLeft, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
-		topLeftSizer->Add(m_stratumCanvas);
-	topSizer->Add(topLeft);
-
-	// Space between the panels
-	topSizer->AddSpacer(10);
+	// Top middle
+	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
 
 	// Top right
-	wxPanel *topRight = new wxPanel(top);
-	wxBoxSizer *topRightSizer = new wxBoxSizer(wxVERTICAL);
-	topRight->SetSizer(topRightSizer);
-		wxButton *segmentVolumeButton = new wxButton(topRight, wxID_ANY, wxT("Segment Volume"));
-		topRightSizer->Add(segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
-
-		m_partitionCanvas = new PartitionCanvas(topRight, get_context(), attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
-		topRightSizer->Add(m_partitionCanvas);
-	topSizer->Add(topRight);
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Construct the middle panel
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	wxPanel *middle = new wxPanel(this);
-	wxBoxSizer *middleSizer = new wxBoxSizer(wxHORIZONTAL);
-	middle->SetSizer(middleSizer);
-	sizer->Add(middle, 0, wxALIGN_CENTER_HORIZONTAL);
+	wxButton *segmentVolumeButton = new wxButton(this, wxID_ANY, wxT("Segment Volume"));
+	sizer->Add(segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	// Middle left
-	wxPanel *middleLeft = new wxPanel(middle);
-	wxFlexGridSizer *middleLeftSizer = new wxFlexGridSizer(2, 3);
+	wxPanel *middleLeft = new wxPanel(this);
+	wxBoxSizer *middleLeftSizer = new wxBoxSizer(wxVERTICAL);
 	middleLeft->SetSizer(middleLeftSizer);
-		wxStaticText *xText = new wxStaticText(middleLeft, wxID_ANY, wxT("X: "));
-		middleLeftSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-		m_xSlider = new wxSlider(middleLeft, wxID_ANY, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-		middleLeftSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
+		m_stratumCanvas = new StratumCanvas(middleLeft, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
+		middleLeftSizer->Add(m_stratumCanvas);
 
-		wxStaticText *yText = new wxStaticText(middleLeft, wxID_ANY, wxT("Y: "));
-		middleLeftSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-		m_ySlider = new wxSlider(middleLeft, wxID_ANY, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-		middleLeftSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
+		wxPanel *middleLeftBottom = new wxPanel(middleLeft);
+		wxFlexGridSizer *middleLeftBottomSizer = new wxFlexGridSizer(3, 2, 0, 0);
+		middleLeftBottom->SetSizer(middleLeftBottomSizer);
+			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
+			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
+			m_xSlider = new wxSlider(middleLeftBottom, wxID_ANY, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
-		wxStaticText *zText = new wxStaticText(middleLeft, wxID_ANY, wxT("Z: "));
-		middleLeftSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-		m_zSlider = new wxSlider(middleLeft, wxID_ANY, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-		middleLeftSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
-	middleSizer->Add(middleLeft, 0, wxALIGN_CENTER_VERTICAL);
+			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
+			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
+			m_ySlider = new wxSlider(middleLeftBottom, wxID_ANY, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
-	// Space between the panels
-	middleSizer->AddSpacer(20);
+			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
+			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
+			m_zSlider = new wxSlider(middleLeftBottom, wxID_ANY, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
+		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(middleLeft);
+
+	// Middle
+	wxPanel *middle = new wxPanel(this);
+	wxBoxSizer *middleSizer = new wxBoxSizer(wxVERTICAL);
+	middle->SetSizer(middleSizer);
+		wxButton *viewXYButton = new wxButton(middle, wxID_ANY, wxT("View X-Y (usually Axial)"));
+		middleSizer->Add(viewXYButton, 0, wxALIGN_CENTER_HORIZONTAL);
+
+		wxButton *viewXZButton = new wxButton(middle, wxID_ANY, wxT("View X-Z (usually Coronal)"));
+		middleSizer->Add(viewXZButton, 0, wxALIGN_CENTER_HORIZONTAL);
+
+		wxButton *viewYZButton = new wxButton(middle, wxID_ANY, wxT("View Y-Z (usually Sagittal)"));
+		middleSizer->Add(viewYZButton, 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(middle);
 
 	// Middle right
-	wxPanel *middleRight = new wxPanel(middle);
+	wxPanel *middleRight = new wxPanel(this);
 	wxBoxSizer *middleRightSizer = new wxBoxSizer(wxVERTICAL);
 	middleRight->SetSizer(middleRightSizer);
-		wxButton *viewXYButton = new wxButton(middleRight, wxID_ANY, wxT("View X-Y (usually Axial)"));
-		middleRightSizer->Add(viewXYButton);
-
-		wxButton *viewXZButton = new wxButton(middleRight, wxID_ANY, wxT("View X-Z (usually Coronal)"));
-		middleRightSizer->Add(viewXZButton);
-
-		wxButton *viewYZButton = new wxButton(middleRight, wxID_ANY, wxT("View Y-Z (usually Sagittal)"));
-		middleRightSizer->Add(viewYZButton);
-	middleSizer->Add(middleRight, 0, wxALIGN_CENTER_VERTICAL);
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Construct the bottom panel
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		m_partitionCanvas = new PartitionCanvas(middleRight, get_context(), attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
+		middleRightSizer->Add(m_partitionCanvas);
+	sizer->Add(middleRight);
 
 	// TODO
 

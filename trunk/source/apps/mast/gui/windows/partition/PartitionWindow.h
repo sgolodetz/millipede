@@ -49,14 +49,12 @@ private:
 	ViewLocation m_oldViewLocation;		// the stratum and layer which were being viewed before the user started scrolling the slider (-1 when not scrolling)
 	VolumeChoice m_volumeChoice;
 
-	// Top Left
+	// Middle left
 	StratumCanvas *m_stratumCanvas;
-
-	// Top Right
-	PartitionCanvas *m_partitionCanvas;
-
-	// Middle
 	wxSlider *m_xSlider, *m_ySlider, *m_zSlider;
+
+	// Middle right
+	PartitionCanvas *m_partitionCanvas;
 
 	// Bottom
 	wxListCtrl *m_regionInfo;
