@@ -6,6 +6,7 @@
 #include "PartitionWindow.h"
 
 #include <common/dicom/volumes/Volume.h>
+#include <common/dicom/volumes/VolumeTextureSet.h>
 #include <mast/util/StringConversion.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
@@ -45,6 +46,18 @@ void PartitionWindow::calculate_canvas_size()
 	Volume::Size volumeSize = m_model->m_volume->size();
 	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
+}
+
+void PartitionWindow::refresh_canvases()
+{
+	m_stratumCanvas->Refresh();
+	m_partitionCanvas->Refresh();
+}
+
+void PartitionWindow::texture_creator_thread()
+{
+	m_model->m_textureSet.reset(new VolumeTextureSet(m_model->m_volume, m_volumeChoice.windowSettings));
+	refresh_canvases();
 }
 
 }

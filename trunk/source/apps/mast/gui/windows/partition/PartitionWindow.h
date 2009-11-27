@@ -52,16 +52,8 @@ private:
 	// Top Left
 	StratumCanvas *m_stratumCanvas;
 
-#if 0
-	// Top Middle
-	wxSlider *m_stratumSlider;
-#endif
-
 	// Top Right
 	PartitionCanvas *m_partitionCanvas;
-#if 0
-	wxSlider *m_layerSlider;
-#endif
 
 	// Middle
 	wxSlider *m_xSlider, *m_ySlider, *m_zSlider;
@@ -80,7 +72,9 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void calculate_canvas_size();
+	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
+	void texture_creator_thread();
 
 	//#################### EVENT HANDLERS ####################
 public:

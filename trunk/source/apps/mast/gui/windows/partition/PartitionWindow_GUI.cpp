@@ -5,14 +5,15 @@
 
 #include "PartitionWindow.h"
 
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
+
 #include <wx/button.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
-#include <common/dicom/volumes/VolumeTextureSet.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
-#include "ViewedVolumeModel.h"
 
 namespace {
 
@@ -92,17 +93,17 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	middleLeft->SetSizer(middleLeftSizer);
 		wxStaticText *xText = new wxStaticText(middleLeft, wxID_ANY, wxT("X: "));
 		middleLeftSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-		m_xSlider = new wxSlider(middleLeft, wxID_ANY, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_xSlider = new wxSlider(middleLeft, wxID_ANY, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		middleLeftSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 		wxStaticText *yText = new wxStaticText(middleLeft, wxID_ANY, wxT("Y: "));
 		middleLeftSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-		m_ySlider = new wxSlider(middleLeft, wxID_ANY, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_ySlider = new wxSlider(middleLeft, wxID_ANY, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		middleLeftSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 		wxStaticText *zText = new wxStaticText(middleLeft, wxID_ANY, wxT("Z: "));
 		middleLeftSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-		m_zSlider = new wxSlider(middleLeft, wxID_ANY, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_zSlider = new wxSlider(middleLeft, wxID_ANY, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		middleLeftSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 	middleSizer->Add(middleLeft, 0, wxALIGN_CENTER_VERTICAL);
 
@@ -133,9 +134,10 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 }
 
 //#################### EVENT HANDLERS ####################
+//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 {
-	m_model->m_textureSet.reset(new VolumeTextureSet(m_model->m_volume, m_volumeChoice.windowSettings));
+	boost::thread textureCreatorThread(boost::bind(&PartitionWindow::texture_creator_thread, this));
 }
 
 //#################### EVENT TABLE ####################
