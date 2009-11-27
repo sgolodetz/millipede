@@ -64,7 +64,6 @@ private:
 	void calculate_canvas_size();
 	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
-	void texture_creator_thread();
 
 	//#################### EVENT HANDLERS ####################
 public:

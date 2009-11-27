@@ -58,11 +58,4 @@ void PartitionWindow::refresh_canvases()
 	m_partitionCanvas->Refresh();
 }
 
-void PartitionWindow::texture_creator_thread()
-{
-	m_stratumCanvas->SetCurrent();
-	m_model->m_textureSet.reset(new VolumeTextureSet(m_model->m_volume, m_volumeChoice.windowSettings));
-	refresh_canvases();
-}
-
 }

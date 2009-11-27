@@ -5,13 +5,11 @@
 
 #include "PartitionWindow.h"
 
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
-
 #include <wx/button.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
+#include <common/dicom/volumes/VolumeTextureSet.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
 
@@ -125,7 +123,8 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 {
-	boost::thread textureCreatorThread(boost::bind(&PartitionWindow::texture_creator_thread, this));
+	m_model->m_textureSet.reset(new VolumeTextureSet(m_model->m_volume, m_volumeChoice.windowSettings));
+	refresh_canvases();
 }
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
