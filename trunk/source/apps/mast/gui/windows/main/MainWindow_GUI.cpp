@@ -1,5 +1,5 @@
 /***
- * mast: MainWindow_Events.cpp
+ * mast: MainWindow_GUI.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
@@ -19,12 +19,12 @@
 #include <mast/util/IOUtil.h>
 #include <mast/util/StringConversion.h>
 
-namespace mp {
+namespace {
 
 //#################### LOCAL CONSTANTS ####################
 enum
 {
-	MENUID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	ID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	MENUID_FILE_EXIT,
 	MENUID_FILE_OPEN,
 	MENUID_FILE_OPEN_DICOMDIR,
@@ -35,6 +35,10 @@ enum
 	MENUID_FILE_SAVE_VOLUMECHOICE,
 	MENUID_HELP_ABOUT,
 };
+
+}
+
+namespace mp {
 
 //#################### PRIVATE METHODS ####################
 void MainWindow::setup_menus()

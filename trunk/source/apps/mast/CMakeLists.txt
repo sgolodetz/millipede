@@ -30,7 +30,7 @@ SET(gui_dialogs_headers gui/dialogs/VolumeChooserDialog.h)
 ##
 SET(gui_windows_main_sources
 gui/windows/main/MainWindow.cpp
-gui/windows/main/MainWindow_Events.cpp
+gui/windows/main/MainWindow_GUI.cpp
 )
 
 SET(gui_windows_main_headers gui/windows/main/MainWindow.h)
@@ -40,7 +40,7 @@ SET(gui_windows_partition_sources
 gui/windows/partition/BaseCanvas.cpp
 gui/windows/partition/PartitionCanvas.cpp
 gui/windows/partition/PartitionWindow.cpp
-gui/windows/partition/PartitionWindow_Events.cpp
+gui/windows/partition/PartitionWindow_GUI.cpp
 gui/windows/partition/StratumCanvas.cpp
 )
 

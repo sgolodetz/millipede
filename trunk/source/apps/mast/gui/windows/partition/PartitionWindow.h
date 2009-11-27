@@ -52,12 +52,19 @@ private:
 	// Top Left
 	StratumCanvas *m_stratumCanvas;
 
+#if 0
 	// Top Middle
 	wxSlider *m_stratumSlider;
+#endif
 
 	// Top Right
 	PartitionCanvas *m_partitionCanvas;
+#if 0
 	wxSlider *m_layerSlider;
+#endif
+
+	// Middle
+	wxSlider *m_xSlider, *m_ySlider, *m_zSlider;
 
 	// Bottom
 	wxListCtrl *m_regionInfo;
@@ -73,10 +80,12 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void calculate_canvas_size();
+	void setup_gui(wxGLContext *context);
 
 	//#################### EVENT HANDLERS ####################
 public:
-	// TODO
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonCreateTextures(wxCommandEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
