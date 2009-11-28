@@ -16,8 +16,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_model(new ViewedVolume(volume, ViewLocation(256, 256, volumeChoice.minZ, 0), ViewedVolume::ORIENT_XY)),	// TEMPORARY: View location
-	m_oldViewLocation(-1, -1, -1, 0), m_volumeChoice(volumeChoice)
+	m_model(new ViewedVolume(volume, ViewLocation(0, 0, 0, 0), ViewedVolume::ORIENT_XY)), m_volumeChoice(volumeChoice)
 {
 	m_model->add_listener(this);
 
@@ -38,6 +37,7 @@ wxGLContext *PartitionWindow::get_context() const
 void PartitionWindow::viewed_volume_changed()
 {
 	refresh_canvases();
+	// TODO: Update slider values
 }
 
 //#################### PRIVATE METHODS ####################

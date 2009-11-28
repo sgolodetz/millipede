@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_PARTITIONWINDOW
 #define H_MILLIPEDE_PARTITIONWINDOW
 
+#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
@@ -38,7 +39,7 @@ private:
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
 	ViewedVolume_Ptr m_model;
-	ViewLocation m_oldViewLocation;		// the stratum and layer which were being viewed before the user started scrolling the slider (-1 when not scrolling)
+	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
 	VolumeChoice m_volumeChoice;
 
 	// Middle left

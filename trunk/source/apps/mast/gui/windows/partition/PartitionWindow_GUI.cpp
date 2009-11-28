@@ -148,17 +148,20 @@ void PartitionWindow::OnButtonViewYZ(wxCommandEvent&)
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnSliderXTrack(wxScrollEvent&)
 {
-	// TODO
+	ViewLocation loc = m_model->view_location();
+	m_model->set_view_location(ViewLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
 }
 
 void PartitionWindow::OnSliderYTrack(wxScrollEvent&)
 {
-	// TODO
+	ViewLocation loc = m_model->view_location();
+	m_model->set_view_location(ViewLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
 }
 
 void PartitionWindow::OnSliderZTrack(wxScrollEvent&)
 {
-	// TODO
+	ViewLocation loc = m_model->view_location();
+	m_model->set_view_location(ViewLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
 }
 
 void PartitionWindow::OnSliderLayerTrack(wxScrollEvent&)
@@ -173,6 +176,12 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionWindow::OnButtonViewXY)
 	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionWindow::OnButtonViewXZ)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionWindow::OnButtonViewYZ)
+
+	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
+	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_X, PartitionWindow::OnSliderXTrack)
+	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_Y, PartitionWindow::OnSliderYTrack)
+	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_Z, PartitionWindow::OnSliderZTrack)
+	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_LAYER, PartitionWindow::OnSliderLayerTrack)
 END_EVENT_TABLE()
 
 }

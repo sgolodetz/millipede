@@ -42,7 +42,7 @@ public:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	ViewLocation m_viewLocation;
+	ViewLocation m_viewLocation;		// view location in terms of the volume only (not based on actual slice numbers)
 	ViewOrientation m_viewOrientation;
 	Volume_Ptr m_volume;
 	VolumeTextureSet_Ptr m_textureSet;
