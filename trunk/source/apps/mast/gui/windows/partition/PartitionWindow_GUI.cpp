@@ -72,17 +72,17 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
 			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);
@@ -113,7 +113,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleRightBottom->SetSizer(middleRightBottomSizer);
 			wxStaticText *layerText = new wxStaticText(middleRightBottom, wxID_ANY, wxT("Layer: "));
 			middleRightBottomSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
-			m_layerSlider = new wxSlider(middleRightBottom, SLIDERID_LAYER, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_layerSlider = new wxSlider(middleRightBottom, SLIDERID_LAYER, 999, 999, 999, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleRightBottomSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
 		middleRightSizer->Add(middleRightBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleRight);

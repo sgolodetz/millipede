@@ -11,7 +11,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 ViewedVolume::ViewedVolume(const Volume_Ptr& volume, const ViewLocation& loc, ViewOrientation ori)
-:	m_volume(volume), m_viewLocation(loc), m_viewOrientation(ori)
+:	m_viewLocation(loc), m_viewOrientation(ori), m_volume(volume)
 {}
 
 //#################### PUBLIC METHODS ####################
