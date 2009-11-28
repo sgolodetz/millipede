@@ -15,7 +15,8 @@ using boost::shared_ptr;
 #include <wx/slider.h>
 
 #include <common/io/util/VolumeChoice.h>
-#include "ViewedVolumeModel.h"
+#include "ViewedVolume.h"
+#include "ViewedVolumeListener.h"
 
 namespace mp {
 
@@ -25,18 +26,18 @@ class StratumCanvas;
 typedef shared_ptr<class Volume> Volume_Ptr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
-class PartitionWindow : public wxFrame
+class PartitionWindow : public wxFrame, public ViewedVolumeListener
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef ViewedVolumeModel::ViewLocation ViewLocation;
+	typedef ViewedVolume::ViewLocation ViewLocation;
 	typedef shared_ptr<ViewLocation> ViewLocation_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
-	ViewedVolumeModel_Ptr m_model;
+	ViewedVolume_Ptr m_model;
 	ViewLocation m_oldViewLocation;		// the stratum and layer which were being viewed before the user started scrolling the slider (-1 when not scrolling)
 	VolumeChoice m_volumeChoice;
 
@@ -58,6 +59,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	wxGLContext *get_context() const;
+	void viewed_volume_changed();
 
 	//#################### PRIVATE METHODS ####################
 private:
@@ -72,6 +74,12 @@ public:
 	void OnButtonViewXY(wxCommandEvent&);
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);
+
+	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
+	void OnSliderXTrack(wxScrollEvent&);
+	void OnSliderYTrack(wxScrollEvent&);
+	void OnSliderZTrack(wxScrollEvent&);
+	void OnSliderLayerTrack(wxScrollEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

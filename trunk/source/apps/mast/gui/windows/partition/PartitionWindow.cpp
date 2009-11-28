@@ -16,15 +16,10 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_model(new ViewedVolumeModel), m_oldViewLocation(-1, -1, -1), m_volumeChoice(volumeChoice)
+	m_model(new ViewedVolume(volume, ViewLocation(256, 256, volumeChoice.minZ, 0), ViewedVolume::ORIENT_XY)),	// TEMPORARY: View location
+	m_oldViewLocation(-1, -1, -1, 0), m_volumeChoice(volumeChoice)
 {
-#if 0
-	m_model->m_viewLocation.reset(new ViewLocation(volumeChoice.minX, volumeChoice.minY, volumeChoice.minZ));
-#else
-	m_model->m_viewLocation.reset(new ViewLocation(256, 256, volumeChoice.minZ));
-#endif
-	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XY;
-	m_model->m_volume = volume;
+	m_model->add_listener(this);
 
 	calculate_canvas_size();
 	Show();
@@ -40,6 +35,11 @@ wxGLContext *PartitionWindow::get_context() const
 	return m_stratumCanvas->GetContext();
 }
 
+void PartitionWindow::viewed_volume_changed()
+{
+	refresh_canvases();
+}
+
 //#################### PRIVATE METHODS ####################
 void PartitionWindow::calculate_canvas_size()
 {
@@ -47,7 +47,7 @@ void PartitionWindow::calculate_canvas_size()
 	// of the images. We want to be able to show the images in axial (X-Y), sagittal (Y-Z) and coronal (X-Z)
 	// orientations, which dictates which dimensions we need to take into account for the canvas sizes.
 
-	Volume::Size volumeSize = m_model->m_volume->size();
+	Volume::Size volumeSize = m_model->volume()->size();
 	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
 }

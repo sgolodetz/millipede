@@ -23,6 +23,10 @@ enum
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
+	SLIDERID_X,
+	SLIDERID_Y,
+	SLIDERID_Z,
+	SLIDERID_LAYER,
 };
 
 }
@@ -68,17 +72,17 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, wxID_ANY, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
 			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, wxID_ANY, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, wxID_ANY, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);
@@ -109,7 +113,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleRightBottom->SetSizer(middleRightBottomSizer);
 			wxStaticText *layerText = new wxStaticText(middleRightBottom, wxID_ANY, wxT("Layer: "));
 			middleRightBottomSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
-			m_layerSlider = new wxSlider(middleRightBottom, wxID_ANY, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_layerSlider = new wxSlider(middleRightBottom, SLIDERID_LAYER, 999, 999, 999, wxDefaultPosition, wxDefaultSize, wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleRightBottomSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
 		middleRightSizer->Add(middleRightBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleRight);
@@ -123,26 +127,43 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 {
-	m_model->m_textureSet.reset(new VolumeTextureSet(m_model->m_volume, m_volumeChoice.windowSettings));
-	refresh_canvases();
+	m_model->set_volume_texture_set(VolumeTextureSet_Ptr(new VolumeTextureSet(m_model->volume(), m_volumeChoice.windowSettings)));
 }
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
 {
-	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XY;
-	refresh_canvases();
+	m_model->set_view_orientation(ViewedVolume::ORIENT_XY);
 }
 
 void PartitionWindow::OnButtonViewXZ(wxCommandEvent&)
 {
-	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_XZ;
-	refresh_canvases();
+	m_model->set_view_orientation(ViewedVolume::ORIENT_XZ);
 }
 
 void PartitionWindow::OnButtonViewYZ(wxCommandEvent&)
 {
-	m_model->m_viewOrientation = ViewedVolumeModel::ORIENT_YZ;
-	refresh_canvases();
+	m_model->set_view_orientation(ViewedVolume::ORIENT_YZ);
+}
+
+//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
+void PartitionWindow::OnSliderXTrack(wxScrollEvent&)
+{
+	// TODO
+}
+
+void PartitionWindow::OnSliderYTrack(wxScrollEvent&)
+{
+	// TODO
+}
+
+void PartitionWindow::OnSliderZTrack(wxScrollEvent&)
+{
+	// TODO
+}
+
+void PartitionWindow::OnSliderLayerTrack(wxScrollEvent&)
+{
+	// TODO
 }
 
 //#################### EVENT TABLE ####################

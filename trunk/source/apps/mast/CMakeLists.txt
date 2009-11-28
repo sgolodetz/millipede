@@ -42,6 +42,7 @@ gui/windows/partition/PartitionCanvas.cpp
 gui/windows/partition/PartitionWindow.cpp
 gui/windows/partition/PartitionWindow_GUI.cpp
 gui/windows/partition/StratumCanvas.cpp
+gui/windows/partition/ViewedVolume.cpp
 )
 
 SET(gui_windows_partition_headers
@@ -49,7 +50,8 @@ gui/windows/partition/BaseCanvas.h
 gui/windows/partition/PartitionCanvas.h
 gui/windows/partition/PartitionWindow.h
 gui/windows/partition/StratumCanvas.h
-gui/windows/partition/ViewedVolumeModel.h
+gui/windows/partition/ViewedVolume.h
+gui/windows/partition/ViewedVolumeListener.h
 )
 
 ##

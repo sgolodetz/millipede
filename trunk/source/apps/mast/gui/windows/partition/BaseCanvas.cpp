@@ -8,7 +8,7 @@
 #include <common/dicom/volumes/VolumeTextureSet.h>
 #include <common/exceptions/Exception.h>
 #include <common/textures/Texture.h>
-#include "ViewedVolumeModel.h"
+#include "ViewedVolume.h"
 
 namespace mp {
 
@@ -29,20 +29,20 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glPushAttrib(GL_ENABLE_BIT);
 
-	if(m_model && m_model->m_textureSet)
+	if(m_model && m_model->volume_texture_set())
 	{
 		// TEMPORARY
 		Texture_CPtr texture;
-		switch(m_model->m_viewOrientation)
+		switch(m_model->view_orientation())
 		{
-		case ViewedVolumeModel::ORIENT_XY:
-			texture = m_model->m_textureSet->xy_texture(m_model->m_viewLocation->z);
+		case ViewedVolume::ORIENT_XY:
+			texture = m_model->volume_texture_set()->xy_texture(m_model->view_location().z);
 			break;
-		case ViewedVolumeModel::ORIENT_XZ:
-			texture = m_model->m_textureSet->xz_texture(m_model->m_viewLocation->y);
+		case ViewedVolume::ORIENT_XZ:
+			texture = m_model->volume_texture_set()->xz_texture(m_model->view_location().y);
 			break;
-		case ViewedVolumeModel::ORIENT_YZ:
-			texture = m_model->m_textureSet->yz_texture(m_model->m_viewLocation->x);
+		case ViewedVolume::ORIENT_YZ:
+			texture = m_model->volume_texture_set()->yz_texture(m_model->view_location().x);
 			break;
 		default:
 			throw Exception("Unexpected view orientation");
@@ -73,7 +73,7 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	glPopAttrib();
 }
 
-void BaseCanvas::setup(const ViewedVolumeModel_Ptr& model)
+void BaseCanvas::setup(const ViewedVolume_Ptr& model)
 {
 	m_model = model;
 

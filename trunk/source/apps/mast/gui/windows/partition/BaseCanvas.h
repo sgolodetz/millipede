@@ -14,13 +14,13 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<struct ViewedVolumeModel> ViewedVolumeModel_Ptr;
+typedef shared_ptr<class ViewedVolume> ViewedVolume_Ptr;
 
 class BaseCanvas : public Canvas
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	ViewedVolumeModel_Ptr m_model;
+	ViewedVolume_Ptr m_model;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -29,7 +29,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void render(wxPaintDC& dc) const;
-	void setup(const ViewedVolumeModel_Ptr& model);
+	void setup(const ViewedVolume_Ptr& model);
 };
 
 }
