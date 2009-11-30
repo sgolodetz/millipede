@@ -16,16 +16,16 @@ VolumeTextureSet::VolumeTextureSet(const typename itk::Image<TPixel,3>::ConstPoi
 	typedef itk::Image<TPixel,3> Image3D;
 	typedef itk::ExtractImageFilter<Image3D,Image2D> Extractor;
 
-	Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
+	typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
-	Image3D::RegionType region;
-	Image3D::IndexType index;
-	Image3D::SizeType size;
+	typename Image3D::RegionType region;
+	typename Image3D::IndexType index;
+	typename Image3D::SizeType size;
 
 	// Construct the x-y textures.
 	for(unsigned int z=0; z<volumeSize[2]; ++z)
 	{
-		Extractor::Pointer extractor = Extractor::New();
+		typename Extractor::Pointer extractor = Extractor::New();
 		extractor->SetInput(volumeImage);
 
 		index[0] = 0;
@@ -47,7 +47,7 @@ VolumeTextureSet::VolumeTextureSet(const typename itk::Image<TPixel,3>::ConstPoi
 	// Construct the x-z textures.
 	for(unsigned int y=0; y<volumeSize[1]; ++y)
 	{
-		Extractor::Pointer extractor = Extractor::New();
+		typename Extractor::Pointer extractor = Extractor::New();
 		extractor->SetInput(volumeImage);
 
 		index[0] = 0;
@@ -69,7 +69,7 @@ VolumeTextureSet::VolumeTextureSet(const typename itk::Image<TPixel,3>::ConstPoi
 	// Construct the y-z textures.
 	for(unsigned int x=0; x<volumeSize[0]; ++x)
 	{
-		Extractor::Pointer extractor = Extractor::New();
+		typename Extractor::Pointer extractor = Extractor::New();
 		extractor->SetInput(volumeImage);
 
 		index[0] = x;
