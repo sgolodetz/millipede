@@ -43,6 +43,10 @@ dicom/volumes/Volume.h
 dicom/volumes/VolumeTextureSet.h
 )
 
+SET(dicom_volumes_templates
+dicom/volumes/VolumeTextureSet.tpp
+)
+
 ##
 SET(exceptions_headers
 exceptions/Exception.h
@@ -146,6 +150,7 @@ ${textures_headers}
 
 SET(templates
 ${adts_templates}
+${dicom_volumes_templates}
 ${io_util_templates}
 ${ipfs_construction_templates}
 )
@@ -169,6 +174,7 @@ SOURCE_GROUP(dicom\\util\\.h FILES ${dicom_util_headers})
 ##
 SOURCE_GROUP(dicom\\volumes\\.cpp FILES ${dicom_volumes_sources})
 SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
+SOURCE_GROUP(dicom\\volumes\\.tpp FILES ${dicom_volumes_templates})
 
 ##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})

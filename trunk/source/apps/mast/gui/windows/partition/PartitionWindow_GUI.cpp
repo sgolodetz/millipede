@@ -9,6 +9,7 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
+#include <common/dicom/volumes/Volume.h>
 #include <common/dicom/volumes/VolumeTextureSet.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
@@ -127,7 +128,8 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 {
-	m_model->set_volume_texture_set(VolumeTextureSet_Ptr(new VolumeTextureSet(m_model->volume(), m_volumeChoice.windowSettings)));
+	Volume::WindowedImageCPointer windowedImage = m_model->volume()->windowed_image(m_volumeChoice.windowSettings);
+	m_model->set_volume_texture_set(VolumeTextureSet_Ptr(new VolumeTextureSet(windowedImage, *windowedImage)));
 }
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)

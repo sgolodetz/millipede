@@ -11,13 +11,13 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
+#include <itkImage.h>
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 typedef shared_ptr<class Texture> Texture_Ptr;
 typedef shared_ptr<const class Texture> Texture_CPtr;
-typedef shared_ptr<const class Volume> Volume_CPtr;
-class WindowSettings;
 
 class VolumeTextureSet
 {
@@ -27,7 +27,8 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	VolumeTextureSet(const Volume_CPtr& volume, const WindowSettings& windowSettings);
+	// Note: The second parameter is a dummy used to enable the compiler to deduce TPixel.
+	template <typename TPixel> VolumeTextureSet(const typename itk::Image<TPixel,3>::ConstPointer& volumeImage, const itk::Image<TPixel,3>&);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -37,5 +38,7 @@ public:
 };
 
 }
+
+#include "VolumeTextureSet.tpp"
 
 #endif
