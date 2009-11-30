@@ -29,20 +29,20 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glPushAttrib(GL_ENABLE_BIT);
 
-	if(m_model && m_model->volume_texture_set())
+	if(m_viewedVolume && m_viewedVolume->volume_texture_set())
 	{
 		// TEMPORARY
 		Texture_CPtr texture;
-		switch(m_model->view_orientation())
+		switch(m_viewedVolume->view_orientation())
 		{
 		case ViewedVolume::ORIENT_XY:
-			texture = m_model->volume_texture_set()->xy_texture(m_model->view_location().z);
+			texture = m_viewedVolume->volume_texture_set()->xy_texture(m_viewedVolume->view_location().z);
 			break;
 		case ViewedVolume::ORIENT_XZ:
-			texture = m_model->volume_texture_set()->xz_texture(m_model->view_location().y);
+			texture = m_viewedVolume->volume_texture_set()->xz_texture(m_viewedVolume->view_location().y);
 			break;
 		case ViewedVolume::ORIENT_YZ:
-			texture = m_model->volume_texture_set()->yz_texture(m_model->view_location().x);
+			texture = m_viewedVolume->volume_texture_set()->yz_texture(m_viewedVolume->view_location().x);
 			break;
 		default:
 			throw Exception("Unexpected view orientation");
@@ -73,9 +73,9 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	glPopAttrib();
 }
 
-void BaseCanvas::setup(const ViewedVolume_Ptr& model)
+void BaseCanvas::setup(const ViewedVolume_Ptr& viewedVolume)
 {
-	m_model = model;
+	m_viewedVolume = viewedVolume;
 
 	SetCurrent();
 

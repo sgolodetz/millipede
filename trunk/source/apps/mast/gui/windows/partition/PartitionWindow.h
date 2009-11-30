@@ -38,8 +38,8 @@ private:
 private:
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
-	ViewedVolume_Ptr m_model;
 	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
+	ViewedVolume_Ptr m_viewedVolume;
 	VolumeChoice m_volumeChoice;
 
 	// Middle left

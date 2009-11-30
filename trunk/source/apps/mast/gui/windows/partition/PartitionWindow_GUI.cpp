@@ -128,42 +128,42 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 {
-	Volume::WindowedImageCPointer windowedImage = m_model->volume()->windowed_image(m_volumeChoice.windowSettings);
-	m_model->set_volume_texture_set(VolumeTextureSet_Ptr(new VolumeTextureSet(windowedImage, *windowedImage)));
+	Volume::WindowedImageCPointer windowedImage = m_viewedVolume->volume()->windowed_image(m_volumeChoice.windowSettings);
+	m_viewedVolume->set_volume_texture_set(VolumeTextureSet_Ptr(new VolumeTextureSet(windowedImage, *windowedImage)));
 }
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
 {
-	m_model->set_view_orientation(ViewedVolume::ORIENT_XY);
+	m_viewedVolume->set_view_orientation(ViewedVolume::ORIENT_XY);
 }
 
 void PartitionWindow::OnButtonViewXZ(wxCommandEvent&)
 {
-	m_model->set_view_orientation(ViewedVolume::ORIENT_XZ);
+	m_viewedVolume->set_view_orientation(ViewedVolume::ORIENT_XZ);
 }
 
 void PartitionWindow::OnButtonViewYZ(wxCommandEvent&)
 {
-	m_model->set_view_orientation(ViewedVolume::ORIENT_YZ);
+	m_viewedVolume->set_view_orientation(ViewedVolume::ORIENT_YZ);
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnSliderXTrack(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
+	ViewLocation loc = m_viewedVolume->view_location();
+	m_viewedVolume->set_view_location(ViewLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
 }
 
 void PartitionWindow::OnSliderYTrack(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
+	ViewLocation loc = m_viewedVolume->view_location();
+	m_viewedVolume->set_view_location(ViewLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
 }
 
 void PartitionWindow::OnSliderZTrack(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
+	ViewLocation loc = m_viewedVolume->view_location();
+	m_viewedVolume->set_view_location(ViewLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
 }
 
 void PartitionWindow::OnSliderLayerTrack(wxScrollEvent&)

@@ -20,7 +20,7 @@ class BaseCanvas : public Canvas
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	ViewedVolume_Ptr m_model;
+	ViewedVolume_Ptr m_viewedVolume;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -29,7 +29,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void render(wxPaintDC& dc) const;
-	void setup(const ViewedVolume_Ptr& model);
+	void setup(const ViewedVolume_Ptr& viewedVolume);
 };
 
 }
