@@ -5,7 +5,9 @@
 
 #include "Greyscale8ImageTexture.h"
 
-#include <itkPasteImageFilter.h>
+#include <itkAffineTransform.h>
+#include <itkLinearInterpolateImageFunction.h>
+#include <itkResampleImageFilter.h>
 
 namespace mp {
 
@@ -19,39 +21,43 @@ Greyscale8ImageTexture::Greyscale8ImageTexture(const ImagePointer& image, bool c
 //#################### PROTECTED METHODS ####################
 void Greyscale8ImageTexture::reload_image() const
 {
-	typedef itk::PasteImageFilter<Image,Image> Paster;
+	typedef itk::LinearInterpolateImageFunction<Image> Interpolator;
+	typedef itk::ResampleImageFilter<Image,Image> Resampler;
+	typedef itk::AffineTransform<double,2> Transform;
 
 	Image::SizeType size = m_image->GetLargestPossibleRegion().GetSize();
 
-	// Pad the image so that its dimensions are powers of two if necessary.
+	// Resize the image so that its dimensions are powers of two if necessary.
 	unsigned int desiredWidth = 1, desiredHeight = 1;
 	while(desiredWidth < size[0]) desiredWidth *= 2;
 	while(desiredHeight < size[1]) desiredHeight *= 2;
 	if(desiredWidth != size[0] || desiredHeight != size[1])
 	{
-		Paster::Pointer paster = Paster::New();
+		Resampler::Pointer resampler = Resampler::New();
 
-		Image::IndexType index;
-		index.Fill(0);
+		Transform::Pointer transform = Transform::New();
+		resampler->SetTransform(transform);
 
-		Image::Pointer paddedImage = Image::New();
-		Image::RegionType paddedRegion;
-		Image::SizeType paddedSize;
-		paddedSize[0] = desiredWidth;
-		paddedSize[1] = desiredHeight;
-		paddedRegion.SetIndex(index);
-		paddedRegion.SetSize(paddedSize);
-		paddedImage->SetRegions(paddedRegion);
-		paddedImage->Allocate();
-		paddedImage->FillBuffer(0);
+		resampler->SetInterpolator(Interpolator::New());
 
-		paster->SetSourceImage(m_image);
-		paster->SetSourceRegion(m_image->GetLargestPossibleRegion());
-		paster->SetDestinationImage(paddedImage);
-		paster->SetDestinationIndex(index);
-		paster->Update();
+		resampler->SetDefaultPixelValue(50);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, 1, desiredWidth, desiredHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, paster->GetOutput()->GetBufferPointer());
+		Image::SizeType newSize;
+		newSize[0] = desiredWidth;
+		newSize[1] = desiredHeight;
+		resampler->SetSize(newSize);
+
+		resampler->SetOutputOrigin(m_image->GetOrigin());
+
+		Image::SpacingType newSpacing = m_image->GetSpacing();
+		newSpacing[0] *= (double)size[0] / desiredWidth;
+		newSpacing[1] *= (double)size[1] / desiredHeight;
+		resampler->SetOutputSpacing(newSpacing);
+
+		resampler->SetInput(m_image);
+		resampler->Update();
+
+		glTexImage2D(GL_TEXTURE_2D, 0, 1, desiredWidth, desiredHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, resampler->GetOutput()->GetBufferPointer());
 	}
 	else
 	{
