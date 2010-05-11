@@ -87,7 +87,7 @@ public:
 		bool operator!=(const EdgeConstIterator& rhs) const	{ return *m_impl != *rhs.m_impl; }
 	};
 
-private:
+protected:
 	template <typename N, typename Impl>
 	class NodeIteratorT : public std::iterator<std::input_iterator_tag, N>
 	{
