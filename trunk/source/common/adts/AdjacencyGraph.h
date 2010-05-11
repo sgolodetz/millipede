@@ -59,8 +59,8 @@ private:
 		>
 	> EdgeContainer;
 
-	typedef typename EdgeContainer::index<tagSmaller>::type EdgesBySmaller;
-	typedef typename EdgeContainer::index<tagLarger>::type EdgesByLarger;
+	typedef typename EdgeContainer::template index<tagSmaller>::type EdgesBySmaller;
+	typedef typename EdgeContainer::template index<tagLarger>::type EdgesByLarger;
 
 	typedef typename EdgesBySmaller::const_iterator EdgesBySmallerCIter;
 	typedef typename EdgesByLarger::const_iterator EdgesByLargerCIter;
@@ -110,7 +110,7 @@ public:
 
 	EdgeWeight edge_weight(int u, int v) const
 	{
-		EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
+		typename EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
 		if(it != m_edges.end()) return it->m_weight;
 		else throw Exception("No such edge: {" + lexical_cast<std::string>(u) + "," + lexical_cast<std::string>(v) + "}");
 	}
@@ -142,7 +142,7 @@ public:
 
 	const NodeProperties& node_properties(int n) const
 	{
-		std::map<int,NodeProperties>::const_iterator it = m_nodeProperties.find(n);
+		typename std::map<int,NodeProperties>::const_iterator it = m_nodeProperties.find(n);
 		if(it != m_nodeProperties.end()) return it->second;
 		else throw Exception("No such node: " + lexical_cast<std::string>(n));
 	}
@@ -161,7 +161,7 @@ public:
 	{
 		std::vector<int> ret;
 		ret.reserve(m_nodeProperties.size());
-		for(std::map<int,NodeProperties>::const_iterator it=m_nodeProperties.begin(), iend=m_nodeProperties.end(); it!=iend; ++it)
+		for(typename std::map<int,NodeProperties>::const_iterator it=m_nodeProperties.begin(), iend=m_nodeProperties.end(); it!=iend; ++it)
 		{
 			ret.push_back(it->first);
 		}
@@ -170,7 +170,7 @@ public:
 
 	void remove_edge(int u, int v)
 	{
-		EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
+		typename EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
 		if(it != m_edges.end()) m_edges.erase(it);
 		else throw Exception("No such edge: {" + lexical_cast<std::string>(u) + "," + lexical_cast<std::string>(v) + "}");
 	}
@@ -178,7 +178,7 @@ public:
 	void remove_node(int n)
 	{
 		// Remove the node's properties.
-		std::map<int,NodeProperties>::iterator it = m_nodeProperties.find(n);
+		typename std::map<int,NodeProperties>::iterator it = m_nodeProperties.find(n);
 		if(it == m_nodeProperties.end()) throw Exception("No such node: " + lexical_cast<std::string>(n));
 		m_nodeProperties.erase(it);
 
@@ -194,7 +194,7 @@ public:
 		if(!has_node(v)) throw Exception("No such node: " + lexical_cast<std::string>(v));
 
 		Edge e = make_edge(u, v, weight);
-		EdgeContainer::iterator it = m_edges.find(boost::make_tuple(e.u, e.v));
+		typename EdgeContainer::iterator it = m_edges.find(boost::make_tuple(e.u, e.v));
 		if(it != m_edges.end()) m_edges.replace(it, e);
 		else m_edges.insert(e);
 	}
