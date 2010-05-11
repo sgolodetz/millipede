@@ -1,10 +1,10 @@
-# CMakeLists.txt for tests/test-waterfall
+# CMakeLists.txt for tests/test-adjacencygraph
 
 ############################
 # Specify the project name #
 ############################
 
-SET(targetname test-waterfall)
+SET(targetname test-adjacencygraph)
 
 #############################
 # Specify the project files #

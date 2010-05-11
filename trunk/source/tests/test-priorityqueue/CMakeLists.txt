@@ -1,10 +1,10 @@
-# CMakeLists.txt for tests/test-waterfall
+# CMakeLists.txt for tests/test-priorityqueue
 
 ############################
 # Specify the project name #
 ############################
 
-SET(targetname test-waterfall)
+SET(targetname test-priorityqueue)
 
 #############################
 # Specify the project files #

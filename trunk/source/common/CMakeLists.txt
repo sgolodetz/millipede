@@ -6,11 +6,16 @@
 
 ##
 SET(adts_headers
+adts/AdjacencyGraph.h
 adts/DisjointSetForest.h
 adts/Map.h
+adts/PriorityQueue.h
+adts/WeightedEdge.h
 )
 
-SET(adts_templates adts/DisjointSetForest.tpp)
+SET(adts_templates
+adts/DisjointSetForest.tpp
+)
 
 ##
 SET(dicom_directories_sources
@@ -102,6 +107,22 @@ ipfs/construction/Watershed.h
 SET(ipfs_construction_templates ipfs/construction/Watershed.tpp)
 
 ##
+SET(partitionforests_base_headers
+partitionforests/base/IForestLayer.h
+)
+
+##
+SET(partitionforests_images_sources
+partitionforests/images/PixelProperties.cpp
+partitionforests/images/RegionProperties.cpp
+)
+
+SET(partitionforests_images_headers
+partitionforests/images/PixelProperties.h
+partitionforests/images/RegionProperties.h
+)
+
+##
 SET(ogl_headers
 ogl/WrappedGL.h
 )
@@ -131,6 +152,7 @@ ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
 ${ipfs_construction_sources}
+${partitionforests_images_sources}
 ${textures_sources}
 )
 
@@ -144,6 +166,8 @@ ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
 ${ipfs_construction_headers}
+${partitionforests_base_headers}
+${partitionforests_images_headers}
 ${ogl_headers}
 ${textures_headers}
 )
@@ -198,55 +222,32 @@ SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
 SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
 
 ##
+SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
+
+##
+SOURCE_GROUP(partitionforests\\images\\.cpp FILES ${partitionforests_images_sources})
+SOURCE_GROUP(partitionforests\\images\\.h FILES ${partitionforests_images_headers})
+
+##
 SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
 
 ##
 SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 
-##############
-# Find Boost #
-##############
+################################
+# Specify the libraries to use #
+################################
 
-SET(Boost_ADDITIONAL_VERSIONS "1.39" "1.39.0")
-SET(BOOST_ROOT ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0)
-SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost 1.39.0 REQUIRED COMPONENTS thread)
-IF(Boost_FOUND)
-	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-ELSE(Boost_FOUND)
-	MESSAGE(FATAL_ERROR "Boost not found. Please set the directories manually using the advanced view in CMake.")
-ENDIF(Boost_FOUND)
-
-#############
-# Find GDCM #
-#############
-
-FIND_PACKAGE(GDCM REQUIRED)
-IF(GDCM_FOUND)
-	INCLUDE(${GDCM_USE_FILE})
-ELSE(GDCM_FOUND)
-	MESSAGE(FATAL_ERROR "GDCM not found. Please set GDCM_DIR.")
-ENDIF(GDCM_FOUND)
-
-############
-# Find ITK #
-############
-
-FIND_PACKAGE(ITK)
-IF(ITK_FOUND)
-	INCLUDE(${ITK_USE_FILE})
-ELSE(ITK_FOUND)
-	MESSAGE(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
-ENDIF(ITK_FOUND)
+INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseGDCM.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
 
 ###############################
 # Specify the necessary paths #
 ###############################
 
-INCLUDE_DIRECTORIES(
-${millipede_SOURCE_DIR}
-)
+INCLUDE_DIRECTORIES(${millipede_SOURCE_DIR})
 
 ##########################################
 # Specify the target and where to put it #
