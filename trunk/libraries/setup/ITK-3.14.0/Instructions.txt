@@ -1,5 +1,5 @@
 ITK 3.14.0 Setup Instructions
-Last Updated by Stuart Golodetz on 17/07/09
+Last Updated by Stuart Golodetz on 10/05/10
 -------------------------------------------
 
 1. Create an ITK-3.14.0 subdirectory in the libraries directory.
@@ -21,7 +21,7 @@ Last Updated by Stuart Golodetz on 17/07/09
 
 	On Windows:
 
-	a) Use the CMake GUI. Set the source and bin directories to those in the ITK-3.14.0 directory. The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and bin called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building ITK, I recommend:
+	a) Use the CMake GUI. Set the source and build directories to those in the ITK-3.14.0 directory. The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and build called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building ITK, I recommend:
 
 BUILD_DOXYGEN		OFF
 BUILD_EXAMPLES		OFF
@@ -29,10 +29,10 @@ BUILD_SHARED_LIBS	OFF
 BUILD_TESTING		OFF
 ITK_USE_KWSTYLE		OFF
 
-	b) The created solution (ITK.sln) will be in the bin directory. Open it, and build the ALL_BUILD project.
+	b) The created solution (ITK.sln) will be in the build directory. Open it, and build the ALL_BUILD project.
 
 	On Linux:
 
-	a) Make a subdirectory of ITK-3.14.0 called bin (this will be a sibling of the source directory) and change to it.
+	a) Make a subdirectory of ITK-3.14.0 called build (this will be a sibling of the source directory) and change to it.
 	b) Run "ccmake ../source" and set the options as per the instructions for Windows above.
 	c) Run "make".
