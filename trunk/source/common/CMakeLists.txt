@@ -10,6 +10,7 @@ adts/AdjacencyGraph.h
 adts/DisjointSetForest.h
 adts/Map.h
 adts/PriorityQueue.h
+adts/RootedMST.h
 adts/WeightedEdge.h
 )
 

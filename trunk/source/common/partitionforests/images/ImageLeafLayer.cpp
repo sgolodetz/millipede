@@ -32,8 +32,15 @@ std::vector<ImageLeafLayer::Edge> ImageLeafLayer::adjacent_edges(int n) const
 
 std::vector<int> ImageLeafLayer::adjacent_nodes(int n) const
 {
-	// NYI
-	throw 23;
+	std::vector<int> ret;
+
+	int x = n % m_width, y = n / m_width;
+	if(y != 0)				ret.push_back(n - m_width);
+	if(x != 0)				ret.push_back(n - 1);
+	if(x != m_width - 1)	ret.push_back(n + 1);
+	if(y != m_height - 1)	ret.push_back(n + m_width);
+
+	return ret;
 }
 
 RegionProperties ImageLeafLayer::combine_properties(const std::set<int>& nodeIndices) const

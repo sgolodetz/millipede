@@ -111,7 +111,7 @@ public:
 	EdgeWeight edge_weight(int u, int v) const
 	{
 		typename EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
-		if(it != m_edges.end()) return it->m_weight;
+		if(it != m_edges.end()) return it->weight;
 		else throw Exception("No such edge: {" + lexical_cast<std::string>(u) + "," + lexical_cast<std::string>(v) + "}");
 	}
 
@@ -140,24 +140,7 @@ public:
 		return m_nodeProperties.find(n) != m_nodeProperties.end();
 	}
 
-	const NodeProperties& node_properties(int n) const
-	{
-		typename std::map<int,NodeProperties>::const_iterator it = m_nodeProperties.find(n);
-		if(it != m_nodeProperties.end()) return it->second;
-		else throw Exception("No such node: " + lexical_cast<std::string>(n));
-	}
-
-	NodePropertiesCIter node_properties_begin() const
-	{
-		return m_nodeProperties.begin();
-	}
-
-	NodePropertiesCIter node_properties_end() const
-	{
-		return m_nodeProperties.end();
-	}
-
-	std::vector<int> nodes() const
+	std::vector<int> node_indices() const
 	{
 		std::vector<int> ret;
 		ret.reserve(m_nodeProperties.size());
@@ -166,6 +149,30 @@ public:
 			ret.push_back(it->first);
 		}
 		return ret;
+	}
+
+	NodeProperties& node_properties(int n)
+	{
+		typename std::map<int,NodeProperties>::iterator it = m_nodeProperties.find(n);
+		if(it != m_nodeProperties.end()) return it->second;
+		else throw Exception("No such node: " + lexical_cast<std::string>(n));
+	}
+
+	const NodeProperties& node_properties(int n) const
+	{
+		typename std::map<int,NodeProperties>::const_iterator it = m_nodeProperties.find(n);
+		if(it != m_nodeProperties.end()) return it->second;
+		else throw Exception("No such node: " + lexical_cast<std::string>(n));
+	}
+
+	NodePropertiesCIter node_properties_cbegin() const
+	{
+		return m_nodeProperties.begin();
+	}
+
+	NodePropertiesCIter node_properties_cend() const
+	{
+		return m_nodeProperties.end();
 	}
 
 	void remove_edge(int u, int v)
