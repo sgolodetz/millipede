@@ -10,6 +10,8 @@
 #include <set>
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
+
 #include <common/adts/WeightedEdge.h>
 
 namespace mp {
