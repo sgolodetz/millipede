@@ -19,6 +19,24 @@ adts/DisjointSetForest.tpp
 )
 
 ##
+SET(commands_sources
+commands/BasicCommandManager.cpp
+commands/Command.cpp
+commands/CommandSequenceGuard.cpp
+commands/SequenceCommand.cpp
+commands/UndoableCommandManager.cpp
+)
+
+SET(commands_headers
+commands/BasicCommandManager.h
+commands/Command.h
+commands/CommandSequenceGuard.h
+commands/ICommandManager.h
+commands/SequenceCommand.h
+commands/UndoableCommandManager.h
+)
+
+##
 SET(dicom_directories_sources
 dicom/directories/DICOMDirectory.cpp
 dicom/directories/PatientRecord.cpp
@@ -148,6 +166,7 @@ textures/TextureFactory.h
 #################################################################
 
 SET(sources
+${commands_sources}
 ${dicom_directories_sources}
 ${dicom_util_sources}
 ${dicom_volumes_sources}
@@ -161,6 +180,7 @@ ${textures_sources}
 
 SET(headers
 ${adts_headers}
+${commands_headers}
 ${dicom_directories_headers}
 ${dicom_util_headers}
 ${dicom_volumes_headers}
@@ -189,6 +209,10 @@ ${ipfs_construction_templates}
 ##
 SOURCE_GROUP(adts\\.h FILES ${adts_headers})
 SOURCE_GROUP(adts\\.tpp FILES ${adts_templates})
+
+##
+SOURCE_GROUP(commands\\.cpp FILES ${commands_sources})
+SOURCE_GROUP(commands\\.h FILES ${commands_headers})
 
 ##
 SOURCE_GROUP(dicom\\directories\\.cpp FILES ${dicom_directories_sources})
