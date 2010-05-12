@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include <common/adts/RootedMST.h>
-#include <common/partitionforests/images/ImageLeafLayer.h>
 #include <common/partitionforests/images/ITKImageLeafLayer.h>
 using namespace mp;
 
@@ -15,17 +14,14 @@ typename itk::Image<TPixel,3>::Pointer create_3d_image(const TPixel *const pixel
 {
 	typedef itk::Image<TPixel,3> Image;
 	typedef typename Image::Pointer ImagePointer;
-	typedef typename Image::IndexType Index;
-	typedef typename Image::RegionType Region;
-	typedef typename Image::SizeType Size;
 
-	Index start;
+	Image::IndexType start;
 	start.Fill(0);
-	Size size;
+	Image::SizeType size;
 	size[0] = sizeX;
 	size[1] = sizeY;
 	size[2] = sizeZ;
-	Region region;
+	Image::RegionType region;
 	region.SetIndex(start);
 	region.SetSize(size);
 	ImagePointer image = Image::New();
@@ -34,19 +30,15 @@ typename itk::Image<TPixel,3>::Pointer create_3d_image(const TPixel *const pixel
 
 	const TPixel *p = pixels;
 	for(int z=0; z<sizeZ; ++z)
-	{
 		for(int y=0; y<sizeY; ++y)
-		{
 			for(int x=0; x<sizeX; ++x)
 			{
-				Index index;
+				Image::IndexType index;
 				index[0] = x;
 				index[1] = y;
 				index[2] = z;
 				image->SetPixel(index, *p++);
 			}
-		}
-	}
 
 	return image;
 }
@@ -96,12 +88,13 @@ void itk_leaf_layer_mst()
 
 void leaf_layer_mst()
 {
-	PixelProperties arr[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
-	ImageLeafLayer leafLayer(3, 3, leafProperties);
+	typedef ITKPixelProperties P;
+	ITKPixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
+	std::vector<ITKPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(ITKPixelProperties)]);
+	ITKImageLeafLayer leafLayer(3, 3, 1, leafProperties);
 
 	typedef int Label;
-	RootedMST<Label,ImageLeafLayer::EdgeWeight> mst(leafLayer);
+	RootedMST<Label,ITKImageLeafLayer::EdgeWeight> mst(leafLayer);
 }
 
 int main()
