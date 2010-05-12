@@ -21,9 +21,9 @@ public:
 	class Element
 	{
 	private:
-		Data m_data;
 		ID m_id;
 		Key m_key;
+		Data m_data;
 
 	public:
 		Element() {}
