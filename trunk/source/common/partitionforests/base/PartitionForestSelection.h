@@ -314,7 +314,7 @@ public:
 		int usedLayers = 0;
 		for(size_t i=0, layerCount=m_nodes.size(); i<layerCount; ++i)
 		{
-			if(m_locators[i].size() != 0) ++usedLayers;
+			if(m_nodes[i].size() != 0) ++usedLayers;
 		}
 		return usedLayers > 1;
 	}
