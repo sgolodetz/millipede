@@ -15,13 +15,13 @@ typename itk::Image<TPixel,3>::Pointer create_3d_image(const TPixel *const pixel
 	typedef itk::Image<TPixel,3> Image;
 	typedef typename Image::Pointer ImagePointer;
 
-	Image::IndexType start;
+	typename Image::IndexType start;
 	start.Fill(0);
-	Image::SizeType size;
+	typename Image::SizeType size;
 	size[0] = sizeX;
 	size[1] = sizeY;
 	size[2] = sizeZ;
-	Image::RegionType region;
+	typename Image::RegionType region;
 	region.SetIndex(start);
 	region.SetSize(size);
 	ImagePointer image = Image::New();
@@ -33,7 +33,7 @@ typename itk::Image<TPixel,3>::Pointer create_3d_image(const TPixel *const pixel
 		for(int y=0; y<sizeY; ++y)
 			for(int x=0; x<sizeX; ++x)
 			{
-				Image::IndexType index;
+				typename Image::IndexType index;
 				index[0] = x;
 				index[1] = y;
 				index[2] = z;
