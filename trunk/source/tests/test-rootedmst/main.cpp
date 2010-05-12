@@ -1,6 +1,6 @@
 /***
  * test-rootedmst: main.cpp
- * Copyright Stuart Golodetz, 2009. All rights reserved.
+ * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
 #include <iostream>

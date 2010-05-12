@@ -1,6 +1,6 @@
 /***
  * test-partitionforest: main.cpp
- * Copyright Stuart Golodetz, 2009. All rights reserved.
+ * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
 #include <iostream>
@@ -9,7 +9,7 @@
 using boost::shared_ptr;
 
 #include <common/commands/UndoableCommandManager.h>
-#include <common/partitionforests/base/PartitionForest.h>
+#include <common/partitionforests/base/PartitionForestSelection.h>
 #include <common/partitionforests/images/ImageBranchLayer.h>
 #include <common/partitionforests/images/ImageLeafLayer.h>
 using namespace mp;
@@ -17,6 +17,8 @@ using namespace mp;
 //#################### TYPEDEFS ####################
 typedef PartitionForest<ImageLeafLayer, ImageBranchLayer> IPF;
 typedef boost::shared_ptr<IPF> IPF_Ptr;
+typedef PartitionForestSelection<ImageLeafLayer, ImageBranchLayer> Selection;
+typedef boost::shared_ptr<Selection> Selection_Ptr;
 
 //#################### HELPERS ####################
 IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
@@ -58,7 +60,7 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 }
 
 //#################### TESTS ####################
-struct Listener : IPF::Listener
+struct ForestListener : IPF::Listener
 {
 	void layer_was_cloned(int index)		{ std::cout << "Layer cloned: " << index << '\n'; }
 	void layer_was_deleted(int index)		{ std::cout << "Layer deleted: " << index << '\n'; }
@@ -84,7 +86,8 @@ struct Listener : IPF::Listener
 		std::cout << "Nodes will be merged: { ";
 		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
 		std::cout << "}\n";
-	}};
+	}
+};
 
 void listener_test()
 {
@@ -93,13 +96,12 @@ void listener_test()
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
 	std::auto_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(3, 3, 1, leafProperties));
 
-	typedef PartitionForest<ImageLeafLayer, ImageBranchLayer> IPF;
 	IPF ipf(leafLayer);
 
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	ipf.set_command_manager(manager);
 
-	shared_ptr<Listener> listener(new Listener);
+	shared_ptr<ForestListener> listener(new ForestListener);
 	ipf.add_listener(listener);
 
 	ipf.clone_layer(0);
@@ -142,7 +144,6 @@ void nonsibling_node_merging_test()
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
 	std::auto_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(3, 3, 1, leafProperties));
 
-	typedef PartitionForest<ImageLeafLayer, ImageBranchLayer> IPF;
 	IPF ipf(leafLayer);
 
 	ICommandManager_Ptr manager(new UndoableCommandManager);
@@ -180,6 +181,47 @@ void nonsibling_node_merging_test()
 	ipf.merge_nonsibling_nodes(mergees);
 
 	ipf.output(std::cout);
+}
+
+struct SelectionListener : Selection::Listener
+{
+	void node_was_consolidated(const PFNodeID& node)	{ std::cout << "Node consolidated: " << node << '\n'; }
+	void node_was_deconsolidated(const PFNodeID& node)	{ std::cout << "Node deconsolidated: " << node << '\n'; }
+	void node_was_deselected(const PFNodeID& node)		{ std::cout << "Node deselected: " << node << '\n'; }
+	void node_was_selected(const PFNodeID& node)		{ std::cout << "Node selected: " << node << '\n'; }
+	void selection_was_cleared()						{ std::cout << "Selection cleared\n"; }
+};
+
+void selection_test()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+
+	// Test forest selection.
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_listener(selection);
+
+	boost::shared_ptr<SelectionListener> selectionListener(new SelectionListener);
+	selection->add_listener(selectionListener);
+
+	selection->select_node(PFNodeID(4,0));
+	manager->undo();
+	manager->redo();
+	selection->deselect_node(PFNodeID(0,3));
+	manager->undo();
+
+	std::vector<std::set<int> > splitGroups(2);
+	splitGroups[0].insert(0);
+	splitGroups[1].insert(2);
+	ipf->split_node(PFNodeID(4,0), splitGroups);
+	manager->undo();
+
+	selection->deselect_node(PFNodeID(0,3));
+	ipf->delete_layer(3);
+	ipf->delete_layer(2);
+	manager->undo();
+	manager->undo();
 }
 
 void switch_parent_test()
@@ -223,7 +265,8 @@ void unzip_zip_test()
 int main()
 {
 	//listener_test();
-	nonsibling_node_merging_test();
+	//nonsibling_node_merging_test();
+	selection_test();
 	//switch_parent_test();
 	//unzip_zip_test();
 	return 0;
