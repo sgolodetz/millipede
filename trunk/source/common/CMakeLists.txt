@@ -53,8 +53,13 @@ dicom/directories/StudyRecord.h
 )
 
 ##
-SET(dicom_util_sources dicom/util/WindowSettings.cpp)
-SET(dicom_util_headers dicom/util/WindowSettings.h)
+SET(dicom_util_sources
+dicom/util/WindowSettings.cpp
+)
+
+SET(dicom_util_headers
+dicom/util/WindowSettings.h
+)
 
 ##
 SET(dicom_volumes_sources
@@ -91,8 +96,13 @@ io/files/VolumeLoader.h
 )
 
 ##
-SET(io_sections_sources io/sections/VolumeChoiceSection.cpp)
-SET(io_sections_headers io/sections/VolumeChoiceSection.h)
+SET(io_sections_sources
+io/sections/VolumeChoiceSection.cpp
+)
+
+SET(io_sections_headers
+io/sections/VolumeChoiceSection.h
+)
 
 ##
 SET(io_util_sources
@@ -109,7 +119,9 @@ io/util/OSSWrapper.h
 io/util/VolumeChoice.h
 )
 
-SET(io_util_templates io/util/FieldIO.tpp)
+SET(io_util_templates
+io/util/FieldIO.tpp
+)
 
 ##
 SET(ipfs_construction_sources
@@ -123,11 +135,19 @@ ipfs/construction/WaterfallEdge.h
 ipfs/construction/Watershed.h
 )
 
-SET(ipfs_construction_templates ipfs/construction/Watershed.tpp)
+SET(ipfs_construction_templates
+ipfs/construction/Watershed.tpp
+)
 
 ##
+SET(partitionforests_base_sources
+partitionforests/base/PFNodeID.cpp
+)
+
 SET(partitionforests_base_headers
 partitionforests/base/IForestLayer.h
+partitionforests/base/PartitionForest.h
+partitionforests/base/PFNodeID.h
 )
 
 ##
@@ -163,6 +183,11 @@ textures/Texture.h
 textures/TextureFactory.h
 )
 
+##
+SET(util_headers
+util/CompositeListenerBase.h
+)
+
 #################################################################
 # Collect the project files into sources, headers and templates #
 #################################################################
@@ -176,6 +201,7 @@ ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
 ${ipfs_construction_sources}
+${partitionforests_base_sources}
 ${partitionforests_images_sources}
 ${textures_sources}
 )
@@ -195,6 +221,7 @@ ${partitionforests_base_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
 ${textures_headers}
+${util_headers}
 )
 
 SET(templates
@@ -251,6 +278,7 @@ SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
 SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
 
 ##
+SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
 SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
 
 ##
@@ -263,6 +291,9 @@ SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
 ##
 SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
+
+##
+SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ################################
 # Specify the libraries to use #

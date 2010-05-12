@@ -33,6 +33,9 @@ public:
 	virtual std::string undo_description() const = 0;
 };
 
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<ICommandManager> ICommandManager_Ptr;
+
 }
 
 #endif

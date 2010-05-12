@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_PIXELPROPERTIES
 #define H_MILLIPEDE_PIXELPROPERTIES
 
+#include <iosfwd>
+
 namespace mp {
 
 class PixelProperties
@@ -24,6 +26,9 @@ public:
 	unsigned char grey_value() const;
 	signed int hounsfield_value() const;
 };
+
+//#################### GLOBAL OPERATORS ####################
+std::ostream& operator<<(std::ostream& os, const PixelProperties& rhs);
 
 }
 

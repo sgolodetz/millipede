@@ -6,7 +6,6 @@
 #ifndef H_MILLIPEDE_REGIONPROPERTIES
 #define H_MILLIPEDE_REGIONPROPERTIES
 
-#include <iosfwd>
 #include <vector>
 
 #include "PixelProperties.h"

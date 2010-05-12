@@ -5,6 +5,8 @@
 
 #include "PixelProperties.h"
 
+#include <ostream>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -15,5 +17,12 @@ PixelProperties::PixelProperties(unsigned char greyValue, signed int hounsfieldV
 //#################### PUBLIC METHODS ####################
 unsigned char PixelProperties::grey_value() const		{ return m_greyValue; }
 signed int PixelProperties::hounsfield_value() const	{ return m_hounsfieldValue; }
+
+//#################### GLOBAL OPERATORS ####################
+std::ostream& operator<<(std::ostream& os, const PixelProperties& rhs)
+{
+	os << '<' << static_cast<int>(rhs.grey_value()) << " | " << rhs.hounsfield_value() << '>';
+	return os;
+}
 
 }

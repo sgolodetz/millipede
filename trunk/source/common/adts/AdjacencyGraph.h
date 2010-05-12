@@ -10,21 +10,19 @@
 #include <map>
 #include <vector>
 
-#include <boost/lexical_cast.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/composite_key.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 
-#include "WeightedEdge.h"
 #include <common/exceptions/Exception.h>
+#include <common/io/util/OSSWrapper.h>
+#include "WeightedEdge.h"
 
 namespace mp {
 
 namespace mp_AdjacencyGraph {
 
-using boost::bad_lexical_cast;
-using boost::lexical_cast;
 using namespace boost::multi_index;
 
 template <typename NodeProperties, typename EdgeWeight>
@@ -78,7 +76,7 @@ private:
 public:
 	std::vector<Edge> adjacent_edges(int n) const
 	{
-		if(!has_node(n)) throw Exception("No such node: " + lexical_cast<std::string>(n));
+		if(!has_node(n)) throw Exception(OSSWrapper() << "No such node: " << n);
 
 		std::vector<Edge> ret;
 
@@ -94,7 +92,7 @@ public:
 
 	std::vector<int> adjacent_nodes(int n) const
 	{
-		if(!has_node(n)) throw Exception("No such node: " + lexical_cast<std::string>(n));
+		if(!has_node(n)) throw Exception(OSSWrapper() << "No such node: " << n);
 
 		std::vector<int> ret;
 
@@ -112,7 +110,7 @@ public:
 	{
 		typename EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
 		if(it != m_edges.end()) return it->weight;
-		else throw Exception("No such edge: {" + lexical_cast<std::string>(u) + "," + lexical_cast<std::string>(v) + "}");
+		else throw Exception(OSSWrapper() << "No such edge: {" << u << ',' << v << '}');
 	}
 
 	std::vector<Edge> edges() const
@@ -155,14 +153,14 @@ public:
 	{
 		typename std::map<int,NodeProperties>::iterator it = m_nodeProperties.find(n);
 		if(it != m_nodeProperties.end()) return it->second;
-		else throw Exception("No such node: " + lexical_cast<std::string>(n));
+		else throw Exception(OSSWrapper() << "No such node: " << n);
 	}
 
 	const NodeProperties& node_properties(int n) const
 	{
 		typename std::map<int,NodeProperties>::const_iterator it = m_nodeProperties.find(n);
 		if(it != m_nodeProperties.end()) return it->second;
-		else throw Exception("No such node: " + lexical_cast<std::string>(n));
+		else throw Exception(OSSWrapper() << "No such node: " << n);
 	}
 
 	NodePropertiesCIter node_properties_cbegin() const
@@ -179,14 +177,14 @@ public:
 	{
 		typename EdgeContainer::const_iterator it = m_edges.find(make_edge_tuple(u, v));
 		if(it != m_edges.end()) m_edges.erase(it);
-		else throw Exception("No such edge: {" + lexical_cast<std::string>(u) + "," + lexical_cast<std::string>(v) + "}");
+		else throw Exception(OSSWrapper() << "No such edge: {" << u << ',' << v << '}');
 	}
 
 	void remove_node(int n)
 	{
 		// Remove the node's properties.
 		typename std::map<int,NodeProperties>::iterator it = m_nodeProperties.find(n);
-		if(it == m_nodeProperties.end()) throw Exception("No such node: " + lexical_cast<std::string>(n));
+		if(it == m_nodeProperties.end()) throw Exception(OSSWrapper() << "No such node: " << n);
 		m_nodeProperties.erase(it);
 
 		// Remove any edges connected to the node.
@@ -196,9 +194,9 @@ public:
 
 	void set_edge_weight(int u, int v, EdgeWeight weight)
 	{
-		if(u == v) throw Exception("Reflexive edges are not allowed: " + lexical_cast<std::string>(u));
-		if(!has_node(u)) throw Exception("No such node: " + lexical_cast<std::string>(u));
-		if(!has_node(v)) throw Exception("No such node: " + lexical_cast<std::string>(v));
+		if(u == v) throw Exception(OSSWrapper() << "Reflexive edges are not allowed: " << u);
+		if(!has_node(u)) throw Exception(OSSWrapper() << "No such node: " << u);
+		if(!has_node(v)) throw Exception(OSSWrapper() << "No such node: " << v);
 
 		Edge e = make_edge(u, v, weight);
 		typename EdgeContainer::iterator it = m_edges.find(boost::make_tuple(e.u, e.v));

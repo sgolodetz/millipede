@@ -83,6 +83,12 @@ void UndoableCommandManager::redo()
 	}
 }
 
+std::string UndoableCommandManager::redo_description() const
+{
+	if(can_redo()) return m_undone.back()->description();
+	else return "";
+}
+
 void UndoableCommandManager::undo()
 {
 	if(can_undo())
@@ -92,6 +98,12 @@ void UndoableCommandManager::undo()
 		command->undo();
 		m_undone.push_back(command);
 	}
+}
+
+std::string UndoableCommandManager::undo_description() const
+{
+	if(can_undo()) return m_done.back()->description();
+	else return "";
 }
 
 }
