@@ -175,12 +175,12 @@ private:
 		}
 	};
 
-public:
 	typedef LeafNodeIteratorImplT<LeafNode, std::vector<LeafNode> > LeafNodeIteratorImpl;
 	typedef LeafNodeIteratorImplT<const LeafNode, const std::vector<LeafNode> > LeafNodeConstIteratorImpl;
 	typedef LeafNodeIteratorImplT<Node, std::vector<LeafNode> > NodeIteratorImpl;
 	typedef LeafNodeIteratorImplT<const Node, const std::vector<LeafNode> > NodeConstIteratorImpl;
 
+public:
 	typedef NodeIteratorT<LeafNode, LeafNodeIteratorImpl> LeafNodeIterator;
 	typedef NodeIteratorT<const LeafNode, LeafNodeConstIteratorImpl> LeafNodeConstIterator;
 
