@@ -36,7 +36,7 @@ protected:
 	template <typename Func>
 	void multicast(Func func)
 	{
-		for(Listeners::iterator it=m_listeners.begin(), iend=m_listeners.end(); it!=iend;)
+		for(typename Listeners::iterator it=m_listeners.begin(), iend=m_listeners.end(); it!=iend;)
 		{
 			boost::shared_ptr<ListenerType> listener = it->lock();
 			if(listener)	{ func(*listener); ++it; }

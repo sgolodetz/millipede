@@ -58,6 +58,34 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 }
 
 //#################### TESTS ####################
+struct Listener : IPF::Listener
+{
+	void layer_was_cloned(int index)		{ std::cout << "Layer cloned: " << index << '\n'; }
+	void layer_was_deleted(int index)		{ std::cout << "Layer deleted: " << index << '\n'; }
+	void layer_was_undeleted(int index)		{ std::cout << "Layer undeleted: " << index << '\n'; }
+	void layer_will_be_deleted(int index)	{ std::cout << "Layer will be deleted: " << index << '\n'; }
+
+	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results)
+	{
+		std::cout << "Node split: " << node << " -> { ";
+		std::copy(results.begin(), results.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
+		std::cout << "}\n";
+	}
+
+	void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result)
+	{
+		std::cout << "Nodes merged: { ";
+		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
+		std::cout << "} -> " << result << '\n';
+	}
+
+	void nodes_will_be_merged(const std::set<PFNodeID>& nodes)
+	{
+		std::cout << "Nodes will be merged: { ";
+		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
+		std::cout << "}\n";
+	}};
+
 void listener_test()
 {
 	typedef PixelProperties P;
@@ -70,32 +98,6 @@ void listener_test()
 
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	ipf.set_command_manager(manager);
-
-	struct Listener : IPF::Listener
-	{
-		void layer_was_cloned(int index)		{ std::cout << "Layer cloned: " << index << '\n'; }
-		void layer_was_deleted(int index)		{ std::cout << "Layer deleted: " << index << '\n'; }
-		void layer_was_undeleted(int index)		{ std::cout << "Layer undeleted: " << index << '\n'; }
-		void layer_will_be_deleted(int index)	{ std::cout << "Layer will be deleted: " << index << '\n'; }
-		void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results)
-		{
-			std::cout << "Node split: " << node << " -> { ";
-			std::copy(results.begin(), results.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
-			std::cout << "}\n";
-		}
-		void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result)
-		{
-			std::cout << "Nodes merged: { ";
-			std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
-			std::cout << "} -> " << result << '\n';
-		}
-		void nodes_will_be_merged(const std::set<PFNodeID>& nodes)
-		{
-			std::cout << "Nodes will be merged: { ";
-			std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
-			std::cout << "}\n";
-		}
-	};
 
 	shared_ptr<Listener> listener(new Listener);
 	ipf.add_listener(listener);

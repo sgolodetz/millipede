@@ -11,11 +11,14 @@
 #include <queue>
 #include <set>
 
+#include <boost/bind.hpp>
 #include <boost/optional.hpp>
+#include <boost/tuple/tuple.hpp>
 
 #include <common/commands/BasicCommandManager.h>
 #include <common/commands/Command.h>
 #include <common/commands/CommandSequenceGuard.h>
+#include <common/exceptions/Exception.h>
 #include <common/io/util/OSSWrapper.h>
 #include <common/util/CompositeListenerBase.h>
 #include "IForestLayer.h"
@@ -59,7 +62,7 @@ public:
 		CHECK_PRECONDITIONS			= 1,
 	};
 
-	//#################### NESTED CLASSES (EXCLUDING ITERATORS) ####################
+	//#################### NESTED CLASSES (EXCLUDING COMMANDS) ####################
 public:
 	class Listener
 	{
@@ -86,6 +89,83 @@ private:
 		void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results)	{ multicast(bind(&Listener::node_was_split, _1, node, results)); }
 		void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result)	{ multicast(bind(&Listener::nodes_were_merged, _1, nodes, result)); }
 		void nodes_will_be_merged(const std::set<PFNodeID>& nodes)						{ multicast(bind(&Listener::nodes_will_be_merged, _1, nodes)); }
+	};
+
+	//#################### COMMANDS ####################
+private:
+	struct CloneAboveLayerCommand : Command
+	{
+		PartitionForest *m_base;
+		int m_indexB;
+
+		CloneAboveLayerCommand(PartitionForest *base, int indexB)
+		:	Command("Clone Above Layer"), m_base(base), m_indexB(indexB)
+		{}
+
+		void execute()		{ m_base->clone_layer_impl(m_indexB); }
+		void undo()			{ m_base->delete_layer_impl(m_indexB + 1); }
+	};
+
+	struct DeleteLayerCommand : Command
+	{
+		PartitionForest *m_base;
+		int m_indexD;
+		BranchLayer_Ptr m_layerD;
+
+		DeleteLayerCommand(PartitionForest *base, int indexD)
+		:	Command("Delete Layer"), m_base(base), m_indexD(indexD)
+		{}
+
+		void execute()	{ m_layerD = m_base->delete_layer_impl(m_indexD); }
+		void undo()		{ m_base->undelete_layer_impl(m_indexD, m_layerD); }
+	};
+
+	struct MergeSiblingNodesCommand : Command
+	{
+		PartitionForest *m_base;
+		std::set<PFNodeID> m_nodes;
+
+		std::vector<std::set<int> > m_splitGroups;
+		optional<PFNodeID> m_result;
+
+		MergeSiblingNodesCommand(PartitionForest *base, const std::set<PFNodeID>& nodes)
+		:	Command("Merge Sibling Nodes"), m_base(base), m_nodes(nodes)
+		{}
+
+		void execute()
+		{
+			if(m_splitGroups.empty())
+			{
+				// Construct the split groups for a later undo operation.
+				int layerIndex = m_nodes.begin()->layer();	// note that m_nodes is non-empty (see checks above)
+				BranchLayer_Ptr layer = m_base->branch_layer(layerIndex);
+				for(std::set<PFNodeID>::const_iterator it=m_nodes.begin(), iend=m_nodes.end(); it!=iend; ++it)
+				{
+					m_splitGroups.push_back(layer->node_children(it->index()));
+				}
+			}
+
+			m_result = m_base->merge_sibling_nodes_impl(m_nodes);
+		}
+
+		const PFNodeID& result() const	{ return *m_result; }
+		void undo()						{ m_base->split_node_impl(*m_result, m_splitGroups); }
+	};
+
+	struct SplitNodeCommand : Command
+	{
+		PartitionForest *m_base;
+		PFNodeID m_node;
+		std::vector<std::set<int> > m_groups;
+		std::set<PFNodeID> m_result;
+
+		SplitNodeCommand(PartitionForest *base, const PFNodeID& node, const std::vector<std::set<int> >& groups)
+		:	Command("Split Node"), m_base(base), m_node(node), m_groups(groups)
+		{}
+
+		void execute()								{ m_result = m_base->split_node_impl(m_node, m_groups); }
+		const std::set<PFNodeID>& result() const	{ return m_result; }
+		void undo()									{ m_base->merge_sibling_nodes_impl(m_result); }
 	};
 
 	//#################### PRIVATE VARIABLES ####################
@@ -363,19 +443,6 @@ public:
 			}
 		}
 
-		struct CloneAboveLayerCommand : Command
-		{
-			PartitionForest *m_base;
-			int m_indexB;
-
-			CloneAboveLayerCommand(PartitionForest *base, int indexB)
-			:	Command("Clone Above Layer"), m_base(base), m_indexB(indexB)
-			{}
-
-			void execute()		{ m_base->clone_layer_impl(m_indexB); }
-			void undo()			{ m_base->delete_layer_impl(m_indexB + 1); }
-		};
-
 		m_commandManager->execute(Command_Ptr(new CloneAboveLayerCommand(this, indexB)));
 	}
 
@@ -388,20 +455,6 @@ public:
 				throw Exception(OSSWrapper() << "Invalid layer: " << indexD);
 			}
 		}
-
-		struct DeleteLayerCommand : Command
-		{
-			PartitionForest *m_base;
-			int m_indexD;
-			BranchLayer_Ptr m_layerD;
-
-			DeleteLayerCommand(PartitionForest *base, int indexD)
-			:	Command("Delete Layer"), m_base(base), m_indexD(indexD)
-			{}
-
-			void execute()	{ m_layerD = m_base->delete_layer_impl(m_indexD); }
-			void undo()		{ m_base->undelete_layer_impl(m_indexD, m_layerD); }
-		};
 
 		m_commandManager->execute(Command_Ptr(new DeleteLayerCommand(this, indexD)));
 	}
@@ -428,38 +481,6 @@ public:
 			// Check that the union of the objects represented by the nodes to be merged is connected.
 			if(!are_connected(nodeIndices, nodes.begin()->layer())) throw Exception("The merged node would not be connected");
 		}
-
-		struct MergeSiblingNodesCommand : Command
-		{
-			PartitionForest *m_base;
-			std::set<PFNodeID> m_nodes;
-
-			std::vector<std::set<int> > m_splitGroups;
-			optional<PFNodeID> m_result;
-
-			MergeSiblingNodesCommand(PartitionForest *base, const std::set<PFNodeID>& nodes)
-			:	Command("Merge Sibling Nodes"), m_base(base), m_nodes(nodes)
-			{}
-
-			void execute()
-			{
-				if(m_splitGroups.empty())
-				{
-					// Construct the split groups for a later undo operation.
-					int layerIndex = m_nodes.begin()->layer();	// note that m_nodes is non-empty (see checks above)
-					BranchLayer_Ptr layer = m_base->branch_layer(layerIndex);
-					for(std::set<PFNodeID>::const_iterator it=m_nodes.begin(), iend=m_nodes.end(); it!=iend; ++it)
-					{
-						m_splitGroups.push_back(layer->node_children(it->index()));
-					}
-				}
-
-				m_result = m_base->merge_sibling_nodes_impl(m_nodes);
-			}
-
-			const PFNodeID& result() const	{ return *m_result; }
-			void undo()						{ m_base->split_node_impl(*m_result, m_splitGroups); }
-		};
 
 		shared_ptr<MergeSiblingNodesCommand> command(new MergeSiblingNodesCommand(this, nodes));
 		m_commandManager->execute(command);
@@ -497,22 +518,6 @@ public:
 				if(!are_connected(*it, node.layer() - 1)) throw Exception("One of the split groups is not connected");
 			}
 		}
-
-		struct SplitNodeCommand : Command
-		{
-			PartitionForest *m_base;
-			PFNodeID m_node;
-			std::vector<std::set<int> > m_groups;
-			std::set<PFNodeID> m_result;
-
-			SplitNodeCommand(PartitionForest *base, const PFNodeID& node, const std::vector<std::set<int> >& groups)
-			:	Command("Split Node"), m_base(base), m_node(node), m_groups(groups)
-			{}
-
-			void execute()								{ m_result = m_base->split_node_impl(m_node, m_groups); }
-			const std::set<PFNodeID>& result() const	{ return m_result; }
-			void undo()									{ m_base->merge_sibling_nodes_impl(m_result); }
-		};
 
 		shared_ptr<SplitNodeCommand> command(new SplitNodeCommand(this, node, groups));
 		m_commandManager->execute(command);
@@ -831,7 +836,7 @@ private:
 			ret->set_node_properties(nodes[i], sourceLayer.combine_properties(children));
 		}
 
-		for(IForestLayer<BranchProperties,int>::EdgeConstIterator it=sourceLayer.edges_cbegin(), iend=sourceLayer.edges_cend(); it!=iend; ++it)
+		for(typename IForestLayer<BranchProperties,int>::EdgeConstIterator it=sourceLayer.edges_cbegin(), iend=sourceLayer.edges_cend(); it!=iend; ++it)
 		{
 			ret->set_edge_weight(it->u, it->v, it->weight);
 		}
@@ -931,7 +936,7 @@ private:
 			ret.insert(n);
 
 			std::vector<Edge> adjEdges = layer->adjacent_edges(n);
-			for(std::vector<Edge>::const_iterator it=adjEdges.begin(), iend=adjEdges.end(); it!=iend; ++it)
+			for(typename std::vector<Edge>::const_iterator it=adjEdges.begin(), iend=adjEdges.end(); it!=iend; ++it)
 			{
 				int other = (n == it->u) ? it->v : it->u;
 				std::set<int>::iterator jt = nodes.find(other);
@@ -1016,7 +1021,7 @@ private:
 		for(std::set<PFNodeID>::const_iterator it=othersBegin, iend=othersEnd; it!=iend; ++it)
 		{
 			std::vector<Edge> adjEdges = layerM->adjacent_edges(it->index());
-			for(std::vector<Edge>::const_iterator jt=adjEdges.begin(), jend=adjEdges.end(); jt!=jend; ++jt)
+			for(typename std::vector<Edge>::const_iterator jt=adjEdges.begin(), jend=adjEdges.end(); jt!=jend; ++jt)
 			{
 				int otherEnd = (it->index() == jt->u) ? jt->v : jt->u;
 				if(otherEnd != canonical.index()) layerM->update_edge_weight(canonical.index(), otherEnd, jt->weight);
@@ -1091,7 +1096,7 @@ private:
 			for(std::set<int>::const_iterator jt=it->begin(), jend=it->end(); jt!=jend; ++jt)
 			{
 				std::vector<Edge> adjEdges = layerB->adjacent_edges(*jt);
-				for(std::vector<Edge>::const_iterator kt=adjEdges.begin(), kend=adjEdges.end(); kt!=kend; ++kt)
+				for(typename std::vector<Edge>::const_iterator kt=adjEdges.begin(), kend=adjEdges.end(); kt!=kend; ++kt)
 				{
 					int parentU = layerB->node_parent(kt->u), parentV = layerB->node_parent(kt->v);
 					if(parentU != parentV) layerS->update_edge_weight(parentU, parentV, kt->weight);
