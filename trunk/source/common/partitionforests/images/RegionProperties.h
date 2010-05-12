@@ -1,19 +1,19 @@
 /***
- * millipede: ITKRegionProperties.h
+ * millipede: RegionProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_ITKREGIONPROPERTIES
-#define H_MILLIPEDE_ITKREGIONPROPERTIES
+#ifndef H_MILLIPEDE_REGIONPROPERTIES
+#define H_MILLIPEDE_REGIONPROPERTIES
 
 #include <iosfwd>
 #include <vector>
 
-#include "ITKPixelProperties.h"
+#include "PixelProperties.h"
 
 namespace mp {
 
-class ITKRegionProperties
+class RegionProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -22,7 +22,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ITKRegionProperties()
+	RegionProperties()
 	:	m_area(0),
 		m_meanGreyValue(0.0)
 	{}
@@ -30,13 +30,13 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	int area() const;
-	static ITKRegionProperties combine_branch_properties(const std::vector<ITKRegionProperties>& properties);
-	static ITKRegionProperties combine_leaf_properties(const std::vector<ITKPixelProperties>& properties);
+	static RegionProperties combine_branch_properties(const std::vector<RegionProperties>& properties);
+	static RegionProperties combine_leaf_properties(const std::vector<PixelProperties>& properties);
 	double mean_grey_value() const;
 };
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const ITKRegionProperties& rhs);
+std::ostream& operator<<(std::ostream& os, const RegionProperties& rhs);
 
 }
 

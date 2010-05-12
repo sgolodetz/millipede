@@ -1,24 +1,24 @@
 /***
- * millipede: ITKRegionProperties.cpp
+ * millipede: RegionProperties.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "ITKRegionProperties.h"
+#include "RegionProperties.h"
 
 #include <ostream>
 
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
-int ITKRegionProperties::area() const
+int RegionProperties::area() const
 {
 	return m_area;
 }
 
 // Precondition: !properties.empty()
-ITKRegionProperties ITKRegionProperties::combine_branch_properties(const std::vector<ITKRegionProperties>& properties)
+RegionProperties RegionProperties::combine_branch_properties(const std::vector<RegionProperties>& properties)
 {
-	ITKRegionProperties ret;
+	RegionProperties ret;
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
@@ -31,9 +31,9 @@ ITKRegionProperties ITKRegionProperties::combine_branch_properties(const std::ve
 }
 
 // Precondition: !properties.empty()
-ITKRegionProperties ITKRegionProperties::combine_leaf_properties(const std::vector<ITKPixelProperties>& properties)
+RegionProperties RegionProperties::combine_leaf_properties(const std::vector<PixelProperties>& properties)
 {
-	ITKRegionProperties ret;
+	RegionProperties ret;
 
 	ret.m_area = properties.size();
 
@@ -46,13 +46,13 @@ ITKRegionProperties ITKRegionProperties::combine_leaf_properties(const std::vect
 	return ret;
 }
 
-double ITKRegionProperties::mean_grey_value() const
+double RegionProperties::mean_grey_value() const
 {
 	return m_meanGreyValue;
 }
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const ITKRegionProperties& rhs)
+std::ostream& operator<<(std::ostream& os, const RegionProperties& rhs)
 {
 	os << "<<" << rhs.area() << " | " << rhs.mean_grey_value() << ">>";
 	return os;

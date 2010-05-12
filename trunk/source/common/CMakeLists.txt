@@ -132,15 +132,15 @@ partitionforests/base/IForestLayer.h
 
 ##
 SET(partitionforests_images_sources
-partitionforests/images/ITKImageLeafLayer.cpp
-partitionforests/images/ITKPixelProperties.cpp
-partitionforests/images/ITKRegionProperties.cpp
+partitionforests/images/ImageLeafLayer.cpp
+partitionforests/images/PixelProperties.cpp
+partitionforests/images/RegionProperties.cpp
 )
 
 SET(partitionforests_images_headers
-partitionforests/images/ITKImageLeafLayer.h
-partitionforests/images/ITKPixelProperties.h
-partitionforests/images/ITKRegionProperties.h
+partitionforests/images/ImageLeafLayer.h
+partitionforests/images/PixelProperties.h
+partitionforests/images/RegionProperties.h
 )
 
 ##

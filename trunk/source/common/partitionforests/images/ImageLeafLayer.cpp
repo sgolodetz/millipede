@@ -1,16 +1,16 @@
 /***
- * millipede: ITKImageLeafLayer.cpp
+ * millipede: ImageLeafLayer.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "ITKImageLeafLayer.h"
+#include "ImageLeafLayer.h"
 
 #include <cassert>
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-ITKImageLeafLayer::ITKImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vector<NodeProperties>& nodeProperties)
+ImageLeafLayer::ImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vector<NodeProperties>& nodeProperties)
 :	m_sizeX(sizeX), m_sizeY(sizeY), m_sizeZ(sizeZ)
 {
 	m_sizeXY = m_sizeX * m_sizeY;
@@ -21,7 +21,7 @@ ITKImageLeafLayer::ITKImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std:
 	for(size_t i=0; i<size; ++i) m_nodes.push_back(LeafNode(nodeProperties[i]));
 }
 
-ITKImageLeafLayer::ITKImageLeafLayer(const HounsfieldImagePointer& hounsfieldImage, const WindowedImagePointer& windowedImage)
+ImageLeafLayer::ImageLeafLayer(const HounsfieldImagePointer& hounsfieldImage, const WindowedImagePointer& windowedImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -50,7 +50,7 @@ ITKImageLeafLayer::ITKImageLeafLayer(const HounsfieldImagePointer& hounsfieldIma
 }
 
 //#################### PUBLIC METHODS ####################
-std::vector<ITKImageLeafLayer::Edge> ITKImageLeafLayer::adjacent_edges(int n) const
+std::vector<ImageLeafLayer::Edge> ImageLeafLayer::adjacent_edges(int n) const
 {
 	// Note: This is a 6-connected implementation.
 	std::vector<Edge> ret;
@@ -66,7 +66,7 @@ std::vector<ITKImageLeafLayer::Edge> ITKImageLeafLayer::adjacent_edges(int n) co
 	return ret;
 }
 
-std::vector<int> ITKImageLeafLayer::adjacent_nodes(int n) const
+std::vector<int> ImageLeafLayer::adjacent_nodes(int n) const
 {
 	// Note: This is a 6-connected implementation.
 	std::vector<int> ret;
@@ -82,34 +82,34 @@ std::vector<int> ITKImageLeafLayer::adjacent_nodes(int n) const
 	return ret;
 }
 
-ITKRegionProperties ITKImageLeafLayer::combine_properties(const std::set<int>& nodeIndices) const
+RegionProperties ImageLeafLayer::combine_properties(const std::set<int>& nodeIndices) const
 {
-	std::vector<ITKPixelProperties> properties;
+	std::vector<PixelProperties> properties;
 	properties.reserve(nodeIndices.size());
 	for(std::set<int>::const_iterator it=nodeIndices.begin(), iend=nodeIndices.end(); it!=iend; ++it)
 	{
 		properties.push_back(node_properties(*it));
 	}
-	return ITKRegionProperties::combine_leaf_properties(properties);
+	return RegionProperties::combine_leaf_properties(properties);
 }
 
 // Precondition: has_edge(u, v)
-ITKImageLeafLayer::EdgeWeight ITKImageLeafLayer::edge_weight(int u, int v) const
+ImageLeafLayer::EdgeWeight ImageLeafLayer::edge_weight(int u, int v) const
 {
 	return abs(m_nodes[u].properties().grey_value() - m_nodes[v].properties().grey_value());
 }
 
-ITKImageLeafLayer::EdgeConstIterator ITKImageLeafLayer::edges_cbegin() const
+ImageLeafLayer::EdgeConstIterator ImageLeafLayer::edges_cbegin() const
 {
 	return EdgeConstIterator(new EdgeConstIteratorImpl(this, 0));
 }
 
-ITKImageLeafLayer::EdgeConstIterator ITKImageLeafLayer::edges_cend() const
+ImageLeafLayer::EdgeConstIterator ImageLeafLayer::edges_cend() const
 {
 	return EdgeConstIterator(new EdgeConstIteratorImpl(this, m_sizeXYZ));
 }
 
-bool ITKImageLeafLayer::has_edge(int u, int v) const
+bool ImageLeafLayer::has_edge(int u, int v) const
 {
 	// Note: This is a 6-connected implementation.
 	if(!has_node(u) || !has_node(v)) return false;
@@ -119,32 +119,32 @@ bool ITKImageLeafLayer::has_edge(int u, int v) const
 	return xdiff + ydiff + zdiff == 1;	// note that each is either 0 or 1
 }
 
-bool ITKImageLeafLayer::has_node(int n) const
+bool ImageLeafLayer::has_node(int n) const
 {
 	return 0 <= n && n < static_cast<int>(m_nodes.size());
 }
 
-ITKImageLeafLayer::LeafNodeIterator ITKImageLeafLayer::leaf_nodes_begin()
+ImageLeafLayer::LeafNodeIterator ImageLeafLayer::leaf_nodes_begin()
 {
 	return LeafNodeIterator(new LeafNodeIteratorImpl(0, m_nodes));
 }
 
-ITKImageLeafLayer::LeafNodeConstIterator ITKImageLeafLayer::leaf_nodes_cbegin() const
+ImageLeafLayer::LeafNodeConstIterator ImageLeafLayer::leaf_nodes_cbegin() const
 {
 	return LeafNodeConstIterator(new LeafNodeConstIteratorImpl(0, m_nodes));
 }
 
-ITKImageLeafLayer::LeafNodeConstIterator ITKImageLeafLayer::leaf_nodes_cend() const
+ImageLeafLayer::LeafNodeConstIterator ImageLeafLayer::leaf_nodes_cend() const
 {
 	return LeafNodeConstIterator(new LeafNodeConstIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 }
 
-ITKImageLeafLayer::LeafNodeIterator ITKImageLeafLayer::leaf_nodes_end()
+ImageLeafLayer::LeafNodeIterator ImageLeafLayer::leaf_nodes_end()
 {
 	return LeafNodeIterator(new LeafNodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 }
 
-std::vector<int> ITKImageLeafLayer::node_indices() const
+std::vector<int> ImageLeafLayer::node_indices() const
 {
 	int size = static_cast<int>(m_nodes.size());
 	std::vector<int> ret(size);
@@ -156,55 +156,55 @@ std::vector<int> ITKImageLeafLayer::node_indices() const
 }
 
 // Precondition: n is in the right range
-int ITKImageLeafLayer::node_parent(int n) const
+int ImageLeafLayer::node_parent(int n) const
 {
 	return m_nodes[n].parent();
 }
 
 // Precondition: n is in the right range
-const ITKPixelProperties& ITKImageLeafLayer::node_properties(int n) const
+const PixelProperties& ImageLeafLayer::node_properties(int n) const
 {
 	return m_nodes[n].properties();
 }
 
-ITKImageLeafLayer::NodeIterator ITKImageLeafLayer::nodes_begin()
+ImageLeafLayer::NodeIterator ImageLeafLayer::nodes_begin()
 {
 	return NodeIterator(new NodeIteratorImpl(0, m_nodes));
 }
 
-ITKImageLeafLayer::NodeConstIterator ITKImageLeafLayer::nodes_cbegin() const
+ImageLeafLayer::NodeConstIterator ImageLeafLayer::nodes_cbegin() const
 {
 	return NodeConstIterator(new NodeConstIteratorImpl(0, m_nodes));
 }
 
-ITKImageLeafLayer::NodeConstIterator ITKImageLeafLayer::nodes_cend() const
+ImageLeafLayer::NodeConstIterator ImageLeafLayer::nodes_cend() const
 {
 	return NodeConstIterator(new NodeConstIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 }
 
-ITKImageLeafLayer::NodeIterator ITKImageLeafLayer::nodes_end()
+ImageLeafLayer::NodeIterator ImageLeafLayer::nodes_end()
 {
 	return NodeIterator(new NodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 }
 
 // Precondition: n is in the right range
-void ITKImageLeafLayer::set_node_parent(int n, int parent)
+void ImageLeafLayer::set_node_parent(int n, int parent)
 {
 	m_nodes[n].set_parent(parent);
 }
 
 //#################### PRIVATE METHODS ####################
-int ITKImageLeafLayer::x_of(int n) const
+int ImageLeafLayer::x_of(int n) const
 {
 	return n % m_sizeX;
 }
 
-int ITKImageLeafLayer::y_of(int n) const
+int ImageLeafLayer::y_of(int n) const
 {
 	return (n / m_sizeX) % m_sizeY;
 }
 
-int ITKImageLeafLayer::z_of(int n) const
+int ImageLeafLayer::z_of(int n) const
 {
 	return n / m_sizeXY;
 }

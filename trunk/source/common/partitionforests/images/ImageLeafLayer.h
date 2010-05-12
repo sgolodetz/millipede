@@ -1,10 +1,10 @@
 /***
- * millipede: ITKImageLeafLayer.h
+ * millipede: ImageLeafLayer.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_ITKIMAGELEAFLAYER
-#define H_MILLIPEDE_ITKIMAGELEAFLAYER
+#ifndef H_MILLIPEDE_IMAGELEAFLAYER
+#define H_MILLIPEDE_IMAGELEAFLAYER
 
 #include <vector>
 
@@ -13,17 +13,17 @@
 #include <common/adts/WeightedEdge.h>
 #include <common/exceptions/Exception.h>
 #include <common/partitionforests/base/IForestLayer.h>
-#include "ITKRegionProperties.h"
+#include "RegionProperties.h"
 
 namespace mp {
 
-class ITKImageLeafLayer : public IForestLayer<ITKRegionProperties,int>
+class ImageLeafLayer : public IForestLayer<RegionProperties,int>
 {
 	//#################### TYPEDEFS ####################
 public:
 	typedef int EdgeWeight;
 	typedef WeightedEdge<EdgeWeight> Edge;
-	typedef ITKPixelProperties NodeProperties;
+	typedef PixelProperties NodeProperties;
 
 private:
 	typedef itk::Image<signed int,3> HounsfieldImage;
@@ -63,13 +63,13 @@ private:
 	class EdgeConstIteratorImpl : public EdgeConstIteratorImplBase
 	{
 	private:
-		const ITKImageLeafLayer *m_base;
+		const ImageLeafLayer *m_base;
 		int m_currentNode;
 		EdgeDir m_currentDir;
 		mutable boost::shared_ptr<Edge> m_currentEdge;
 
 	public:
-		EdgeConstIteratorImpl(const ITKImageLeafLayer *base, int currentNode)
+		EdgeConstIteratorImpl(const ImageLeafLayer *base, int currentNode)
 		:	m_base(base), m_currentNode(currentNode), m_currentDir(NONE)
 		{
 			if(m_currentNode != m_base->m_sizeXYZ) advance();
@@ -191,14 +191,14 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ITKImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vector<NodeProperties>& nodeProperties);
-	ITKImageLeafLayer(const HounsfieldImagePointer& hounsfieldImage, const WindowedImagePointer& windowedImage);
+	ImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vector<NodeProperties>& nodeProperties);
+	ImageLeafLayer(const HounsfieldImagePointer& hounsfieldImage, const WindowedImagePointer& windowedImage);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	std::vector<Edge> adjacent_edges(int n) const;
 	std::vector<int> adjacent_nodes(int n) const;
-	ITKRegionProperties combine_properties(const std::set<int>& nodeIndices) const;
+	RegionProperties combine_properties(const std::set<int>& nodeIndices) const;
 	EdgeWeight edge_weight(int u, int v) const;
 	EdgeConstIterator edges_cbegin() const;
 	EdgeConstIterator edges_cend() const;
@@ -210,7 +210,7 @@ public:
 	LeafNodeIterator leaf_nodes_end();
 	std::vector<int> node_indices() const;
 	int node_parent(int n) const;
-	const ITKPixelProperties& node_properties(int n) const;
+	const PixelProperties& node_properties(int n) const;
 	NodeIterator nodes_begin();
 	NodeConstIterator nodes_cbegin() const;
 	NodeConstIterator nodes_cend() const;

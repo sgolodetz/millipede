@@ -1,14 +1,14 @@
 /***
- * millipede: ITKPixelProperties.h
+ * millipede: PixelProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_ITKPIXELPROPERTIES
-#define H_MILLIPEDE_ITKPIXELPROPERTIES
+#ifndef H_MILLIPEDE_PIXELPROPERTIES
+#define H_MILLIPEDE_PIXELPROPERTIES
 
 namespace mp {
 
-class ITKPixelProperties
+class PixelProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -17,7 +17,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ITKPixelProperties(unsigned char greyValue, signed int hounsfieldValue);
+	PixelProperties(unsigned char greyValue, signed int hounsfieldValue);
 
 	//#################### PUBLIC METHODS ####################
 public:
