@@ -7,7 +7,6 @@
 #define H_MILLIPEDE_PARTITIONFOREST
 
 #include <deque>
-#include <memory>
 #include <queue>
 #include <set>
 
@@ -177,45 +176,10 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit PartitionForest(std::auto_ptr<LeafLayer> leafLayer, const optional<std::vector<std::set<int> > >& lowestBranchGroups = none)
+	explicit PartitionForest(const LeafLayer_Ptr& leafLayer, const BranchLayer_Ptr& lowestBranchLayer = BranchLayer_Ptr())
 	:	m_leafLayer(leafLayer), m_commandManager(new BasicCommandManager)
 	{
-		if(lowestBranchGroups)
-		{
-			const std::vector<std::set<int> >& groups = *lowestBranchGroups;
-			BranchLayer_Ptr lowestBranchLayer(new BranchLayer);
-
-			// Add the forest links and calculate the lowest branch layer node properties.
-			for(size_t i=0, size=groups.size(); i<size; ++i)
-			{
-				const std::set<int>& group = groups[i];
-				if(group.empty()) throw Exception("Empty branch group");
-				int parentIndex = *group.begin();
-
-				for(std::set<int>::const_iterator jt=group.begin(), jend=group.end(); jt!=jend; ++jt)
-				{
-					m_leafLayer->set_node_parent(*jt, parentIndex);
-				}
-
-				lowestBranchLayer->set_node_children(parentIndex, group);
-				lowestBranchLayer->set_node_properties(parentIndex, m_leafLayer->combine_properties(group));
-			}
-
-			// Add the edges between adjacent lowest branch layer nodes.
-			for(typename LeafLayer::EdgeConstIterator it=m_leafLayer->edges_cbegin(), iend=m_leafLayer->edges_cend(); it!=iend; ++it)
-			{
-				Edge e = *it;
-				int parentU = m_leafLayer->node_parent(e.u);
-				int parentV = m_leafLayer->node_parent(e.v);
-				if(parentU != parentV)
-				{
-					lowestBranchLayer->update_edge_weight(parentU, parentV, e.weight);
-				}
-			}
-
-			// Add the lowest branch layer to the forest.
-			m_branchLayers.push_back(lowestBranchLayer);
-		}
+		if(lowestBranchLayer) m_branchLayers.push_back(lowestBranchLayer);
 	}
 
 	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
@@ -286,6 +250,41 @@ public:
 		}
 
 		return ret;
+	}
+
+	static BranchLayer_Ptr construct_lowest_branch_layer(const LeafLayer_Ptr& leafLayer, const std::vector<std::set<int> >& groups)
+	{
+		BranchLayer_Ptr lowestBranchLayer(new BranchLayer);
+
+		// Add the forest links and calculate the lowest branch layer node properties.
+		for(size_t i=0, size=groups.size(); i<size; ++i)
+		{
+			const std::set<int>& group = groups[i];
+			if(group.empty()) throw Exception("Empty branch group");
+			int parentIndex = *group.begin();
+
+			for(std::set<int>::const_iterator jt=group.begin(), jend=group.end(); jt!=jend; ++jt)
+			{
+				leafLayer->set_node_parent(*jt, parentIndex);
+			}
+
+			lowestBranchLayer->set_node_children(parentIndex, group);
+			lowestBranchLayer->set_node_properties(parentIndex, leafLayer->combine_properties(group));
+		}
+
+		// Add the edges between adjacent lowest branch layer nodes.
+		for(typename LeafLayer::EdgeConstIterator it=leafLayer->edges_cbegin(), iend=leafLayer->edges_cend(); it!=iend; ++it)
+		{
+			Edge e = *it;
+			int parentU = leafLayer->node_parent(e.u);
+			int parentV = leafLayer->node_parent(e.v);
+			if(parentU != parentV)
+			{
+				lowestBranchLayer->update_edge_weight(parentU, parentV, e.weight);
+			}
+		}
+
+		return lowestBranchLayer;
 	}
 
 	EdgeConstIterator edges_cbegin(int layerIndex) const
