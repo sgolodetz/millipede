@@ -9,7 +9,7 @@
 using boost::shared_ptr;
 
 #include <common/commands/UndoableCommandManager.h>
-#include <common/partitionforests/base/PartitionForestSelection.h>
+#include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
 #include <common/partitionforests/images/ImageBranchLayer.h>
 #include <common/partitionforests/images/ImageLeafLayer.h>
 using namespace mp;
@@ -60,6 +60,33 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 }
 
 //#################### TESTS ####################
+enum SimpleFeatureID
+{
+	KIDNEY,
+	LIVER,
+};
+
+void feature_selection_test()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+
+	typedef PartitionForestMultiFeatureSelection<ImageLeafLayer, ImageBranchLayer, SimpleFeatureID> MFS;
+	typedef boost::shared_ptr<MFS> MFS_Ptr;
+	MFS_Ptr mfs(new MFS(ipf));
+	mfs->set_command_manager(manager);
+
+	mfs->identify_feature(PFNodeID(1,6), LIVER);
+	mfs->unidentify_feature(PFNodeID(1,6), LIVER);
+	manager->undo();
+	mfs->clear_feature(LIVER);
+	manager->undo();
+	mfs->identify_feature(PFNodeID(3,0), KIDNEY);
+	std::vector<SimpleFeatureID> features = mfs->features_of(PFNodeID(0,7));
+	mfs->clear_all();
+	manager->undo();
+}
+
 struct ForestListener : IPF::Listener
 {
 	void layer_was_cloned(int index)		{ std::cout << "Layer cloned: " << index << '\n'; }
@@ -264,9 +291,10 @@ void unzip_zip_test()
 
 int main()
 {
+	feature_selection_test();
 	//listener_test();
 	//nonsibling_node_merging_test();
-	selection_test();
+	//selection_test();
 	//switch_parent_test();
 	//unzip_zip_test();
 	return 0;
