@@ -38,7 +38,7 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit PartitionForestMultiFeatureSelection(const PartitionForest_Ptr& forest)
-	:	m_forest(forest), m_commandManager(new BasicCommandManager)
+	:	m_commandManager(new BasicCommandManager), m_forest(forest)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -104,7 +104,7 @@ public:
 	void set_command_manager(const ICommandManager_Ptr& commandManager)
 	{
 		m_commandManager = commandManager;
-		for(std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		for(typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			it->second->set_command_manager(commandManager);
 		}
