@@ -94,7 +94,12 @@ void leaf_layer_mst()
 	ImageLeafLayer leafLayer(3, 3, 1, leafProperties);
 
 	typedef int Label;
-	RootedMST<Label,ImageLeafLayer::EdgeWeight> mst(leafLayer);
+	typedef RootedMST<Label,ImageLeafLayer::EdgeWeight> MST;
+	MST mst(leafLayer);
+
+	mst.merge_nodes(7, 6);
+
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<MST::Edge>(std::cout, " "));
 }
 
 int main()

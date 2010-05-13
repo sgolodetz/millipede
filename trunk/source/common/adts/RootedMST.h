@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_ROOTEDMST
 #define H_MILLIPEDE_ROOTEDMST
 
+#include <cassert>
 #include <set>
 
 #include <boost/shared_ptr.hpp>
@@ -103,6 +104,37 @@ public:
 	EdgeConstIterator edges_cend() const				{ return m_base.edges_cend(); }
 	bool has_edge(int u, int v) const					{ return m_base.has_edge(u, v); }
 	bool has_node(int n) const							{ return m_base.has_node(n); }
+
+	void merge_nodes(int parent, int child)
+	{
+		assert(parent == tree_parent(child));
+
+		// Determine the indices of the surviving node and the one to be removed.
+		int survivingIndex = std::min(parent, child), otherIndex = std::max(parent, child);
+
+		// Move all the edges descending from the node to be removed to the surviving node.
+		std::set<int> otherChildren = tree_children(otherIndex);
+		if(survivingIndex == child) otherChildren.erase(child);
+		for(std::set<int>::const_iterator it=otherChildren.begin(), iend=otherChildren.end(); it!=iend; ++it)
+		{
+			set_tree_parent(*it, survivingIndex);
+			m_base.set_edge_weight(*it, survivingIndex, edge_weight(*it, otherIndex));
+		}
+
+		// If the surviving node is the child, it needs to be connected to the parent of the initial parent.
+		if(survivingIndex == child)
+		{
+			set_tree_parent(survivingIndex, tree_parent(parent));
+			m_base.set_edge_weight(survivingIndex, tree_parent(parent), edge_weight(otherIndex, tree_parent(parent)));
+		}
+
+		// If the root gets removed during a merge with another node, update its index.
+		if(m_root == otherIndex) m_root = survivingIndex;
+
+		// Remove the node.
+		m_base.remove_node(otherIndex);
+	}
+
 	std::vector<int> node_indices() const				{ return m_base.node_indices(); }
 	const NodeProperties& node_properties(int n) const	{ return m_base.node_properties(n).m_properties; }
 
@@ -116,6 +148,10 @@ public:
 
 	int tree_parent(int n) const						{ return m_base.node_properties(n).m_parent; }
 	int tree_root() const								{ return m_root; }
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void set_tree_parent(int n, int parent)				{ m_base.node_properties(n).m_parent = parent; }
 };
 
 }
