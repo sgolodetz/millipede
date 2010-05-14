@@ -57,7 +57,7 @@ private:
 	void merge_nodes(RootedMST<EdgeWeight>& mst, int u, int v)
 	{
 		mst.merge_nodes(u, v);
-		m_listeners.merge_nodes(u, v);
+		this->m_listeners.merge_nodes(u, v);
 	}
 
 	Flag run_sub(RootedMST<EdgeWeight>& mst, int parent, EdgeWeight parentWeight)
@@ -75,7 +75,7 @@ private:
 			}
 
 			// Find the 'minimum' element when sorting first by ascending weight and then by flag (GUARD before NON_GUARD).
-			std::list<Result>::iterator lowestIt = std::min_element(results.begin(), results.end());
+			typename std::list<Result>::iterator lowestIt = std::min_element(results.begin(), results.end());
 			Result& lowest = *lowestIt;
 
 			// Calculate the parent flag.
@@ -89,7 +89,7 @@ private:
 			}
 
 			// Merge all remaining non-guard edges.
-			for(std::list<Result>::const_iterator it=results.begin(), iend=results.end(); it!=iend; ++it)
+			for(typename std::list<Result>::const_iterator it=results.begin(), iend=results.end(); it!=iend; ++it)
 			{
 				if(it->flag == NON_GUARD)
 				{
