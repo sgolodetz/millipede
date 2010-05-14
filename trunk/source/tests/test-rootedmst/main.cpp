@@ -47,7 +47,7 @@ void adjacency_graph_mst()
 {
 	AdjacencyGraph<std::string, int> graph;
 	graph.set_node_properties(0, "Wibble");
-	RootedMST<int, int> mst(graph);
+	RootedMST<int> mst(graph);
 }
 
 void itk_leaf_layer_mst()
@@ -82,8 +82,7 @@ void itk_leaf_layer_mst()
 
 	ImageLeafLayer leafLayer(hounsfieldImage, windowedImage);
 
-	typedef int Label;
-	RootedMST<Label,ImageLeafLayer::EdgeWeight> mst(leafLayer);
+	RootedMST<ImageLeafLayer::EdgeWeight> mst(leafLayer);
 }
 
 void leaf_layer_mst()
@@ -93,8 +92,7 @@ void leaf_layer_mst()
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
 	ImageLeafLayer leafLayer(3, 3, 1, leafProperties);
 
-	typedef int Label;
-	typedef RootedMST<Label,ImageLeafLayer::EdgeWeight> MST;
+	typedef RootedMST<ImageLeafLayer::EdgeWeight> MST;
 	MST mst(leafLayer);
 
 	mst.merge_nodes(7, 6);

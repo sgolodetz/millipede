@@ -31,34 +31,7 @@ private:
 	typedef shared_ptr<const PartitionForestT> PartitionForest_CPtr;
 
 	//#################### NESTED CLASSES (EXCLUDING COMMANDS AND ITERATORS) ####################
-public:
-	class Listener
-	{
-	public:
-		virtual ~Listener() {}
-
-		// TODO:	This interface doesn't allow a listener to track every single change to the selection. In particular,
-		//			it doesn't alert listeners to every selection change due to a change in the underlying forest. If this
-		//			becomes important in the future, I'll fix it. Right now, it's only present at all to facilitate output
-		//			to Graphviz.
-		virtual void node_was_consolidated(const PFNodeID& node)	{}
-		virtual void node_was_deconsolidated(const PFNodeID& node)	{}
-		virtual void node_was_deselected(const PFNodeID& node)		{}
-		virtual void node_was_selected(const PFNodeID& node)		{}
-		virtual void selection_was_cleared()						{}
-	};
-
 private:
-	class CompositeListener : public CompositeListenerBase<Listener>
-	{
-	public:
-		void node_was_consolidated(const PFNodeID& node)	{ multicast(boost::bind(&Listener::node_was_consolidated, _1, node)); }
-		void node_was_deconsolidated(const PFNodeID& node)	{ multicast(boost::bind(&Listener::node_was_deconsolidated, _1, node)); }
-		void node_was_deselected(const PFNodeID& node)		{ multicast(boost::bind(&Listener::node_was_deselected, _1, node)); }
-		void node_was_selected(const PFNodeID& node)		{ multicast(boost::bind(&Listener::node_was_selected, _1, node)); }
-		void selection_was_cleared()						{ multicast(boost::bind(&Listener::selection_was_cleared, _1)); }
-	};
-
 	class Modification
 	{
 	private:
@@ -250,7 +223,6 @@ private:
 
 	PartitionForest_Ptr m_forest;
 	ICommandManager_Ptr m_commandManager;
-	CompositeListener m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -262,11 +234,6 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(const shared_ptr<Listener>& listener)
-	{
-		m_listeners.add_listener(listener);
-	}
-
 	void clear()
 	{
 		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(&PartitionForestSelection<LeafLayer,BranchLayer>::clear_impl, _1), "Clear Selection")));
@@ -437,7 +404,6 @@ private:
 			}
 			m_nodes[i].clear();
 		}
-		m_listeners.selection_was_cleared();
 		return modification;
 	}
 
@@ -457,7 +423,6 @@ private:
 		}
 		insert_node(node, modification);
 
-		m_listeners.node_was_consolidated(node);
 		return true;
 	}
 
@@ -480,8 +445,6 @@ private:
 		{
 			insert_node(*it, modification);
 		}
-
-		m_listeners.node_was_deconsolidated(node);
 	}
 
 	std::list<PFNodeID> descendants_in_layer(const PFNodeID& node, int layerIndex) const
@@ -531,7 +494,6 @@ private:
 		if(in_representation(node))
 		{
 			erase_node(node, modification);
-			m_listeners.node_was_deselected(node);
 			return modification;
 		}
 
@@ -542,7 +504,6 @@ private:
 		{
 			split_selection(trail, modification);
 			erase_node(node, modification);
-			m_listeners.node_was_deselected(node);
 			return modification;
 		}
 
@@ -552,7 +513,6 @@ private:
 		{
 			erase_node(*it, modification);
 		}
-		m_listeners.node_was_deselected(node);
 		return modification;
 	}
 
@@ -615,8 +575,6 @@ private:
 		}
 
 		insert_node(node, modification);
-
-		m_listeners.node_was_selected(node);
 
 		// Note: This is designed to work even if the node actually has no parent.
 		consolidate_upwards_from_node(m_forest->parent_of(node), modification);

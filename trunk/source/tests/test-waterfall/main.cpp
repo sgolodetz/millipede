@@ -1,61 +1,57 @@
 /***
  * test-waterfall: main.cpp
- * Copyright Stuart Golodetz, 2009. All rights reserved.
+ * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include <climits>
 #include <iostream>
-#include <string>
 
-#include <common/ipfs/construction/Waterfall.h>
+#include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 using namespace mp;
 
-class TestWE : public WaterfallEdge
+struct Listener : WaterfallPass<int>::Listener
 {
-	//#################### PRIVATE VARIABLES ####################
-private:
-	std::string m_name;
-
-	//#################### CONSTRUCTORS ####################
-public:
-	TestWE(const std::string& name, int weight)
-	:	WaterfallEdge(weight), m_name(name)
-	{}
-
-	//#################### PRIVATE METHODS ####################
-private:
-	void merge_hook() const
+	void merge_nodes(int u, int v)
 	{
-		std::cout << "Merging edge " << m_name << std::endl;
+		std::cout << "Merging nodes " << u << " and " << v << '\n';
 	}
 };
 
+void basic_test()
+{
+	// Create the graph in the Marcotegui waterfall paper.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<14; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 3);
+		graph.set_edge_weight(1, 2, 2);
+		graph.set_edge_weight(1, 3, 20);
+			graph.set_edge_weight(3, 4, 4);
+				graph.set_edge_weight(4, 5, 2);
+			graph.set_edge_weight(3, 6, 10);
+				graph.set_edge_weight(6, 7, 5);
+					graph.set_edge_weight(7, 8, 5);
+						graph.set_edge_weight(8, 9, 4);
+						graph.set_edge_weight(8, 10, 2);
+						graph.set_edge_weight(8, 11, 20);
+							graph.set_edge_weight(11, 12, 4);
+							graph.set_edge_weight(11, 13, 4);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Nicholls waterfall pass on the MST.
+	NichollsWaterfallPass<int> pass;
+	boost::shared_ptr<Listener> listener(new Listener);
+	pass.add_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
 int main()
 {
-	WaterfallEdge_Ptr r(new TestWE("r", INT_MAX));
-	WaterfallEdge_Ptr a(new TestWE("a", 5));
-	WaterfallEdge_Ptr b(new TestWE("b", 4));
-	WaterfallEdge_Ptr c(new TestWE("c", 2));
-	WaterfallEdge_Ptr d(new TestWE("d", 6));
-	WaterfallEdge_Ptr e(new TestWE("e", 1));
-	WaterfallEdge_Ptr f(new TestWE("f", 1));
-	WaterfallEdge_Ptr g(new TestWE("g", 3));
-	WaterfallEdge_Ptr h(new TestWE("h", 2));
-	WaterfallEdge_Ptr i(new TestWE("i", 3));
-	WaterfallEdge_Ptr j(new TestWE("j", 2));
-
-	r->add_child(a);
-		a->add_child(d);
-	r->add_child(b);
-		b->add_child(e);
-			e->add_child(h);
-		b->add_child(f);
-			f->add_child(i);
-	r->add_child(c);
-		c->add_child(g);
-			g->add_child(j);
-
-	Waterfall::iterate(r);
-
+	basic_test();
 	return 0;
 }

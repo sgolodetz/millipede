@@ -16,26 +16,16 @@
 
 namespace mp {
 
-template <typename NodeProperties, typename EdgeWeight>
+template <typename EdgeWeight>
 class RootedMST
 {
 	//#################### NESTED CLASSES ####################
 private:
 	struct NullType {};
 
-	struct NodeData
-	{
-		int m_parent;
-		NodeProperties m_properties;
-
-		NodeData()
-		:	m_parent(-1)
-		{}
-	};
-
 	//#################### TYPEDEFS ####################
 private:
-	typedef AdjacencyGraph<NodeData, EdgeWeight> BaseGraph;
+	typedef AdjacencyGraph<int, EdgeWeight> BaseGraph;	// each node stores the index of its parent
 public:
 	typedef typename BaseGraph::Edge Edge;
 	typedef typename BaseGraph::EdgeCIter EdgeConstIterator;
@@ -57,11 +47,11 @@ public:
 		if(nodeIndices.empty()) throw Exception("Cannot build a *rooted* MST for a graph with no nodes (there's no potential root)");
 		m_root = nodeIndices.front();
 		pq.insert(m_root, 0, NullType());
-		m_base.set_node_properties(m_root, NodeData());
+		set_tree_parent(m_root, -1);
 		for(size_t i=1, size=nodeIndices.size(); i<size; ++i)
 		{
 			pq.insert(nodeIndices[i], INT_MAX, NullType());
-			m_base.set_node_properties(nodeIndices[i], NodeData());
+			set_tree_parent(nodeIndices[i], -1);
 		}
 
 		while(!pq.empty())
@@ -77,7 +67,7 @@ public:
 				if(pq.contains(v) && weight < pq.element(v).key())
 				{
 					pq.update_key(v, weight);
-					m_base.node_properties(v).m_parent = u;
+					set_tree_parent(v, u);
 				}
 			}
 		}
@@ -86,7 +76,7 @@ public:
 		for(typename BaseGraph::NodePropertiesCIter it=m_base.node_properties_cbegin(), iend=m_base.node_properties_cend(); it!=iend; ++it)
 		{
 			int u = it->first;
-			int v = it->second.m_parent;
+			int v = it->second;
 			if(v != -1)
 			{
 				EdgeWeight weight = graph.edge_weight(u, v);
@@ -105,7 +95,7 @@ public:
 	bool has_edge(int u, int v) const					{ return m_base.has_edge(u, v); }
 	bool has_node(int n) const							{ return m_base.has_node(n); }
 
-	void merge_nodes(int parent, int child)
+	int merge_nodes(int parent, int child)
 	{
 		assert(parent == tree_parent(child));
 
@@ -133,10 +123,11 @@ public:
 
 		// Remove the node.
 		m_base.remove_node(otherIndex);
+
+		return survivingIndex;
 	}
 
 	std::vector<int> node_indices() const				{ return m_base.node_indices(); }
-	const NodeProperties& node_properties(int n) const	{ return m_base.node_properties(n).m_properties; }
 
 	std::set<int> tree_children(int n) const
 	{
@@ -146,12 +137,12 @@ public:
 		return children;
 	}
 
-	int tree_parent(int n) const						{ return m_base.node_properties(n).m_parent; }
+	int tree_parent(int n) const						{ return m_base.node_properties(n); }
 	int tree_root() const								{ return m_root; }
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void set_tree_parent(int n, int parent)				{ m_base.node_properties(n).m_parent = parent; }
+	void set_tree_parent(int n, int parent)				{ m_base.set_node_properties(n, parent); }
 };
 
 }

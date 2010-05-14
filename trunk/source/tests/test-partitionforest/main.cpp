@@ -187,8 +187,7 @@ void lowest_branch_layer_test()
 	IPF ipf(leafLayer, lowestBranchLayer);
 
 	// Construct a rooted MST from the lowest branch layer.
-	typedef int Label;
-	RootedMST<Label,ImageBranchLayer::EdgeWeight> mst(*lowestBranchLayer);
+	RootedMST<ImageBranchLayer::EdgeWeight> mst(*lowestBranchLayer);
 }
 
 void nonsibling_node_merging_test()
@@ -238,15 +237,6 @@ void nonsibling_node_merging_test()
 	ipf.output(std::cout);
 }
 
-struct SelectionListener : Selection::Listener
-{
-	void node_was_consolidated(const PFNodeID& node)	{ std::cout << "Node consolidated: " << node << '\n'; }
-	void node_was_deconsolidated(const PFNodeID& node)	{ std::cout << "Node deconsolidated: " << node << '\n'; }
-	void node_was_deselected(const PFNodeID& node)		{ std::cout << "Node deselected: " << node << '\n'; }
-	void node_was_selected(const PFNodeID& node)		{ std::cout << "Node selected: " << node << '\n'; }
-	void selection_was_cleared()						{ std::cout << "Selection cleared\n"; }
-};
-
 void selection_test()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
@@ -256,9 +246,6 @@ void selection_test()
 	Selection_Ptr selection(new Selection(ipf));
 	selection->set_command_manager(manager);
 	ipf->add_listener(selection);
-
-	boost::shared_ptr<SelectionListener> selectionListener(new SelectionListener);
-	selection->add_listener(selectionListener);
 
 	selection->select_node(PFNodeID(4,0));
 	manager->undo();
