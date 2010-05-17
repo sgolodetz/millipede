@@ -124,15 +124,6 @@ io/util/FieldIO.tpp
 )
 
 ##
-SET(ipfs_construction_headers
-ipfs/construction/Watershed.h
-)
-
-SET(ipfs_construction_templates
-ipfs/construction/Watershed.tpp
-)
-
-##
 SET(partitionforests_base_sources
 partitionforests/base/PFNodeID.cpp
 )
@@ -169,6 +160,11 @@ ogl/WrappedGL.h
 SET(segmentation_waterfall_headers
 segmentation/waterfall/NichollsWaterfallPass.h
 segmentation/waterfall/WaterfallPass.h
+)
+
+##
+SET(segmentation_watershed_headers
+segmentation/watershed/MeijsterRoerdinkWatershed.h
 )
 
 ##
@@ -216,11 +212,11 @@ ${exceptions_headers}
 ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
-${ipfs_construction_headers}
 ${partitionforests_base_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
 ${segmentation_waterfall_headers}
+${segmentation_watershed_headers}
 ${textures_headers}
 ${util_headers}
 )
@@ -229,7 +225,6 @@ SET(templates
 ${adts_templates}
 ${dicom_volumes_templates}
 ${io_util_templates}
-${ipfs_construction_templates}
 )
 
 #############################
@@ -274,10 +269,6 @@ SOURCE_GROUP(io\\util\\.h FILES ${io_util_headers})
 SOURCE_GROUP(io\\util\\.tpp FILES ${io_util_templates})
 
 ##
-SOURCE_GROUP(ipfs\\construction\\.h FILES ${ipfs_construction_headers})
-SOURCE_GROUP(ipfs\\construction\\.tpp FILES ${ipfs_construction_templates})
-
-##
 SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
 SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
 
@@ -290,6 +281,9 @@ SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
 
 ##
 SOURCE_GROUP(segmentation\\waterfall\\.h FILES ${segmentation_waterfall_headers})
+
+##
+SOURCE_GROUP(segmentation\\watershed\\.h FILES ${segmentation_watershed_headers})
 
 ##
 SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})

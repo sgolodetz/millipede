@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <common/ipfs/construction/Watershed.h>
+#include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 using namespace mp;
 
 template <typename PixelType>
@@ -85,21 +85,35 @@ try
 		6,6,5,5,5,2,1
 	};
 
-	Image::Pointer function = create_2d_image(pixels, 7, 5);
+	Image::Pointer image = create_2d_image(pixels, 7, 5);
 
-	output_2d_image(std::cout, function);
+	output_2d_image(std::cout, image);
 
-	typedef Watershed<signed int,2> WS;
-	WS ws(function);
+	typedef MeijsterRoerdinkWatershed<signed int,2> WS;
 
+	// Specify a 3x3 basic neighbourhood.
+	WS::NeighbourRadius radius;
+	radius.Fill(1);
+
+	// Specify the necessary offsets for 4-connectivity.
+	WS::NeighbourOffsets offsets(4);
+	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
+	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
+	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
+	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
+
+	// Run the watershed algorithm on the image.
+	WS ws(image, radius, offsets);
+
+	// Output the results.
 	std::cout << '\n';
 	output_2d_image(std::cout, ws.lower_complete());
 
 	std::cout << '\n';
-	output_2d_image(std::cout, ws.labels());
+	output_2d_image(std::cout, ws.arrows());
 
 	std::cout << '\n';
-	output_2d_image(std::cout, ws.arrows());
+	output_2d_image(std::cout, ws.labels());
 
 	return 0;
 }
