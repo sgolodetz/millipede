@@ -29,15 +29,35 @@ namespace mp_PartitionForest {
 
 using namespace boost;
 
+/**
+@brief	A partition forest is a nested hierarchy of adjacency graphs that all partition the same aggregate object.
+		For a more detailed and formal definition, please refer to my thesis.
+
+This class template provides a generic implementation of partition forests that can be applied
+in multiple contexts. Clients must provide their own leaf layer and branch layer implementations,
+since the way in which these can be implemented efficiently varies with context.
+
+@tparam	LeafLayer		The type containing the client's implementation of a leaf layer
+@tparam BranchLayer		The type containing the client's implementation of a branch layer
+*/
 template <typename LeafLayer, typename BranchLayer>
 class PartitionForest
 {
 	//#################### TYPEDEFS ####################
 public:
+	/// The properties associated with a branch node
 	typedef typename BranchLayer::NodeProperties BranchProperties;
+
+	/// A chain of nodes produced during an unzip_node() operation
 	typedef std::deque<PFNodeID> Chain;
-	typedef typename LeafLayer::Edge Edge;						// must be the same as BranchLayer::Edge
-	typedef typename LeafLayer::EdgeWeight EdgeWeight;			// must be the same as BranchLayer::EdgeWeight
+
+	/// An edge in any of the layers (note that LeafLayer::Edge must equal BranchLayer::Edge)
+	typedef typename LeafLayer::Edge Edge;
+
+	/// The weight on an edge in any of the layers (note that LeafLayer::EdgeWeight must equal BranchLayer::EdgeWeight)
+	typedef typename LeafLayer::EdgeWeight EdgeWeight;
+
+	/// The properties associated with a leaf node
 	typedef typename LeafLayer::NodeProperties LeafProperties;
 
 private:
@@ -48,10 +68,24 @@ private:
 	typedef shared_ptr<LeafLayer> LeafLayer_Ptr;
 
 public:
+	/**
+	@name Iterator Types
+	*/
+	//@{
+
+	/// Iterator type that allows the nodes in a branch layer to be traversed in sequence as branch nodes (for reading only).
 	typedef typename BranchLayer::BranchNodeConstIterator BranchNodeConstIterator;
+
+	/// Iterator type that allows the nodes in the leaf layer to be traversed in sequence as leaf nodes (for reading only).
 	typedef typename LeafLayer::LeafNodeConstIterator LeafNodeConstIterator;
+
+	/// Iterator type that allows the edges in a layer to be traversed in sequence (for reading only).
 	typedef typename IForestLayerT::EdgeConstIterator EdgeConstIterator;
+
+	/// Iterator type that allows the nodes in a layer to be traversed in sequence as generic nodes (for reading only).
 	typedef typename IForestLayerT::NodeConstIterator NodeConstIterator;
+
+	//@}
 
 	//#################### CONSTANTS ####################
 public:
@@ -176,6 +210,21 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
+	/**
+	@brief	Constructs an initial partition forest from a leaf layer (and, optionally, a corresponding
+			lowest branch layer).
+
+	The facility to generate a lowest branch layer externally and then supply it as an argument here is	provided
+	because it may be prohibitively inefficient to generate it by cloning the leaf layer and then merging nodes
+	(this would be the only option if we forced clients to construct it in situ).
+
+	@param[in]	leafLayer			A shared_ptr (non-null) to the leaf layer
+	@param[in]	lowestBranchLayer	An optional shared_ptr (possibly null) to the lowest branch layer
+	@pre
+		-	leafLayer.get() != NULL
+		-	The layers pointed to by leafLayer and lowestBranchLayer properly correspond to each other
+			(in the obvious manner)
+	*/
 	explicit PartitionForest(const LeafLayer_Ptr& leafLayer, const BranchLayer_Ptr& lowestBranchLayer = BranchLayer_Ptr())
 	:	m_leafLayer(leafLayer), m_commandManager(new BasicCommandManager)
 	{
@@ -184,74 +233,56 @@ public:
 
 	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
 private:
+	/**
+	@brief	The default compiler-generated copy constructor would be dangerous: this disables it.
+	*/
 	PartitionForest(const PartitionForest&);
+
+	/**
+	@brief	The default compiler-generated assignment operator would be dangerous: this disables it.
+	*/
 	PartitionForest& operator=(const PartitionForest&);
 
 	//#################### PUBLIC METHODS ####################
 public:
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Auxiliary Methods
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Adds a listener to be notified of changes to the partition forest.
+
+	@param[in]	listener	A shared_ptr (non-null) to the listener
+	@pre
+		-	listener.get() != NULL
+	@post
+		-	The argument is registered as listening to this partition forest (and will be alerted to any changes)
+	*/
 	void add_listener(const shared_ptr<Listener>& listener)
 	{
 		m_listeners.add_listener(listener);
 	}
 
-	PFNodeID ancestor_of(const PFNodeID& node, int layerIndex) const
-	{
-		if(layerIndex < node.layer() || layerIndex > highest_layer())
-		{
-			throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-		}
+	/**
+	@brief	Provides a general way of constructing a lowest branch layer from a leaf layer and a specified
+			partitioning of the leaf nodes it contains.
 
-		PFNodeID cur = node;
-		while(cur.layer() < layerIndex)
-		{
-			IForestLayer_Ptr layer = forest_layer(cur.layer());
-			cur = PFNodeID(cur.layer() + 1, layer->node_parent(cur.index()));
-		}
-		return cur;
-	}
+	The lowest branch layer constructed will contain a node for each group. Each such node will contain child
+	links to the leaf nodes in its group. Corresponding parent links will be added to the nodes in the leaf
+	layer (this is why leafLayer is marked as an in/out parameter - although it isn't modified itself, the
+	leaf layer is changed through it).
 
-	BranchNodeConstIterator branch_nodes_cbegin(int layerIndex) const
-	{
-		BranchLayer_Ptr layer = checked_branch_layer(layerIndex);
-		if(layer) return layer->branch_nodes_cbegin();
-		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-	}
-
-	BranchNodeConstIterator branch_nodes_cend(int layerIndex) const
-	{
-		BranchLayer_Ptr layer = checked_branch_layer(layerIndex);
-		if(layer) return layer->branch_nodes_cend();
-		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-	}
-
-	const BranchProperties& branch_properties(const PFNodeID& node) const
-	{
-		BranchLayer_Ptr branchLayer = checked_branch_layer(node.layer());
-		if(branchLayer && branchLayer->has_node(node.index())) return branchLayer->node_properties(node.index());
-		else throw Exception(OSSWrapper() << "Invalid node: " << node);
-	}
-
-	std::set<PFNodeID> children_of(const PFNodeID& node) const
-	{
-		// Special case: nodes in the leaf layer have no children.
-		if(node.layer() == 0) return std::set<PFNodeID>();
-
-		BranchLayer_Ptr layer = checked_branch_layer(node.layer());
-		if(!layer) throw Exception(OSSWrapper() << "Invalid layer: " << node.layer());
-		if(!layer->has_node(node.index())) throw Exception(OSSWrapper() << "Invalid node: " << node);
-
-		std::set<PFNodeID> ret;
-
-		std::set<int> children = layer->node_children(node.index());
-		int childLayerIndex = node.layer() - 1;
-		for(std::set<int>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
-		{
-			ret.insert(PFNodeID(childLayerIndex, *it));
-		}
-
-		return ret;
-	}
-
+	@param[in,out]	leafLayer	The leaf layer
+	@param[in]		groups		The groups into which to partition the leaf nodes
+	@pre
+		-	The specified groups must form a partition of the leaf nodes
+	@throw Exception
+		-	If any of the specified groups are empty
+	@return A shared_ptr to the newly-constructed lowest branch layer
+	*/
 	static BranchLayer_Ptr construct_lowest_branch_layer(const LeafLayer_Ptr& leafLayer, const std::vector<std::set<int> >& groups)
 	{
 		BranchLayer_Ptr lowestBranchLayer(new BranchLayer);
@@ -287,55 +318,11 @@ public:
 		return lowestBranchLayer;
 	}
 
-	EdgeConstIterator edges_cbegin(int layerIndex) const
-	{
-		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
-		if(layer) return layer->edges_cbegin();
-		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-	}
+	/**
+	@brief	Outputs a textual representation of the partition forest to a std::ostream.
 
-	EdgeConstIterator edges_cend(int layerIndex) const
-	{
-		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
-		if(layer) return layer->edges_cend();
-		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-	}
-
-	int highest_layer() const
-	{
-		return static_cast<int>(m_branchLayers.size());
-	}
-
-	LeafNodeConstIterator leaf_nodes_cbegin() const
-	{
-		return m_leafLayer->leaf_nodes_cbegin();
-	}
-
-	LeafNodeConstIterator leaf_nodes_cend() const
-	{
-		return m_leafLayer->leaf_nodes_cend();
-	}
-
-	const LeafProperties& leaf_properties(int n) const
-	{
-		if(m_leafLayer->has_node(n)) return m_leafLayer->node_properties(n);
-		else throw Exception(OSSWrapper() << "Invalid leaf: " << n);
-	}
-
-	NodeConstIterator nodes_cbegin(int layerIndex) const
-	{
-		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
-		if(layer) return layer->nodes_cbegin();
-		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-	}
-
-	NodeConstIterator nodes_cend(int layerIndex) const
-	{
-		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
-		if(layer) return layer->nodes_cend();
-		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
-	}
-
+	@param[out]	os	A reference to the std::ostream to which to output the partition forest
+	*/
 	void output(std::ostream& os) const
 	{
 		os << "LAYER 0\n\n";
@@ -387,6 +374,116 @@ public:
 		}
 	}
 
+	/**
+	@brief	Sets the command manager that the partition forest should use.
+
+	By default, a partition forest uses a BasicCommandManager to manage command execution.
+	This is a simple command manager that executes commands without storing them, meaning
+	that once they're executed, they can't be undone. It is ideal when constructing the
+	forest, or when undo facilities are unimportant (or the overhead cannot be afforded).
+	If and when undo facilities are required, however, the command manager can be replaced
+	with an UndoableCommandManager (or a program's own command manager, by deriving from
+	ICommandManager).
+
+	@param[in]	commandManager	A shared_ptr to the command manager to use
+	@post
+		-	The partition forest's command manager is replaced with the argument
+	*/
+	void set_command_manager(const ICommandManager_Ptr& commandManager)
+	{
+		m_commandManager = commandManager;
+	}
+
+	//@}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Hierarchy Accessors
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief Finds the ancestor of a node in the specified layer.
+
+	@param[in]	node		The ID of the node
+	@param[in]	layerIndex	The layer in which to find the relevant ancestor of the node
+	@pre
+		-	node.layer() <= layerIndex <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+		-	If the specified ID does not refer to a valid node
+	@return The ancestor of the node in the specified layer
+	*/
+	PFNodeID ancestor_of(const PFNodeID& node, int layerIndex) const
+	{
+		if(layerIndex < node.layer() || layerIndex > highest_layer())
+		{
+			throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+		}
+
+		PFNodeID cur = node;
+		while(cur.layer() < layerIndex)
+		{
+			IForestLayer_Ptr layer = forest_layer(cur.layer());
+			cur = PFNodeID(cur.layer() + 1, layer->node_parent(cur.index()));
+		}
+		return cur;
+	}
+
+	/**
+	@brief	Returns the node IDs of the children of the specified node.
+
+	If the node is in the leaf layer, it has no children, so the empty set is returned.
+
+	@param[in]	node	The ID of the node
+	@throw Exception
+		-	If the specified ID does not refer to a valid node
+	@return
+		-	The node's children, if the node is a branch node
+		-	The empty set, if the node is a leaf node
+	*/
+	std::set<PFNodeID> children_of(const PFNodeID& node) const
+	{
+		// Special case: nodes in the leaf layer have no children.
+		if(node.layer() == 0) return std::set<PFNodeID>();
+
+		BranchLayer_Ptr layer = checked_branch_layer(node.layer());
+		if(!layer) throw Exception(OSSWrapper() << "Invalid layer: " << node.layer());
+		if(!layer->has_node(node.index())) throw Exception(OSSWrapper() << "Invalid node: " << node);
+
+		std::set<PFNodeID> ret;
+
+		std::set<int> children = layer->node_children(node.index());
+		int childLayerIndex = node.layer() - 1;
+		for(std::set<int>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
+		{
+			ret.insert(PFNodeID(childLayerIndex, *it));
+		}
+
+		return ret;
+	}
+
+	/**
+	@brief	Returns the index of the highest layer in the partition forest.
+
+	@return	The index of the highest layer, as described
+	*/
+	int highest_layer() const
+	{
+		return static_cast<int>(m_branchLayers.size());
+	}
+
+	/**
+	@brief	Returns the node ID of the parent of the specified node (if any).
+
+	@param[in]	node	The ID of the node
+	@throw Exception
+		-	If the specified ID does not refer to a valid node
+	@return
+		-	The ID of the node's parent, if node.layer() != highest_layer()
+		-	PFNodeID::invalid(), otherwise
+	*/
 	PFNodeID parent_of(const PFNodeID& node) const
 	{
 		IForestLayer_Ptr layer = checked_forest_layer(node.layer());
@@ -399,6 +496,16 @@ public:
 		else throw Exception(OSSWrapper() << "Invalid node: " << node);
 	}
 
+	/**
+	@brief	Determines the <em>receptive region</em> of the specified node.
+
+	@note	The receptive region of a node is the set of its leaf node descendants in the partition forest.
+
+	@param[in]	node	The ID of the node
+	@throw Exception
+		-	If the specified ID does not refer to a valid node
+	@return A list of the indices of the leaf nodes in the receptive region of the node
+	*/
 	std::list<int> receptive_region_of(const PFNodeID& node) const
 	{
 		// Note: This is not currently optimized -- it's mostly for debugging/output purposes right now.
@@ -425,13 +532,227 @@ public:
 		return result;
 	}
 
-	void set_command_manager(const ICommandManager_Ptr& commandManager)
+	//@}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Node Property Accessors
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Returns the properties associated with the specified branch node.
+
+	@param[in]	node	The ID of the node
+	@throw Exception
+		-	If the specified ID does not refer to a valid node
+	@return The properties of the branch node, as described
+	*/
+	const BranchProperties& branch_properties(const PFNodeID& node) const
 	{
-		m_commandManager = commandManager;
+		BranchLayer_Ptr branchLayer = checked_branch_layer(node.layer());
+		if(branchLayer && branchLayer->has_node(node.index())) return branchLayer->node_properties(node.index());
+		else throw Exception(OSSWrapper() << "Invalid node: " << node);
 	}
 
-	//~~~~~~~~~~~~~~~~~~~~ CORE ALGORITHMS ~~~~~~~~~~~~~~~~~~~~
+	/**
+	@brief	Returns the properties associated with the specified leaf node.
 
+	@note	Since all leaf nodes are in layer 0, only the index of the leaf node
+			is passed in, rather than a full node ID.
+
+	@param[in]	n	The index of the leaf node
+	@throw Exception
+		-	If the specified ID does not refer to a valid node
+	@return The properties of the leaf node, as described
+	*/
+	const LeafProperties& leaf_properties(int n) const
+	{
+		if(m_leafLayer->has_node(n)) return m_leafLayer->node_properties(n);
+		else throw Exception(OSSWrapper() << "Invalid leaf: " << n);
+	}
+
+	//@}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Iterators
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Returns a BranchNodeConstIterator referring to the start of the branch nodes in the specified layer.
+
+	In conjunction with branch_nodes_cend(), this allows the nodes in a given branch layer to be accessed in
+	sequence as branch nodes. This is in contrast to the more generic interface provided by nodes_cbegin() and
+	nodes_cend(), which only allow the same nodes to be accessed as generic nodes.
+
+	@note	It is implicit that corresponding calls to branch_nodes_cbegin() and branch_nodes_cend() must specify
+			the same branch layer index. If the layer indices differ, iterator comparisons between the two results
+			will be undefined.
+
+	@param[in]	layerIndex	The index of the branch layer
+	@pre
+		-	1 <= layerIndex <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+	@return The BranchNodeConstIterator, as described
+	*/
+	BranchNodeConstIterator branch_nodes_cbegin(int layerIndex) const
+	{
+		BranchLayer_Ptr layer = checked_branch_layer(layerIndex);
+		if(layer) return layer->branch_nodes_cbegin();
+		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+	}
+
+	/**
+	@brief	Returns a BranchNodeConstIterator referring to the end of the branch nodes in the specified layer.
+
+	@see branch_nodes_cbegin
+
+	@param[in]	layerIndex	The index of the branch layer
+	@pre
+		-	1 <= layerIndex <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+	@return The BranchNodeConstIterator, as described
+	*/
+	BranchNodeConstIterator branch_nodes_cend(int layerIndex) const
+	{
+		BranchLayer_Ptr layer = checked_branch_layer(layerIndex);
+		if(layer) return layer->branch_nodes_cend();
+		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+	}
+
+	/**
+	@brief	Returns an EdgeConstIterator to the start of the edges in the specified layer.
+
+	In conjunction with edges_cend(), this allows the edges in a given layer to be accessed in sequence.
+
+	@note	It is implicit that corresponding calls to edges_cbegin() and edges_cend() must specify
+			the same layer index. If the layer indices differ, iterator comparisons between the two
+			results will be undefined.
+
+	@param[in]	layerIndex	The index of the layer
+	@pre
+		-	0 <= layerIndex <= highest_layer()
+	@throws Exception
+		-	If the precondition is violated
+	@return The EdgeConstIterator, as described
+	*/
+	EdgeConstIterator edges_cbegin(int layerIndex) const
+	{
+		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
+		if(layer) return layer->edges_cbegin();
+		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+	}
+
+	/**
+	@brief	Returns an EdgeConstIterator to the end of the edges in the specified layer.
+
+	@see edges_cbegin
+
+	@param[in]	layerIndex	The index of the layer
+	@pre
+		-	0 <= layerIndex <= highest_layer()
+	@throws Exception
+		-	If the precondition is violated
+	@return The EdgeConstIterator, as described
+	*/
+	EdgeConstIterator edges_cend(int layerIndex) const
+	{
+		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
+		if(layer) return layer->edges_cend();
+		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+	}
+
+	/**
+	@brief	Returns a LeafNodeConstIterator referring to the start of the leaf nodes.
+
+	In conjunction with leaf_nodes_cend(), this allows the nodes in the leaf layer to be accessed
+	in sequence. This is in contrast to the more generic interface provided by nodes_cbegin() and
+	nodes_cend(), which only allow the same nodes to be accessed as generic nodes.
+
+	@return The LeafNodeConstIterator, as described
+	*/
+	LeafNodeConstIterator leaf_nodes_cbegin() const
+	{
+		return m_leafLayer->leaf_nodes_cbegin();
+	}
+
+	/**
+	@brief	Returns a LeafNodeConstIterator referring to the end of the leaf nodes.
+
+	@see leaf_nodes_cbegin
+
+	@return The LeafNodeConstIterator, as described
+	*/
+	LeafNodeConstIterator leaf_nodes_cend() const
+	{
+		return m_leafLayer->leaf_nodes_cend();
+	}
+
+	/**
+	@brief	Returns a NodeConstIterator referring to the start of the nodes in the specified layer.
+
+	In conjunction with nodes_cend(), this allows the nodes in a given layer to be accessed in sequence
+	as generic nodes.
+
+	@note	It is implicit that corresponding calls to nodes_cbegin() and nodes_cend() must specify the
+			same layer index. If the layer indices differ, iterator comparisons between the two results
+			will be undefined.
+
+	@param[in]	layerIndex	The index of the layer
+	@pre
+		-	0 <= layerIndex <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+	@return The NodeConstIterator, as described
+	*/
+	NodeConstIterator nodes_cbegin(int layerIndex) const
+	{
+		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
+		if(layer) return layer->nodes_cbegin();
+		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+	}
+
+	/**
+	@brief	Returns a NodeConstIterator referring to the end of the nodes in the specified layer.
+
+	@see nodes_cbegin
+
+	@return The NodeConstIterator, as described
+	*/
+	NodeConstIterator nodes_cend(int layerIndex) const
+	{
+		IForestLayer_Ptr layer = checked_forest_layer(layerIndex);
+		if(layer) return layer->nodes_cend();
+		else throw Exception(OSSWrapper() << "Invalid layer: " << layerIndex);
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Core Mutators
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Inserts a clone of the specified layer into the partition forest (above the clonee layer).
+
+	@note	This method executes a CloneAboveLayerCommand (which can be undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()).
+
+	@param[in]	indexB				The index of the clonee layer
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	0 <= indexB <= highest_layer()
+	@post
+		-	A clone of the specified layer will have been inserted into the partition forest as described
+		-	Listeners will have been alerted that this has happened
+	*/
 	void clone_layer(int indexB, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -445,6 +766,22 @@ public:
 		m_commandManager->execute(Command_Ptr(new CloneAboveLayerCommand(this, indexB)));
 	}
 
+	/**
+	@brief	Deletes the specified (branch) layer from the partition forest.
+
+	The leaf layer cannot be deleted, as it is essential to know the primitive sub-objects in the aggregate.
+
+	@note	This method executes a DeleteLayerCommand (which can be undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()).
+
+	@param[in]	indexD				The index of the layer to be deleted
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	1 <= indexD <= highest_layer()
+	@post
+		-	The specified layer will have been deleted from the partition forest
+		-	Listeners will have been alerted that this has happened
+	*/
 	void delete_layer(int indexD, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -458,6 +795,26 @@ public:
 		m_commandManager->execute(Command_Ptr(new DeleteLayerCommand(this, indexD)));
 	}
 
+	/**
+	@brief	Merges a set of sibling nodes in the partition forest.
+
+	@note	This method executes a MergeSiblingNodesCommand (which can be undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()).
+
+	@param[in]	nodes	The set of nodes to be merged
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	!nodes.empty()
+		-	The nodes are all valid, and share a common parent (they must thus all be in the same layer)
+		-	The layer in which the nodes reside is not the lowest layer
+		-	The union of the objects represented by the nodes to be merged is connected
+	@post
+		-	The partition forest will have been consistently modified so as to merge the specified nodes
+		-	Listeners will have been alerted that this has happened
+	@throw Exception
+		-	If the preconditions are violated
+	@return The ID of the node resulting from the merge
+	*/
 	PFNodeID merge_sibling_nodes(const std::set<PFNodeID>& nodes, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -486,6 +843,32 @@ public:
 		return command->result();
 	}
 
+	/**
+	@brief	Splits a node in the partition forest into a number of non-overlapping, connected pieces.
+
+	The pieces are specified as groups of the node's children. For instance, if a node has the child set {0,3,4,6},
+	we might e.g. pass in (subject to connectivity constraints) the groups [{0,4},{3,6}] to split the node into two.
+	The node would then be replaced with two nodes, one with child set {0,4}, and the other with child set {3,6}.
+
+	@note	This method executes a SplitNodeCommand (which can be undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()).
+
+	@param[in]	node	The node to be split
+	@param[in]	groups	A partition of the node's children into groups
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	node.layer() != 0
+		-	The node to be split is valid
+		-	The set of groups forms a partition of the node's children
+		-	Each group is itself non-empty and connected
+	@post
+		-	The partition forest will have been consistently modified so as to replace the node being split with
+			a node for each split group
+		-	Listeners will have been alerted that this has happened
+	@throw Exception
+		-	If the preconditions are violated
+	@return The set of nodes created as a result of the split
+	*/
 	std::set<PFNodeID> split_node(const PFNodeID& node, const std::vector<std::set<int> >& groups, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -523,8 +906,40 @@ public:
 		return command->result();
 	}
 
-	//~~~~~~~~~~~~~~~~~~~~ ZIPPING ALGORITHMS ~~~~~~~~~~~~~~~~~~~~
+	//@}
 
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Zipping Mutators
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Unzips a node in the partition forest as far up as the specified layer.
+
+	An unzip node operation is essentially a multi-layer split. Each ancestor of
+	the specified node in the layers [node.layer()+1, toLayer] is split into pieces.
+	For each split, one of those pieces has the same receptive region as the node being
+	unzipped, whilst the other pieces are determined to be the connected components of
+	what remains of the split node.
+
+	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
+			changes involved, rather than the execution of the sequence as a whole.
+
+	@param[in]	node				The node to be unzipped
+	@param[in]	toLayer				The layer to which to unzip it
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	The specified node is valid
+		-	node.layer() <= toLayer <= highest_layer()
+	@post
+		-	The partition forest will have been consistently modified so as to unzip the node to the specified layer
+	@throw Exception
+		-	If the preconditions are violated
+	@return The node chains generated by the unzip (see my thesis for details, and also see zip_chains())
+	*/
 	std::vector<Chain> unzip_node(const PFNodeID& node, int toLayer = highest_layer(), CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -591,6 +1006,34 @@ public:
 		return chains;
 	}
 
+	/**
+	@brief	Zips chains of sibling nodes in the partition forest together.
+
+	A zip chains operation is essentially a multi-layer sibling node merge. The chains (which do not all have
+	to be of the same length, but must share the same highest layer) are lined up next to each other and the
+	corresponding sibling nodes in each layer are merged, starting from the highest layer and working downwards.
+	For example, if we were merging the hypothetical chains [(3,0),(2,0),(1,5)], [(3,3),(2,4)] and [(3,2),(2,2)],
+	then the sequence of sibling merges would be {(3,0),(3,3),(3,2)}, {(2,0),(2,4),(2,2)} and (trivially) {(1,5)}.
+
+	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
+			changes involved, rather than the execution of the sequence as a whole.
+
+	@param[in]	chains				The chains of nodes
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	!chains.empty()
+		-	Every chain node is valid
+		-	Each chain is non-empty, and does not extend down as far as the leaf layer (which is immutable)
+		-	The highest nodes in the chains are siblings of each other
+		-	The sets of nodes to be merged in each layer are connected
+	@post
+		-	The partition forest will have been consistently modified so as to zip the chains together
+	@throw Exception
+		-	If the preconditions are violated
+	@return A pair, the first component of which is the node resulting from the final merge, and the second
+			component of which is the layer at which the chains started
+	*/
 	std::pair<PFNodeID,int> zip_chains(const std::vector<Chain>& chains, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -662,8 +1105,40 @@ public:
 		return std::make_pair(mergeResult, highLayer);
 	}
 
-	//~~~~~~~~~~~~~~~~~~~~ HIGHER-LEVEL ALGORITHMS ~~~~~~~~~~~~~~~~~~~~
+	//@}
 
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Higher-Level Mutators
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Merges a set of nodes in the same layer of the partition forest into their connected components.
+
+	This a more general merging algorithm than merge_sibling_nodes(). It weakens the preconditions required
+	to merge nodes to the minimum possible. Given a set of nodes to be merged (which must all be in the same
+	layer), the algorithm first determines their connected components using the adjacency graph for their layer,
+	and then merges the nodes in each component using zipping operations.
+
+	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
+			changes involved, rather than the execution of the sequence as a whole.
+
+	@param[in]	nodes				The nodes to be merged
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	!nodes.empty()
+		-	Each of the nodes to be merged is valid
+		-	All of the nodes are in the same, non-leaf, layer
+	@post
+		-	The partition forest will have been consistently modified so as to merge the specified nodes into their
+			connected components in their layer's adjacency graph
+	@throw Exception
+		-	If the preconditions are violated
+	@return A set of nodes, each of which is the result of merging the input nodes in one connected component
+	*/
 	std::set<PFNodeID> merge_nonsibling_nodes(const std::set<PFNodeID>& nodes, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -724,6 +1199,29 @@ public:
 		return mergedNodes;
 	}
 
+	/**
+	@brief	Switches a node from being the child of one parent in the layer above to the child of another.
+
+	It is possible that moving the node may cause some of its old ancestors to become disconnected. If this happens,
+	what remains of each old ancestor is split into its connected components. (This all happens automatically, as the
+	operation is implemented in terms of zipping operations.)
+
+	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
+			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
+			changes involved, rather than the execution of the sequence as a whole.
+
+	@param[in]	node				The node whose parent is to be switched
+	@param[in]	newParent			The index of the new parent to which to switch it (in the layer above)
+	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
+	@pre
+		-	The node itself is valid
+		-	The proposed new parent is valid
+		-	The node is adjacent to at least one child of its proposed new parent
+	@post
+		-	The partition forest will have been consistently modified so as to switch the parent of the node
+	@throw Exception
+		-	If the preconditions are violated
+	*/
 	void parent_switch(const PFNodeID& node, int newParent, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
 		if(checkPreconditions)
@@ -770,6 +1268,8 @@ public:
 		chains.push_back(newChain);
 		zip_chains(chains, DONT_CHECK_PRECONDITIONS);
 	}
+
+	//@}
 
 	//#################### PRIVATE METHODS ####################
 private:
