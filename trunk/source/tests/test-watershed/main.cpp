@@ -115,6 +115,8 @@ try
 	std::cout << '\n';
 	output_2d_image(std::cout, ws.labels());
 
+	std::vector<std::set<int> > groups = ws.calculate_groups();
+
 	return 0;
 }
 catch(Exception& e)

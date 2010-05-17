@@ -43,8 +43,6 @@ private:
 	typedef itk::Image<Index, Dimension> ArrowImage;
 	typedef typename ArrowImage::Pointer ArrowImagePointer;
 
-	typedef std::set<int> Group;
-
 	typedef itk::Image<int, Dimension> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
 
@@ -54,7 +52,6 @@ private:
 
 public:
 	typedef typename ArrowImage::ConstPointer ArrowImageCPointer;
-	typedef boost::shared_ptr<std::vector<Group> > Groups_Ptr;
 	typedef typename InputImage::ConstPointer InputImageCPointer;
 	typedef typename LabelImage::ConstPointer LabelImageCPointer;
 	typedef typename LowerCompleteImage::ConstPointer LowerCompleteImageCPointer;
@@ -93,10 +90,44 @@ public:
 public:
 	ArrowImageCPointer arrows() const					{ return ArrowImageCPointer(m_arrows); }
 
-	Groups_Ptr calculate_groups() const
+	std::vector<std::set<int> > calculate_groups() const
 	{
-		// NYI
-		throw 23;
+		std::vector<std::set<int> > groups(m_labelCount);
+
+		typename LabelImage::SizeType size = m_labels->GetLargestPossibleRegion().GetSize();
+
+		itk::ImageRegionConstIteratorWithIndex<LabelImage> it(m_labels, m_labels->GetLargestPossibleRegion());
+		for(it.GoToBegin(); !it.IsAtEnd(); ++it)
+		{
+			int group = it.Get();
+			Index location = it.GetIndex();
+			int n = 0;
+
+			if(Dimension == 2)
+			{
+				n = location[1] * size[0] + location[0];
+			}
+			else if(Dimension == 3)
+			{
+				n = location[2] * size[0] * size[1] + location[1] * size[0] + location[0];
+			}
+			else
+			{
+				for(int j=0; j<Dimension; ++j)
+				{
+					int term = location[j];
+					for(int k=0; k<j; ++k)
+					{
+						term *= size[k];
+					}
+					n += term;
+				}
+			}
+
+			groups[group].insert(n);
+		}
+
+		return groups;
 	}
 
 	InputImageCPointer input() const					{ return InputImageCPointer(m_input); }
