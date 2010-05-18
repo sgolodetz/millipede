@@ -45,8 +45,8 @@ void VolumeLoader::load()
 try
 {
 	typedef itk::GDCMImageIO ImageIO;
-	typedef itk::Image<signed int,2> Image2D;
-	typedef itk::Image<signed int,3> Image3D;
+	typedef itk::Image<int,2> Image2D;
+	typedef itk::Image<int,3> Image3D;
 	typedef itk::JoinSeriesImageFilter<Image2D,Image3D> Joiner;
 	typedef itk::ImageFileReader<Image2D> Reader;
 	typedef itk::RegionOfInterestImageFilter<Image2D,Image2D> RegionExtractor;
@@ -178,7 +178,7 @@ const VolumeChoice& VolumeLoader::volume_choice() const
 }
 
 //#################### PRIVATE METHODS ####################
-std::string VolumeLoader::read_header_field(const itk::Image<signed int,2>::Pointer& image, const std::string& key)
+std::string VolumeLoader::read_header_field(const itk::Image<int,2>::Pointer& image, const std::string& key)
 {
 	const itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
 

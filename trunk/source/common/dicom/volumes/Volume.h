@@ -17,7 +17,7 @@ class Volume
 {
 	//#################### TYPEDEFS ####################
 public:
-	typedef itk::Image<signed int,3> BaseImage;
+	typedef itk::Image<int,3> BaseImage;
 	typedef BaseImage::Pointer BaseImagePointer;
 	typedef BaseImage::ConstPointer BaseImageCPointer;
 	typedef BaseImage::SizeType Size;

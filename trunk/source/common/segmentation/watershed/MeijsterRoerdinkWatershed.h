@@ -48,26 +48,27 @@ class MeijsterRoerdinkWatershed
 						 (InputPixelType));
 
 	//#################### TYPEDEFS ####################
-private:
+public:
 	typedef itk::Image<InputPixelType, Dimension> InputImage;
-	typedef typename InputImage::Pointer InputImagePointer;
 
+private:
 	typedef typename InputImage::IndexType Index;
-	typedef itk::Image<Index, Dimension> ArrowImage;
-	typedef typename ArrowImage::Pointer ArrowImagePointer;
-
-	typedef itk::Image<int, Dimension> LabelImage;
-	typedef typename LabelImage::Pointer LabelImagePointer;
-
 	typedef long LowerCompletePixelType;
-	typedef itk::Image<LowerCompletePixelType, Dimension> LowerCompleteImage;
-	typedef typename LowerCompleteImage::Pointer LowerCompleteImagePointer;
 
 public:
+	typedef itk::Image<Index, Dimension> ArrowImage;
+	typedef itk::Image<int, Dimension> LabelImage;
+	typedef itk::Image<LowerCompletePixelType, Dimension> LowerCompleteImage;
+
+	typedef typename ArrowImage::Pointer ArrowImagePointer;
 	typedef typename ArrowImage::ConstPointer ArrowImageCPointer;
-	typedef typename InputImage::ConstPointer InputImageCPointer;
+	typedef typename InputImage::Pointer InputImagePointer;
+	typedef typename InputImage::ConstPointer InputImageCPointer;	
+	typedef typename LabelImage::Pointer LabelImagePointer;
 	typedef typename LabelImage::ConstPointer LabelImageCPointer;
+	typedef typename LowerCompleteImage::Pointer LowerCompleteImagePointer;
 	typedef typename LowerCompleteImage::ConstPointer LowerCompleteImageCPointer;
+
 	typedef itk::Offset<Dimension> NeighbourOffset;
 	typedef std::vector<NeighbourOffset> NeighbourOffsets;
 

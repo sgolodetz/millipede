@@ -15,16 +15,16 @@ class PixelProperties
 	//#################### PRIVATE VARIABLES ####################
 private:
 	unsigned char m_greyValue;
-	signed int m_hounsfieldValue;
+	int m_hounsfieldValue;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PixelProperties(unsigned char greyValue, signed int hounsfieldValue);
+	PixelProperties(unsigned char greyValue, int hounsfieldValue);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	unsigned char grey_value() const;
-	signed int hounsfield_value() const;
+	int hounsfield_value() const;
 };
 
 //#################### GLOBAL OPERATORS ####################

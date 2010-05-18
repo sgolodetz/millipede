@@ -54,7 +54,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	static std::string read_header_field(const itk::Image<signed int,2>::Pointer& image, const std::string& key);
+	static std::string read_header_field(const itk::Image<int,2>::Pointer& image, const std::string& key);
 };
 
 }

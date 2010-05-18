@@ -52,12 +52,12 @@ void adjacency_graph_mst()
 
 void itk_leaf_layer_mst()
 {
-	typedef itk::Image<signed int,3> HounsfieldImage;
+	typedef itk::Image<int,3> HounsfieldImage;
 	typedef HounsfieldImage::Pointer HounsfieldImagePointer;
 	typedef itk::Image<unsigned char,3> WindowedImage;
 	typedef WindowedImage::Pointer WindowedImagePointer;
 
-	signed int hounsfieldPixels[] = {
+	int hounsfieldPixels[] = {
 		-3, -3, -1,
 		2, 1, 0,
 		5, 4, 2,
