@@ -43,7 +43,9 @@ template <typename InputPixelType, unsigned int Dimension>
 class MeijsterRoerdinkWatershed
 {
 	//#################### TEMPLATE PARAMETER CONSTRAINTS ####################
-	BOOST_MPL_ASSERT((boost::is_integral<InputPixelType>));
+	BOOST_MPL_ASSERT_MSG(boost::is_integral<InputPixelType>::value,
+						 NON_INTEGRAL_PIXEL_TYPES_ARE_NOT_SUPPORTED,
+						 (InputPixelType));
 
 	//#################### TYPEDEFS ####################
 private:
