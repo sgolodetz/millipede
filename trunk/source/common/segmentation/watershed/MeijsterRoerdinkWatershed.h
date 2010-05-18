@@ -173,10 +173,10 @@ public:
 			}
 			else
 			{
-				for(int j=0; j<Dimension; ++j)
+				for(unsigned int j=0; j<Dimension; ++j)
 				{
 					int term = location[j];
-					for(int k=0; k<j; ++k)
+					for(unsigned int k=0; k<j; ++k)
 					{
 						term *= size[k];
 					}
