@@ -25,12 +25,6 @@ public:
 	typedef WeightedEdge<EdgeWeight> Edge;
 	typedef PixelProperties NodeProperties;
 
-private:
-	typedef itk::Image<int,3> HounsfieldImage;
-	typedef HounsfieldImage::Pointer HounsfieldImagePointer;
-	typedef itk::Image<unsigned char,3> WindowedImage;
-	typedef WindowedImage::Pointer WindowedImagePointer;
-
 	//#################### NESTED CLASSES (EXCLUDING ITERATORS) ####################
 public:
 	class LeafNode : public Node
@@ -191,8 +185,9 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vector<NodeProperties>& nodeProperties);
-	ImageLeafLayer(const HounsfieldImagePointer& hounsfieldImage, const WindowedImagePointer& windowedImage);
+	ImageLeafLayer(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1);
+	ImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage);
+	ImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage);
 
 	//#################### PUBLIC METHODS ####################
 public:

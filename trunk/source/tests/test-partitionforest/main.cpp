@@ -28,7 +28,7 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 	typedef PixelProperties P;
 	PixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
-	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(3, 3, 1, leafProperties));
+	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(leafProperties, 3, 3));
 
 	IPF_Ptr ipf(new IPF(leafLayer));
 
@@ -122,7 +122,7 @@ void listener_test()
 	typedef PixelProperties P;
 	PixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
-	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(3, 3, 1, leafProperties));
+	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
 
@@ -170,7 +170,7 @@ void lowest_branch_layer_test()
 	typedef PixelProperties P;
 	PixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
-	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(3, 3, 1, leafProperties));
+	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(leafProperties, 3, 3));
 
 	// Create some arbitrary groups.
 	std::vector<std::set<int> > groups(3);
@@ -196,7 +196,7 @@ void nonsibling_node_merging_test()
 	typedef PixelProperties P;
 	PixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
-	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(3, 3, 1, leafProperties));
+	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
 

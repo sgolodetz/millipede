@@ -22,6 +22,7 @@ using boost::shared_ptr;
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 using namespace mp;
 
+//#################### HELPER FUNCTIONS ####################
 template <typename PixelType>
 typename itk::Image<PixelType,2>::Pointer create_2d_image(const PixelType *const pixels, int width, int height)
 {
@@ -152,6 +153,7 @@ void output_3d_image(std::ostream& os, const ImagePointer& image)
 	}
 }
 
+//#################### TEST FUNCTIONS ####################
 void basic_test()
 {
 	typedef itk::Image<int,2> Image;
@@ -247,9 +249,9 @@ void gradient_test()
 void forest_test()
 {
 	// Create the Hounsfield and 'windowed' images.
-	typedef itk::Image<int,3> HounsfieldImage;
-	typedef itk::Image<unsigned char,3> WindowedImage;
-	typedef itk::Image<int,3> GradientMagnitudeImage;
+	typedef itk::Image<int,2> HounsfieldImage;
+	typedef itk::Image<unsigned char,2> WindowedImage;
+	typedef itk::Image<int,2> GradientMagnitudeImage;
 
 	int pixels[] =
 	{
@@ -263,8 +265,8 @@ void forest_test()
 		5,5,5,9,9,3,3,3,
 	};
 
-	HounsfieldImage::Pointer hounsfieldImage = create_3d_image(pixels, 8, 8, 1);
-	output_3d_image(std::cout, hounsfieldImage);
+	HounsfieldImage::Pointer hounsfieldImage = create_2d_image(pixels, 8, 8);
+	output_2d_image(std::cout, hounsfieldImage);
 	std::cout << '\n';
 
 	// This is not the proper way to do windowing - it's a hack for testing purposes.
@@ -282,10 +284,10 @@ void forest_test()
 	gradientMagnitudeFilter->Update();
 
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
-	output_3d_image(std::cout, gradientMagnitudeImage);
+	output_2d_image(std::cout, gradientMagnitudeImage);
 	std::cout << '\n';
 
-	typedef MeijsterRoerdinkWatershed<int,3> WS;
+	typedef MeijsterRoerdinkWatershed<int,2> WS;
 
 	// Specify the necessary offsets for 6-connectivity.
 	WS::NeighbourOffsets offsets(6);
@@ -300,13 +302,13 @@ void forest_test()
 	WS ws(gradientMagnitudeImage, offsets);
 
 	// Output the results.
-	output_3d_image(std::cout, ws.lower_complete());
+	output_2d_image(std::cout, ws.lower_complete());
 	std::cout << '\n';
 
-	output_3d_image(std::cout, ws.arrows());
+	output_2d_image(std::cout, ws.arrows());
 	std::cout << '\n';
 
-	output_3d_image(std::cout, ws.labels());
+	output_2d_image(std::cout, ws.labels());
 	std::cout << '\n';
 
 	// Create the partition forest.

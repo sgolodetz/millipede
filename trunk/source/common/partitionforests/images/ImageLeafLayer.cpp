@@ -10,7 +10,7 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-ImageLeafLayer::ImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vector<NodeProperties>& nodeProperties)
+ImageLeafLayer::ImageLeafLayer(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ)
 :	m_sizeX(sizeX), m_sizeY(sizeY), m_sizeZ(sizeZ)
 {
 	m_sizeXY = m_sizeX * m_sizeY;
@@ -21,9 +21,39 @@ ImageLeafLayer::ImageLeafLayer(int sizeX, int sizeY, int sizeZ, const std::vecto
 	for(size_t i=0; i<size; ++i) m_nodes.push_back(LeafNode(nodeProperties[i]));
 }
 
-ImageLeafLayer::ImageLeafLayer(const HounsfieldImagePointer& hounsfieldImage, const WindowedImagePointer& windowedImage)
+ImageLeafLayer::ImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
+
+	typedef itk::Image<int,2> HounsfieldImage;
+	typedef itk::Image<unsigned char,2> WindowedImage;
+
+	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
+	m_sizeX = size[0];
+	m_sizeY = size[1];
+	m_sizeZ = 1;
+	m_sizeXY = m_sizeXYZ = m_sizeX * m_sizeY;
+
+	m_nodes.reserve(m_sizeXY);
+	for(int y=0; y<m_sizeY; ++y)
+		for(int x=0; x<m_sizeX; ++x)
+		{
+			WindowedImage::IndexType windowedIndex;
+			windowedIndex[0] = x;
+			windowedIndex[1] = y;
+			HounsfieldImage::IndexType hounsfieldIndex;
+			hounsfieldIndex[0] = x;
+			hounsfieldIndex[1] = y;
+			m_nodes.push_back(LeafNode(NodeProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex))));
+		}
+}
+
+ImageLeafLayer::ImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage)
+{
+	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
+
+	typedef itk::Image<int,3> HounsfieldImage;
+	typedef itk::Image<unsigned char,3> WindowedImage;
 
 	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 	m_sizeX = size[0];

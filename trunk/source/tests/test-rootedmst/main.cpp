@@ -90,7 +90,7 @@ void leaf_layer_mst()
 	typedef PixelProperties P;
 	PixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
 	std::vector<PixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(PixelProperties)]);
-	ImageLeafLayer leafLayer(3, 3, 1, leafProperties);
+	ImageLeafLayer leafLayer(leafProperties, 3, 3);
 
 	typedef RootedMST<ImageLeafLayer::EdgeWeight> MST;
 	MST mst(leafLayer);
