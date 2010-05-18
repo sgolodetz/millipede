@@ -54,13 +54,13 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void merge_nodes(RootedMST<EdgeWeight>& mst, int u, int v)
+	int merge_nodes(RootedMST<EdgeWeight>& mst, int u, int v)
 	{
-		mst.merge_nodes(u, v);
 		this->m_listeners.merge_nodes(u, v);
+		return mst.merge_nodes(u, v);
 	}
 
-	Flag run_sub(RootedMST<EdgeWeight>& mst, int parent, EdgeWeight parentWeight)
+	std::pair<int,Flag> run_sub(RootedMST<EdgeWeight>& mst, int parent, EdgeWeight parentWeight)
 	{
 		std::set<int> children = mst.tree_children(parent);
 		if(children.size() > 0)
@@ -70,8 +70,8 @@ private:
 			for(std::set<int>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
 			{
 				EdgeWeight childWeight = mst.edge_weight(parent, *it);
-				Flag childFlag = run_sub(mst, *it, childWeight);
-				results.push_back(Result(*it, childWeight, childFlag));
+				std::pair<int,Flag> childPair = run_sub(mst, *it, childWeight);
+				results.push_back(Result(childPair.first, childWeight, childPair.second));
 			}
 
 			// Find the 'minimum' element when sorting first by ascending weight and then by flag (GUARD before NON_GUARD).
@@ -84,7 +84,7 @@ private:
 			// If the parent is a guard edge, merge the 'minimum' edge regardless of its own flag.
 			if(parentFlag == GUARD)
 			{
-				merge_nodes(mst, parent, lowest.node);
+				parent = merge_nodes(mst, parent, lowest.node);
 				results.erase(lowestIt);
 			}
 
@@ -93,13 +93,13 @@ private:
 			{
 				if(it->flag == NON_GUARD)
 				{
-					merge_nodes(mst, parent, it->node);
+					parent = merge_nodes(mst, parent, it->node);
 				}
 			}
 
-			return parentFlag;
+			return std::make_pair(parent, parentFlag);
 		}
-		else return NON_GUARD;
+		else return std::make_pair(parent, NON_GUARD);
 	}
 };
 

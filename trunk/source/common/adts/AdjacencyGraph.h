@@ -138,6 +138,11 @@ public:
 		return m_nodeProperties.find(n) != m_nodeProperties.end();
 	}
 
+	int node_count() const
+	{
+		return static_cast<int>(m_nodeProperties.size());
+	}
+
 	std::vector<int> node_indices() const
 	{
 		std::vector<int> ret;

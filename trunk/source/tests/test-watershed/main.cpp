@@ -311,7 +311,7 @@ void forest_test()
 	output_2d_image(std::cout, ws.labels());
 	std::cout << '\n';
 
-	// Create the partition forest.
+	// Create the initial partition forest.
 	typedef PartitionForest<ImageLeafLayer,ImageBranchLayer> IPF;
 	typedef shared_ptr<IPF> IPF_Ptr;
 	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(hounsfieldImage, windowedImage));
@@ -329,22 +329,32 @@ void real_image_test()
 	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
 	UCReader::Pointer reader = UCReader::New();
 	reader->SetFileName("../resources/test.bmp");
+	reader->Update();
+	UCImage::Pointer windowedImage = reader->GetOutput();
 
-	// Cast the image to make its pixels real-valued.
+	// Cast the windowed image to make a dummy Hounsfield image.
+	typedef itk::Image<int,2> IntImage;
+	typedef itk::CastImageFilter<UCImage,IntImage> UC2IntCastFilter;
+	UC2IntCastFilter::Pointer uc2intCastFilter = UC2IntCastFilter::New();
+	uc2intCastFilter->SetInput(windowedImage);
+	uc2intCastFilter->Update();
+	IntImage::Pointer hounsfieldImage = uc2intCastFilter->GetOutput();
+
+	// Cast the windowed image to make its pixels real-valued.
 	typedef itk::Image<float,2> RealImage;
-	typedef itk::CastImageFilter<UCImage,RealImage> CastFilter;
-	CastFilter::Pointer castFilter = CastFilter::New();
-	castFilter->SetInput(reader->GetOutput());
+	typedef itk::CastImageFilter<UCImage,RealImage> UC2RealCastFilter;
+	UC2RealCastFilter::Pointer uc2realCastFilter = UC2RealCastFilter::New();
+	uc2realCastFilter->SetInput(windowedImage);
 
-	// Smooth the image using anisotropic diffusion.
+	// Smooth this real image using anisotropic diffusion.
 	typedef itk::GradientAnisotropicDiffusionImageFilter<RealImage,RealImage> AnisotropicDiffusionFilter;
 	AnisotropicDiffusionFilter::Pointer adFilter = AnisotropicDiffusionFilter::New();
-	adFilter->SetInput(castFilter->GetOutput());
+	adFilter->SetInput(uc2realCastFilter->GetOutput());
 	adFilter->SetConductanceParameter(1.0);
 	adFilter->SetNumberOfIterations(5);		// a typical value (see the ITK software guide)
 	adFilter->SetTimeStep(0.125);
 
-	// Calculate the gradient magnitude image.
+	// Calculate the gradient magnitude of the smoothed image.
 	typedef itk::Image<int,2> GradientMagnitudeImage;
 	typedef itk::GradientMagnitudeImageFilter<RealImage,GradientMagnitudeImage> GradientMagnitudeFilter;
 	GradientMagnitudeFilter::Pointer gradientMagnitudeFilter = GradientMagnitudeFilter::New();
@@ -381,6 +391,13 @@ void real_image_test()
 	writer->SetInput(colourMapper->GetOutput());
 	writer->SetFileName("../resources/output.bmp");
 	writer->Update();
+
+	// Create the initial partition forest.
+	typedef PartitionForest<ImageLeafLayer,ImageBranchLayer> IPF;
+	typedef shared_ptr<IPF> IPF_Ptr;
+	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(hounsfieldImage, windowedImage));
+	shared_ptr<ImageBranchLayer> lowestBranchLayer = IPF::construct_lowest_branch_layer(leafLayer, ws.calculate_groups());
+	IPF_Ptr ipf(new IPF(leafLayer, lowestBranchLayer));
 }
 
 int main()

@@ -127,6 +127,7 @@ public:
 		return survivingIndex;
 	}
 
+	int node_count() const								{ return m_base.node_count(); }
 	std::vector<int> node_indices() const				{ return m_base.node_indices(); }
 
 	std::set<int> tree_children(int n) const
