@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_MEIJSTERROERDINKWATERSHED
 #define H_MILLIPEDE_MEIJSTERROERDINKWATERSHED
 
+#include <cassert>
 #include <iostream>
 #include <limits>
 #include <queue>
@@ -26,11 +27,16 @@
 namespace mp {
 
 /**
-@brief	The Meijster/Roerdink watershed algorithm is a specific implementation of the watershed transform for images.
+@brief	The Meijster/Roerdink watershed algorithm is one possible image-specific version of the watershed
+		transform, which is a general segmentation approach based on the idea of dividing a landscape into
+		its catchment basins. The algorithm is described in the paper entitled 'A Disjoint Set Algorithm for
+		the Watershed Transform'.
 
-It is described in the paper entitled 'A Disjoint Set Algorithm for the Watershed Transform'.
+This class provides an ITK-based implementation of it that works for both 2D and 3D images.
+
+@tparam InputPixelType	The pixel type of the input image
+@tparam Dimension		The dimensionality of the input image (generally 2 or 3)
 */
-
 template <typename InputPixelType, unsigned int Dimension>
 class MeijsterRoerdinkWatershed
 {
@@ -57,7 +63,6 @@ public:
 	typedef typename LowerCompleteImage::ConstPointer LowerCompleteImageCPointer;
 	typedef itk::Offset<Dimension> NeighbourOffset;
 	typedef std::vector<NeighbourOffset> NeighbourOffsets;
-	typedef itk::Size<Dimension> NeighbourRadius;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -67,14 +72,44 @@ private:
 	LabelImagePointer m_labels;
 	LowerCompleteImagePointer m_lowerComplete;
 	NeighbourOffsets m_offsets;
-	NeighbourRadius m_radius;
+	itk::Size<Dimension> m_radius;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit MeijsterRoerdinkWatershed(const InputImagePointer& input, const NeighbourRadius& radius,
-									   const NeighbourOffsets& offsets)
-	:	m_input(input), m_offsets(offsets), m_radius(radius)
+	/**
+	@brief	Runs the Meijster/Roerdink watershed algorithm on the input image. The various results
+			can then be extracted using the public member functions.
+
+	The offsets parameter is used to specify the desired connectivity of the pixels. As an example, we can
+	specify that the pixels should be 4-connected (in 2D) as follows:
+
+	@code
+WS::NeighbourOffsets offsets(4);
+offsets[0][0] = 0;		offsets[0][1] = -1;		// above
+offsets[1][0] = -1;		offsets[1][1] = 0;		// left
+offsets[2][0] = 1;		offsets[2][1] = 0;		// right
+offsets[3][0] = 0;		offsets[3][1] = 1;		// below
+	@endcode
+
+	It is worth noting that the order in which the offsets are specified here makes no difference to the
+	result of running the algorithm, since they are simply passed on to ITK, which chooses its own order.
+
+	@param[in]	input		An itk::SmartPointer to the input image
+	@param[in]	offsets		A vector of itk::Offset used to specify the desired connectivity of the pixels
+	@pre
+		-	input.IsNotNull()
+	@post
+		-	arrows().IsNotNull()
+		-	labels().IsNotNull()
+		-	lower_complete().IsNotNull()
+	*/
+	explicit MeijsterRoerdinkWatershed(const InputImagePointer& input, const NeighbourOffsets& offsets)
+	:	m_input(input), m_offsets(offsets)
 	{
+		assert(input.IsNotNull());
+
+		m_radius.Fill(1);
+
 		// Create images with the same dimensions as the input to store the arrows, labels and lower-complete function.
 		create_same_size_image(input, m_arrows);
 		create_same_size_image(input, m_labels);
@@ -88,8 +123,26 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	ArrowImageCPointer arrows() const					{ return ArrowImageCPointer(m_arrows); }
+	/**
+	@brief	Returns the arrows image.
 
+	The arrows image is an image of locations. After the algorithm has been run, each pixel in the arrow image
+	contains the location of the canonical point of the catchment basin to which it belongs.
+
+	@return As described above
+	*/
+	ArrowImageCPointer arrows() const
+	{
+		return ArrowImageCPointer(m_arrows);
+	}
+
+	/**
+	@brief	Calculates the pixel groups induced by the watershed labelling.
+
+	@see labels
+
+	@return The pixel groups
+	*/
 	std::vector<std::set<int> > calculate_groups() const
 	{
 		std::vector<std::set<int> > groups(m_labelCount);
@@ -130,10 +183,57 @@ public:
 		return groups;
 	}
 
-	InputImageCPointer input() const					{ return InputImageCPointer(m_input); }
-	int label_count() const								{ return m_labelCount; }
-	LabelImageCPointer labels() const					{ return LabelImageCPointer(m_labels); }
-	LowerCompleteImageCPointer lower_complete() const	{ return LowerCompleteImageCPointer(m_lowerComplete); }
+	/**
+	@brief	Returns the input image.
+
+	@return As described above
+	*/
+	InputImageCPointer input() const
+	{
+		return InputImageCPointer(m_input);
+	}
+
+	/**
+	@brief	Returns the number of labels in the label image.
+
+	@see labels
+
+	@return As described above
+	*/
+	int label_count() const
+	{
+		return m_labelCount;
+	}
+
+	/**
+	@brief	Returns the label image.
+
+	The label image is effectively the main output of the Meijster/Roerdink watershed algorithm. It is an image
+	of integers in the range [0, label_count() - 1]. The numbers themselves are of little significance; what is
+	important is the implied clustering of the pixels into groups, such that all the pixels labelled 0 are in one
+	group, all those labelled 1 are in another, and so on. The groups themselves can be determined (in the obvious
+	manner) using the calculate_groups() method.
+
+	@return As described above
+	*/
+	LabelImageCPointer labels() const
+	{
+		return LabelImageCPointer(m_labels);
+	}
+
+	/**
+	@brief	Returns the lower complete image.
+
+	The lower-complete image is a transformation of the original image whose corresponding discrete landscape
+	contains no non-minimal plateaux. The transformation works by raising non-minimal plateau pixels based on
+	their distance from their plateau's boundary.
+
+	@return As described above
+	*/
+	LowerCompleteImageCPointer lower_complete() const
+	{
+		return LowerCompleteImageCPointer(m_lowerComplete);
+	}
 
 	//#################### PRIVATE METHODS ####################
 private:

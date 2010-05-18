@@ -91,10 +91,6 @@ try
 
 	typedef MeijsterRoerdinkWatershed<signed int,2> WS;
 
-	// Specify a 3x3 basic neighbourhood.
-	WS::NeighbourRadius radius;
-	radius.Fill(1);
-
 	// Specify the necessary offsets for 4-connectivity.
 	WS::NeighbourOffsets offsets(4);
 	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
@@ -103,7 +99,7 @@ try
 	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
 
 	// Run the watershed algorithm on the image.
-	WS ws(image, radius, offsets);
+	WS ws(image, offsets);
 
 	// Output the results.
 	std::cout << '\n';
