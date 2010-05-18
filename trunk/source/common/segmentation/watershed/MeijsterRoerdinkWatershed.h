@@ -13,7 +13,9 @@
 #include <set>
 #include <vector>
 
+#include <boost/mpl/assert.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/type_traits/is_integral.hpp>
 
 #include <itkConstantBoundaryCondition.h>
 #include <itkImage.h>
@@ -34,12 +36,15 @@ namespace mp {
 
 This class provides an ITK-based implementation of it that works for both 2D and 3D images.
 
-@tparam InputPixelType	The pixel type of the input image
+@tparam InputPixelType	The pixel type of the input image (must be integral)
 @tparam Dimension		The dimensionality of the input image (generally 2 or 3)
 */
 template <typename InputPixelType, unsigned int Dimension>
 class MeijsterRoerdinkWatershed
 {
+	//#################### TEMPLATE PARAMETER CONSTRAINTS ####################
+	BOOST_MPL_ASSERT((boost::is_integral<InputPixelType>));
+
 	//#################### TYPEDEFS ####################
 private:
 	typedef itk::Image<InputPixelType, Dimension> InputImage;

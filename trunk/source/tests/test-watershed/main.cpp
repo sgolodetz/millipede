@@ -6,6 +6,8 @@
 #include <cassert>
 #include <iostream>
 
+#include <itkGradientMagnitudeImageFilter.h>
+
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 using namespace mp;
 
@@ -71,8 +73,7 @@ void output_2d_image(std::ostream& os, const ImagePointer& image)
 	}
 }
 
-int main()
-try
+void basic_test()
 {
 	typedef itk::Image<signed int,2> Image;
 
@@ -86,7 +87,6 @@ try
 	};
 
 	Image::Pointer image = create_2d_image(pixels, 7, 5);
-
 	output_2d_image(std::cout, image);
 
 	typedef MeijsterRoerdinkWatershed<signed int,2> WS;
@@ -112,7 +112,68 @@ try
 	output_2d_image(std::cout, ws.labels());
 
 	std::vector<std::set<int> > groups = ws.calculate_groups();
+}
 
+void gradient_test()
+{
+	typedef itk::Image<signed int,2> Image;
+
+	signed int pixels[] =
+	{
+		2,2,2,9,9,3,3,3,
+		2,2,2,9,9,3,3,3,
+		2,2,2,9,9,3,3,3,
+		9,9,9,9,9,9,9,9,
+		9,9,9,9,9,9,9,9,
+		5,5,5,9,9,3,3,3,
+		5,5,5,9,9,3,3,3,
+		5,5,5,9,9,3,3,3,
+	};
+
+	Image::Pointer image = create_2d_image(pixels, 8, 8);
+	output_2d_image(std::cout, image);
+	std::cout << '\n';
+
+	typedef itk::GradientMagnitudeImageFilter<Image,Image> GradientMagnitudeFilter;
+	GradientMagnitudeFilter::Pointer gradientMagnitudeFilter = GradientMagnitudeFilter::New();
+	gradientMagnitudeFilter->SetInput(image);
+	gradientMagnitudeFilter->SetUseImageSpacingOff();
+	gradientMagnitudeFilter->Update();
+
+	Image::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
+	output_2d_image(std::cout, gradientMagnitudeImage);
+	std::cout << '\n';
+
+	typedef MeijsterRoerdinkWatershed<signed int,2> WS;
+
+	// Specify the necessary offsets for 4-connectivity.
+	WS::NeighbourOffsets offsets(4);
+	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
+	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
+	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
+	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
+
+	// Run the watershed algorithm on the gradient magnitude image.
+	WS ws(gradientMagnitudeImage, offsets);
+
+	// Output the results.
+	output_2d_image(std::cout, ws.lower_complete());
+	std::cout << '\n';
+
+	output_2d_image(std::cout, ws.arrows());
+	std::cout << '\n';
+
+	output_2d_image(std::cout, ws.labels());
+	std::cout << '\n';
+
+	std::vector<std::set<int> > groups = ws.calculate_groups();
+}
+
+int main()
+try
+{
+	//basic_test();
+	gradient_test();
 	return 0;
 }
 catch(Exception& e)
