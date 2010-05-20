@@ -138,6 +138,7 @@ partitionforests/base/PFNodeID.h
 
 ##
 SET(partitionforests_images_sources
+partitionforests/images/CTImageUtil.cpp
 partitionforests/images/ImageBranchLayer.cpp
 partitionforests/images/ImageLeafLayer.cpp
 partitionforests/images/PixelProperties.cpp
@@ -145,6 +146,7 @@ partitionforests/images/RegionProperties.cpp
 )
 
 SET(partitionforests_images_headers
+partitionforests/images/CTImageUtil.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/PixelProperties.h

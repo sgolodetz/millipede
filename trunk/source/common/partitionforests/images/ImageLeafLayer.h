@@ -186,8 +186,6 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	ImageLeafLayer(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1);
-	ImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage);
-	ImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage);
 
 	//#################### PUBLIC METHODS ####################
 public:

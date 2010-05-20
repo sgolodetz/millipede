@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include <common/adts/RootedMST.h>
-#include <common/partitionforests/images/ImageLeafLayer.h>
+#include <common/partitionforests/images/CTImageUtil.h>
 using namespace mp;
 
 template <typename TPixel>
@@ -80,9 +80,9 @@ void itk_leaf_layer_mst()
 	HounsfieldImagePointer hounsfieldImage = create_3d_image(hounsfieldPixels, 3, 3, 2);
 	WindowedImagePointer windowedImage = create_3d_image(windowedPixels, 3, 3, 2);
 
-	ImageLeafLayer leafLayer(hounsfieldImage, windowedImage);
+	boost::shared_ptr<ImageLeafLayer> leafLayer = CTImageUtil::make_leaf_layer(hounsfieldImage, windowedImage);
 
-	RootedMST<ImageLeafLayer::EdgeWeight> mst(leafLayer);
+	RootedMST<ImageLeafLayer::EdgeWeight> mst(*leafLayer);
 }
 
 void leaf_layer_mst()

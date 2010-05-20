@@ -17,8 +17,8 @@ using boost::shared_ptr;
 #include <itkScalarToRGBPixelFunctor.h>
 
 #include <common/partitionforests/base/PartitionForest.h>
+#include <common/partitionforests/images/CTImageUtil.h>
 #include <common/partitionforests/images/ImageBranchLayer.h>
-#include <common/partitionforests/images/ImageLeafLayer.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 using namespace mp;
 
@@ -314,7 +314,7 @@ void forest_test()
 	// Create the initial partition forest.
 	typedef PartitionForest<ImageLeafLayer,ImageBranchLayer> IPF;
 	typedef shared_ptr<IPF> IPF_Ptr;
-	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(hounsfieldImage, windowedImage));
+	shared_ptr<ImageLeafLayer> leafLayer = CTImageUtil::make_leaf_layer(hounsfieldImage, windowedImage);
 	shared_ptr<ImageBranchLayer> lowestBranchLayer = IPF::construct_lowest_branch_layer(leafLayer, ws.calculate_groups());
 	std::copy(lowestBranchLayer->edges_cbegin(), lowestBranchLayer->edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
 	std::cout << '\n';
@@ -395,7 +395,7 @@ void real_image_test()
 	// Create the initial partition forest.
 	typedef PartitionForest<ImageLeafLayer,ImageBranchLayer> IPF;
 	typedef shared_ptr<IPF> IPF_Ptr;
-	shared_ptr<ImageLeafLayer> leafLayer(new ImageLeafLayer(hounsfieldImage, windowedImage));
+	shared_ptr<ImageLeafLayer> leafLayer = CTImageUtil::make_leaf_layer(hounsfieldImage, windowedImage);
 	shared_ptr<ImageBranchLayer> lowestBranchLayer = IPF::construct_lowest_branch_layer(leafLayer, ws.calculate_groups());
 	IPF_Ptr ipf(new IPF(leafLayer, lowestBranchLayer));
 }
