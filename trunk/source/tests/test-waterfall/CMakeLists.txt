@@ -63,4 +63,4 @@ ENDFOREACH(resource)
 #############################
 
 INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
-INSTALL(FILES ${resources} DESTINATION bin/${targetname}/resources)
+INSTALL(FILES ${resources} DESTINATION bin/tests/${targetname}/resources)

@@ -18,6 +18,8 @@ template <typename LeafProperties, typename BranchProperties>
 class ImageLeafLayer : public IForestLayer<BranchProperties,int>
 {
 	//#################### TYPEDEFS ####################
+private:
+	typedef IForestLayer<BranchProperties,int> Base;
 public:
 	typedef int EdgeWeight;
 	typedef WeightedEdge<EdgeWeight> Edge;
@@ -25,7 +27,7 @@ public:
 
 	//#################### NESTED CLASSES (EXCLUDING ITERATORS) ####################
 public:
-	class LeafNode : public Node
+	class LeafNode : public Base::Node
 	{
 	private:
 		int m_parent;
@@ -52,7 +54,7 @@ private:
 
 	//#################### ITERATORS ####################
 private:
-	class EdgeConstIteratorImpl : public EdgeConstIteratorImplBase
+	class EdgeConstIteratorImpl : public Base::EdgeConstIteratorImplBase
 	{
 	private:
 		const ImageLeafLayer *m_base;
@@ -76,7 +78,7 @@ private:
 			return *this;
 		}
 
-		bool operator==(const EdgeConstIteratorImplBase& baseRhs) const
+		bool operator==(const typename Base::EdgeConstIteratorImplBase& baseRhs) const
 		{
 			const EdgeConstIteratorImpl& rhs = static_cast<const EdgeConstIteratorImpl&>(baseRhs);
 			return m_currentNode == rhs.m_currentNode && m_currentDir == rhs.m_currentDir;
@@ -136,7 +138,7 @@ private:
 
 	// Note: Either Vec = std::vector<LeafNode> or Vec = const std::vector<LeafNode>.
 	template <typename N, typename LeafNodeVec>
-	class LeafNodeIteratorImplT : public NodeIteratorImplBaseT<N>
+	class LeafNodeIteratorImplT : public Base::template NodeIteratorImplBaseT<N>
 	{
 	private:
 		int m_index;
@@ -155,7 +157,7 @@ private:
 			return *this;
 		}
 
-		bool operator==(const NodeIteratorImplBaseT<N>& baseRhs) const
+		bool operator==(const typename Base::template NodeIteratorImplBaseT<N>& baseRhs) const
 		{
 			const LeafNodeIteratorImplT& rhs = static_cast<const LeafNodeIteratorImplT&>(baseRhs);
 			return m_index == rhs.m_index;
@@ -169,12 +171,12 @@ private:
 
 	typedef LeafNodeIteratorImplT<LeafNode, std::vector<LeafNode> > LeafNodeIteratorImpl;
 	typedef LeafNodeIteratorImplT<const LeafNode, const std::vector<LeafNode> > LeafNodeConstIteratorImpl;
-	typedef LeafNodeIteratorImplT<Node, std::vector<LeafNode> > NodeIteratorImpl;
-	typedef LeafNodeIteratorImplT<const Node, const std::vector<LeafNode> > NodeConstIteratorImpl;
+	typedef LeafNodeIteratorImplT<typename Base::Node, std::vector<LeafNode> > NodeIteratorImpl;
+	typedef LeafNodeIteratorImplT<const typename Base::Node, const std::vector<LeafNode> > NodeConstIteratorImpl;
 
 public:
-	typedef NodeIteratorT<LeafNode, LeafNodeIteratorImpl> LeafNodeIterator;
-	typedef NodeIteratorT<const LeafNode, LeafNodeConstIteratorImpl> LeafNodeConstIterator;
+	typedef typename Base::template NodeIteratorT<LeafNode, LeafNodeIteratorImpl> LeafNodeIterator;
+	typedef typename Base::template NodeIteratorT<const LeafNode, LeafNodeConstIteratorImpl> LeafNodeConstIterator;
 
 	//#################### PROTECTED VARIABLES ####################
 protected:
@@ -194,6 +196,10 @@ protected:
 	//#################### DESTRUCTOR ####################
 protected:
 	~ImageLeafLayer() {}
+
+	//#################### PUBLIC ABSTRACT METHODS ####################
+public:
+	virtual EdgeWeight edge_weight(int u, int v) const = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -240,14 +246,14 @@ public:
 		return BranchProperties::combine_leaf_properties(properties);
 	}
 
-	EdgeConstIterator edges_cbegin() const
+	typename Base::EdgeConstIterator edges_cbegin() const
 	{
-		return EdgeConstIterator(new EdgeConstIteratorImpl(this, 0));
+		return typename Base::EdgeConstIterator(new EdgeConstIteratorImpl(this, 0));
 	}
 
-	EdgeConstIterator edges_cend() const
+	typename Base::EdgeConstIterator edges_cend() const
 	{
-		return EdgeConstIterator(new EdgeConstIteratorImpl(this, m_sizeXYZ));
+		return typename Base::EdgeConstIterator(new EdgeConstIteratorImpl(this, m_sizeXYZ));
 	}
 
 	bool has_edge(int u, int v) const
@@ -308,24 +314,24 @@ public:
 		return m_nodes[n].properties();
 	}
 
-	NodeIterator nodes_begin()
+	typename Base::NodeIterator nodes_begin()
 	{
-		return NodeIterator(new NodeIteratorImpl(0, m_nodes));
+		return typename Base::NodeIterator(new NodeIteratorImpl(0, m_nodes));
 	}
 
-	NodeConstIterator nodes_cbegin() const
+	typename Base::NodeConstIterator nodes_cbegin() const
 	{
-		return NodeConstIterator(new NodeConstIteratorImpl(0, m_nodes));
+		return typename Base::NodeConstIterator(new NodeConstIteratorImpl(0, m_nodes));
 	}
 
-	NodeConstIterator nodes_cend() const
+	typename Base::NodeConstIterator nodes_cend() const
 	{
-		return NodeConstIterator(new NodeConstIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
+		return typename Base::NodeConstIterator(new NodeConstIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 	}
 
-	NodeIterator nodes_end()
+	typename Base::NodeIterator nodes_end()
 	{
-		return NodeIterator(new NodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
+		return typename Base::NodeIterator(new NodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 	}
 
 	// Precondition: n is in the right range

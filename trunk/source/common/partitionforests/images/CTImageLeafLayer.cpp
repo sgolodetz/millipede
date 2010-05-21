@@ -31,11 +31,11 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldI
 	GradientMagnitudeImage::IndexType gradientMagnitudeIndex;
 	WindowedImage::IndexType windowedIndex;
 	HounsfieldImage::IndexType hounsfieldIndex;
-	for(long y=0; y<size[1]; ++y)
-		for(long x=0; x<size[0]; ++x)
+	for(size_t y=0; y<size[1]; ++y)
+		for(size_t x=0; x<size[0]; ++x)
 		{
-			windowedIndex[0] = hounsfieldIndex[0] = gradientMagnitudeIndex[0] = x;
-			windowedIndex[1] = hounsfieldIndex[1] = gradientMagnitudeIndex[1] = y;
+			gradientMagnitudeIndex[0] = windowedIndex[0] = hounsfieldIndex[0] = x;
+			gradientMagnitudeIndex[1] = windowedIndex[1] = hounsfieldIndex[1] = y;
 			nodeProperties.push_back(CTPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
 													   windowedImage->GetPixel(windowedIndex),
 													   hounsfieldImage->GetPixel(hounsfieldIndex)));
@@ -62,13 +62,13 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldI
 	GradientMagnitudeImage::IndexType gradientMagnitudeIndex;
 	WindowedImage::IndexType windowedIndex;
 	HounsfieldImage::IndexType hounsfieldIndex;
-	for(long z=0; z<size[2]; ++z)
-		for(long y=0; y<size[1]; ++y)
-			for(long x=0; x<size[0]; ++x)
+	for(size_t z=0; z<size[2]; ++z)
+		for(size_t y=0; y<size[1]; ++y)
+			for(size_t x=0; x<size[0]; ++x)
 			{
-				windowedIndex[0] = hounsfieldIndex[0] = gradientMagnitudeIndex[0] = x;
-				windowedIndex[1] = hounsfieldIndex[1] = gradientMagnitudeIndex[1] = y;
-				windowedIndex[2] = hounsfieldIndex[2] = gradientMagnitudeIndex[2] = z;
+				gradientMagnitudeIndex[0] = windowedIndex[0] = hounsfieldIndex[0] = x;
+				gradientMagnitudeIndex[1] = windowedIndex[1] = hounsfieldIndex[1] = y;
+				gradientMagnitudeIndex[2] = windowedIndex[2] = hounsfieldIndex[2] = z;
 				nodeProperties.push_back(CTPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
 														   windowedImage->GetPixel(windowedIndex),
 														   hounsfieldImage->GetPixel(hounsfieldIndex)));

@@ -18,6 +18,8 @@ template <typename BranchProperties>
 class ImageBranchLayer : public IForestLayer<BranchProperties,int>
 {
 	//#################### TYPEDEFS ####################
+private:
+	typedef IForestLayer<BranchProperties,int> Base;
 public:
 	typedef int EdgeWeight;
 	typedef WeightedEdge<EdgeWeight> Edge;
@@ -39,7 +41,7 @@ private:
 	};
 
 public:
-	class BranchNode : public Node
+	class BranchNode : public Base::Node
 	{
 	private:
 		typename std::map<int,ForestLinks>::iterator m_forestLinksIt;
@@ -58,7 +60,7 @@ public:
 
 	//#################### ITERATORS ####################
 private:
-	class EdgeConstIteratorImpl : public EdgeConstIteratorImplBase
+	class EdgeConstIteratorImpl : public Base::EdgeConstIteratorImplBase
 	{
 	private:
 		typename GraphType::EdgeCIter m_it;
@@ -76,7 +78,7 @@ private:
 			return *this;
 		}
 
-		bool operator==(const EdgeConstIteratorImplBase& baseRhs) const
+		bool operator==(const typename Base::EdgeConstIteratorImplBase& baseRhs) const
 		{
 			const EdgeConstIteratorImpl& rhs = static_cast<const EdgeConstIteratorImpl&>(baseRhs);
 			return m_it == rhs.m_it;
@@ -84,7 +86,7 @@ private:
 	};
 
 	template <typename N>
-	class BranchNodeIteratorImplT : public NodeIteratorImplBaseT<N>
+	class BranchNodeIteratorImplT : public Base::template NodeIteratorImplBaseT<N>
 	{
 	private:
 		typename std::map<int,ForestLinks>::iterator m_forestLinksIt;
@@ -111,7 +113,7 @@ private:
 			return *this;
 		}
 
-		bool operator==(const NodeIteratorImplBaseT<N>& baseRhs) const
+		bool operator==(const typename Base::template NodeIteratorImplBaseT<N>& baseRhs) const
 		{
 			const BranchNodeIteratorImplT& rhs = static_cast<const BranchNodeIteratorImplT&>(baseRhs);
 			return m_forestLinksIt == rhs.m_forestLinksIt;
@@ -129,12 +131,12 @@ private:
 
 	typedef BranchNodeIteratorImplT<BranchNode> BranchNodeIteratorImpl;
 	typedef BranchNodeIteratorImplT<const BranchNode> BranchNodeConstIteratorImpl;
-	typedef BranchNodeIteratorImplT<Node> NodeIteratorImpl;
-	typedef BranchNodeIteratorImplT<const Node> NodeConstIteratorImpl;
+	typedef BranchNodeIteratorImplT<typename Base::Node> NodeIteratorImpl;
+	typedef BranchNodeIteratorImplT<const typename Base::Node> NodeConstIteratorImpl;
 
 public:
-	typedef NodeIteratorT<BranchNode, BranchNodeIteratorImpl> BranchNodeIterator;
-	typedef NodeIteratorT<const BranchNode, BranchNodeConstIteratorImpl> BranchNodeConstIterator;
+	typedef typename Base::template NodeIteratorT<BranchNode, BranchNodeIteratorImpl> BranchNodeIterator;
+	typedef typename Base::template NodeIteratorT<const BranchNode, BranchNodeConstIteratorImpl> BranchNodeConstIterator;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -203,14 +205,14 @@ public:
 		return m_graph.edges();
 	}
 
-	EdgeConstIterator edges_cbegin() const
+	typename Base::EdgeConstIterator edges_cbegin() const
 	{
-		return EdgeConstIterator(new EdgeConstIteratorImpl(m_graph.edges_cbegin()));
+		return typename Base::EdgeConstIterator(new EdgeConstIteratorImpl(m_graph.edges_cbegin()));
 	}
 
-	EdgeConstIterator edges_cend() const
+	typename Base::EdgeConstIterator edges_cend() const
 	{
-		return EdgeConstIterator(new EdgeConstIteratorImpl(m_graph.edges_cend()));
+		return typename Base::EdgeConstIterator(new EdgeConstIteratorImpl(m_graph.edges_cend()));
 	}
 
 	bool has_edge(int u, int v) const
@@ -225,14 +227,14 @@ public:
 
 	std::set<int>& node_children(int n)
 	{
-		std::map<int,ForestLinks>::iterator it = m_forestLinks.find(n);
+		typename std::map<int,ForestLinks>::iterator it = m_forestLinks.find(n);
 		if(it != m_forestLinks.end()) return it->second.m_children;
 		else throw Exception(OSSWrapper() << "No such node: " << n);
 	}
 
 	const std::set<int>& node_children(int n) const
 	{
-		std::map<int,ForestLinks>::const_iterator it = m_forestLinks.find(n);
+		typename std::map<int,ForestLinks>::const_iterator it = m_forestLinks.find(n);
 		if(it != m_forestLinks.end()) return it->second.m_children;
 		else throw Exception(OSSWrapper() << "No such node: " << n);
 	}
@@ -244,7 +246,7 @@ public:
 
 	int node_parent(int n) const
 	{
-		std::map<int,ForestLinks>::const_iterator it = m_forestLinks.find(n);
+		typename std::map<int,ForestLinks>::const_iterator it = m_forestLinks.find(n);
 		if(it != m_forestLinks.end()) return it->second.m_parent;
 		else throw Exception(OSSWrapper() << "No such node: " << n);
 	}
@@ -254,24 +256,24 @@ public:
 		return m_graph.node_properties(n);
 	}
 
-	NodeIterator nodes_begin()
+	typename Base::NodeIterator nodes_begin()
 	{
-		return NodeIterator(new NodeIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
+		return typename Base::NodeIterator(new NodeIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
 	}
 
-	NodeConstIterator nodes_cbegin() const
+	typename Base::NodeConstIterator nodes_cbegin() const
 	{
-		return NodeConstIterator(new NodeConstIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
+		return typename Base::NodeConstIterator(new NodeConstIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
 	}
 
-	NodeConstIterator nodes_cend() const
+	typename Base::NodeConstIterator nodes_cend() const
 	{
-		return NodeConstIterator(new NodeConstIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
+		return typename Base::NodeConstIterator(new NodeConstIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
 	}
 
-	NodeIterator nodes_end()
+	typename Base::NodeIterator nodes_end()
 	{
-		return NodeIterator(new NodeIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
+		return typename Base::NodeIterator(new NodeIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
 	}
 
 	void remove_edge(int u, int v)
