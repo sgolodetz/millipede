@@ -11,4 +11,3 @@
 #endif
 
 #include <GL/gl.h>
-

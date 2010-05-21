@@ -191,8 +191,13 @@ textures/TextureFactory.h
 )
 
 ##
+SET(util_sources
+util/JobManager.cpp
+)
+
 SET(util_headers
 util/CompositeListenerBase.h
+util/JobManager.h
 )
 
 #################################################################
@@ -210,6 +215,7 @@ ${io_util_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
 ${textures_sources}
+${util_sources}
 )
 
 SET(headers
@@ -300,6 +306,7 @@ SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 
 ##
+SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ################################

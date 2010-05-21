@@ -180,7 +180,7 @@ void real_image_test()
 	}
 
 	// Output the mosaic images for each of the partition forest layers.
-	std::cout << "Outputting partitions...\n";
+	std::cout << "Outputting mosaic images...\n";
 	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 	for(int i=0; i<=ipf->highest_layer(); ++i)
 	{
