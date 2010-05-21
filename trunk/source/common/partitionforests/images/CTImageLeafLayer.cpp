@@ -81,7 +81,7 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldI
 // Precondition: has_edge(u, v)
 CTImageLeafLayer::EdgeWeight CTImageLeafLayer::edge_weight(int u, int v) const
 {
-	return abs(m_nodes[u].properties().gradient_magnitude_value() - m_nodes[v].properties().gradient_magnitude_value());
+	return std::max(m_nodes[u].properties().gradient_magnitude_value(), m_nodes[v].properties().gradient_magnitude_value());
 }
 
 }

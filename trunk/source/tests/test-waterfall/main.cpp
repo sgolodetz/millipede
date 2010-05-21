@@ -12,10 +12,10 @@ using boost::shared_ptr;
 #include <itkGradientAnisotropicDiffusionImageFilter.h>
 #include <itkGradientMagnitudeImageFilter.h>
 #include <itkImageFileReader.h>
+#include <itkImageFileWriter.h>
 
 #include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/CTImageBranchLayer.h>
-#include <common/partitionforests/images/CTImageLeafLayer.h>
+#include <common/partitionforests/images/IPFUtil.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 using namespace mp;
@@ -24,9 +24,16 @@ typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
 typedef shared_ptr<IPF> IPF_Ptr;
 
 //#################### HELPER FUNCTIONS ####################
-void output_partition(const IPF_Ptr& ipf, int layerIndex)
+void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int height)
 {
-	// TODO
+	typedef itk::Image<unsigned char,2> Image;
+	Image::Pointer image = IPFUtil::make_mosaic_image(ipf, layerIndex, width, height);
+
+	typedef itk::ImageFileWriter<Image> Writer;
+	Writer::Pointer writer = Writer::New();
+	writer->SetInput(image);
+	writer->SetFileName(OSSWrapper() << "../resources/partition" << layerIndex << ".bmp");
+	writer->Update();
 }
 
 //#################### TEST FUNCTIONS ####################
@@ -82,8 +89,11 @@ struct IPFConstructionListener : WaterfallPass<int>::Listener
 
 	void merge_nodes(int u, int v)
 	{
-		// TODO: Merge the regions in the top-most layer of the IPF.
-		//std::cout << "Merging nodes " << u << " and " << v << '\n';
+		// Merge the corresponding nodes in the top-most layer of the IPF.
+		std::set<PFNodeID> mergees;
+		mergees.insert(PFNodeID(m_ipf->highest_layer(), u));
+		mergees.insert(PFNodeID(m_ipf->highest_layer(), v));
+		m_ipf->merge_sibling_nodes(mergees, IPF::DONT_CHECK_PRECONDITIONS);
 	}
 };
 
@@ -120,7 +130,7 @@ void real_image_test()
 	AnisotropicDiffusionFilter::Pointer adFilter = AnisotropicDiffusionFilter::New();
 	adFilter->SetInput(uc2realCastFilter->GetOutput());
 	adFilter->SetConductanceParameter(1.0);
-	adFilter->SetNumberOfIterations(5);		// a typical value (see the ITK software guide)
+	adFilter->SetNumberOfIterations(15);
 	adFilter->SetTimeStep(0.125);
 
 	// Calculate the gradient magnitude of the smoothed image.
@@ -167,7 +177,14 @@ void real_image_test()
 		std::cout << "Running waterfall pass...\n";
 		pass.run(mst);
 		std::cout << "Layer " << ipf->highest_layer() << " Node Count: " << mst.node_count() << '\n';
-		output_partition(ipf, ipf->highest_layer());
+	}
+
+	// Output the mosaic images for each of the partition forest layers.
+	std::cout << "Outputting partitions...\n";
+	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
+	for(int i=0; i<=ipf->highest_layer(); ++i)
+	{
+		output_mosaic_image(ipf, i, imageSize[0], imageSize[1]);
 	}
 }
 
