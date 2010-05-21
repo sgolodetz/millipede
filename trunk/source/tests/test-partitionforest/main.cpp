@@ -11,22 +11,23 @@ using boost::shared_ptr;
 #include <common/adts/RootedMST.h>
 #include <common/commands/UndoableCommandManager.h>
 #include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
-#include <common/partitionforests/images/TestImageForestLayers.h>
+#include <common/partitionforests/images/SimpleImageBranchLayer.h>
+#include <common/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
 
 //#################### TYPEDEFS ####################
-typedef PartitionForest<TestImageLeafLayer, TestImageBranchLayer> IPF;
+typedef PartitionForest<SimpleImageLeafLayer, SimpleImageBranchLayer> IPF;
 typedef boost::shared_ptr<IPF> IPF_Ptr;
-typedef PartitionForestSelection<TestImageLeafLayer, TestImageBranchLayer> Selection;
+typedef PartitionForestSelection<SimpleImageLeafLayer, SimpleImageBranchLayer> Selection;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
 
 //#################### HELPERS ####################
 IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 {
 	// Construct the forest.
-	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
-	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
-	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
 
 	IPF_Ptr ipf(new IPF(leafLayer));
 
@@ -70,7 +71,7 @@ void feature_selection_test()
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
 
-	typedef PartitionForestMultiFeatureSelection<TestImageLeafLayer, TestImageBranchLayer, SimpleFeatureID> MFS;
+	typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeatureID> MFS;
 	typedef boost::shared_ptr<MFS> MFS_Ptr;
 	MFS_Ptr mfs(new MFS(ipf));
 	mfs->set_command_manager(manager);
@@ -117,9 +118,9 @@ struct ForestListener : IPF::Listener
 
 void listener_test()
 {
-	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
-	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
-	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
 
@@ -164,9 +165,9 @@ void listener_test()
 void lowest_branch_layer_test()
 {
 	// Construct the leaf layer.
-	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
-	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
-	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
 
 	// Create some arbitrary groups.
 	std::vector<std::set<int> > groups(3);
@@ -177,21 +178,21 @@ void lowest_branch_layer_test()
 	groups[2].insert(7);
 
 	// Construct the lowest branch layer.
-	shared_ptr<TestImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, groups);
+	shared_ptr<SimpleImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, groups);
 
 	// Construct the forest itself.
 	IPF ipf(leafLayer, lowestBranchLayer);
 
 	// Construct a rooted MST from the lowest branch layer.
-	RootedMST<TestImageBranchLayer::EdgeWeight> mst(*lowestBranchLayer);
+	RootedMST<SimpleImageBranchLayer::EdgeWeight> mst(*lowestBranchLayer);
 }
 
 void nonsibling_node_merging_test()
 {
 	// Construct initial forest.
-	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
-	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
-	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
 

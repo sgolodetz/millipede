@@ -141,6 +141,9 @@ SET(partitionforests_images_sources
 partitionforests/images/CTImageLeafLayer.cpp
 partitionforests/images/CTPixelProperties.cpp
 partitionforests/images/CTRegionProperties.cpp
+partitionforests/images/SimpleImageLeafLayer.cpp
+partitionforests/images/SimplePixelProperties.cpp
+partitionforests/images/SimpleRegionProperties.cpp
 )
 
 SET(partitionforests_images_headers
@@ -150,8 +153,10 @@ partitionforests/images/CTPixelProperties.h
 partitionforests/images/CTRegionProperties.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
-partitionforests/images/TestImageForestLayers.h
-partitionforests/images/TestImageNodeProperties.h
+partitionforests/images/SimpleImageBranchLayer.h
+partitionforests/images/SimpleImageLeafLayer.h
+partitionforests/images/SimplePixelProperties.h
+partitionforests/images/SimpleRegionProperties.h
 )
 
 ##

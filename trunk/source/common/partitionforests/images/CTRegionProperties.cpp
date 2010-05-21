@@ -9,6 +9,12 @@
 
 namespace mp {
 
+//#################### CONSTRUCTORS ####################
+CTRegionProperties::CTRegionProperties()
+:	m_area(0),
+	m_meanGreyValue(0.0)
+{}
+
 //#################### PUBLIC METHODS ####################
 int CTRegionProperties::area() const
 {

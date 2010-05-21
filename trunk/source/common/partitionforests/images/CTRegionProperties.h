@@ -21,10 +21,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTRegionProperties()
-	:	m_area(0),
-		m_meanGreyValue(0.0)
-	{}
+	CTRegionProperties();
 
 	//#################### PUBLIC METHODS ####################
 public:

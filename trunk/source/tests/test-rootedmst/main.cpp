@@ -7,7 +7,7 @@
 
 #include <common/adts/RootedMST.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
-#include <common/partitionforests/images/TestImageForestLayers.h>
+#include <common/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
 
 template <typename TPixel>
@@ -88,11 +88,11 @@ void itk_leaf_layer_mst()
 
 void leaf_layer_mst()
 {
-	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
-	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
-	TestImageLeafLayer leafLayer(leafProperties, 3, 3);
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	SimpleImageLeafLayer leafLayer(leafProperties, 3, 3);
 
-	typedef RootedMST<TestImageLeafLayer::EdgeWeight> MST;
+	typedef RootedMST<SimpleImageLeafLayer::EdgeWeight> MST;
 	MST mst(leafLayer);
 
 	mst.merge_nodes(7, 6);
