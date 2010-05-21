@@ -51,12 +51,11 @@ void adjacency_graph_mst()
 	RootedMST<int> mst(graph);
 }
 
-void itk_leaf_layer_mst()
+void ct_leaf_layer_mst()
 {
-	typedef itk::Image<int,3> HounsfieldImage;
-	typedef HounsfieldImage::Pointer HounsfieldImagePointer;
-	typedef itk::Image<unsigned char,3> WindowedImage;
-	typedef WindowedImage::Pointer WindowedImagePointer;
+	typedef itk::Image<int,3>::Pointer GradientMagnitudeImagePointer;
+	typedef itk::Image<int,3>::Pointer HounsfieldImagePointer;
+	typedef itk::Image<unsigned char,3>::Pointer WindowedImagePointer;
 
 	int hounsfieldPixels[] = {
 		-3, -3, -1,
@@ -80,13 +79,14 @@ void itk_leaf_layer_mst()
 
 	HounsfieldImagePointer hounsfieldImage = create_3d_image(hounsfieldPixels, 3, 3, 2);
 	WindowedImagePointer windowedImage = create_3d_image(windowedPixels, 3, 3, 2);
+	GradientMagnitudeImagePointer gradientMagnitudeImage = hounsfieldImage;		// note: this is a hack (for testing purposes)
 
-	CTImageLeafLayer leafLayer(hounsfieldImage, windowedImage);
+	CTImageLeafLayer leafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage);
 
 	RootedMST<CTImageLeafLayer::EdgeWeight> mst(leafLayer);
 }
 
-void leaf_layer_mst()
+void simple_leaf_layer_mst()
 {
 	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
 	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
@@ -103,7 +103,7 @@ void leaf_layer_mst()
 int main()
 {
 	adjacency_graph_mst();
-	itk_leaf_layer_mst();
-	leaf_layer_mst();
+	ct_leaf_layer_mst();
+	simple_leaf_layer_mst();
 	return 0;
 }

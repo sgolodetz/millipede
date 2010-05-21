@@ -10,18 +10,19 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTPixelProperties::CTPixelProperties(unsigned char greyValue, int hounsfieldValue)
-:	m_greyValue(greyValue), m_hounsfieldValue(hounsfieldValue)
+CTPixelProperties::CTPixelProperties(int gradientMagnitudeValue, unsigned char greyValue, int hounsfieldValue)
+:	m_gradientMagnitudeValue(gradientMagnitudeValue), m_greyValue(greyValue), m_hounsfieldValue(hounsfieldValue)
 {}
 
 //#################### PUBLIC METHODS ####################
-unsigned char CTPixelProperties::grey_value() const		{ return m_greyValue; }
-int CTPixelProperties::hounsfield_value() const			{ return m_hounsfieldValue; }
+int CTPixelProperties::gradient_magnitude_value() const		{ return m_gradientMagnitudeValue; }
+unsigned char CTPixelProperties::grey_value() const			{ return m_greyValue; }
+int CTPixelProperties::hounsfield_value() const				{ return m_hounsfieldValue; }
 
 //#################### GLOBAL OPERATORS ####################
 std::ostream& operator<<(std::ostream& os, const CTPixelProperties& rhs)
 {
-	os << '<' << static_cast<int>(rhs.grey_value()) << " | " << rhs.hounsfield_value() << '>';
+	os << '<' << rhs.gradient_magnitude_value() << " | " << static_cast<int>(rhs.grey_value()) << " | " << rhs.hounsfield_value() << '>';
 	return os;
 }
 

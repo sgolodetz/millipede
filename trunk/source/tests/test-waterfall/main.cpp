@@ -148,7 +148,7 @@ void real_image_test()
 
 	// Create the initial partition forest.
 	std::cout << "Creating initial partition forest...\n";
-	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage));
+	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
 	shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
 	IPF_Ptr ipf(new IPF(leafLayer, lowestBranchLayer));
 
