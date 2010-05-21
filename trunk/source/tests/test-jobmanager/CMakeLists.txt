@@ -41,6 +41,7 @@ INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 #################################
 
 TARGET_LINK_LIBRARIES(${targetname} common)
+INCLUDE(${millipede_SOURCE_DIR}/LinkBoost.cmake)
 
 #############################
 # Specify things to install #
