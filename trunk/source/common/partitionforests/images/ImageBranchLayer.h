@@ -9,21 +9,22 @@
 #include <set>
 
 #include <common/adts/AdjacencyGraph.h>
+#include <common/io/util/OSSWrapper.h>
 #include <common/partitionforests/base/IForestLayer.h>
-#include "RegionProperties.h"
 
 namespace mp {
 
-class ImageBranchLayer : public IForestLayer<RegionProperties,int>
+template <typename BranchProperties>
+class ImageBranchLayer : public IForestLayer<BranchProperties,int>
 {
 	//#################### TYPEDEFS ####################
 public:
 	typedef int EdgeWeight;
 	typedef WeightedEdge<EdgeWeight> Edge;
-	typedef RegionProperties NodeProperties;
+	typedef BranchProperties NodeProperties;
 
 private:
-	typedef AdjacencyGraph<RegionProperties,int> GraphType;
+	typedef AdjacencyGraph<BranchProperties,int> GraphType;
 
 	//#################### NESTED CLASSES (EXCLUDING ITERATORS ####################
 private:
@@ -41,10 +42,10 @@ public:
 	class BranchNode : public Node
 	{
 	private:
-		std::map<int,ForestLinks>::iterator m_forestLinksIt;
-		GraphType::NodePropertiesCIter m_nodePropertiesIt;
+		typename std::map<int,ForestLinks>::iterator m_forestLinksIt;
+		typename GraphType::NodePropertiesCIter m_nodePropertiesIt;
 	public:
-		explicit BranchNode(const std::map<int,ForestLinks>::iterator& forestLinksIt, const GraphType::NodePropertiesCIter& nodePropertiesIt)
+		explicit BranchNode(const typename std::map<int,ForestLinks>::iterator& forestLinksIt, const typename GraphType::NodePropertiesCIter& nodePropertiesIt)
 		:	m_forestLinksIt(forestLinksIt), m_nodePropertiesIt(nodePropertiesIt)
 		{}
 
@@ -60,9 +61,9 @@ private:
 	class EdgeConstIteratorImpl : public EdgeConstIteratorImplBase
 	{
 	private:
-		GraphType::EdgeCIter m_it;
+		typename GraphType::EdgeCIter m_it;
 	public:
-		EdgeConstIteratorImpl(const GraphType::EdgeCIter& it)
+		EdgeConstIteratorImpl(const typename GraphType::EdgeCIter& it)
 		:	m_it(it)
 		{}
 
@@ -86,14 +87,14 @@ private:
 	class BranchNodeIteratorImplT : public NodeIteratorImplBaseT<N>
 	{
 	private:
-		std::map<int,ForestLinks>::iterator m_forestLinksIt;
-		std::map<int,ForestLinks>::iterator m_forestLinksEnd;
-		GraphType::NodePropertiesCIter m_nodePropertiesIt;
+		typename std::map<int,ForestLinks>::iterator m_forestLinksIt;
+		typename std::map<int,ForestLinks>::iterator m_forestLinksEnd;
+		typename GraphType::NodePropertiesCIter m_nodePropertiesIt;
 		boost::shared_ptr<BranchNode> m_cur;
 
 	public:
-		BranchNodeIteratorImplT(const std::map<int,ForestLinks>::iterator& forestLinksIt, const std::map<int,ForestLinks>::iterator& forestLinksEnd,
-								const GraphType::NodePropertiesCIter& nodePropertiesIt)
+		BranchNodeIteratorImplT(const typename std::map<int,ForestLinks>::iterator& forestLinksIt, const typename std::map<int,ForestLinks>::iterator& forestLinksEnd,
+								const typename GraphType::NodePropertiesCIter& nodePropertiesIt)
 		:	m_forestLinksIt(forestLinksIt), m_forestLinksEnd(forestLinksEnd), m_nodePropertiesIt(nodePropertiesIt)
 		{
 			set_cur();
@@ -142,7 +143,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ImageBranchLayer();
+	ImageBranchLayer() {}
 
 	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
 private:
@@ -151,35 +152,169 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	std::vector<Edge> adjacent_edges(int n) const;
-	std::vector<int> adjacent_nodes(int n) const;
-	BranchNodeIterator branch_nodes_begin();
-	BranchNodeConstIterator branch_nodes_cbegin() const;
-	BranchNodeConstIterator branch_nodes_cend() const;
-	BranchNodeIterator branch_nodes_end();
-	RegionProperties combine_properties(const std::set<int>& nodeIndices) const;
-	EdgeWeight edge_weight(int u, int v) const;
-	std::vector<Edge> edges() const;
-	EdgeConstIterator edges_cbegin() const;
-	EdgeConstIterator edges_cend() const;
-	bool has_edge(int u, int v) const;
-	bool has_node(int n) const;
-	std::set<int>& node_children(int n);
-	const std::set<int>& node_children(int n) const;
-	std::vector<int> node_indices() const;
-	int node_parent(int n) const;
-	const NodeProperties& node_properties(int n) const;
-	NodeIterator nodes_begin();
-	NodeConstIterator nodes_cbegin() const;
-	NodeConstIterator nodes_cend() const;
-	NodeIterator nodes_end();
-	void remove_edge(int u, int v);
-	void remove_node(int n);
-	void set_edge_weight(int u, int v, EdgeWeight weight);
-	void set_node_children(int n, const std::set<int>& children);
-	void set_node_parent(int n, int parent);
-	void set_node_properties(int n, const NodeProperties& properties);
-	void update_edge_weight(int u, int v, EdgeWeight weight);
+	std::vector<Edge> adjacent_edges(int n) const
+	{
+		return m_graph.adjacent_edges(n);
+	}
+
+	std::vector<int> adjacent_nodes(int n) const
+	{
+		return m_graph.adjacent_nodes(n);
+	}
+
+	BranchNodeIterator branch_nodes_begin()
+	{
+		return BranchNodeIterator(new BranchNodeIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
+	}
+
+	BranchNodeConstIterator branch_nodes_cbegin() const
+	{
+		return BranchNodeConstIterator(new BranchNodeConstIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
+	}
+
+	BranchNodeConstIterator branch_nodes_cend() const
+	{
+		return BranchNodeConstIterator(new BranchNodeConstIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
+	}
+
+	BranchNodeIterator branch_nodes_end()
+	{
+		return BranchNodeIterator(new BranchNodeIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
+	}
+
+	BranchProperties combine_properties(const std::set<int>& nodeIndices) const
+	{
+		std::vector<BranchProperties> properties;
+		properties.reserve(nodeIndices.size());
+		for(std::set<int>::const_iterator it=nodeIndices.begin(), iend=nodeIndices.end(); it!=iend; ++it)
+		{
+			properties.push_back(node_properties(*it));
+		}
+		return BranchProperties::combine_branch_properties(properties);
+	}
+
+	EdgeWeight edge_weight(int u, int v) const
+	{
+		return m_graph.edge_weight(u, v);
+	}
+
+	std::vector<Edge> edges() const
+	{
+		return m_graph.edges();
+	}
+
+	EdgeConstIterator edges_cbegin() const
+	{
+		return EdgeConstIterator(new EdgeConstIteratorImpl(m_graph.edges_cbegin()));
+	}
+
+	EdgeConstIterator edges_cend() const
+	{
+		return EdgeConstIterator(new EdgeConstIteratorImpl(m_graph.edges_cend()));
+	}
+
+	bool has_edge(int u, int v) const
+	{
+		return m_graph.has_edge(u, v);
+	}
+
+	bool has_node(int n) const
+	{
+		return m_graph.has_node(n);
+	}
+
+	std::set<int>& node_children(int n)
+	{
+		std::map<int,ForestLinks>::iterator it = m_forestLinks.find(n);
+		if(it != m_forestLinks.end()) return it->second.m_children;
+		else throw Exception(OSSWrapper() << "No such node: " << n);
+	}
+
+	const std::set<int>& node_children(int n) const
+	{
+		std::map<int,ForestLinks>::const_iterator it = m_forestLinks.find(n);
+		if(it != m_forestLinks.end()) return it->second.m_children;
+		else throw Exception(OSSWrapper() << "No such node: " << n);
+	}
+
+	std::vector<int> node_indices() const
+	{
+		return m_graph.node_indices();
+	}
+
+	int node_parent(int n) const
+	{
+		std::map<int,ForestLinks>::const_iterator it = m_forestLinks.find(n);
+		if(it != m_forestLinks.end()) return it->second.m_parent;
+		else throw Exception(OSSWrapper() << "No such node: " << n);
+	}
+
+	const NodeProperties& node_properties(int n) const
+	{
+		return m_graph.node_properties(n);
+	}
+
+	NodeIterator nodes_begin()
+	{
+		return NodeIterator(new NodeIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
+	}
+
+	NodeConstIterator nodes_cbegin() const
+	{
+		return NodeConstIterator(new NodeConstIteratorImpl(m_forestLinks.begin(), m_forestLinks.end(), m_graph.node_properties_cbegin()));
+	}
+
+	NodeConstIterator nodes_cend() const
+	{
+		return NodeConstIterator(new NodeConstIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
+	}
+
+	NodeIterator nodes_end()
+	{
+		return NodeIterator(new NodeIteratorImpl(m_forestLinks.end(), m_forestLinks.end(), m_graph.node_properties_cend()));
+	}
+
+	void remove_edge(int u, int v)
+	{
+		m_graph.remove_edge(u, v);
+	}
+
+	void remove_node(int n)
+	{
+		m_graph.remove_node(n);
+		m_forestLinks.erase(n);
+	}
+
+	void set_edge_weight(int u, int v, EdgeWeight weight)
+	{
+		m_graph.set_edge_weight(u, v, weight);
+	}
+
+	void set_node_children(int n, const std::set<int>& children)
+	{
+		m_forestLinks[n].m_children = children;
+	}
+
+	void set_node_parent(int n, int parent)
+	{
+		m_forestLinks[n].m_parent = parent;
+	}
+
+	void set_node_properties(int n, const NodeProperties& properties)
+	{
+		m_graph.set_node_properties(n, properties);
+		m_forestLinks[n];	// "touch" the forest link to create it if it doesn't exist
+	}
+
+	void update_edge_weight(int u, int v, EdgeWeight weight)
+	{
+		if(has_edge(u, v))
+		{
+			EdgeWeight oldWeight = edge_weight(u, v);
+			if(weight < oldWeight) set_edge_weight(u, v, weight);
+		}
+		else set_edge_weight(u, v, weight);
+	}
 };
 
 }

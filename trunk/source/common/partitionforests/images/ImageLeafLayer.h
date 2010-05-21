@@ -8,22 +8,20 @@
 
 #include <vector>
 
-#include <itkImage.h>
-
 #include <common/adts/WeightedEdge.h>
 #include <common/exceptions/Exception.h>
 #include <common/partitionforests/base/IForestLayer.h>
-#include "RegionProperties.h"
 
 namespace mp {
 
-class ImageLeafLayer : public IForestLayer<RegionProperties,int>
+template <typename LeafProperties, typename BranchProperties>
+class ImageLeafLayer : public IForestLayer<BranchProperties,int>
 {
 	//#################### TYPEDEFS ####################
 public:
 	typedef int EdgeWeight;
 	typedef WeightedEdge<EdgeWeight> Edge;
-	typedef PixelProperties NodeProperties;
+	typedef LeafProperties NodeProperties;
 
 	//#################### NESTED CLASSES (EXCLUDING ITERATORS) ####################
 public:
@@ -185,36 +183,167 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ImageLeafLayer(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1);
+	ImageLeafLayer(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1)
+	:	m_sizeX(sizeX), m_sizeY(sizeY), m_sizeZ(sizeZ)
+	{
+		m_sizeXY = m_sizeX * m_sizeY;
+		m_sizeXYZ = m_sizeXY * m_sizeZ;
+
+		size_t size = nodeProperties.size();
+		m_nodes.reserve(size);
+		for(size_t i=0; i<size; ++i) m_nodes.push_back(LeafNode(nodeProperties[i]));
+	}
 
 	//#################### PUBLIC METHODS ####################
 public:
-	std::vector<Edge> adjacent_edges(int n) const;
-	std::vector<int> adjacent_nodes(int n) const;
-	RegionProperties combine_properties(const std::set<int>& nodeIndices) const;
-	EdgeWeight edge_weight(int u, int v) const;
-	EdgeConstIterator edges_cbegin() const;
-	EdgeConstIterator edges_cend() const;
-	bool has_edge(int u, int v) const;
-	bool has_node(int n) const;
-	LeafNodeIterator leaf_nodes_begin();
-	LeafNodeConstIterator leaf_nodes_cbegin() const;
-	LeafNodeConstIterator leaf_nodes_cend() const;
-	LeafNodeIterator leaf_nodes_end();
-	std::vector<int> node_indices() const;
-	int node_parent(int n) const;
-	const PixelProperties& node_properties(int n) const;
-	NodeIterator nodes_begin();
-	NodeConstIterator nodes_cbegin() const;
-	NodeConstIterator nodes_cend() const;
-	NodeIterator nodes_end();
-	void set_node_parent(int n, int parent);
+	std::vector<Edge> adjacent_edges(int n) const
+	{
+		// Note: This is a 6-connected implementation.
+		std::vector<Edge> ret;
+
+		int x = x_of(n), y = y_of(n), z = z_of(n);
+		if(z != 0)				ret.push_back(Edge(n - m_sizeXY, n, edge_weight(n - m_sizeXY, n)));
+		if(y != 0)				ret.push_back(Edge(n - m_sizeX, n, edge_weight(n - m_sizeX, n)));
+		if(x != 0)				ret.push_back(Edge(n - 1, n, edge_weight(n - 1, n)));
+		if(x != m_sizeX - 1)	ret.push_back(Edge(n, n + 1, edge_weight(n, n + 1)));
+		if(y != m_sizeY - 1)	ret.push_back(Edge(n, n + m_sizeX, edge_weight(n, n + m_sizeX)));
+		if(z != m_sizeZ - 1)	ret.push_back(Edge(n, n + m_sizeXY, edge_weight(n, n + m_sizeXY)));
+
+		return ret;
+	}
+
+	std::vector<int> adjacent_nodes(int n) const
+	{
+		// Note: This is a 6-connected implementation.
+		std::vector<int> ret;
+
+		int x = x_of(n), y = y_of(n), z = z_of(n);
+		if(z != 0)				ret.push_back(n - m_sizeXY);
+		if(y != 0)				ret.push_back(n - m_sizeX);
+		if(x != 0)				ret.push_back(n - 1);
+		if(x != m_sizeX - 1)	ret.push_back(n + 1);
+		if(y != m_sizeY - 1)	ret.push_back(n + m_sizeX);
+		if(z != m_sizeZ - 1)	ret.push_back(n + m_sizeXY);
+
+		return ret;
+	}
+
+	BranchProperties combine_properties(const std::set<int>& nodeIndices) const
+	{
+		std::vector<LeafProperties> properties;
+		properties.reserve(nodeIndices.size());
+		for(std::set<int>::const_iterator it=nodeIndices.begin(), iend=nodeIndices.end(); it!=iend; ++it)
+		{
+			properties.push_back(node_properties(*it));
+		}
+		return BranchProperties::combine_leaf_properties(properties);
+	}
+
+	// Precondition: has_edge(u, v)
+	EdgeWeight edge_weight(int u, int v) const
+	{
+		return abs(m_nodes[u].properties().grey_value() - m_nodes[v].properties().grey_value());
+	}
+
+	EdgeConstIterator edges_cbegin() const
+	{
+		return EdgeConstIterator(new EdgeConstIteratorImpl(this, 0));
+	}
+
+	EdgeConstIterator edges_cend() const
+	{
+		return EdgeConstIterator(new EdgeConstIteratorImpl(this, m_sizeXYZ));
+	}
+
+	bool has_edge(int u, int v) const
+	{
+		// Note: This is a 6-connected implementation.
+		if(!has_node(u) || !has_node(v)) return false;
+		int ux = x_of(u), uy = y_of(u), uz = z_of(u);
+		int vx = x_of(v), vy = y_of(v), vz = z_of(v);
+		int xdiff = abs(ux - vx), ydiff = abs(uy - vy), zdiff = abs(uz - vz);
+		return xdiff + ydiff + zdiff == 1;	// note that each is either 0 or 1
+	}
+
+	bool has_node(int n) const
+	{
+		return 0 <= n && n < static_cast<int>(m_nodes.size());
+	}
+
+	LeafNodeIterator leaf_nodes_begin()
+	{
+		return LeafNodeIterator(new LeafNodeIteratorImpl(0, m_nodes));
+	}
+
+	LeafNodeConstIterator leaf_nodes_cbegin() const
+	{
+		return LeafNodeConstIterator(new LeafNodeConstIteratorImpl(0, m_nodes));
+	}
+
+	LeafNodeConstIterator leaf_nodes_cend() const
+	{
+		return LeafNodeConstIterator(new LeafNodeConstIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
+	}
+
+	LeafNodeIterator leaf_nodes_end()
+	{
+		return LeafNodeIterator(new LeafNodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
+	}
+
+	std::vector<int> node_indices() const
+	{
+		int size = static_cast<int>(m_nodes.size());
+		std::vector<int> ret(size);
+		for(int i=0; i<size; ++i)
+		{
+			ret[i] = i;
+		}
+		return ret;
+	}
+
+	// Precondition: n is in the right range
+	int node_parent(int n) const
+	{
+		return m_nodes[n].parent();
+	}
+
+	// Precondition: n is in the right range
+	const LeafProperties& node_properties(int n) const
+	{
+		return m_nodes[n].properties();
+	}
+
+	NodeIterator nodes_begin()
+	{
+		return NodeIterator(new NodeIteratorImpl(0, m_nodes));
+	}
+
+	NodeConstIterator nodes_cbegin() const
+	{
+		return NodeConstIterator(new NodeConstIteratorImpl(0, m_nodes));
+	}
+
+	NodeConstIterator nodes_cend() const
+	{
+		return NodeConstIterator(new NodeConstIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
+	}
+
+	NodeIterator nodes_end()
+	{
+		return NodeIterator(new NodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
+	}
+
+	// Precondition: n is in the right range
+	void set_node_parent(int n, int parent)
+	{
+		m_nodes[n].set_parent(parent);
+	}
 
 	//#################### PRIVATE METHODS ####################
 private:
-	int x_of(int n) const;
-	int y_of(int n) const;
-	int z_of(int n) const;
+	int x_of(int n) const	{ return n % m_sizeX; }
+	int y_of(int n) const	{ return (n / m_sizeX) % m_sizeY; }
+	int z_of(int n) const	{ return n / m_sizeXY; }
 };
 
 }

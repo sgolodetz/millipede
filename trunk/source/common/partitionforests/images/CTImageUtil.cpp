@@ -9,7 +9,7 @@ namespace mp {
 
 namespace CTImageUtil {
 
-boost::shared_ptr<ImageLeafLayer> make_leaf_layer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage)
+boost::shared_ptr<CTImageLeafLayer> make_leaf_layer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -18,7 +18,7 @@ boost::shared_ptr<ImageLeafLayer> make_leaf_layer(const itk::Image<int,2>::Point
 
 	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 
-	std::vector<PixelProperties> nodeProperties;
+	std::vector<CTPixelProperties> nodeProperties;
 	nodeProperties.reserve(size[0] * size[1]);
 
 	WindowedImage::IndexType windowedIndex;
@@ -28,13 +28,13 @@ boost::shared_ptr<ImageLeafLayer> make_leaf_layer(const itk::Image<int,2>::Point
 		{
 			windowedIndex[0] = hounsfieldIndex[0] = x;
 			windowedIndex[1] = hounsfieldIndex[1] = y;
-			nodeProperties.push_back(PixelProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex)));
+			nodeProperties.push_back(CTPixelProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex)));
 		}
 
-	return boost::shared_ptr<ImageLeafLayer>(new ImageLeafLayer(nodeProperties, size[0], size[1]));
+	return boost::shared_ptr<CTImageLeafLayer>(new CTImageLeafLayer(nodeProperties, size[0], size[1]));
 }
 
-boost::shared_ptr<ImageLeafLayer> make_leaf_layer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage)
+boost::shared_ptr<CTImageLeafLayer> make_leaf_layer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -43,7 +43,7 @@ boost::shared_ptr<ImageLeafLayer> make_leaf_layer(const itk::Image<int,3>::Point
 
 	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 
-	std::vector<PixelProperties> nodeProperties;
+	std::vector<CTPixelProperties> nodeProperties;
 	nodeProperties.reserve(size[0] * size[1] * size[2]);
 
 	WindowedImage::IndexType windowedIndex;
@@ -55,10 +55,10 @@ boost::shared_ptr<ImageLeafLayer> make_leaf_layer(const itk::Image<int,3>::Point
 				windowedIndex[0] = hounsfieldIndex[0] = x;
 				windowedIndex[1] = hounsfieldIndex[1] = y;
 				windowedIndex[2] = hounsfieldIndex[2] = z;
-				nodeProperties.push_back(PixelProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex)));
+				nodeProperties.push_back(CTPixelProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex)));
 			}
 
-	return boost::shared_ptr<ImageLeafLayer>(new ImageLeafLayer(nodeProperties, size[0], size[1], size[2]));
+	return boost::shared_ptr<CTImageLeafLayer>(new CTImageLeafLayer(nodeProperties, size[0], size[1], size[2]));
 }
 
 }

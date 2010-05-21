@@ -1,16 +1,16 @@
 /***
- * millipede: PixelProperties.h
+ * millipede: CTPixelProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_PIXELPROPERTIES
-#define H_MILLIPEDE_PIXELPROPERTIES
+#ifndef H_MILLIPEDE_CTPIXELPROPERTIES
+#define H_MILLIPEDE_CTPIXELPROPERTIES
 
 #include <iosfwd>
 
 namespace mp {
 
-class PixelProperties
+class CTPixelProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -19,7 +19,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PixelProperties(unsigned char greyValue, int hounsfieldValue);
+	CTPixelProperties(unsigned char greyValue, int hounsfieldValue);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -28,7 +28,7 @@ public:
 };
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const PixelProperties& rhs);
+std::ostream& operator<<(std::ostream& os, const CTPixelProperties& rhs);
 
 }
 

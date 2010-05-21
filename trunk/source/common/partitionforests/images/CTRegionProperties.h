@@ -1,18 +1,18 @@
 /***
- * millipede: RegionProperties.h
+ * millipede: CTRegionProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_REGIONPROPERTIES
-#define H_MILLIPEDE_REGIONPROPERTIES
+#ifndef H_MILLIPEDE_CTREGIONPROPERTIES
+#define H_MILLIPEDE_CTREGIONPROPERTIES
 
 #include <vector>
 
-#include "PixelProperties.h"
+#include "CTPixelProperties.h"
 
 namespace mp {
 
-class RegionProperties
+class CTRegionProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -21,7 +21,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	RegionProperties()
+	CTRegionProperties()
 	:	m_area(0),
 		m_meanGreyValue(0.0)
 	{}
@@ -29,13 +29,13 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	int area() const;
-	static RegionProperties combine_branch_properties(const std::vector<RegionProperties>& properties);
-	static RegionProperties combine_leaf_properties(const std::vector<PixelProperties>& properties);
+	static CTRegionProperties combine_branch_properties(const std::vector<CTRegionProperties>& properties);
+	static CTRegionProperties combine_leaf_properties(const std::vector<CTPixelProperties>& properties);
 	double mean_grey_value() const;
 };
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const RegionProperties& rhs);
+std::ostream& operator<<(std::ostream& os, const CTRegionProperties& rhs);
 
 }
 

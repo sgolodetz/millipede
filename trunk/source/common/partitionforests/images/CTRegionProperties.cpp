@@ -1,24 +1,24 @@
 /***
- * millipede: RegionProperties.cpp
+ * millipede: CTRegionProperties.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "RegionProperties.h"
+#include "CTRegionProperties.h"
 
 #include <ostream>
 
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
-int RegionProperties::area() const
+int CTRegionProperties::area() const
 {
 	return m_area;
 }
 
 // Precondition: !properties.empty()
-RegionProperties RegionProperties::combine_branch_properties(const std::vector<RegionProperties>& properties)
+CTRegionProperties CTRegionProperties::combine_branch_properties(const std::vector<CTRegionProperties>& properties)
 {
-	RegionProperties ret;
+	CTRegionProperties ret;
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
@@ -31,9 +31,9 @@ RegionProperties RegionProperties::combine_branch_properties(const std::vector<R
 }
 
 // Precondition: !properties.empty()
-RegionProperties RegionProperties::combine_leaf_properties(const std::vector<PixelProperties>& properties)
+CTRegionProperties CTRegionProperties::combine_leaf_properties(const std::vector<CTPixelProperties>& properties)
 {
-	RegionProperties ret;
+	CTRegionProperties ret;
 
 	ret.m_area = properties.size();
 
@@ -46,13 +46,13 @@ RegionProperties RegionProperties::combine_leaf_properties(const std::vector<Pix
 	return ret;
 }
 
-double RegionProperties::mean_grey_value() const
+double CTRegionProperties::mean_grey_value() const
 {
 	return m_meanGreyValue;
 }
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const RegionProperties& rhs)
+std::ostream& operator<<(std::ostream& os, const CTRegionProperties& rhs)
 {
 	os << "<<" << rhs.area() << " | " << rhs.mean_grey_value() << ">>";
 	return os;
