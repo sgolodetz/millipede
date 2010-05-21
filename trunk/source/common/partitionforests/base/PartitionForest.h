@@ -283,7 +283,7 @@ public:
 		-	If any of the specified groups are empty
 	@return A shared_ptr to the newly-constructed lowest branch layer
 	*/
-	static BranchLayer_Ptr construct_lowest_branch_layer(const LeafLayer_Ptr& leafLayer, const std::vector<std::set<int> >& groups)
+	static BranchLayer_Ptr make_lowest_branch_layer(const LeafLayer_Ptr& leafLayer, const std::vector<std::set<int> >& groups)
 	{
 		BranchLayer_Ptr lowestBranchLayer(new BranchLayer);
 

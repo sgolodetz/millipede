@@ -1,15 +1,19 @@
 /***
- * millipede: CTImageUtil.cpp
+ * millipede: CTImageLeafLayer.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CTImageUtil.h"
+#include "CTImageLeafLayer.h"
 
 namespace mp {
 
-namespace CTImageUtil {
+//#################### CONSTRUCTORS ####################
+CTImageLeafLayer::CTImageLeafLayer(const std::vector<CTPixelProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ)
+{
+	initialise(nodeProperties, sizeX, sizeY, sizeZ);
+}
 
-boost::shared_ptr<CTImageLeafLayer> make_leaf_layer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage)
+CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage, const itk::Image<unsigned char,2>::Pointer& windowedImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -31,10 +35,10 @@ boost::shared_ptr<CTImageLeafLayer> make_leaf_layer(const itk::Image<int,2>::Poi
 			nodeProperties.push_back(CTPixelProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex)));
 		}
 
-	return boost::shared_ptr<CTImageLeafLayer>(new CTImageLeafLayer(nodeProperties, size[0], size[1]));
+	initialise(nodeProperties, size[0], size[1]);
 }
 
-boost::shared_ptr<CTImageLeafLayer> make_leaf_layer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage)
+CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage, const itk::Image<unsigned char,3>::Pointer& windowedImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -58,9 +62,14 @@ boost::shared_ptr<CTImageLeafLayer> make_leaf_layer(const itk::Image<int,3>::Poi
 				nodeProperties.push_back(CTPixelProperties(windowedImage->GetPixel(windowedIndex), hounsfieldImage->GetPixel(hounsfieldIndex)));
 			}
 
-	return boost::shared_ptr<CTImageLeafLayer>(new CTImageLeafLayer(nodeProperties, size[0], size[1], size[2]));
+	initialise(nodeProperties, size[0], size[1], size[2]);
 }
 
+//#################### PUBLIC METHODS ####################
+// Precondition: has_edge(u, v)
+CTImageLeafLayer::EdgeWeight CTImageLeafLayer::edge_weight(int u, int v) const
+{
+	return abs(m_nodes[u].properties().grey_value() - m_nodes[v].properties().grey_value());
 }
 
 }

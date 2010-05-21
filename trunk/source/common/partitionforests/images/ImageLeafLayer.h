@@ -176,23 +176,24 @@ public:
 	typedef NodeIteratorT<LeafNode, LeafNodeIteratorImpl> LeafNodeIterator;
 	typedef NodeIteratorT<const LeafNode, LeafNodeConstIteratorImpl> LeafNodeConstIterator;
 
-	//#################### PRIVATE VARIABLES ####################
-private:
+	//#################### PROTECTED VARIABLES ####################
+protected:
 	int m_sizeX, m_sizeY, m_sizeZ, m_sizeXY, m_sizeXYZ;
 	std::vector<LeafNode> m_nodes;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	ImageLeafLayer(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1)
-	:	m_sizeX(sizeX), m_sizeY(sizeY), m_sizeZ(sizeZ)
 	{
-		m_sizeXY = m_sizeX * m_sizeY;
-		m_sizeXYZ = m_sizeXY * m_sizeZ;
-
-		size_t size = nodeProperties.size();
-		m_nodes.reserve(size);
-		for(size_t i=0; i<size; ++i) m_nodes.push_back(LeafNode(nodeProperties[i]));
+		initialise(nodeProperties, sizeX, sizeY, sizeZ);
 	}
+
+protected:
+	ImageLeafLayer() {}
+
+	//#################### DESTRUCTOR ####################
+protected:
+	~ImageLeafLayer() {}
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -237,12 +238,6 @@ public:
 			properties.push_back(node_properties(*it));
 		}
 		return BranchProperties::combine_leaf_properties(properties);
-	}
-
-	// Precondition: has_edge(u, v)
-	EdgeWeight edge_weight(int u, int v) const
-	{
-		return abs(m_nodes[u].properties().grey_value() - m_nodes[v].properties().grey_value());
 	}
 
 	EdgeConstIterator edges_cbegin() const
@@ -337,6 +332,21 @@ public:
 	void set_node_parent(int n, int parent)
 	{
 		m_nodes[n].set_parent(parent);
+	}
+
+	//#################### PROTECTED METHODS ####################
+protected:
+	void initialise(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1)
+	{
+		m_sizeX = sizeX;
+		m_sizeY = sizeY;
+		m_sizeZ = sizeZ;
+		m_sizeXY = m_sizeX * m_sizeY;
+		m_sizeXYZ = m_sizeXY * m_sizeZ;
+
+		size_t size = nodeProperties.size();
+		m_nodes.reserve(size);
+		for(size_t i=0; i<size; ++i) m_nodes.push_back(LeafNode(nodeProperties[i]));
 	}
 
 	//#################### PRIVATE METHODS ####################

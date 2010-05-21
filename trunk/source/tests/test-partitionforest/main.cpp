@@ -11,23 +11,22 @@ using boost::shared_ptr;
 #include <common/adts/RootedMST.h>
 #include <common/commands/UndoableCommandManager.h>
 #include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
-#include <common/partitionforests/images/CTImageUtil.h>
+#include <common/partitionforests/images/TestImageForestLayers.h>
 using namespace mp;
 
 //#################### TYPEDEFS ####################
-typedef PartitionForest<CTImageLeafLayer, CTImageBranchLayer> IPF;
+typedef PartitionForest<TestImageLeafLayer, TestImageBranchLayer> IPF;
 typedef boost::shared_ptr<IPF> IPF_Ptr;
-typedef PartitionForestSelection<CTImageLeafLayer, CTImageBranchLayer> Selection;
+typedef PartitionForestSelection<TestImageLeafLayer, TestImageBranchLayer> Selection;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
 
 //#################### HELPERS ####################
 IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 {
 	// Construct the forest.
-	typedef CTPixelProperties P;
-	CTPixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
-	std::vector<CTPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(CTPixelProperties)]);
-	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(leafProperties, 3, 3));
+	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
+	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
 
 	IPF_Ptr ipf(new IPF(leafLayer));
 
@@ -71,7 +70,7 @@ void feature_selection_test()
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
 
-	typedef PartitionForestMultiFeatureSelection<CTImageLeafLayer, CTImageBranchLayer, SimpleFeatureID> MFS;
+	typedef PartitionForestMultiFeatureSelection<TestImageLeafLayer, TestImageBranchLayer, SimpleFeatureID> MFS;
 	typedef boost::shared_ptr<MFS> MFS_Ptr;
 	MFS_Ptr mfs(new MFS(ipf));
 	mfs->set_command_manager(manager);
@@ -118,10 +117,9 @@ struct ForestListener : IPF::Listener
 
 void listener_test()
 {
-	typedef CTPixelProperties P;
-	CTPixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
-	std::vector<CTPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(CTPixelProperties)]);
-	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(leafProperties, 3, 3));
+	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
+	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
 
@@ -166,10 +164,9 @@ void listener_test()
 void lowest_branch_layer_test()
 {
 	// Construct the leaf layer.
-	typedef CTPixelProperties P;
-	CTPixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
-	std::vector<CTPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(CTPixelProperties)]);
-	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(leafProperties, 3, 3));
+	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
+	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
 
 	// Create some arbitrary groups.
 	std::vector<std::set<int> > groups(3);
@@ -180,22 +177,21 @@ void lowest_branch_layer_test()
 	groups[2].insert(7);
 
 	// Construct the lowest branch layer.
-	shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::construct_lowest_branch_layer(leafLayer, groups);
+	shared_ptr<TestImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, groups);
 
 	// Construct the forest itself.
 	IPF ipf(leafLayer, lowestBranchLayer);
 
 	// Construct a rooted MST from the lowest branch layer.
-	RootedMST<CTImageBranchLayer::EdgeWeight> mst(*lowestBranchLayer);
+	RootedMST<TestImageBranchLayer::EdgeWeight> mst(*lowestBranchLayer);
 }
 
 void nonsibling_node_merging_test()
 {
 	// Construct initial forest.
-	typedef CTPixelProperties P;
-	CTPixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
-	std::vector<CTPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(CTPixelProperties)]);
-	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(leafProperties, 3, 3));
+	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
+	shared_ptr<TestImageLeafLayer> leafLayer(new TestImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
 

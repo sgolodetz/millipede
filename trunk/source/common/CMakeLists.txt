@@ -138,17 +138,20 @@ partitionforests/base/PFNodeID.h
 
 ##
 SET(partitionforests_images_sources
-partitionforests/images/CTImageUtil.cpp
+partitionforests/images/CTImageLeafLayer.cpp
 partitionforests/images/CTPixelProperties.cpp
 partitionforests/images/CTRegionProperties.cpp
 )
 
 SET(partitionforests_images_headers
-partitionforests/images/CTImageUtil.h
+partitionforests/images/CTImageBranchLayer.h
+partitionforests/images/CTImageLeafLayer.h
 partitionforests/images/CTPixelProperties.h
 partitionforests/images/CTRegionProperties.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
+partitionforests/images/TestImageForestLayers.h
+partitionforests/images/TestImageNodeProperties.h
 )
 
 ##

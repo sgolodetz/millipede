@@ -6,7 +6,8 @@
 #include <iostream>
 
 #include <common/adts/RootedMST.h>
-#include <common/partitionforests/images/CTImageUtil.h>
+#include <common/partitionforests/images/CTImageLeafLayer.h>
+#include <common/partitionforests/images/TestImageForestLayers.h>
 using namespace mp;
 
 template <typename TPixel>
@@ -80,19 +81,18 @@ void itk_leaf_layer_mst()
 	HounsfieldImagePointer hounsfieldImage = create_3d_image(hounsfieldPixels, 3, 3, 2);
 	WindowedImagePointer windowedImage = create_3d_image(windowedPixels, 3, 3, 2);
 
-	boost::shared_ptr<CTImageLeafLayer> leafLayer = CTImageUtil::make_leaf_layer(hounsfieldImage, windowedImage);
+	CTImageLeafLayer leafLayer(hounsfieldImage, windowedImage);
 
-	RootedMST<CTImageLeafLayer::EdgeWeight> mst(*leafLayer);
+	RootedMST<CTImageLeafLayer::EdgeWeight> mst(leafLayer);
 }
 
 void leaf_layer_mst()
 {
-	typedef CTPixelProperties P;
-	CTPixelProperties arr[] = { P(0,0), P(1,1), P(2,2), P(3,3), P(4,4), P(5,5), P(6,6), P(7,7), P(8,8) };
-	std::vector<CTPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(CTPixelProperties)]);
-	CTImageLeafLayer leafLayer(leafProperties, 3, 3);
+	TestPixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<TestPixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(TestPixelProperties)]);
+	TestImageLeafLayer leafLayer(leafProperties, 3, 3);
 
-	typedef RootedMST<CTImageLeafLayer::EdgeWeight> MST;
+	typedef RootedMST<TestImageLeafLayer::EdgeWeight> MST;
 	MST mst(leafLayer);
 
 	mst.merge_nodes(7, 6);
