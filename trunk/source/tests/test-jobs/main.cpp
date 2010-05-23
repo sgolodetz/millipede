@@ -85,7 +85,7 @@ struct MainThreadJob : SimpleJob
 
 	int length() const
 	{
-		return 5;
+		return 1;
 	}
 };
 
@@ -102,13 +102,18 @@ struct OtherThreadJob : SimpleJob
 		std::cout << "[Other Thread] Executing Sub-Job\n";
 
 		// Do something non-trivial to make the job take a little bit of time.
-		for(int i=0; i<10000; ++i)
+		for(int i=1; i<=10000; ++i)
 		{
 			for(int j=0; j<10000; ++j)
 			{
 				int k = i*j;
 			}
-			if(i % 1000 == 0) set_status(OSSWrapper() << '(' << m_index << ") Finished iteration " << i);
+
+			if(i % 1000 == 0)
+			{
+				set_progress(i / 1000);
+				set_status(OSSWrapper() << '(' << m_index << ") Finished iteration " << i);
+			}
 		}
 
 		set_finished();
@@ -116,7 +121,7 @@ struct OtherThreadJob : SimpleJob
 
 	int length() const
 	{
-		return 3;
+		return 10;
 	}
 };
 

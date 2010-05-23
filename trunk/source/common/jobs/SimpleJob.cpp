@@ -9,15 +9,14 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 SimpleJob::SimpleJob()
-:	m_finished(false)
+:	m_progress(0)
 {}
 
 //#################### PUBLIC METHODS ####################
 int SimpleJob::progress() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);
-	if(m_finished)	return length();
-	else			return 0;
+	return m_progress;
 }
 
 std::string SimpleJob::status() const
@@ -29,8 +28,13 @@ std::string SimpleJob::status() const
 //#################### PROTECTED METHODS ####################
 void SimpleJob::set_finished()
 {
+	set_progress(length());
+}
+
+void SimpleJob::set_progress(int progress)
+{
 	boost::mutex::scoped_lock lock(m_mutex);
-	m_finished = true;
+	m_progress = progress;
 }
 
 void SimpleJob::set_status(const std::string& status)
