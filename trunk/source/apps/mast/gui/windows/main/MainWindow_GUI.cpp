@@ -16,6 +16,7 @@
 #include <common/exceptions/Exception.h>
 #include <common/io/files/VolumeLoader.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
+#include <mast/gui/windows/partition/PartitionWindow.h>
 #include <mast/util/IOUtil.h>
 #include <mast/util/StringConversion.h>
 
@@ -93,8 +94,15 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 			if(dialog.volume_choice())
 			{
 				VolumeLoader_Ptr loader(new VolumeLoader(dialog.dicomdir(), *dialog.volume_choice()));
-				boost::thread volumeLoaderThread(boost::bind(&MainWindow::volume_loader_thread, this, loader));
-				show_progress_dialog(loader);
+				Job::execute_in_thread(loader);
+				show_progress_dialog(loader, "Loading Volume");
+
+				if(!loader->is_aborted())
+				{
+					// Create a window for the user to interact with the new volume.
+					PartitionWindow *partitionWindow = new PartitionWindow(this, "Untitled", loader->volume(), loader->volume_choice());
+					partitionWindow->Show(true);
+				}
 			}
 		}
 		catch(std::exception& e)

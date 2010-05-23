@@ -7,7 +7,6 @@
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/thread/mutex.hpp>
 using boost::bad_lexical_cast;
 using boost::lexical_cast;
 
@@ -25,23 +24,11 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 VolumeLoader::VolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice)
-:	m_dicomdir(dicomdir), m_volumeChoice(volumeChoice), m_aborted(false)
+:	m_dicomdir(dicomdir), m_volumeChoice(volumeChoice)
 {}
 
 //#################### PUBLIC METHODS ####################
-void VolumeLoader::abort()
-{
-	boost::mutex::scoped_lock lock(m_mutex);
-	m_aborted = true;
-}
-
-bool VolumeLoader::aborted() const
-{
-	boost::mutex::scoped_lock lock(m_mutex);
-	return m_aborted;
-}
-
-void VolumeLoader::load()
+void VolumeLoader::execute()
 try
 {
 	typedef itk::GDCMImageIO ImageIO;
@@ -68,16 +55,12 @@ try
 	{
 		std::string imageFilename = m_volumeChoice.filePrefix + imageFilenames[i];
 
-		// Introduce a local scope to make sure the mutex gets unlocked as soon as possible.
+		if(!is_aborted())
 		{
-			boost::mutex::scoped_lock lock(m_mutex);
-			if(!m_aborted)
-			{
-				m_progress = i - m_volumeChoice.minZ;
-				m_status = "Loading image " + imageFilename + "...";
-			}
-			else return;
+			set_progress(i - m_volumeChoice.minZ);
+			set_status("Loading image " + imageFilename + "...");
 		}
+		else return;
 
 		// Load the image.
 		Reader::Pointer reader = Reader::New();
@@ -141,30 +124,17 @@ try
 	Image3D::Pointer volumeImage = joiner->GetOutput();
 	m_volume.reset(new Volume(volumeImage));
 
-	boost::mutex::scoped_lock lock(m_mutex);
-	m_progress = max();
+	set_finished();
 }
 catch(std::exception& e)
 {
-	boost::mutex::scoped_lock lock(m_mutex);
-	m_aborted = true;
-	m_status = e.what();
+	abort();
+	set_status(e.what());
 }
 
-int VolumeLoader::max() const
+int VolumeLoader::length() const
 {
 	return m_volumeChoice.maxZ - m_volumeChoice.minZ + 1;
-}
-
-int VolumeLoader::progress() const
-{
-	boost::mutex::scoped_lock lock(m_mutex);
-	return m_progress;
-}
-
-std::string VolumeLoader::status() const
-{
-	return m_status;
 }
 
 const Volume_Ptr& VolumeLoader::volume()

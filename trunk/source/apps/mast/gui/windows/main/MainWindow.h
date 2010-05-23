@@ -14,7 +14,7 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class VolumeLoader> VolumeLoader_Ptr;
+typedef shared_ptr<class Job> Job_Ptr;
 
 class MainWindow : public wxFrame
 {
@@ -29,8 +29,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void setup_menus();
-	void show_progress_dialog(const VolumeLoader_Ptr& loader);
-	void volume_loader_thread(const VolumeLoader_Ptr& loader);
+	void show_progress_dialog(const Job_Ptr& job, const std::string& caption);
 
 	//#################### EVENT HANDLERS ####################
 public:
