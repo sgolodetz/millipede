@@ -91,6 +91,12 @@ struct MainThreadJob : SimpleJob
 
 struct OtherThreadJob : SimpleJob
 {
+	int m_index;
+
+	explicit OtherThreadJob(int index)
+	:	m_index(index)
+	{}
+
 	void operator()()
 	{
 		std::cout << "[Other Thread] Executing Sub-Job\n";
@@ -102,7 +108,7 @@ struct OtherThreadJob : SimpleJob
 			{
 				int k = i*j;
 			}
-			if(i % 1000 == 0) set_status(OSSWrapper() << "Finished iteration " << i);
+			if(i % 1000 == 0) set_status(OSSWrapper() << '(' << m_index << ") Finished iteration " << i);
 		}
 
 		set_finished();
@@ -117,9 +123,9 @@ struct OtherThreadJob : SimpleJob
 boost::shared_ptr<CompositeJob> construct_job()
 {
 	boost::shared_ptr<CompositeJob> job(new CompositeJob);
-	job->add_subjob(new OtherThreadJob);
+	job->add_subjob(new OtherThreadJob(0));
 	job->add_main_thread_subjob(new MainThreadJob);
-	job->add_subjob(new OtherThreadJob);
+	job->add_subjob(new OtherThreadJob(1));
 	return job;
 }
 
@@ -130,7 +136,7 @@ void show_progress(const boost::shared_ptr<CompositeJob>& job)
 	int length = job->length();
 	int lastProgress = -1;
 	std::string lastStatus = "";
-	while(!job->is_finished())
+	while(!job->is_aborted() && !job->is_finished())
 	{
 		int progress = job->progress();
 		std::string status = job->status();
@@ -141,12 +147,19 @@ void show_progress(const boost::shared_ptr<CompositeJob>& job)
 			std::cout << oss.str();
 			lastProgress = progress;
 		}
+
 		if(status != lastStatus)
 		{
 			std::ostringstream oss;
 			oss << "[Status Update] " << status << '\n';
 			std::cout << oss.str();
 			lastStatus = status;
+
+			if(status == "(1) Finished iteration 2000")
+			{
+				job->abort();
+				continue;
+			}
 		}
 
 		if(mtjq.has_jobs())
@@ -156,7 +169,8 @@ void show_progress(const boost::shared_ptr<CompositeJob>& job)
 		}
 	}
 
-	std::cout << "[Progress Update] Finished\n";
+	if(job->is_finished())	std::cout << "[Progress Update] Finished\n";
+	else					std::cout << "[Progress Update] Aborted\n";
 }
 
 void test2()
