@@ -8,25 +8,14 @@
 
 #include <queue>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
+
+#include "Job.h"
 
 namespace mp {
 
 class MainThreadJobQueue
 {
-	//#################### NESTED CLASSES ####################
-public:
-	struct Job
-	{
-		virtual ~Job() {}
-		virtual void operator()() = 0;
-	};
-
-	//#################### TYPEDEFS ####################
-public:
-	typedef boost::shared_ptr<Job> Job_Ptr;
-
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::queue<Job_Ptr> m_jobs;
@@ -42,6 +31,7 @@ public:
 public:
 	bool has_jobs() const;
 	void queue_job(Job *job);
+	void queue_job(const Job_Ptr& job);
 	void run_next_job();
 };
 

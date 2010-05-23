@@ -125,11 +125,17 @@ io/util/FieldIO.tpp
 
 ##
 SET(jobs_sources
+jobs/CompositeJob.cpp
+jobs/Job.cpp
 jobs/MainThreadJobQueue.cpp
+jobs/SimpleJob.cpp
 )
 
 SET(jobs_headers
+jobs/CompositeJob.h
+jobs/Job.h
 jobs/MainThreadJobQueue.h
+jobs/SimpleJob.h
 )
 
 ##

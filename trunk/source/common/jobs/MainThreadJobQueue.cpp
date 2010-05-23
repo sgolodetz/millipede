@@ -26,8 +26,13 @@ bool MainThreadJobQueue::has_jobs() const
 
 void MainThreadJobQueue::queue_job(Job *job)
 {
+	queue_job(Job_Ptr(job));
+}
+
+void MainThreadJobQueue::queue_job(const Job_Ptr& job)
+{
 	boost::mutex::scoped_lock lock(m_mutex);
-	m_jobs.push(Job_Ptr(job));
+	m_jobs.push(job);
 }
 
 void MainThreadJobQueue::run_next_job()

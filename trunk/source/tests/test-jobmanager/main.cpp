@@ -9,20 +9,24 @@
 #include <boost/thread.hpp>
 
 #include <common/jobs/MainThreadJobQueue.h>
+#include <common/jobs/SimpleJob.h>
 using namespace mp;
 
-struct SimpleJob : MainThreadJobQueue::Job
+struct TestJob : SimpleJob
 {
 	int m_i;
 
-	explicit SimpleJob(int i) : m_i(i) {}
+	explicit TestJob(int i) : m_i(i) {}
 
 	void operator()()
 	{
 		std::ostringstream oss;
-		oss << "Doing a simple job in the main thread: " << m_i << '\n';
+		oss << "Doing a test job in the main thread: " << m_i << '\n';
 		std::cout << oss.str();
+		set_finished();
 	}
+
+	int length() const	{ return 1; }
 };
 
 void f()
@@ -37,7 +41,7 @@ void f()
 
 	for(int i=0; i<10; ++i)
 	{
-		MainThreadJobQueue::instance().queue_job(new SimpleJob(i));
+		MainThreadJobQueue::instance().queue_job(new TestJob(i));
 	}
 }
 
