@@ -26,10 +26,6 @@ private:
 public:
 	CompositeJob();
 
-	//#################### PUBLIC OPERATORS ####################
-public:
-	void operator()();
-
 	//#################### PUBLIC METHODS ####################
 public:
 	void abort();
@@ -37,6 +33,7 @@ public:
 	void add_subjob(const Job_Ptr& job);
 	void add_main_thread_subjob(Job *job);
 	void add_main_thread_subjob(const Job_Ptr& job);
+	void execute();
 	int length() const;
 	int progress() const;
 	std::string status() const;

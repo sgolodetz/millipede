@@ -50,7 +50,7 @@ void MainThreadJobQueue::run_next_job()
 		}
 	}
 
-	if(job) (*job)();
+	if(job) job->execute();
 }
 
 }

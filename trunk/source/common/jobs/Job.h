@@ -32,12 +32,9 @@ public:
 public:
 	virtual ~Job();
 
-	//#################### PUBLIC ABSTRACT OPERATORS ####################
-public:
-	virtual void operator()() = 0;
-
 	//#################### PUBLIC ABSTRACT METHODS ####################
 public:
+	virtual void execute() = 0;
 	virtual int length() const = 0;
 	virtual int progress() const = 0;
 	virtual std::string status() const = 0;

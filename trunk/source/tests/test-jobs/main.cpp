@@ -21,7 +21,7 @@ struct TestJob : SimpleJob
 
 	explicit TestJob(int i) : m_i(i) {}
 
-	void operator()()
+	void execute()
 	{
 		std::ostringstream oss;
 		oss << "Doing a test job in the main thread: " << m_i << '\n';
@@ -75,7 +75,7 @@ void test1()
 //#################### TEST 2 ####################
 struct MainThreadJob : SimpleJob
 {
-	void operator()()
+	void execute()
 	{
 		// Note: We can't do anything too interesting in a main thread job without locking up the user interface.
 		int k = 23 * 9;
@@ -97,7 +97,7 @@ struct OtherThreadJob : SimpleJob
 	:	m_index(index)
 	{}
 
-	void operator()()
+	void execute()
 	{
 		std::cout << "[Other Thread] Executing Sub-Job\n";
 
