@@ -1,10 +1,10 @@
 /***
- * millipede: JobManager.h
+ * millipede: MainThreadJobQueue.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_JOBMANAGER
-#define H_MILLIPEDE_JOBMANAGER
+#ifndef H_MILLIPEDE_MAINTHREADJOBQUEUE
+#define H_MILLIPEDE_MAINTHREADJOBQUEUE
 
 #include <queue>
 
@@ -13,7 +13,7 @@
 
 namespace mp {
 
-class JobManager
+class MainThreadJobQueue
 {
 	//#################### NESTED CLASSES ####################
 public:
@@ -34,9 +34,9 @@ private:
 
 	//#################### SINGLETON IMPLEMENTATION ####################
 private:
-	JobManager();
+	MainThreadJobQueue();
 public:
-	static JobManager& instance();
+	static MainThreadJobQueue& instance();
 
 	//#################### PUBLIC METHODS ####################
 public:

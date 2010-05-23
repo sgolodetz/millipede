@@ -8,10 +8,10 @@
 
 #include <boost/thread.hpp>
 
-#include <common/util/JobManager.h>
+#include <common/jobs/MainThreadJobQueue.h>
 using namespace mp;
 
-struct SimpleJob : JobManager::Job
+struct SimpleJob : MainThreadJobQueue::Job
 {
 	int m_i;
 
@@ -37,7 +37,7 @@ void f()
 
 	for(int i=0; i<10; ++i)
 	{
-		JobManager::instance().queue_job(new SimpleJob(i));
+		MainThreadJobQueue::instance().queue_job(new SimpleJob(i));
 	}
 }
 
@@ -45,7 +45,7 @@ int main()
 {
 	boost::thread th(&f);
 
-	JobManager& jobManager = JobManager::instance();
+	MainThreadJobQueue& jobQueue = MainThreadJobQueue::instance();
 
 	const unsigned long ITERATIONS = 20;
 	for(unsigned long i=0; i<ITERATIONS; ++i)
@@ -54,12 +54,12 @@ int main()
 		oss << "Doing normal processing in the main thread: " << i << '\n';
 		std::cout << oss.str();
 
-		if(jobManager.has_jobs()) jobManager.run_next_job();
+		if(jobQueue.has_jobs()) jobQueue.run_next_job();
 	}
 
 	th.join();
 
-	while(jobManager.has_jobs()) jobManager.run_next_job();
+	while(jobQueue.has_jobs()) jobQueue.run_next_job();
 
 	return 0;
 }

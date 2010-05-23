@@ -124,6 +124,15 @@ io/util/FieldIO.tpp
 )
 
 ##
+SET(jobs_sources
+jobs/MainThreadJobQueue.cpp
+)
+
+SET(jobs_headers
+jobs/MainThreadJobQueue.h
+)
+
+##
 SET(partitionforests_base_sources
 partitionforests/base/PFNodeID.cpp
 )
@@ -191,13 +200,8 @@ textures/TextureFactory.h
 )
 
 ##
-SET(util_sources
-util/JobManager.cpp
-)
-
 SET(util_headers
 util/CompositeListenerBase.h
-util/JobManager.h
 )
 
 #################################################################
@@ -212,10 +216,10 @@ ${dicom_volumes_sources}
 ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
+${jobs_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
 ${textures_sources}
-${util_sources}
 )
 
 SET(headers
@@ -228,6 +232,7 @@ ${exceptions_headers}
 ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
+${jobs_headers}
 ${partitionforests_base_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
@@ -285,6 +290,10 @@ SOURCE_GROUP(io\\util\\.h FILES ${io_util_headers})
 SOURCE_GROUP(io\\util\\.tpp FILES ${io_util_templates})
 
 ##
+SOURCE_GROUP(jobs\\.cpp FILES ${jobs_sources})
+SOURCE_GROUP(jobs\\.h FILES ${jobs_headers})
+
+##
 SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
 SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
 
@@ -306,7 +315,6 @@ SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 
 ##
-SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ################################
