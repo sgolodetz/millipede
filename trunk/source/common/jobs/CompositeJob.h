@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include <boost/thread.hpp>
+
 #include "Job.h"
 
 namespace mp {
@@ -33,8 +35,11 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void abort();
-	void add_job(const Job_Ptr& job);
-	void add_main_thread_job(const Job_Ptr& job);
+	void add_subjob(Job *job);
+	void add_subjob(const Job_Ptr& job);
+	void add_main_thread_subjob(Job *job);
+	void add_main_thread_subjob(const Job_Ptr& job);
+	static boost::shared_ptr<boost::thread> execute_in_thread(const boost::shared_ptr<CompositeJob>& job);
 	int length() const;
 	int progress() const;
 	std::string status() const;
