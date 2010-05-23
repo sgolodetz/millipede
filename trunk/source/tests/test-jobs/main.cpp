@@ -120,7 +120,7 @@ struct OtherThreadJob : SimpleJob
 	}
 };
 
-boost::shared_ptr<CompositeJob> construct_job()
+boost::shared_ptr<Job> construct_job()
 {
 	boost::shared_ptr<CompositeJob> job(new CompositeJob);
 	job->add_subjob(new OtherThreadJob(0));
@@ -129,7 +129,7 @@ boost::shared_ptr<CompositeJob> construct_job()
 	return job;
 }
 
-void show_progress(const boost::shared_ptr<CompositeJob>& job)
+void show_progress(const boost::shared_ptr<Job>& job)
 {
 	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
 
@@ -176,8 +176,8 @@ void show_progress(const boost::shared_ptr<CompositeJob>& job)
 
 void test2()
 {
-	boost::shared_ptr<CompositeJob> job = construct_job();
-	CompositeJob::execute_in_thread(job);
+	boost::shared_ptr<Job> job = construct_job();
+	Job::execute_in_thread(job);
 	show_progress(job);
 }
 

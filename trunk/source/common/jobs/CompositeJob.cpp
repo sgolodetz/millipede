@@ -82,11 +82,6 @@ void CompositeJob::add_main_thread_subjob(const Job_Ptr& job)
 	m_length += job->length();
 }
 
-boost::shared_ptr<boost::thread> CompositeJob::execute_in_thread(const boost::shared_ptr<CompositeJob>& job)
-{
-	return boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&CompositeJob::operator(), job)));
-}
-
 int CompositeJob::length() const
 {
 	return m_length;

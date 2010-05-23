@@ -23,6 +23,11 @@ void Job::abort()
 	m_aborted = true;
 }
 
+boost::shared_ptr<boost::thread> Job::execute_in_thread(const boost::shared_ptr<Job>& job)
+{
+	return boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&Job::operator(), job)));
+}
+
 bool Job::is_aborted() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);
