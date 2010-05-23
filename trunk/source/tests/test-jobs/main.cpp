@@ -140,6 +140,7 @@ void show_progress(const boost::shared_ptr<CompositeJob>& job)
 	{
 		int progress = job->progress();
 		std::string status = job->status();
+
 		if(progress != lastProgress)
 		{
 			std::ostringstream oss;
