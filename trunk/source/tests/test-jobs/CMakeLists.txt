@@ -1,10 +1,10 @@
-# CMakeLists.txt for tests/test-jobmanager
+# CMakeLists.txt for tests/test-jobs
 
 ############################
 # Specify the project name #
 ############################
 
-SET(targetname test-jobmanager)
+SET(targetname test-jobs)
 
 #############################
 # Specify the project files #

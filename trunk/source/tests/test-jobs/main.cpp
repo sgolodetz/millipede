@@ -1,5 +1,5 @@
 /***
- * test-jobmanager: main.cpp
+ * test-jobs: main.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
