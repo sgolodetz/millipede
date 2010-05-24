@@ -18,6 +18,11 @@ MainThreadJobQueue& MainThreadJobQueue::instance()
 }
 
 //#################### PUBLIC METHODS ####################
+void MainThreadJobQueue::clear()
+{
+	m_jobs = std::queue<Job_Ptr>();
+}
+
 bool MainThreadJobQueue::has_jobs() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);

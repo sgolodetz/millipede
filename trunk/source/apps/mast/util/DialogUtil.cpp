@@ -42,8 +42,8 @@ wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& capt
 
 void show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job)
 {
-	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), NULL, wxPD_CAN_ABORT|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH);
-	dialog.SetSize(500, 200);
+	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), parent, wxPD_CAN_ABORT|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH);
+	dialog.SetSize(600, 200);
 
 	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
 
@@ -69,6 +69,9 @@ void show_progress_dialog(wxWindow *parent, const std::string& caption, const Jo
 			mtjq.run_next_job();
 		}
 	}
+
+	// If there are any remaining jobs on the main thread job queue (e.g. if we aborted), clear them.
+	mtjq.clear();
 }
 
 }

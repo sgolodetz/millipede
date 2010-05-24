@@ -15,6 +15,7 @@ using boost::shared_ptr;
 #include <wx/listctrl.h>
 #include <wx/slider.h>
 
+#include <common/dicom/volumes/SliceOrientation.h>
 #include <common/io/util/VolumeChoice.h>
 #include "ViewedVolume.h"
 #include "ViewedVolumeListener.h"
@@ -65,6 +66,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void calculate_canvas_size();
+	bool create_textures(SliceOrientation ori);
 	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
 

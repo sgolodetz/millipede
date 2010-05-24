@@ -29,6 +29,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	void clear();
 	bool has_jobs() const;
 	void queue_job(Job *job);
 	void queue_job(const Job_Ptr& job);

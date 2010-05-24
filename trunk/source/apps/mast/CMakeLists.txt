@@ -51,7 +51,6 @@ SET(gui_windows_partition_sources
 gui/windows/partition/BaseCanvas.cpp
 gui/windows/partition/PartitionCanvas.cpp
 gui/windows/partition/PartitionWindow.cpp
-gui/windows/partition/PartitionWindow_GUI.cpp
 gui/windows/partition/StratumCanvas.cpp
 gui/windows/partition/ViewedVolume.cpp
 )
