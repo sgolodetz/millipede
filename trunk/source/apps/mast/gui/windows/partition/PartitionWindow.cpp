@@ -16,6 +16,7 @@
 #include <mast/util/StringConversion.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
+using namespace mp;
 
 namespace {
 
@@ -23,7 +24,6 @@ namespace {
 enum
 {
 	ID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-	BUTTONID_CREATE_TEXTURES,
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
@@ -81,17 +81,14 @@ void PartitionWindow::calculate_canvas_size()
 bool PartitionWindow::create_textures(SliceOrientation ori)
 {
 	Volume::WindowedImageCPointer windowedImage = m_viewedVolume->volume()->windowed_image(m_volumeChoice.windowSettings);
+
 	VolumeTextureSet_Ptr volumeTextureSet(new VolumeTextureSet);
 	shared_ptr<Job> textureCreator(new VolumeTextureCreator<unsigned char>(windowedImage, ori, volumeTextureSet));
 	Job::execute_in_thread(textureCreator);
-	show_progress_dialog(this, "Creating Textures", textureCreator);
+	if(!show_progress_dialog(this, "Creating Textures", textureCreator)) return false;
 
-	if(textureCreator->is_finished())
-	{
-		m_viewedVolume->set_volume_texture_set(volumeTextureSet);
-		return true;
-	}
-	else return false;
+	m_viewedVolume->set_volume_texture_set(volumeTextureSet);
+	return true;
 }
 
 void PartitionWindow::refresh_canvases()
@@ -116,8 +113,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	};
 
 	// Top left
-	wxButton *createTexturesButton = new wxButton(this, BUTTONID_CREATE_TEXTURES, wxT("Create Textures"));
-	sizer->Add(createTexturesButton, 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
 
 	// Top middle
 	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
@@ -191,21 +187,6 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 
 //#################### EVENT HANDLERS ####################
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
-{
-#if 0
-	Volume::WindowedImageCPointer windowedImage = m_viewedVolume->volume()->windowed_image(m_volumeChoice.windowSettings);
-	VolumeTextureSet_Ptr volumeTextureSet(new VolumeTextureSet);
-	shared_ptr<CompositeJob> textureCreator(new CompositeJob);
-		textureCreator->add_subjob(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_XY, volumeTextureSet));
-		textureCreator->add_subjob(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_XZ, volumeTextureSet));
-		textureCreator->add_subjob(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_YZ, volumeTextureSet));
-	Job::execute_in_thread(textureCreator);
-	show_progress_dialog(this, "Creating Textures", textureCreator);
-	if(textureCreator->is_finished()) m_viewedVolume->set_volume_texture_set(volumeTextureSet);
-#endif
-}
-
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
 {
 	if(create_textures(ORIENT_XY)) m_viewedVolume->set_slice_orientation(ORIENT_XY);
@@ -248,7 +229,6 @@ void PartitionWindow::OnSliderLayerTrack(wxScrollEvent&)
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	EVT_BUTTON(BUTTONID_CREATE_TEXTURES, PartitionWindow::OnButtonCreateTextures)
 	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionWindow::OnButtonViewXY)
 	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionWindow::OnButtonViewXZ)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionWindow::OnButtonViewYZ)

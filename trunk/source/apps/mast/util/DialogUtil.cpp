@@ -40,7 +40,7 @@ wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& capt
 							wxSAVE | wxOVERWRITE_PROMPT));
 }
 
-void show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job)
+bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job)
 {
 	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), parent, wxPD_CAN_ABORT|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH);
 	dialog.SetSize(600, 200);
@@ -72,6 +72,8 @@ void show_progress_dialog(wxWindow *parent, const std::string& caption, const Jo
 
 	// If there are any remaining jobs on the main thread job queue (e.g. if we aborted), clear them.
 	mtjq.clear();
+
+	return job->is_finished();
 }
 
 }

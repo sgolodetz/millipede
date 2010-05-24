@@ -73,7 +73,6 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	void OnButtonCreateTextures(wxCommandEvent&);
 	void OnButtonViewXY(wxCommandEvent&);
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);
