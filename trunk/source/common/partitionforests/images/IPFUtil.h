@@ -15,6 +15,7 @@ namespace mp {
 namespace IPFUtil {
 
 itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<const PartitionForest<CTImageLeafLayer,CTImageBranchLayer> >& ipf, int layerIndex, int width, int height);
+itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boost::shared_ptr<const PartitionForest<CTImageLeafLayer,CTImageBranchLayer> >& ipf, int layerIndex, int width, int height);
 
 }
 

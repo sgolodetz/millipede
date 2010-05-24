@@ -10,6 +10,10 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
+PFNodeID::PFNodeID()
+:	m_layer(-1), m_index(-1)
+{}
+
 PFNodeID::PFNodeID(int layer, int index)
 :	m_layer(layer), m_index(index)
 {}
@@ -42,7 +46,7 @@ bool PFNodeID::operator<(const PFNodeID& rhs) const
 
 PFNodeID PFNodeID::invalid()
 {
-	return PFNodeID(-1, -1);
+	return PFNodeID();
 }
 
 //#################### GLOBAL OPERATORS ####################

@@ -27,7 +27,9 @@ typedef shared_ptr<IPF> IPF_Ptr;
 void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int height)
 {
 	typedef itk::Image<unsigned char,2> Image;
-	Image::Pointer image = IPFUtil::make_mosaic_image(ipf, layerIndex, width, height);
+	Image::Pointer image = layerIndex > 0 ?
+		IPFUtil::make_mosaic_image_with_boundaries(ipf, layerIndex, width, height) :
+		IPFUtil::make_mosaic_image(ipf, layerIndex, width, height);
 
 	typedef itk::ImageFileWriter<Image> Writer;
 	Writer::Pointer writer = Writer::New();

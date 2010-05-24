@@ -19,6 +19,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
+	PFNodeID();
 	PFNodeID(int layer, int index);
 
 	//#################### PUBLIC METHODS ####################
