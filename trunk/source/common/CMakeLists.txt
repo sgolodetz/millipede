@@ -68,7 +68,9 @@ dicom/volumes/VolumeTextureSet.cpp
 )
 
 SET(dicom_volumes_headers
+dicom/volumes/SliceOrientation.h
 dicom/volumes/Volume.h
+dicom/volumes/VolumeTextureCreator.h
 dicom/volumes/VolumeTextureSet.h
 )
 

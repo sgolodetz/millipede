@@ -10,14 +10,20 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-ViewedVolume::ViewedVolume(const Volume_Ptr& volume, const ViewLocation& loc, ViewOrientation ori)
-:	m_viewLocation(loc), m_viewOrientation(ori), m_volume(volume)
+ViewedVolume::ViewedVolume(const Volume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori)
+:	m_sliceOrientation(ori), m_viewLocation(loc), m_volume(volume)
 {}
 
 //#################### PUBLIC METHODS ####################
 void ViewedVolume::add_listener(ViewedVolumeListener *listener)
 {
 	m_listeners.push_back(listener);
+}
+
+void ViewedVolume::set_slice_orientation(SliceOrientation ori)
+{
+	m_sliceOrientation = ori;
+	alert_listeners();
 }
 
 void ViewedVolume::set_view_location(const ViewLocation& loc)
@@ -27,20 +33,14 @@ void ViewedVolume::set_view_location(const ViewLocation& loc)
 	alert_listeners();
 }
 
-void ViewedVolume::set_view_orientation(ViewOrientation ori)
-{
-	m_viewOrientation = ori;
-	alert_listeners();
-}
-
 void ViewedVolume::set_volume_texture_set(const VolumeTextureSet_Ptr& textureSet)
 {
 	m_textureSet = textureSet;
 	alert_listeners();
 }
 
+SliceOrientation ViewedVolume::slice_orientation() const				{ return m_sliceOrientation; }
 const ViewedVolume::ViewLocation& ViewedVolume::view_location() const	{ return m_viewLocation; }
-ViewedVolume::ViewOrientation ViewedVolume::view_orientation() const	{ return m_viewOrientation; }
 const Volume_Ptr& ViewedVolume::volume()								{ return m_volume; }
 Volume_CPtr ViewedVolume::volume() const								{ return m_volume; }
 const VolumeTextureSet_Ptr& ViewedVolume::volume_texture_set()			{ return m_textureSet; }

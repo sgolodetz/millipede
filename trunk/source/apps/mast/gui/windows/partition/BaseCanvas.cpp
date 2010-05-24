@@ -33,15 +33,15 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	{
 		// TEMPORARY
 		Texture_CPtr texture;
-		switch(m_viewedVolume->view_orientation())
+		switch(m_viewedVolume->slice_orientation())
 		{
-		case ViewedVolume::ORIENT_XY:
+		case ORIENT_XY:
 			texture = m_viewedVolume->volume_texture_set()->xy_texture(m_viewedVolume->view_location().z);
 			break;
-		case ViewedVolume::ORIENT_XZ:
+		case ORIENT_XZ:
 			texture = m_viewedVolume->volume_texture_set()->xz_texture(m_viewedVolume->view_location().y);
 			break;
-		case ViewedVolume::ORIENT_YZ:
+		case ORIENT_YZ:
 			texture = m_viewedVolume->volume_texture_set()->yz_texture(m_viewedVolume->view_location().x);
 			break;
 		default:

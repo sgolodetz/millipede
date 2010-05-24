@@ -134,17 +134,17 @@ void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
 {
-	m_viewedVolume->set_view_orientation(ViewedVolume::ORIENT_XY);
+	m_viewedVolume->set_slice_orientation(ORIENT_XY);
 }
 
 void PartitionWindow::OnButtonViewXZ(wxCommandEvent&)
 {
-	m_viewedVolume->set_view_orientation(ViewedVolume::ORIENT_XZ);
+	m_viewedVolume->set_slice_orientation(ORIENT_XZ);
 }
 
 void PartitionWindow::OnButtonViewYZ(wxCommandEvent&)
 {
-	m_viewedVolume->set_view_orientation(ViewedVolume::ORIENT_YZ);
+	m_viewedVolume->set_slice_orientation(ORIENT_YZ);
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~

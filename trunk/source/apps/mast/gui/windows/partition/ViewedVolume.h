@@ -11,6 +11,8 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
+#include <common/dicom/volumes/SliceOrientation.h>
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
@@ -22,28 +24,21 @@ typedef shared_ptr<const class VolumeTextureSet> VolumeTextureSet_CPtr;
 
 class ViewedVolume
 {
-	//#################### ENUMERATIONS ####################
-public:
-	enum ViewOrientation
-	{
-		ORIENT_XY,
-		ORIENT_XZ,
-		ORIENT_YZ,
-	};
-
 	//#################### NESTED CLASSES ####################
 public:
 	struct ViewLocation
 	{
 		int x, y, z, layer;
 
-		ViewLocation(int x_, int y_, int z_, int layer_) : x(x_), y(y_), z(z_), layer(layer_) {}
+		ViewLocation(int x_, int y_, int z_, int layer_)
+		:	x(x_), y(y_), z(z_), layer(layer_)
+		{}
 	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	ViewLocation m_viewLocation;		// view location in terms of the volume only (not based on actual slice numbers)
-	ViewOrientation m_viewOrientation;
+	ViewLocation m_viewLocation;			// view location in terms of the volume only (not based on actual slice numbers)
+	SliceOrientation m_sliceOrientation;
 	Volume_Ptr m_volume;
 	VolumeTextureSet_Ptr m_textureSet;
 
@@ -51,16 +46,16 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ViewedVolume(const Volume_Ptr& volume, const ViewLocation& loc, ViewOrientation ori);
+	ViewedVolume(const Volume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	void add_listener(ViewedVolumeListener *listener);
+	void set_slice_orientation(SliceOrientation ori);
 	void set_view_location(const ViewLocation& loc);
-	void set_view_orientation(ViewOrientation ori);
 	void set_volume_texture_set(const VolumeTextureSet_Ptr& textureSet);
+	SliceOrientation slice_orientation() const;
 	const ViewLocation& view_location() const;
-	ViewOrientation view_orientation() const;
 	const Volume_Ptr& volume();
 	Volume_CPtr volume() const;
 	const VolumeTextureSet_Ptr& volume_texture_set();

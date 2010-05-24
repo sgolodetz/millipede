@@ -16,7 +16,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_viewedVolume(new ViewedVolume(volume, ViewLocation(0, 0, 0, 0), ViewedVolume::ORIENT_XY)), m_volumeChoice(volumeChoice)
+	m_viewedVolume(new ViewedVolume(volume, ViewLocation(0, 0, 0, 0), ORIENT_XY)), m_volumeChoice(volumeChoice)
 {
 	m_viewedVolume->add_listener(this);
 
