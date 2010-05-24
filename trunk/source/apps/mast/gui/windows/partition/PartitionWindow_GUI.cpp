@@ -131,17 +131,18 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 {
 	Volume::WindowedImageCPointer windowedImage = m_viewedVolume->volume()->windowed_image(m_volumeChoice.windowSettings);
-	m_viewedVolume->set_volume_texture_set(VolumeTextureSet_Ptr(new VolumeTextureSet(windowedImage, *windowedImage)));
+	VolumeTextureSet_Ptr volumeTextureSet(new VolumeTextureSet);
+	shared_ptr<CompositeJob> textureCreator(new CompositeJob);
+		textureCreator->add_subjob(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_XY, volumeTextureSet));
+		textureCreator->add_subjob(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_XZ, volumeTextureSet));
+		textureCreator->add_subjob(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_YZ, volumeTextureSet));
+	Job::execute_in_thread(textureCreator);
+	show_progress_dialog(this, "Creating Textures", textureCreator);
+	if(textureCreator->is_finished()) m_viewedVolume->set_volume_texture_set(volumeTextureSet);
 }
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
 {
-#if 0
-	Volume::WindowedImageCPointer windowedImage = m_viewedVolume->volume()->windowed_image(m_volumeChoice.windowSettings);
-	shared_ptr<Job> textureCreator(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_XY));
-	Job::execute_in_thread(textureCreator);
-	show_progress_dialog(this, "Creating Textures", textureCreator);
-#endif
 	m_viewedVolume->set_slice_orientation(ORIENT_XY);
 }
 

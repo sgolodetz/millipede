@@ -12,7 +12,7 @@
 #include <common/jobs/CompositeJob.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/textures/TextureFactory.h>
-#include "SliceOrientation.h"
+#include "VolumeTextureSet.h"
 
 namespace mp {
 
@@ -47,7 +47,7 @@ private:
 
 		void execute()
 		{
-			set_status(OSSWrapper() << "Extracting slice " << sliceIndex);
+			set_status(OSSWrapper() << "Extracting slice " << sliceIndex << "...");
 
 			typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
@@ -98,8 +98,32 @@ private:
 
 		void execute()
 		{
-			set_status(OSSWrapper() << "Creating texture for slice " << sliceIndex);
+			set_status(OSSWrapper() << "Creating texture for slice " << sliceIndex << "...");
 			texture = TextureFactory::create_texture(sliceImage);
+			if(is_aborted()) return;
+			set_finished();
+		}
+
+		int length() const
+		{
+			return 1;
+		}
+	};
+
+	struct TextureSetFillerJob : SimpleJob
+	{
+		VolumeTextureSet_Ptr volumeTextureSet;
+		SliceOrientation ori;
+		const std::vector<Texture_Ptr>& textures;
+
+		TextureSetFillerJob(const VolumeTextureSet_Ptr& volumeTextureSet_, SliceOrientation ori_, const std::vector<Texture_Ptr>& textures_)
+		:	volumeTextureSet(volumeTextureSet_), ori(ori_), textures(textures_)
+		{}
+
+		void execute()
+		{
+			set_status("Filling texture set...");
+			volumeTextureSet->set_textures(ori, textures);
 			if(is_aborted()) return;
 			set_finished();
 		}
@@ -112,7 +136,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	VolumeTextureCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori/*, const VolumeTextureSet_Ptr& volumeTextureSet*/)
+	VolumeTextureCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori, const VolumeTextureSet_Ptr& volumeTextureSet)
 	{
 		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
@@ -124,7 +148,7 @@ public:
 			add_main_thread_subjob(new CreateTextureJob(m_sliceImage, i, m_textures[i]));
 		}
 
-		// TODO
+		add_subjob(new TextureSetFillerJob(volumeTextureSet, ori, m_textures));
 	}
 };
 

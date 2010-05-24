@@ -13,6 +13,8 @@ using boost::shared_ptr;
 
 #include <itkImage.h>
 
+#include "SliceOrientation.h"
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
@@ -23,22 +25,14 @@ class VolumeTextureSet
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	std::vector<Texture_Ptr> m_xyTextures, m_xzTextures, m_yzTextures;
-
-	//#################### CONSTRUCTORS ####################
-public:
-	// Note: The second parameter is a dummy used to enable the compiler to deduce TPixel.
-	template <typename TPixel> VolumeTextureSet(const typename itk::Image<TPixel,3>::ConstPointer& volumeImage, const itk::Image<TPixel,3>&);
+	std::vector<Texture_Ptr> m_textures[3];
 
 	//#################### PUBLIC METHODS ####################
 public:
-	Texture_CPtr xy_texture(int n) const;
-	Texture_CPtr xz_texture(int n) const;
-	Texture_CPtr yz_texture(int n) const;
+	void set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures);
+	Texture_CPtr texture(SliceOrientation ori, int n) const;
 };
 
 }
-
-#include "VolumeTextureSet.tpp"
 
 #endif

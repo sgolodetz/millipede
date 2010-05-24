@@ -29,25 +29,28 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glPushAttrib(GL_ENABLE_BIT);
 
+	// TEMPORARY
+	Texture_CPtr texture;
 	if(m_viewedVolume && m_viewedVolume->volume_texture_set())
 	{
-		// TEMPORARY
-		Texture_CPtr texture;
 		switch(m_viewedVolume->slice_orientation())
 		{
 		case ORIENT_XY:
-			texture = m_viewedVolume->volume_texture_set()->xy_texture(m_viewedVolume->view_location().z);
+			texture = m_viewedVolume->volume_texture_set()->texture(ORIENT_XY, m_viewedVolume->view_location().z);
 			break;
 		case ORIENT_XZ:
-			texture = m_viewedVolume->volume_texture_set()->xz_texture(m_viewedVolume->view_location().y);
+			texture = m_viewedVolume->volume_texture_set()->texture(ORIENT_XZ, m_viewedVolume->view_location().y);
 			break;
 		case ORIENT_YZ:
-			texture = m_viewedVolume->volume_texture_set()->yz_texture(m_viewedVolume->view_location().x);
+			texture = m_viewedVolume->volume_texture_set()->texture(ORIENT_YZ, m_viewedVolume->view_location().x);
 			break;
 		default:
-			throw Exception("Unexpected view orientation");
+			throw Exception("Unexpected slice orientation");
 		}
+	}
 
+	if(texture)
+	{
 		glEnable(GL_TEXTURE_2D);
 		texture->bind();
 		glColor3d(1,1,1);

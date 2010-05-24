@@ -8,22 +8,15 @@
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
-Texture_CPtr VolumeTextureSet::xy_texture(int n) const
+void VolumeTextureSet::set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures)
 {
-	assert(0 <= n && n < static_cast<int>(m_xyTextures.size()));
-	return m_xyTextures[n];
+	m_textures[ori] = textures;
 }
 
-Texture_CPtr VolumeTextureSet::xz_texture(int n) const
+Texture_CPtr VolumeTextureSet::texture(SliceOrientation ori, int n) const
 {
-	assert(0 <= n && n < static_cast<int>(m_xzTextures.size()));
-	return m_xzTextures[n];
-}
-
-Texture_CPtr VolumeTextureSet::yz_texture(int n) const
-{
-	assert(0 <= n && n < static_cast<int>(m_yzTextures.size()));
-	return m_yzTextures[n];
+	assert(0 <= n && n < static_cast<int>(m_textures[ori].size()));
+	return m_textures[ori][n];
 }
 
 }
