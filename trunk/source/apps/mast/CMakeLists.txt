@@ -11,8 +11,13 @@ SET(targetname mast)
 ##########################################
 
 ##
-SET(mast_sources Application.cpp)
-SET(mast_headers Application.h)
+SET(mast_sources
+Application.cpp
+)
+
+SET(mast_headers
+Application.h
+)
 
 ##
 SET(gui_base_sources
@@ -24,16 +29,22 @@ gui/base/Canvas.h
 )
 
 ##
-SET(gui_dialogs_sources gui/dialogs/VolumeChooserDialog.cpp)
-SET(gui_dialogs_headers gui/dialogs/VolumeChooserDialog.h)
+SET(gui_dialogs_sources
+gui/dialogs/VolumeChooserDialog.cpp
+)
+
+SET(gui_dialogs_headers
+gui/dialogs/VolumeChooserDialog.h
+)
 
 ##
 SET(gui_windows_main_sources
 gui/windows/main/MainWindow.cpp
-gui/windows/main/MainWindow_GUI.cpp
 )
 
-SET(gui_windows_main_headers gui/windows/main/MainWindow.h)
+SET(gui_windows_main_headers
+gui/windows/main/MainWindow.h
+)
 
 ##
 SET(gui_windows_partition_sources
