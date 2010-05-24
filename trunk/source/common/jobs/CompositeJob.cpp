@@ -55,7 +55,7 @@ void CompositeJob::execute()
 	//			sub-jobs to complete, and this will never happen while the main thread job queue is stalled. In order to
 	//			avoid problems, it is generally best to run composite jobs using execute_in_thread().
 
-	for(size_t i=0, size=m_jobs.size(); i<size; ++i)
+	for(size_t i=0, size=m_jobs.size(); i<size && !is_aborted(); ++i)
 	{
 		// Set the pointer to the current job. Note that this is the only method in which the pointer is modified,
 		// so we only need to acquire a mutex whilst actually modifying the pointer (we know it won't be changed
@@ -68,16 +68,19 @@ void CompositeJob::execute()
 		if(m_jobs[i].second) MainThreadJobQueue::instance().queue_job(m_currentJob);
 		else m_currentJob->execute();
 
-		while(!m_currentJob->is_finished());
+		while(!m_currentJob->is_aborted() && !m_currentJob->is_finished());
 
-		boost::mutex::scoped_lock lock(m_mutex);
-		int curLength = m_currentJob->length();
+		if(m_currentJob->is_finished())
+		{
+			boost::mutex::scoped_lock lock(m_mutex);
+			int curLength = m_currentJob->length();
 
-		// It is crucial to reset the current job pointer here, because the progress calculation
-		// would otherwise incorrectly make use of the "current" job's progress.
-		m_currentJob.reset();
+			// It is crucial to reset the current job pointer here, because the progress calculation
+			// would otherwise incorrectly make use of the "current" job's progress.
+			m_currentJob.reset();
 
-		m_progress += curLength;
+			m_progress += curLength;
+		}
 	}
 }
 

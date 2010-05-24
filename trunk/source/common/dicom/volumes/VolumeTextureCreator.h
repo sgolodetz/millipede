@@ -8,6 +8,7 @@
 
 #include <itkExtractImageFilter.h>
 
+#include <common/io/util/OSSWrapper.h>
 #include <common/jobs/CompositeJob.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/textures/TextureFactory.h>
@@ -26,6 +27,11 @@ private:
 	typedef itk::Image<TPixel,2> Image2D;
 	typedef itk::Image<TPixel,3> Image3D;
 
+	//#################### PRIVATE VARIABLES ####################
+private:
+	typename Image2D::Pointer m_sliceImage;
+	std::vector<Texture_Ptr> m_textures;
+
 	//#################### NESTED CLASSES ####################
 private:
 	struct ExtractSliceJob : SimpleJob
@@ -41,6 +47,8 @@ private:
 
 		void execute()
 		{
+			set_status(OSSWrapper() << "Extracting slice " << sliceIndex);
+
 			typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
 			typedef itk::ExtractImageFilter<Image3D,Image2D> Extractor;
@@ -63,8 +71,13 @@ private:
 			region.SetSize(size);
 			extractor->SetExtractionRegion(region);
 
+			if(is_aborted()) return;
 			extractor->Update();
+			if(is_aborted()) return;
 			sliceImage = extractor->GetOutput();
+			if(is_aborted()) return;
+
+			set_finished();
 		}
 
 		int length() const
@@ -75,16 +88,20 @@ private:
 
 	struct CreateTextureJob : SimpleJob
 	{
-		typename Image2D::Pointer sliceImage;
+		const typename Image2D::Pointer& sliceImage;
+		int sliceIndex;
 		Texture_Ptr& texture;
 
-		CreateTextureJob(const typename Image2D::Pointer& sliceImage_, Texture_Ptr& texture_)
-		:	sliceImage(sliceImage_), texture(texture_)
+		CreateTextureJob(const typename Image2D::Pointer& sliceImage_, int sliceIndex_, Texture_Ptr& texture_)
+		:	sliceImage(sliceImage_), sliceIndex(sliceIndex_), texture(texture_)
 		{}
 
 		void execute()
 		{
+			set_status(OSSWrapper() << "Creating texture for slice " << sliceIndex);
 			texture = TextureFactory::create_texture(sliceImage);
+			if(is_aborted()) return;
+			set_finished();
 		}
 
 		int length() const
@@ -99,13 +116,12 @@ public:
 	{
 		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
-		std::vector<Texture_Ptr> textures(volumeSize[ori]);
+		m_textures.resize(volumeSize[ori]);
 
-		typename Image2D::Pointer sliceImage;
 		for(unsigned int i=0; i<volumeSize[ori]; ++i)
 		{
-			add_subjob(new ExtractSliceJob(volumeImage, ori, i, sliceImage));
-			add_main_thread_subjob(new CreateTextureJob(sliceImage, textures[i]));
+			add_subjob(new ExtractSliceJob(volumeImage, ori, i, m_sliceImage));
+			add_main_thread_subjob(new CreateTextureJob(m_sliceImage, i, m_textures[i]));
 		}
 
 		// TODO

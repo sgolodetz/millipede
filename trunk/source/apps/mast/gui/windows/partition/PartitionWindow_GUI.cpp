@@ -10,7 +10,9 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/Volume.h>
+#include <common/dicom/volumes/VolumeTextureCreator.h>
 #include <common/dicom/volumes/VolumeTextureSet.h>
+#include <mast/util/DialogUtil.h>
 #include "PartitionCanvas.h"
 #include "StratumCanvas.h"
 
@@ -134,6 +136,12 @@ void PartitionWindow::OnButtonCreateTextures(wxCommandEvent&)
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)
 {
+#if 0
+	Volume::WindowedImageCPointer windowedImage = m_viewedVolume->volume()->windowed_image(m_volumeChoice.windowSettings);
+	shared_ptr<Job> textureCreator(new VolumeTextureCreator<unsigned char>(windowedImage, ORIENT_XY));
+	Job::execute_in_thread(textureCreator);
+	show_progress_dialog(this, "Creating Textures", textureCreator);
+#endif
 	m_viewedVolume->set_slice_orientation(ORIENT_XY);
 }
 
