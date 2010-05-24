@@ -56,12 +56,12 @@ gui/windows/partition/ViewedVolumeListener.h
 
 ##
 SET(util_sources
-util/IOUtil.cpp
+util/DialogUtil.cpp
 util/StringConversion.cpp
 )
 
 SET(util_headers
-util/IOUtil.h
+util/DialogUtil.h
 util/StringConversion.h
 )
 

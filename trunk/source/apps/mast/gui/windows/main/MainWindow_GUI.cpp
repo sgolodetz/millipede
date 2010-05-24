@@ -17,7 +17,7 @@
 #include <common/io/files/VolumeLoader.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
 #include <mast/gui/windows/partition/PartitionWindow.h>
-#include <mast/util/IOUtil.h>
+#include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
 
 namespace {
@@ -95,7 +95,7 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 			{
 				VolumeLoader_Ptr loader(new VolumeLoader(dialog.dicomdir(), *dialog.volume_choice()));
 				Job::execute_in_thread(loader);
-				show_progress_dialog(loader, "Loading Volume");
+				show_progress_dialog(this, "Loading Volume", loader);
 
 				if(!loader->is_aborted())
 				{

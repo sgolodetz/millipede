@@ -1,13 +1,18 @@
 /***
- * millipede: IOUtil.cpp
+ * millipede: DialogUtil.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "IOUtil.h"
+#include "DialogUtil.h"
 
 #include <fstream>
 
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+
 #include <common/exceptions/FileNotFoundException.h>
+#include <common/jobs/Job.h>
+#include <common/jobs/MainThreadJobQueue.h>
 #include "StringConversion.h"
 
 namespace mp {
@@ -33,6 +38,37 @@ wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& capt
 	return wxFileDialog_Ptr(new wxFileDialog(parent, string_to_wxString(caption), string_to_wxString(defaultDir),
 							string_to_wxString(defaultFilename), string_to_wxString(wildcard),
 							wxSAVE | wxOVERWRITE_PROMPT));
+}
+
+void show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job)
+{
+	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), NULL, wxPD_CAN_ABORT|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH);
+	dialog.SetSize(500, 200);
+
+	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
+
+	while(!job->is_finished())
+	{
+		if(!dialog.Update(job->progress(), string_to_wxString(job->status())))
+		{
+			// The user clicked Cancel.
+			job->abort();
+			break;
+		}
+
+		if(job->is_aborted())
+		{
+			// The loading process failed (i.e. the job aborted itself).
+			wxMessageBox(string_to_wxString(job->status()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, parent);
+			break;
+		}
+
+		// If any sub-jobs have been queued to run in the main thread, run the next one in the queue.
+		if(mtjq.has_jobs())
+		{
+			mtjq.run_next_job();
+		}
+	}
 }
 
 }

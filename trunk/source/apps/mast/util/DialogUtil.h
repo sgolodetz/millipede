@@ -1,10 +1,10 @@
 /***
- * millipede: IOUtil.h
+ * millipede: DialogUtil.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_IOUTIL
-#define H_MILLIPEDE_IOUTIL
+#ifndef H_MILLIPEDE_DIALOGUTIL
+#define H_MILLIPEDE_DIALOGUTIL
 
 #include <string>
 
@@ -17,6 +17,7 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### TYPEDEFS ####################
+typedef shared_ptr<class Job> Job_Ptr;
 typedef shared_ptr<wxFileDialog> wxFileDialog_Ptr;
 
 //#################### FUNCTIONS ####################
@@ -25,6 +26,7 @@ wxFileDialog_Ptr construct_open_dialog(wxWindow *parent, const std::string& capt
 									   const std::string& defaultDir = ".", const std::string& defaultFilename = "");
 wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& caption, const std::string& wildcard,
 									   const std::string& defaultDir = ".", const std::string& defaultFilename = "");
+void show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job);
 
 }
 
