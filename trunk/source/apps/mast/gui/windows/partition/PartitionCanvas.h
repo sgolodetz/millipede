@@ -15,6 +15,10 @@ class PartitionCanvas : public BaseCanvas
 	//#################### CONSTRUCTORS ####################
 public:
 	PartitionCanvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS);
+
+	//#################### PRIVATE METHODS ####################
+private:
+	Texture_CPtr texture_to_display() const;
 };
 
 }

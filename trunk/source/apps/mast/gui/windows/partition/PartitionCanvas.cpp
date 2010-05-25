@@ -12,4 +12,11 @@ PartitionCanvas::PartitionCanvas(wxWindow *parent, wxGLContext *context, int *at
 :	BaseCanvas(parent, context, attribList, id, pos, size, style)
 {}
 
+//#################### PRIVATE METHODS ####################
+Texture_CPtr PartitionCanvas::texture_to_display() const
+{
+	// TEMPORARY
+	return Texture_CPtr();
+}
+
 }

@@ -14,17 +14,22 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
+typedef shared_ptr<const class Texture> Texture_CPtr;
 typedef shared_ptr<class ViewedVolume> ViewedVolume_Ptr;
 
 class BaseCanvas : public Canvas
 {
-	//#################### PRIVATE VARIABLES ####################
-private:
+	//#################### PROTECTED VARIABLES ####################
+protected:
 	ViewedVolume_Ptr m_viewedVolume;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	BaseCanvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxFULL_REPAINT_ON_RESIZE|wxWANTS_CHARS);
+
+	//#################### PRIVATE ABSTRACT METHODS ####################
+private:
+	virtual Texture_CPtr texture_to_display() const = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:

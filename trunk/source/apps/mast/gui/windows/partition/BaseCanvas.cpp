@@ -5,10 +5,7 @@
 
 #include "BaseCanvas.h"
 
-#include <common/dicom/volumes/VolumeTextureSet.h>
-#include <common/exceptions/Exception.h>
 #include <common/textures/Texture.h>
-#include "ViewedVolume.h"
 
 namespace mp {
 
@@ -24,31 +21,11 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
 	glTranslated(0, 0, -256);
 
 	glPushAttrib(GL_ENABLE_BIT);
 
-	// TEMPORARY
-	Texture_CPtr texture;
-	if(m_viewedVolume && m_viewedVolume->volume_texture_set())
-	{
-		switch(m_viewedVolume->slice_orientation())
-		{
-		case ORIENT_XY:
-			texture = m_viewedVolume->volume_texture_set()->texture(ORIENT_XY, m_viewedVolume->view_location().z);
-			break;
-		case ORIENT_XZ:
-			texture = m_viewedVolume->volume_texture_set()->texture(ORIENT_XZ, m_viewedVolume->view_location().y);
-			break;
-		case ORIENT_YZ:
-			texture = m_viewedVolume->volume_texture_set()->texture(ORIENT_YZ, m_viewedVolume->view_location().x);
-			break;
-		default:
-			throw Exception("Unexpected slice orientation");
-		}
-	}
-
+	Texture_CPtr texture = texture_to_display();
 	if(texture)
 	{
 		glEnable(GL_TEXTURE_2D);
