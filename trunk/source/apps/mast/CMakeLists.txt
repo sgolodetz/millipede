@@ -68,7 +68,6 @@ models/PartitionModel.cpp
 
 SET(models_headers
 models/PartitionModel.h
-models/PartitionModelListener.h
 )
 
 ##

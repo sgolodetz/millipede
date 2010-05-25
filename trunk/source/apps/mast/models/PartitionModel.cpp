@@ -5,8 +5,6 @@
 
 #include "PartitionModel.h"
 
-#include "PartitionModelListener.h"
-
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -15,7 +13,7 @@ PartitionModel::PartitionModel(const Volume_Ptr& volume, const ViewLocation& loc
 {}
 
 //#################### PUBLIC METHODS ####################
-void PartitionModel::add_listener(PartitionModelListener *listener)
+void PartitionModel::add_listener(Listener *listener)
 {
 	m_listeners.push_back(listener);
 }

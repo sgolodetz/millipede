@@ -16,7 +16,6 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-class PartitionModelListener;
 typedef shared_ptr<class Volume> Volume_Ptr;
 typedef shared_ptr<const class Volume> Volume_CPtr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
@@ -26,6 +25,12 @@ class PartitionModel
 {
 	//#################### NESTED CLASSES ####################
 public:
+	struct Listener
+	{
+		virtual ~Listener() {}
+		virtual void model_changed() = 0;
+	};
+
 	struct ViewLocation
 	{
 		int x, y, z, layer;
@@ -42,7 +47,7 @@ private:
 	Volume_Ptr m_volume;
 	VolumeTextureSet_Ptr m_textureSet;
 
-	std::vector<PartitionModelListener*> m_listeners;
+	std::vector<Listener*> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -50,7 +55,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(PartitionModelListener *listener);
+	void add_listener(Listener *listener);
 	void set_slice_orientation(SliceOrientation ori);
 	void set_view_location(const ViewLocation& loc);
 	void set_volume_texture_set(const VolumeTextureSet_Ptr& textureSet);
