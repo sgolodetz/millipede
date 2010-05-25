@@ -13,7 +13,7 @@
 using boost::shared_ptr;
 
 #include <wx/checkbox.h>
-#include <wx/dialog.h>
+#include <wx/propdlg.h>
 #include <wx/spinctrl.h>
 #include <wx/stattext.h>
 #include <wx/treectrl.h>
@@ -26,7 +26,7 @@ namespace mp {
 typedef shared_ptr<class DICOMDirectory> DICOMDirectory_Ptr;
 typedef shared_ptr<const class DICOMDirectory> DICOMDirectory_CPtr;
 
-class VolumeChooserDialog : public wxDialog
+class VolumeChooserDialog : public wxPropertySheetDialog
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -56,6 +56,8 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	bool construct_volume_choice();
+	wxPanel *create_basic_page(wxWindow *parent);
+	wxPanel *create_advanced_page(wxWindow *parent);
 
 	//#################### EVENT HANDLERS ####################
 public:
