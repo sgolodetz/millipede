@@ -1,22 +1,22 @@
 /***
- * millipede: ViewedVolumeListener.h
+ * millipede: PartitionModelListener.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VIEWEDVOLUMELISTENER
-#define H_MILLIPEDE_VIEWEDVOLUMELISTENER
+#ifndef H_MILLIPEDE_PARTITIONMODELLISTENER
+#define H_MILLIPEDE_PARTITIONMODELLISTENER
 
 namespace mp {
 
-class ViewedVolumeListener
+class PartitionModelListener
 {
 	//#################### DESTRUCTOR ####################
 public:
-	virtual ~ViewedVolumeListener() {}
+	virtual ~PartitionModelListener() {}
 
 	//#################### PUBLIC ABSTRACT METHODS ####################
 public:
-	virtual void viewed_volume_changed() = 0;
+	virtual void model_changed() = 0;
 };
 
 }

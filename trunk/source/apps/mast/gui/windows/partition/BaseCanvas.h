@@ -14,14 +14,14 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
+typedef shared_ptr<class PartitionModel> PartitionModel_Ptr;
 typedef shared_ptr<const class Texture> Texture_CPtr;
-typedef shared_ptr<class ViewedVolume> ViewedVolume_Ptr;
 
 class BaseCanvas : public Canvas
 {
 	//#################### PROTECTED VARIABLES ####################
 protected:
-	ViewedVolume_Ptr m_viewedVolume;
+	PartitionModel_Ptr m_model;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -34,7 +34,7 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	void render(wxPaintDC& dc) const;
-	void setup(const ViewedVolume_Ptr& viewedVolume);
+	void setup(const PartitionModel_Ptr& model);
 };
 
 }

@@ -1,10 +1,10 @@
 /***
- * millipede: ViewedVolume.h
+ * millipede: PartitionModel.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VIEWEDVOLUME
-#define H_MILLIPEDE_VIEWEDVOLUME
+#ifndef H_MILLIPEDE_PARTITIONMODEL
+#define H_MILLIPEDE_PARTITIONMODEL
 
 #include <vector>
 
@@ -16,13 +16,13 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class ViewedVolumeListener> ViewedVolumeListener_Ptr;
+class PartitionModelListener;
 typedef shared_ptr<class Volume> Volume_Ptr;
 typedef shared_ptr<const class Volume> Volume_CPtr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 typedef shared_ptr<const class VolumeTextureSet> VolumeTextureSet_CPtr;
 
-class ViewedVolume
+class PartitionModel
 {
 	//#################### NESTED CLASSES ####################
 public:
@@ -42,15 +42,15 @@ private:
 	Volume_Ptr m_volume;
 	VolumeTextureSet_Ptr m_textureSet;
 
-	std::vector<ViewedVolumeListener*> m_listeners;
+	std::vector<PartitionModelListener*> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ViewedVolume(const Volume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori);
+	PartitionModel(const Volume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori);
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(ViewedVolumeListener *listener);
+	void add_listener(PartitionModelListener *listener);
 	void set_slice_orientation(SliceOrientation ori);
 	void set_view_location(const ViewLocation& loc);
 	void set_volume_texture_set(const VolumeTextureSet_Ptr& textureSet);
@@ -67,8 +67,8 @@ private:
 };
 
 //#################### TYPEDEFS ####################
-typedef shared_ptr<ViewedVolume> ViewedVolume_Ptr;
-typedef shared_ptr<const ViewedVolume> ViewedVolume_CPtr;
+typedef shared_ptr<PartitionModel> PartitionModel_Ptr;
+typedef shared_ptr<const PartitionModel> PartitionModel_CPtr;
 
 }
 

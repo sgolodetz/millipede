@@ -7,7 +7,7 @@
 
 #include <common/dicom/volumes/VolumeTextureSet.h>
 #include <common/exceptions/Exception.h>
-#include "ViewedVolume.h"
+#include <mast/models/PartitionModel.h>
 
 namespace mp {
 
@@ -19,13 +19,13 @@ StratumCanvas::StratumCanvas(wxWindow *parent, wxGLContext *context, int *attrib
 //#################### PRIVATE METHODS ####################
 Texture_CPtr StratumCanvas::texture_to_display() const
 {
-	if(m_viewedVolume && m_viewedVolume->volume_texture_set())
+	if(m_model && m_model->volume_texture_set())
 	{
-		switch(m_viewedVolume->slice_orientation())
+		switch(m_model->slice_orientation())
 		{
-			case ORIENT_XY:		return m_viewedVolume->volume_texture_set()->texture(ORIENT_XY, m_viewedVolume->view_location().z);
-			case ORIENT_XZ:		return m_viewedVolume->volume_texture_set()->texture(ORIENT_XZ, m_viewedVolume->view_location().y);
-			case ORIENT_YZ:		return m_viewedVolume->volume_texture_set()->texture(ORIENT_YZ, m_viewedVolume->view_location().x);
+			case ORIENT_XY:		return m_model->volume_texture_set()->texture(ORIENT_XY, m_model->view_location().z);
+			case ORIENT_XZ:		return m_model->volume_texture_set()->texture(ORIENT_XZ, m_model->view_location().y);
+			case ORIENT_YZ:		return m_model->volume_texture_set()->texture(ORIENT_YZ, m_model->view_location().x);
 			default:			throw Exception("Unexpected slice orientation");
 		}
 	}

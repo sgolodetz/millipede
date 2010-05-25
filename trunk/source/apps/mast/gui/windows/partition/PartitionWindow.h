@@ -17,8 +17,8 @@ using boost::shared_ptr;
 
 #include <common/dicom/volumes/SliceOrientation.h>
 #include <common/io/util/VolumeChoice.h>
-#include "ViewedVolume.h"
-#include "ViewedVolumeListener.h"
+#include <mast/models/PartitionModel.h>
+#include <mast/models/PartitionModelListener.h>
 
 namespace mp {
 
@@ -28,19 +28,19 @@ class StratumCanvas;
 typedef shared_ptr<class Volume> Volume_Ptr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
-class PartitionWindow : public wxFrame, public ViewedVolumeListener
+class PartitionWindow : public wxFrame, public PartitionModelListener
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef ViewedVolume::ViewLocation ViewLocation;
+	typedef PartitionModel::ViewLocation ViewLocation;
 	typedef shared_ptr<ViewLocation> ViewLocation_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
+	PartitionModel_Ptr m_model;
 	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
-	ViewedVolume_Ptr m_viewedVolume;
 	VolumeChoice m_volumeChoice;
 
 	// Middle left
@@ -61,7 +61,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	wxGLContext *get_context() const;
-	void viewed_volume_changed();
+	void model_changed();
 
 	//#################### PRIVATE METHODS ####################
 private:

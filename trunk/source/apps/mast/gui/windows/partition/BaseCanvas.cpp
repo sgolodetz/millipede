@@ -53,9 +53,9 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	glPopAttrib();
 }
 
-void BaseCanvas::setup(const ViewedVolume_Ptr& viewedVolume)
+void BaseCanvas::setup(const PartitionModel_Ptr& model)
 {
-	m_viewedVolume = viewedVolume;
+	m_model = model;
 
 	SetCurrent();
 

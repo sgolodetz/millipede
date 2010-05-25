@@ -52,7 +52,6 @@ gui/windows/partition/BaseCanvas.cpp
 gui/windows/partition/PartitionCanvas.cpp
 gui/windows/partition/PartitionWindow.cpp
 gui/windows/partition/StratumCanvas.cpp
-gui/windows/partition/ViewedVolume.cpp
 )
 
 SET(gui_windows_partition_headers
@@ -60,8 +59,16 @@ gui/windows/partition/BaseCanvas.h
 gui/windows/partition/PartitionCanvas.h
 gui/windows/partition/PartitionWindow.h
 gui/windows/partition/StratumCanvas.h
-gui/windows/partition/ViewedVolume.h
-gui/windows/partition/ViewedVolumeListener.h
+)
+
+##
+SET(models_sources
+models/PartitionModel.cpp
+)
+
+SET(models_headers
+models/PartitionModel.h
+models/PartitionModelListener.h
 )
 
 ##
@@ -85,6 +92,7 @@ ${gui_base_sources}
 ${gui_dialogs_sources}
 ${gui_windows_main_sources}
 ${gui_windows_partition_sources}
+${models_sources}
 ${util_sources}
 )
 
@@ -94,6 +102,7 @@ ${gui_base_headers}
 ${gui_dialogs_headers}
 ${gui_windows_main_headers}
 ${gui_windows_partition_headers}
+${models_headers}
 ${util_headers}
 )
 
@@ -123,6 +132,10 @@ SOURCE_GROUP(gui\\windows\\main\\.h FILES ${gui_windows_main_headers})
 ##
 SOURCE_GROUP(gui\\windows\\partition\\.cpp FILES ${gui_windows_partition_sources})
 SOURCE_GROUP(gui\\windows\\partition\\.h FILES ${gui_windows_partition_headers})
+
+##
+SOURCE_GROUP(models\\.cpp FILES ${models_sources})
+SOURCE_GROUP(models\\.h FILES ${models_headers})
 
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
