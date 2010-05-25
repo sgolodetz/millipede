@@ -5,6 +5,8 @@
 
 #include "VolumeChoice.h"
 
+#include <sstream>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -13,5 +15,13 @@ VolumeChoice::VolumeChoice(const std::string& filePrefix_, const std::string& pa
 :	filePrefix(filePrefix_), patientKey(patientKey_), studyKey(studyKey_), seriesKey(seriesKey_),
 	minX(minX_), minY(minY_), minZ(minZ_), maxX(maxX_), maxY(maxY_), maxZ(maxZ_), windowSettings(windowSettings_)
 {}
+
+//#################### PUBLIC METHODS ####################
+std::string VolumeChoice::description() const
+{
+	std::ostringstream oss;
+	oss << patientKey << " | " << studyKey << " | " << seriesKey;
+	return oss.str();
+}
 
 }

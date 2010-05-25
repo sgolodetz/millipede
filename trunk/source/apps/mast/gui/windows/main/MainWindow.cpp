@@ -101,7 +101,8 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 				if(!loader->is_aborted())
 				{
 					// Create a window for the user to interact with the new volume.
-					PartitionWindow *partitionWindow = new PartitionWindow(this, "Untitled", loader->volume(), loader->volume_choice());
+					std::string caption = "MAST - " + loader->volume_choice().description() + " - Untitled";
+					PartitionWindow *partitionWindow = new PartitionWindow(this, caption, loader->volume(), loader->volume_choice());
 					partitionWindow->Show(true);
 				}
 			}

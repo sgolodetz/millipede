@@ -21,6 +21,9 @@ struct VolumeChoice
 
 	//#################### CONSTRUCTORS ####################
 	VolumeChoice(const std::string& filePrefix_, const std::string& patientKey_, const std::string& studyKey_, const std::string& seriesKey_, int minX_, int minY_, int minZ_, int maxX_, int maxY_, int maxZ_, const WindowSettings& windowSettings_);
+
+	//#################### PUBLIC METHODS ####################
+	std::string description() const;
 };
 
 }
