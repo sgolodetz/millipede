@@ -10,9 +10,31 @@
 #include <wx/bookctrl.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
+#include <wx/spinctrl.h>
 #include <wx/stattext.h>
 
 #include <mast/util/StringConversion.h>
+
+namespace {
+
+//#################### LOCAL CONSTANTS ####################
+enum
+{
+	RADIOBOXID_SEGMENTATIONTYPE,
+	SPINID_GRIDSIZE,
+};
+
+enum SegmentationType
+{
+	SEGTYPE_XY,
+	SEGTYPE_XZ,
+	SEGTYPE_YZ,
+	SEGTYPE_3D,
+	SEGTYPE_CUSTOM,
+	SEGTYPE_COUNT,	// dummy value containing the number of segmentation types
+};
+
+}
 
 namespace mp {
 
@@ -41,14 +63,14 @@ wxPanel *SegmentVolumeDialog::create_basic_page(wxWindow *parent)
 	panel->SetSizer(sizer);
 
 	// Set up the radio box to choose a segmentation type.
-	wxArrayString strings;
-	strings.Add(wxT("Segment as &Axial (X-Y) Slices"));
-	strings.Add(wxT("Segment as &Coronal (X-Z) Slices"));
-	strings.Add(wxT("Segment as &Sagittal (Y-Z) Slices"));
-	strings.Add(wxT("Segment as 3D &Volume"));
-	strings.Add(wxT("Segment using Customised &Grid Size"));
-	wxRadioBox *segmentationTypeBox = new wxRadioBox(panel, wxID_ANY, wxT("Segmentation Type"), wxDefaultPosition, wxDefaultSize, strings, 1, wxRA_SPECIFY_COLS);
-	sizer->Add(segmentationTypeBox, 0, wxALIGN_CENTER_HORIZONTAL);
+	wxString strings[SEGTYPE_COUNT];
+	strings[SEGTYPE_XY] = wxT("Segment as &Axial (X-Y) Slices");
+	strings[SEGTYPE_XZ] = wxT("Segment as &Coronal (X-Z) Slices");
+	strings[SEGTYPE_YZ] = wxT("Segment as &Sagittal (Y-Z) Slices");
+	strings[SEGTYPE_3D] = wxT("Segment as 3D &Volume");
+	strings[SEGTYPE_CUSTOM] = wxT("Segment using Customised &Grid Size");
+	m_segmentationType = new wxRadioBox(panel, RADIOBOXID_SEGMENTATIONTYPE, wxT("Segmentation Type"), wxDefaultPosition, wxDefaultSize, SEGTYPE_COUNT, strings, 1, wxRA_SPECIFY_COLS);
+	sizer->Add(m_segmentationType, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->AddSpacer(10);
 
@@ -62,14 +84,13 @@ wxPanel *SegmentVolumeDialog::create_basic_page(wxWindow *parent)
 	gridPanel->SetSizer(gridSizer);
 
 	wxString captions[] = {"X Grid Size:", "Y Grid Size:", "Z Grid Size:"};
-	int ids[] = {wxID_ANY, wxID_ANY, wxID_ANY};
 	for(int i=0; i<3; ++i)
 	{
 		gridSizer->Add(new wxStaticText(gridPanel, wxID_ANY, captions[i]));
 		int initial = i != 2 ? m_volumeSize[i] : 1;
 		wxString initialValue = string_to_wxString(boost::lexical_cast<std::string>(initial));
-		wxSpinCtrl *spin = new wxSpinCtrl(gridPanel, ids[i], initialValue, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, initial, m_volumeSize[i]);
-		gridSizer->Add(spin);
+		m_gridSizes[i] = new wxSpinCtrl(gridPanel, SPINID_GRIDSIZE, initialValue, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, m_volumeSize[i], initial);
+		gridSizer->Add(m_gridSizes[i]);
 	}
 
 	sizer->Fit(panel);
@@ -87,8 +108,8 @@ wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
 	wxArrayString strings;
 	strings.Add(wxT("Use &Windowed Input"));
 	strings.Add(wxT("Use &Hounsfield Input"));
-	wxRadioBox *inputTypeBox = new wxRadioBox(panel, wxID_ANY, wxT("Input Type"), wxDefaultPosition, wxDefaultSize, strings, 1, wxRA_SPECIFY_COLS);
-	sizer->Add(inputTypeBox);
+	wxRadioBox *inputType = new wxRadioBox(panel, wxID_ANY, wxT("Input Type"), wxDefaultPosition, wxDefaultSize, strings, 1, wxRA_SPECIFY_COLS);
+	sizer->Add(inputType);
 
 	sizer->AddSpacer(10);
 
@@ -106,9 +127,39 @@ wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
 	return panel;
 }
 
+//#################### EVENT HANDLERS ####################
+
+//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
+void SegmentVolumeDialog::OnRadioBoxSegmentationType(wxCommandEvent&)
+{
+	if(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM) return;
+
+	itk::Size<3> gridSizes = m_volumeSize;
+	switch(m_segmentationType->GetSelection())
+	{
+		case SEGTYPE_XY:	gridSizes[2] = 1; break;
+		case SEGTYPE_XZ:	gridSizes[1] = 1; break;
+		case SEGTYPE_YZ:	gridSizes[0] = 1; break;
+		default:			break;
+	}
+
+	for(int i=0; i<3; ++i) m_gridSizes[i]->SetValue(gridSizes[i]);
+}
+
+//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+void SegmentVolumeDialog::OnUpdateGridSizeControl(wxUpdateUIEvent& e)
+{
+	// Enable the grid size controls iff custom segmentation is selected.
+	e.Enable(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM);
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(SegmentVolumeDialog, wxPropertySheetDialog)
-	// TODO
+	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
+	EVT_RADIOBOX(RADIOBOXID_SEGMENTATIONTYPE, SegmentVolumeDialog::OnRadioBoxSegmentationType)
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(SPINID_GRIDSIZE, SegmentVolumeDialog::OnUpdateGridSizeControl)
 END_EVENT_TABLE()
 
 }

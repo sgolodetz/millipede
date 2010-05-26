@@ -9,7 +9,6 @@
 #include <itkSize.h>
 
 #include <wx/propdlg.h>
-#include <wx/spinctrl.h>
 
 namespace mp {
 
@@ -18,6 +17,9 @@ class SegmentVolumeDialog : public wxPropertySheetDialog
 	//#################### PRIVATE VARIABLES ####################
 private:
 	itk::Size<3> m_volumeSize;
+
+	wxSpinCtrl *m_gridSizes[3];
+	wxRadioBox *m_segmentationType;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -30,7 +32,11 @@ private:
 
 	//#################### EVENT HANDLERS ####################
 public:
-	// TODO
+	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
+	void OnRadioBoxSegmentationType(wxCommandEvent&);
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateGridSizeControl(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

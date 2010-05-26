@@ -24,7 +24,7 @@ using boost::lexical_cast;
 #include <common/io/files/VolumeChoiceFile.h>
 #include <mast/util/StringConversion.h>
 
-namespace mp {
+namespace {
 
 //#################### LOCAL CONSTANTS ####################
 enum
@@ -53,6 +53,10 @@ struct SeriesData : wxTreeItemData
 	const int imageWidth;
 	const int imageCount;
 };
+
+}
+
+namespace mp {
 
 //#################### CONSTRUCTORS ####################
 VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
