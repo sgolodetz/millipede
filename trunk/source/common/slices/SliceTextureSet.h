@@ -1,10 +1,10 @@
 /***
- * millipede: VolumeTextureSet.h
+ * millipede: SliceTextureSet.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VOLUMETEXTURESET
-#define H_MILLIPEDE_VOLUMETEXTURESET
+#ifndef H_MILLIPEDE_SLICETEXTURESET
+#define H_MILLIPEDE_SLICETEXTURESET
 
 #include <vector>
 
@@ -21,7 +21,7 @@ namespace mp {
 typedef shared_ptr<class Texture> Texture_Ptr;
 typedef shared_ptr<const class Texture> Texture_CPtr;
 
-class VolumeTextureSet
+class SliceTextureSet
 {
 	//#################### PRIVATE VARIABLES ####################
 private:

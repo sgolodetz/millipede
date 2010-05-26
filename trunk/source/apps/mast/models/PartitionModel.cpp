@@ -18,12 +18,12 @@ void PartitionModel::add_listener(Listener *listener)
 	m_listeners.push_back(listener);
 }
 
-const VolumeTextureSet_Ptr& PartitionModel::dicom_texture_set()				{ return m_dicomTextureSet; }
-VolumeTextureSet_CPtr PartitionModel::dicom_texture_set() const				{ return m_dicomTextureSet; }
+const SliceTextureSet_Ptr& PartitionModel::dicom_texture_set()				{ return m_dicomTextureSet; }
+SliceTextureSet_CPtr PartitionModel::dicom_texture_set() const				{ return m_dicomTextureSet; }
 const DICOMVolume_Ptr& PartitionModel::dicom_volume()						{ return m_dicomVolume; }
 DICOMVolume_CPtr PartitionModel::dicom_volume() const						{ return m_dicomVolume; }
 
-void PartitionModel::set_dicom_texture_set(const VolumeTextureSet_Ptr& dicomTextureSet)
+void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;
 	alert_listeners();

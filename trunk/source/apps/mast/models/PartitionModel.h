@@ -11,15 +11,15 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-#include <common/dicom/volumes/SliceOrientation.h>
+#include <common/slices/SliceOrientation.h>
 
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 typedef shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
-typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
-typedef shared_ptr<const class VolumeTextureSet> VolumeTextureSet_CPtr;
+typedef shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
+typedef shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
 class PartitionModel
 {
@@ -42,8 +42,8 @@ public:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
-	VolumeTextureSet_Ptr m_dicomTextureSet;
 	SliceOrientation m_sliceOrientation;
 	ViewLocation m_viewLocation;			// view location in terms of the volume only (not based on actual slice numbers)
 
@@ -56,11 +56,11 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void add_listener(Listener *listener);
-	const VolumeTextureSet_Ptr& dicom_texture_set();
-	VolumeTextureSet_CPtr dicom_texture_set() const;
+	const SliceTextureSet_Ptr& dicom_texture_set();
+	SliceTextureSet_CPtr dicom_texture_set() const;
 	const DICOMVolume_Ptr& dicom_volume();
 	DICOMVolume_CPtr dicom_volume() const;
-	void set_dicom_texture_set(const VolumeTextureSet_Ptr& dicomTextureSet);
+	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
 	void set_slice_orientation(SliceOrientation ori);
 	void set_view_location(const ViewLocation& loc);
 	SliceOrientation slice_orientation() const;

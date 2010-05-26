@@ -5,8 +5,8 @@
 
 #include "StratumCanvas.h"
 
-#include <common/dicom/volumes/VolumeTextureSet.h>
 #include <common/exceptions/Exception.h>
+#include <common/slices/SliceTextureSet.h>
 #include <mast/models/PartitionModel.h>
 
 namespace mp {

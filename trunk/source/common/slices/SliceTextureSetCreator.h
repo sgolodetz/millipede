@@ -1,10 +1,10 @@
 /***
- * millipede: VolumeTextureSetCreator.h
+ * millipede: SliceTextureSetCreator.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VOLUMETEXTURESETCREATOR
-#define H_MILLIPEDE_VOLUMETEXTURESETCREATOR
+#ifndef H_MILLIPEDE_SLICETEXTURESETCREATOR
+#define H_MILLIPEDE_SLICETEXTURESETCREATOR
 
 #include <itkExtractImageFilter.h>
 
@@ -12,7 +12,7 @@
 #include <common/jobs/CompositeJob.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/textures/TextureFactory.h>
-#include "VolumeTextureSet.h"
+#include "SliceTextureSet.h"
 
 namespace mp {
 
@@ -20,7 +20,7 @@ namespace mp {
 typedef shared_ptr<class Texture> Texture_Ptr;
 
 template <typename TPixel>
-class VolumeTextureSetCreator : public CompositeJob
+class SliceTextureSetCreator : public CompositeJob
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -107,18 +107,18 @@ private:
 
 	struct TextureSetFillerJob : SimpleJob
 	{
-		VolumeTextureSet_Ptr volumeTextureSet;
+		SliceTextureSet_Ptr sliceTextureSet;
 		SliceOrientation ori;
 		const std::vector<Texture_Ptr>& textures;
 
-		TextureSetFillerJob(const VolumeTextureSet_Ptr& volumeTextureSet_, SliceOrientation ori_, const std::vector<Texture_Ptr>& textures_)
-		:	volumeTextureSet(volumeTextureSet_), ori(ori_), textures(textures_)
+		TextureSetFillerJob(const SliceTextureSet_Ptr& sliceTextureSet_, SliceOrientation ori_, const std::vector<Texture_Ptr>& textures_)
+		:	sliceTextureSet(sliceTextureSet_), ori(ori_), textures(textures_)
 		{}
 
 		void execute()
 		{
 			set_status("Filling texture set...");
-			volumeTextureSet->set_textures(ori, textures);
+			sliceTextureSet->set_textures(ori, textures);
 			if(is_aborted()) return;
 			set_finished();
 		}
@@ -136,7 +136,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	VolumeTextureSetCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori, const VolumeTextureSet_Ptr& volumeTextureSet)
+	SliceTextureSetCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet)
 	{
 		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
@@ -148,7 +148,7 @@ public:
 			add_main_thread_subjob(new CreateTextureJob(m_sliceImage, i, m_textures[i]));
 		}
 
-		add_subjob(new TextureSetFillerJob(volumeTextureSet, ori, m_textures));
+		add_subjob(new TextureSetFillerJob(sliceTextureSet, ori, m_textures));
 	}
 };
 

@@ -10,7 +10,7 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
-#include <common/dicom/volumes/VolumeTextureSetCreator.h>
+#include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/SegmentVolumeDialog.h>
 #include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
@@ -89,8 +89,8 @@ bool PartitionWindow::create_textures(SliceOrientation ori)
 {
 	DICOMVolume::WindowedImageCPointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
-	VolumeTextureSet_Ptr textureSet(new VolumeTextureSet);
-	shared_ptr<Job> textureSetCreator(new VolumeTextureSetCreator<unsigned char>(windowedImage, ori, textureSet));
+	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
+	shared_ptr<Job> textureSetCreator(new SliceTextureSetCreator<unsigned char>(windowedImage, ori, textureSet));
 	Job::execute_in_thread(textureSetCreator);
 	if(!show_progress_dialog(this, "Creating Slice Textures", textureSetCreator)) return false;
 

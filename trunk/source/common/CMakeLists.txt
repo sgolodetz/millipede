@@ -66,16 +66,12 @@ SET(dicom_volumes_sources
 dicom/volumes/DICOMVolume.cpp
 dicom/volumes/DICOMVolumeChoice.cpp
 dicom/volumes/DICOMVolumeLoader.cpp
-dicom/volumes/VolumeTextureSet.cpp
 )
 
 SET(dicom_volumes_headers
 dicom/volumes/DICOMVolume.h
 dicom/volumes/DICOMVolumeChoice.h
 dicom/volumes/DICOMVolumeLoader.h
-dicom/volumes/SliceOrientation.h
-dicom/volumes/VolumeTextureSet.h
-dicom/volumes/VolumeTextureSetCreator.h
 )
 
 ##
@@ -191,6 +187,17 @@ segmentation/watershed/MeijsterRoerdinkWatershed.h
 )
 
 ##
+SET(slices_sources
+slices/SliceTextureSet.cpp
+)
+
+SET(slices_headers
+slices/SliceOrientation.h
+slices/SliceTextureSet.h
+slices/SliceTextureSetCreator.h
+)
+
+##
 SET(textures_sources
 textures/Greyscale8ImageTexture.cpp
 textures/Texture.cpp
@@ -223,6 +230,7 @@ ${io_util_sources}
 ${jobs_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
+${slices_sources}
 ${textures_sources}
 )
 
@@ -242,6 +250,7 @@ ${partitionforests_images_headers}
 ${ogl_headers}
 ${segmentation_waterfall_headers}
 ${segmentation_watershed_headers}
+${slices_headers}
 ${textures_headers}
 ${util_headers}
 )
@@ -311,6 +320,10 @@ SOURCE_GROUP(segmentation\\waterfall\\.h FILES ${segmentation_waterfall_headers}
 
 ##
 SOURCE_GROUP(segmentation\\watershed\\.h FILES ${segmentation_watershed_headers})
+
+##
+SOURCE_GROUP(slices\\.cpp FILES ${slices_sources})
+SOURCE_GROUP(slices\\.h FILES ${slices_headers})
 
 ##
 SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})

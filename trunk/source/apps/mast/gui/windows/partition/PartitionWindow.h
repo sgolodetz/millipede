@@ -16,7 +16,7 @@ using boost::shared_ptr;
 #include <wx/slider.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
-#include <common/dicom/volumes/SliceOrientation.h>
+#include <common/slices/SliceOrientation.h>
 #include <mast/models/PartitionModel.h>
 
 namespace mp {
@@ -24,8 +24,8 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 class PartitionCanvas;
+typedef shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
 class StratumCanvas;
-typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
 class PartitionWindow : public wxFrame, public PartitionModel::Listener
 {
