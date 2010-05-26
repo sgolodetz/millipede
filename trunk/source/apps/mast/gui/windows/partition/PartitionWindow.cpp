@@ -42,7 +42,8 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_model(new PartitionModel(volume, ViewLocation(0, 0, 0, 0), ORIENT_XY)), m_volumeChoice(volumeChoice)
+	m_model(new PartitionModel(volume, ViewLocation((volumeChoice.minX + volumeChoice.maxX)/2, (volumeChoice.minY + volumeChoice.maxY)/2, (volumeChoice.minZ + volumeChoice.maxZ)/2, 0), ORIENT_XY)),
+	m_volumeChoice(volumeChoice)
 {
 	m_model->add_listener(this);
 
@@ -136,17 +137,17 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX + m_model->view_location().x, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
 			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY + m_model->view_location().y, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_model->view_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);
@@ -214,25 +215,25 @@ void PartitionWindow::OnButtonViewYZ(wxCommandEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnSliderXTrack(wxScrollEvent&)
+void PartitionWindow::OnSliderX(wxScrollEvent&)
 {
 	ViewLocation loc = m_model->view_location();
 	m_model->set_view_location(ViewLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
 }
 
-void PartitionWindow::OnSliderYTrack(wxScrollEvent&)
+void PartitionWindow::OnSliderY(wxScrollEvent&)
 {
 	ViewLocation loc = m_model->view_location();
 	m_model->set_view_location(ViewLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
 }
 
-void PartitionWindow::OnSliderZTrack(wxScrollEvent&)
+void PartitionWindow::OnSliderZ(wxScrollEvent&)
 {
 	ViewLocation loc = m_model->view_location();
 	m_model->set_view_location(ViewLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
 }
 
-void PartitionWindow::OnSliderLayerTrack(wxScrollEvent&)
+void PartitionWindow::OnSliderLayer(wxScrollEvent&)
 {
 	// TODO
 }
@@ -246,10 +247,10 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionWindow::OnButtonViewYZ)
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_X, PartitionWindow::OnSliderXTrack)
-	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_Y, PartitionWindow::OnSliderYTrack)
-	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_Z, PartitionWindow::OnSliderZTrack)
-	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_LAYER, PartitionWindow::OnSliderLayerTrack)
+	EVT_COMMAND_SCROLL(SLIDERID_X, PartitionWindow::OnSliderX)
+	EVT_COMMAND_SCROLL(SLIDERID_Y, PartitionWindow::OnSliderY)
+	EVT_COMMAND_SCROLL(SLIDERID_Z, PartitionWindow::OnSliderZ)
+	EVT_COMMAND_SCROLL(SLIDERID_LAYER, PartitionWindow::OnSliderLayer)
 END_EVENT_TABLE()
 
 }

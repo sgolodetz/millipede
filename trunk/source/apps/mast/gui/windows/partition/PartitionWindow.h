@@ -78,10 +78,10 @@ public:
 	void OnButtonViewYZ(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-	void OnSliderXTrack(wxScrollEvent&);
-	void OnSliderYTrack(wxScrollEvent&);
-	void OnSliderZTrack(wxScrollEvent&);
-	void OnSliderLayerTrack(wxScrollEvent&);
+	void OnSliderX(wxScrollEvent&);
+	void OnSliderY(wxScrollEvent&);
+	void OnSliderZ(wxScrollEvent&);
+	void OnSliderLayer(wxScrollEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
