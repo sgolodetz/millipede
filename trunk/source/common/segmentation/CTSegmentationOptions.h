@@ -21,12 +21,12 @@ struct CTSegmentationOptions
 	};
 
 	//#################### PUBLIC VARIABLES ####################
-	itk::Size<3> gridSize;
 	InputType inputType;
+	itk::Size<3> subvolumeSize;
 	int waterfallLayerLimit;
 
 	//#################### CONSTRUCTORS ####################
-	CTSegmentationOptions(const itk::Size<3>& gridSize_, InputType inputType_, int waterfallLayerLimit_);
+	CTSegmentationOptions(InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_);
 };
 
 }

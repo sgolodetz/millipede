@@ -28,9 +28,9 @@ private:
 	itk::Size<3> m_volumeSize;
 	boost::optional<CTSegmentationOptions> m_segmentationOptions;
 
-	wxSpinCtrl *m_gridSizes[3];
 	wxRadioBox *m_inputType;
 	wxRadioBox *m_segmentationType;
+	wxSpinCtrl *m_subvolumeSizes[3];
 	wxSpinCtrl *m_waterfallLayerLimit;
 
 	//#################### CONSTRUCTORS ####################

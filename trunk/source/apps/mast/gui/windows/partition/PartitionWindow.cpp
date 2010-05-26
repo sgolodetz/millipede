@@ -200,7 +200,10 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size());
 	dialog.ShowModal();
 
-	// TODO
+	if(dialog.segmentation_options())
+	{
+		// TODO
+	}
 }
 
 void PartitionWindow::OnButtonViewXY(wxCommandEvent&)

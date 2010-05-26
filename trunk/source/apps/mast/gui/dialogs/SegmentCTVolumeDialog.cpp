@@ -64,11 +64,11 @@ const boost::optional<CTSegmentationOptions>& SegmentCTVolumeDialog::segmentatio
 //#################### PRIVATE METHODS ####################
 void SegmentCTVolumeDialog::construct_segmentation_options()
 {
-	itk::Size<3> gridSize;
-	for(int i=0; i<3; ++i) gridSize[i] = m_gridSizes[i]->GetValue();
 	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
+	itk::Size<3> subvolumeSize;
+	for(int i=0; i<3; ++i) subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
 	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
-	m_segmentationOptions = CTSegmentationOptions(gridSize, inputType, waterfallLayerLimit);
+	m_segmentationOptions = CTSegmentationOptions(inputType, subvolumeSize, waterfallLayerLimit);
 }
 
 wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)
@@ -84,29 +84,29 @@ wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)
 	strings[SEGTYPE_XZ] = wxT("Segment as &Coronal (X-Z) Slices");
 	strings[SEGTYPE_YZ] = wxT("Segment as &Sagittal (Y-Z) Slices");
 	strings[SEGTYPE_3D] = wxT("Segment as 3D &Volume");
-	strings[SEGTYPE_CUSTOM] = wxT("Segment using Customised &Grid Size");
+	strings[SEGTYPE_CUSTOM] = wxT("Segment using C&ustomised Sub-Volume Size");
 	m_segmentationType = new wxRadioBox(panel, RADIOBOXID_SEGMENTATIONTYPE, wxT("Segmentation Type"), wxDefaultPosition, wxDefaultSize, SEGTYPE_COUNT, strings, 1, wxRA_SPECIFY_COLS);
 	sizer->Add(m_segmentationType, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->AddSpacer(10);
 
-	// Set up the grid size options.
-	wxStaticBoxSizer *gridSizeOptions = new wxStaticBoxSizer(wxVERTICAL, panel, wxT("Grid Size Options"));
-	sizer->Add(gridSizeOptions);
+	// Set up the subvolume size options.
+	wxStaticBoxSizer *subvolumeSizeOptions = new wxStaticBoxSizer(wxVERTICAL, panel, wxT("Sub-Volume Size"));
+	sizer->Add(subvolumeSizeOptions);
 
-	wxPanel *gridPanel = new wxPanel(panel);
-	gridSizeOptions->Add(gridPanel);
-	wxGridSizer *gridSizer = new wxGridSizer(0, 2, 0, 0);
-	gridPanel->SetSizer(gridSizer);
+	wxPanel *subvolumePanel = new wxPanel(panel);
+	subvolumeSizeOptions->Add(subvolumePanel);
+	wxGridSizer *subvolumeSizer = new wxGridSizer(0, 2, 0, 0);
+	subvolumePanel->SetSizer(subvolumeSizer);
 
-	wxString captions[] = {"X Grid Size:", "Y Grid Size:", "Z Grid Size:"};
+	wxString captions[] = {"X Size:", "Y Size:", "Z Size:"};
 	for(int i=0; i<3; ++i)
 	{
-		gridSizer->Add(new wxStaticText(gridPanel, wxID_ANY, captions[i]));
+		subvolumeSizer->Add(new wxStaticText(subvolumePanel, wxID_ANY, captions[i]));
 		int initial = i != 2 ? m_volumeSize[i] : 1;
 		wxString initialValue = string_to_wxString(boost::lexical_cast<std::string>(initial));
-		m_gridSizes[i] = new wxSpinCtrl(gridPanel, SPINID_GRIDSIZE, initialValue, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, m_volumeSize[i], initial);
-		gridSizer->Add(m_gridSizes[i]);
+		m_subvolumeSizes[i] = new wxSpinCtrl(subvolumePanel, SPINID_GRIDSIZE, initialValue, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, m_volumeSize[i], initial);
+		subvolumeSizer->Add(m_subvolumeSizes[i]);
 	}
 
 	sizer->Fit(panel);
@@ -157,16 +157,16 @@ void SegmentCTVolumeDialog::OnRadioBoxSegmentationType(wxCommandEvent&)
 {
 	if(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM) return;
 
-	itk::Size<3> gridSize = m_volumeSize;
+	itk::Size<3> subvolumeSize = m_volumeSize;
 	switch(m_segmentationType->GetSelection())
 	{
-		case SEGTYPE_XY:	gridSize[2] = 1; break;
-		case SEGTYPE_XZ:	gridSize[1] = 1; break;
-		case SEGTYPE_YZ:	gridSize[0] = 1; break;
+		case SEGTYPE_XY:	subvolumeSize[2] = 1; break;
+		case SEGTYPE_XZ:	subvolumeSize[1] = 1; break;
+		case SEGTYPE_YZ:	subvolumeSize[0] = 1; break;
 		default:			break;
 	}
 
-	for(int i=0; i<3; ++i) m_gridSizes[i]->SetValue(gridSize[i]);
+	for(int i=0; i<3; ++i) m_subvolumeSizes[i]->SetValue(subvolumeSize[i]);
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
