@@ -1,9 +1,9 @@
 /***
- * millipede: SegmentVolumeDialog.cpp
+ * millipede: SegmentCTVolumeDialog.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SegmentVolumeDialog.h"
+#include "SegmentCTVolumeDialog.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -40,10 +40,10 @@ enum SegmentationType
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-SegmentVolumeDialog::SegmentVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize)
+SegmentCTVolumeDialog::SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize)
 :	m_volumeSize(volumeSize)
 {
-	Create(parent, wxID_ANY, wxT("Segment Volume"), wxDefaultPosition, wxDefaultSize);
+	Create(parent, wxID_ANY, wxT("Segment CT Volume"), wxDefaultPosition, wxDefaultSize);
 
 	wxBookCtrlBase *notebook = GetBookCtrl();
 	wxPanel *basicPage = create_basic_page(notebook);
@@ -56,13 +56,13 @@ SegmentVolumeDialog::SegmentVolumeDialog(wxWindow *parent, const itk::Size<3>& v
 }
 
 //#################### PUBLIC METHODS ####################
-const boost::optional<CTSegmentationOptions>& SegmentVolumeDialog::segmentation_options() const
+const boost::optional<CTSegmentationOptions>& SegmentCTVolumeDialog::segmentation_options() const
 {
 	return m_segmentationOptions;
 }
 
 //#################### PRIVATE METHODS ####################
-void SegmentVolumeDialog::construct_segmentation_options()
+void SegmentCTVolumeDialog::construct_segmentation_options()
 {
 	itk::Size<3> gridSize;
 	for(int i=0; i<3; ++i) gridSize[i] = m_gridSizes[i]->GetValue();
@@ -71,7 +71,7 @@ void SegmentVolumeDialog::construct_segmentation_options()
 	m_segmentationOptions = CTSegmentationOptions(gridSize, inputType, waterfallLayerLimit);
 }
 
-wxPanel *SegmentVolumeDialog::create_basic_page(wxWindow *parent)
+wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)
 {
 	wxPanel *panel = new wxPanel(parent);
 
@@ -113,7 +113,7 @@ wxPanel *SegmentVolumeDialog::create_basic_page(wxWindow *parent)
 	return panel;
 }
 
-wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
+wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
 {
 	wxPanel *panel = new wxPanel(parent);
 
@@ -146,14 +146,14 @@ wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-void SegmentVolumeDialog::OnButtonOK(wxCommandEvent&)
+void SegmentCTVolumeDialog::OnButtonOK(wxCommandEvent&)
 {
 	construct_segmentation_options();
 	Close();
 }
 
 //~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
-void SegmentVolumeDialog::OnRadioBoxSegmentationType(wxCommandEvent&)
+void SegmentCTVolumeDialog::OnRadioBoxSegmentationType(wxCommandEvent&)
 {
 	if(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM) return;
 
@@ -170,22 +170,22 @@ void SegmentVolumeDialog::OnRadioBoxSegmentationType(wxCommandEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-void SegmentVolumeDialog::OnUpdateGridSizeControl(wxUpdateUIEvent& e)
+void SegmentCTVolumeDialog::OnUpdateGridSizeControl(wxUpdateUIEvent& e)
 {
 	// Enable the grid size controls iff custom segmentation is selected.
 	e.Enable(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM);
 }
 
 //#################### EVENT TABLE ####################
-BEGIN_EVENT_TABLE(SegmentVolumeDialog, wxPropertySheetDialog)
+BEGIN_EVENT_TABLE(SegmentCTVolumeDialog, wxPropertySheetDialog)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	EVT_BUTTON(wxID_OK, SegmentVolumeDialog::OnButtonOK)
+	EVT_BUTTON(wxID_OK, SegmentCTVolumeDialog::OnButtonOK)
 
 	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
-	EVT_RADIOBOX(RADIOBOXID_SEGMENTATIONTYPE, SegmentVolumeDialog::OnRadioBoxSegmentationType)
+	EVT_RADIOBOX(RADIOBOXID_SEGMENTATIONTYPE, SegmentCTVolumeDialog::OnRadioBoxSegmentationType)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-	EVT_UPDATE_UI(SPINID_GRIDSIZE, SegmentVolumeDialog::OnUpdateGridSizeControl)
+	EVT_UPDATE_UI(SPINID_GRIDSIZE, SegmentCTVolumeDialog::OnUpdateGridSizeControl)
 END_EVENT_TABLE()
 
 }

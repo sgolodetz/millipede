@@ -11,7 +11,7 @@
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/slices/SliceTextureSetCreator.h>
-#include <mast/gui/dialogs/SegmentVolumeDialog.h>
+#include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
 #include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
 #include "PartitionCanvas.h"
@@ -24,7 +24,7 @@ namespace {
 enum
 {
 	ID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-	BUTTONID_SEGMENT_VOLUME,
+	BUTTONID_SEGMENT_CT_VOLUME,
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
@@ -126,7 +126,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
 
 	// Top right
-	wxButton *segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume..."));
+	wxButton *segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_CT_VOLUME, wxT("Segment CT Volume..."));
 	sizer->Add(segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	// Middle left
@@ -194,10 +194,10 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 
 //#################### EVENT HANDLERS ####################
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnButtonSegmentVolume(wxCommandEvent&)
+void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 {
-	// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentVolumeDialog dialog(this, m_model->dicom_volume()->size());
+	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
+	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size());
 	dialog.ShowModal();
 
 	// TODO
@@ -245,7 +245,7 @@ void PartitionWindow::OnSliderLayer(wxScrollEvent&)
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	EVT_BUTTON(BUTTONID_SEGMENT_VOLUME, PartitionWindow::OnButtonSegmentVolume)
+	EVT_BUTTON(BUTTONID_SEGMENT_CT_VOLUME, PartitionWindow::OnButtonSegmentCTVolume)
 	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionWindow::OnButtonViewXY)
 	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionWindow::OnButtonViewXZ)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionWindow::OnButtonViewYZ)

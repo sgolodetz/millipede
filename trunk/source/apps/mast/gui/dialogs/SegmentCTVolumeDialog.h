@@ -1,10 +1,10 @@
 /***
- * millipede: SegmentVolumeDialog.h
+ * millipede: SegmentCTVolumeDialog.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_SEGMENTVOLUMEDIALOG
-#define H_MILLIPEDE_SEGMENTVOLUMEDIALOG
+#ifndef H_MILLIPEDE_SEGMENTCTVOLUMEDIALOG
+#define H_MILLIPEDE_SEGMENTCTVOLUMEDIALOG
 
 #include <boost/optional.hpp>
 
@@ -21,7 +21,7 @@ class wxSpinCtrl;
 
 namespace mp {
 
-class SegmentVolumeDialog : public wxPropertySheetDialog
+class SegmentCTVolumeDialog : public wxPropertySheetDialog
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -35,7 +35,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit SegmentVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize);
+	explicit SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize);
 
 	//#################### PUBLIC METHODS ####################
 public:
