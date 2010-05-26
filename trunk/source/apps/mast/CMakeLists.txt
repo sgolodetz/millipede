@@ -30,10 +30,12 @@ gui/base/Canvas.h
 
 ##
 SET(gui_dialogs_sources
+gui/dialogs/SegmentVolumeDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
 )
 
 SET(gui_dialogs_headers
+gui/dialogs/SegmentVolumeDialog.h
 gui/dialogs/VolumeChooserDialog.h
 )
 

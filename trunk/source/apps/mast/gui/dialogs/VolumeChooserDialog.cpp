@@ -65,8 +65,8 @@ VolumeChooserDialog::VolumeChooserDialog(const std::string& dicomdirFilename)
 	m_dicomdir = DICOMDIRFile::load(dicomdirFilename);
 
 	Create(NULL, wxID_ANY, wxT("Volume Chooser"), wxDefaultPosition, wxDefaultSize);
-	wxBookCtrlBase *notebook = GetBookCtrl();
 
+	wxBookCtrlBase *notebook = GetBookCtrl();
 	wxPanel *basicPage = create_basic_page(notebook);
 	wxPanel *advancedPage = create_advanced_page(notebook);
 	notebook->AddPage(basicPage, wxT("Basic"), true);
@@ -342,7 +342,7 @@ void VolumeChooserDialog::OnUpdateWindowControl(wxUpdateUIEvent& e)
 }
 
 //#################### EVENT TABLE ####################
-BEGIN_EVENT_TABLE(VolumeChooserDialog, wxDialog)
+BEGIN_EVENT_TABLE(VolumeChooserDialog, wxPropertySheetDialog)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	EVT_BUTTON(BUTTONID_ABOUTWINDOWS, VolumeChooserDialog::OnButtonAboutWindows)
 	EVT_BUTTON(BUTTONID_SAVE, VolumeChooserDialog::OnButtonSave)
