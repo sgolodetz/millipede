@@ -181,6 +181,15 @@ ogl/WrappedGL.h
 )
 
 ##
+SET(segmentation_sources
+segmentation/CTSegmentationOptions.cpp
+)
+
+SET(segmentation_headers
+segmentation/CTSegmentationOptions.h
+)
+
+##
 SET(segmentation_waterfall_headers
 segmentation/waterfall/NichollsWaterfallPass.h
 segmentation/waterfall/WaterfallPass.h
@@ -230,6 +239,7 @@ ${io_util_sources}
 ${jobs_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
+${segmentation_sources}
 ${slices_sources}
 ${textures_sources}
 )
@@ -249,6 +259,7 @@ ${listeners_headers}
 ${partitionforests_base_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
+${segmentation_headers}
 ${segmentation_waterfall_headers}
 ${segmentation_watershed_headers}
 ${slices_headers}
@@ -317,6 +328,10 @@ SOURCE_GROUP(partitionforests\\images\\.h FILES ${partitionforests_images_header
 
 ##
 SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
+
+##
+SOURCE_GROUP(segmentation\\.cpp FILES ${segmentation_sources})
+SOURCE_GROUP(segmentation\\.h FILES ${segmentation_headers})
 
 ##
 SOURCE_GROUP(segmentation\\waterfall\\.h FILES ${segmentation_waterfall_headers})

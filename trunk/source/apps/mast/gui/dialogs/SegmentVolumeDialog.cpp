@@ -55,7 +55,22 @@ SegmentVolumeDialog::SegmentVolumeDialog(wxWindow *parent, const itk::Size<3>& v
 	LayoutDialog();
 }
 
+//#################### PUBLIC METHODS ####################
+const boost::optional<CTSegmentationOptions>& SegmentVolumeDialog::segmentation_options() const
+{
+	return m_segmentationOptions;
+}
+
 //#################### PRIVATE METHODS ####################
+void SegmentVolumeDialog::construct_segmentation_options()
+{
+	itk::Size<3> gridSize;
+	for(int i=0; i<3; ++i) gridSize[i] = m_gridSizes[i]->GetValue();
+	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
+	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
+	m_segmentationOptions = CTSegmentationOptions(gridSize, inputType, waterfallLayerLimit);
+}
+
 wxPanel *SegmentVolumeDialog::create_basic_page(wxWindow *parent)
 {
 	wxPanel *panel = new wxPanel(parent);
@@ -76,7 +91,7 @@ wxPanel *SegmentVolumeDialog::create_basic_page(wxWindow *parent)
 	sizer->AddSpacer(10);
 
 	// Set up the grid size options.
-	wxStaticBoxSizer *gridSizeOptions = new wxStaticBoxSizer(wxVERTICAL, panel, wxT("Partition Forest Grid Size Options"));
+	wxStaticBoxSizer *gridSizeOptions = new wxStaticBoxSizer(wxVERTICAL, panel, wxT("Grid Size Options"));
 	sizer->Add(gridSizeOptions);
 
 	wxPanel *gridPanel = new wxPanel(panel);
@@ -106,11 +121,11 @@ wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
 	panel->SetSizer(sizer);
 
 	// Set up the radio box to choose between Hounsfield and windowed input.
-	wxArrayString strings;
-	strings.Add(wxT("Use &Windowed Input"));
-	strings.Add(wxT("Use &Hounsfield Input"));
-	wxRadioBox *inputType = new wxRadioBox(panel, wxID_ANY, wxT("Input Type"), wxDefaultPosition, wxDefaultSize, strings, 1, wxRA_SPECIFY_COLS);
-	sizer->Add(inputType);
+	wxString strings[CTSegmentationOptions::INPUTTYPE_COUNT];
+	strings[CTSegmentationOptions::INPUTTYPE_WINDOWED] = wxT("Use &Windowed Input");
+	strings[CTSegmentationOptions::INPUTTYPE_HOUNSFIELD] = wxT("Use &Hounsfield Input");
+	m_inputType = new wxRadioBox(panel, wxID_ANY, wxT("Input Type"), wxDefaultPosition, wxDefaultSize, CTSegmentationOptions::INPUTTYPE_COUNT, strings, 1, wxRA_SPECIFY_COLS);
+	sizer->Add(m_inputType);
 
 	sizer->AddSpacer(10);
 
@@ -121,8 +136,8 @@ wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
 	limitPanel->SetSizer(limitSizer);
 
 	limitSizer->Add(new wxStaticText(limitPanel, wxID_ANY, wxT("Waterfall Layer Limit:")));
-	wxSpinCtrl *spin = new wxSpinCtrl(limitPanel, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 4);
-	limitSizer->Add(spin);
+	m_waterfallLayerLimit = new wxSpinCtrl(limitPanel, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 4);
+	limitSizer->Add(m_waterfallLayerLimit);
 
 	sizer->Fit(panel);
 	return panel;
@@ -130,21 +145,28 @@ wxPanel *SegmentVolumeDialog::create_advanced_page(wxWindow *parent)
 
 //#################### EVENT HANDLERS ####################
 
+//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+void SegmentVolumeDialog::OnButtonOK(wxCommandEvent&)
+{
+	construct_segmentation_options();
+	Close();
+}
+
 //~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
 void SegmentVolumeDialog::OnRadioBoxSegmentationType(wxCommandEvent&)
 {
 	if(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM) return;
 
-	itk::Size<3> gridSizes = m_volumeSize;
+	itk::Size<3> gridSize = m_volumeSize;
 	switch(m_segmentationType->GetSelection())
 	{
-		case SEGTYPE_XY:	gridSizes[2] = 1; break;
-		case SEGTYPE_XZ:	gridSizes[1] = 1; break;
-		case SEGTYPE_YZ:	gridSizes[0] = 1; break;
+		case SEGTYPE_XY:	gridSize[2] = 1; break;
+		case SEGTYPE_XZ:	gridSize[1] = 1; break;
+		case SEGTYPE_YZ:	gridSize[0] = 1; break;
 		default:			break;
 	}
 
-	for(int i=0; i<3; ++i) m_gridSizes[i]->SetValue(gridSizes[i]);
+	for(int i=0; i<3; ++i) m_gridSizes[i]->SetValue(gridSize[i]);
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
@@ -156,6 +178,9 @@ void SegmentVolumeDialog::OnUpdateGridSizeControl(wxUpdateUIEvent& e)
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(SegmentVolumeDialog, wxPropertySheetDialog)
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(wxID_OK, SegmentVolumeDialog::OnButtonOK)
+
 	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
 	EVT_RADIOBOX(RADIOBOXID_SEGMENTATIONTYPE, SegmentVolumeDialog::OnRadioBoxSegmentationType)
 
