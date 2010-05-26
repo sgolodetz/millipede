@@ -9,7 +9,7 @@
 #include <boost/bind.hpp>
 
 #include <common/adts/RootedMST.h>
-#include <common/util/CompositeListenerBase.h>
+#include <common/listeners/CompositeListenerBase.h>
 
 namespace mp {
 

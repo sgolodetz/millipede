@@ -19,7 +19,7 @@
 #include <common/commands/CommandSequenceGuard.h>
 #include <common/exceptions/Exception.h>
 #include <common/io/util/OSSWrapper.h>
-#include <common/util/CompositeListenerBase.h>
+#include <common/listeners/CompositeListenerBase.h>
 #include "IForestLayer.h"
 #include "PFNodeID.h"
 

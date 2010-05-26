@@ -133,6 +133,11 @@ jobs/SimpleJob.h
 )
 
 ##
+SET(listeners_headers
+listeners/CompositeListenerBase.h
+)
+
+##
 SET(partitionforests_base_sources
 partitionforests/base/PFNodeID.cpp
 )
@@ -210,11 +215,6 @@ textures/Texture.h
 textures/TextureFactory.h
 )
 
-##
-SET(util_headers
-util/CompositeListenerBase.h
-)
-
 #################################################################
 # Collect the project files into sources, headers and templates #
 #################################################################
@@ -245,6 +245,7 @@ ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
 ${jobs_headers}
+${listeners_headers}
 ${partitionforests_base_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
@@ -252,7 +253,6 @@ ${segmentation_waterfall_headers}
 ${segmentation_watershed_headers}
 ${slices_headers}
 ${textures_headers}
-${util_headers}
 )
 
 SET(templates
@@ -305,6 +305,9 @@ SOURCE_GROUP(jobs\\.cpp FILES ${jobs_sources})
 SOURCE_GROUP(jobs\\.h FILES ${jobs_headers})
 
 ##
+SOURCE_GROUP(listeners\\.h FILES ${listeners_headers})
+
+##
 SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
 SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
 
@@ -328,9 +331,6 @@ SOURCE_GROUP(slices\\.h FILES ${slices_headers})
 ##
 SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
-
-##
-SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ################################
 # Specify the libraries to use #
