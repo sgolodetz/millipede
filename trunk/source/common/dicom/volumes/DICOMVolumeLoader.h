@@ -12,7 +12,7 @@
 
 #include <itkImage.h>
 
-#include <common/io/util/VolumeChoice.h>
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/jobs/SimpleJob.h>
 
 namespace mp {
@@ -27,18 +27,18 @@ class DICOMVolumeLoader : public SimpleJob
 private:
 	DICOMDirectory_CPtr m_dicomdir;
 	DICOMVolume_Ptr m_volume;
-	VolumeChoice m_volumeChoice;
+	DICOMVolumeChoice m_volumeChoice;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice);
+	DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	void execute();
 	int length() const;
 	const DICOMVolume_Ptr& volume();
-	const VolumeChoice& volume_choice() const;
+	const DICOMVolumeChoice& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

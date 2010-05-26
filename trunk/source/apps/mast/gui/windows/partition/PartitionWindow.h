@@ -15,8 +15,8 @@ using boost::shared_ptr;
 #include <wx/listctrl.h>
 #include <wx/slider.h>
 
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/dicom/volumes/SliceOrientation.h>
-#include <common/io/util/VolumeChoice.h>
 #include <mast/models/PartitionModel.h>
 
 namespace mp {
@@ -40,7 +40,7 @@ private:
 	wxGLContext *m_context;
 	PartitionModel_Ptr m_model;
 	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
-	VolumeChoice m_volumeChoice;
+	DICOMVolumeChoice m_volumeChoice;
 
 	// Middle left
 	StratumCanvas *m_stratumCanvas;
@@ -55,7 +55,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context = NULL);
+	PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:

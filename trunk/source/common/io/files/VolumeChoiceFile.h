@@ -6,17 +6,17 @@
 #ifndef H_MILLIPEDE_VOLUMECHOICEFILE
 #define H_MILLIPEDE_VOLUMECHOICEFILE
 
-#include <common/io/util/VolumeChoice.h>
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 
 namespace mp {
 
 struct VolumeChoiceFile
 {
 	//#################### LOADING METHODS ####################
-	static VolumeChoice load(const std::string& filename);
+	static DICOMVolumeChoice load(const std::string& filename);
 
 	//#################### SAVING METHODS ####################
-	static void save(const std::string& filename, const VolumeChoice& volumeChoice);
+	static void save(const std::string& filename, const DICOMVolumeChoice& volumeChoice);
 };
 
 }

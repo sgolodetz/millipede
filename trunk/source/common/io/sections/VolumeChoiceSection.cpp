@@ -10,13 +10,14 @@
 using boost::bad_lexical_cast;
 using boost::lexical_cast;
 
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/io/util/FieldIO.h>
 #include <common/io/util/LineIO.h>
 
 namespace mp {
 
 //#################### LOADING METHODS ####################
-VolumeChoice VolumeChoiceSection::load(std::istream& is)
+DICOMVolumeChoice VolumeChoiceSection::load(std::istream& is)
 try
 {
 	LineIO::read_checked_line(is, "VolumeChoice");
@@ -63,7 +64,7 @@ try
 		else throw Exception("Unknown volume choice property: " + name);
 	}
 
-	return VolumeChoice(filePrefix, patientHandle, studyHandle, seriesHandle, minX, minY, minZ, maxX, maxY, maxZ, windowSettings);
+	return DICOMVolumeChoice(filePrefix, patientHandle, studyHandle, seriesHandle, minX, minY, minZ, maxX, maxY, maxZ, windowSettings);
 }
 catch(bad_lexical_cast&)
 {
@@ -71,7 +72,7 @@ catch(bad_lexical_cast&)
 }
 
 //#################### SAVING METHODS ####################
-void VolumeChoiceSection::save(std::ostream& os, const VolumeChoice& volumeChoice)
+void VolumeChoiceSection::save(std::ostream& os, const DICOMVolumeChoice& volumeChoice)
 {
 	os << "VolumeChoice\n";
 	os << "{\n";

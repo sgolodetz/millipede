@@ -23,7 +23,7 @@ using boost::lexical_cast;
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-DICOMVolumeLoader::DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice)
+DICOMVolumeLoader::DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice)
 :	m_dicomdir(dicomdir), m_volumeChoice(volumeChoice)
 {}
 
@@ -142,7 +142,7 @@ const DICOMVolume_Ptr& DICOMVolumeLoader::volume()
 	return m_volume;
 }
 
-const VolumeChoice& DICOMVolumeLoader::volume_choice() const
+const DICOMVolumeChoice& DICOMVolumeLoader::volume_choice() const
 {
 	return m_volumeChoice;
 }

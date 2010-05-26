@@ -18,7 +18,7 @@ using boost::shared_ptr;
 #include <wx/stattext.h>
 #include <wx/treectrl.h>
 
-#include <common/io/util/VolumeChoice.h>
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 
 namespace mp {
 
@@ -32,7 +32,7 @@ class VolumeChooserDialog : public wxPropertySheetDialog
 private:
 	DICOMDirectory_Ptr m_dicomdir;
 	std::string m_filePrefix;
-	boost::optional<VolumeChoice> m_volumeChoice;
+	boost::optional<DICOMVolumeChoice> m_volumeChoice;
 
 	wxTreeCtrl *m_tree;
 
@@ -51,7 +51,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	DICOMDirectory_CPtr dicomdir() const;
-	const boost::optional<VolumeChoice>& volume_choice() const;
+	const boost::optional<DICOMVolumeChoice>& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

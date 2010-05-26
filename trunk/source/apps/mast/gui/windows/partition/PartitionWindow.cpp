@@ -39,14 +39,14 @@ enum
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
+PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
+								 wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
-	m_model(new PartitionModel(volume,
-							   ViewLocation((volumeChoice.maxX - volumeChoice.minX)/2,
-											(volumeChoice.maxY - volumeChoice.minY)/2,
-											(volumeChoice.maxZ - volumeChoice.minZ)/2,
-											0),
-							   ORIENT_XY)),
+	m_model(new PartitionModel(
+		volume,
+		ViewLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
+		ORIENT_XY)
+	),
 	m_volumeChoice(volumeChoice)
 {
 	m_model->add_listener(this);

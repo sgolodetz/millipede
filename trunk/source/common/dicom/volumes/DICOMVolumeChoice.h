@@ -1,10 +1,10 @@
 /***
- * millipede: VolumeChoice.h
+ * millipede: DICOMVolumeChoice.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VOLUMECHOICE
-#define H_MILLIPEDE_VOLUMECHOICE
+#ifndef H_MILLIPEDE_DICOMVOLUMECHOICE
+#define H_MILLIPEDE_DICOMVOLUMECHOICE
 
 #include <string>
 
@@ -12,7 +12,7 @@
 
 namespace mp {
 
-struct VolumeChoice
+struct DICOMVolumeChoice
 {
 	//#################### PUBLIC VARIABLES ####################
 	std::string filePrefix, patientKey, studyKey, seriesKey;
@@ -20,7 +20,7 @@ struct VolumeChoice
 	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-	VolumeChoice(const std::string& filePrefix_, const std::string& patientKey_, const std::string& studyKey_, const std::string& seriesKey_, int minX_, int minY_, int minZ_, int maxX_, int maxY_, int maxZ_, const WindowSettings& windowSettings_);
+	DICOMVolumeChoice(const std::string& filePrefix_, const std::string& patientKey_, const std::string& studyKey_, const std::string& seriesKey_, int minX_, int minY_, int minZ_, int maxX_, int maxY_, int maxZ_, const WindowSettings& windowSettings_);
 
 	//#################### PUBLIC METHODS ####################
 	std::string description() const;

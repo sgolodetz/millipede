@@ -64,12 +64,14 @@ dicom/util/WindowSettings.h
 ##
 SET(dicom_volumes_sources
 dicom/volumes/DICOMVolume.cpp
+dicom/volumes/DICOMVolumeChoice.cpp
 dicom/volumes/DICOMVolumeLoader.cpp
 dicom/volumes/VolumeTextureSet.cpp
 )
 
 SET(dicom_volumes_headers
 dicom/volumes/DICOMVolume.h
+dicom/volumes/DICOMVolumeChoice.h
 dicom/volumes/DICOMVolumeLoader.h
 dicom/volumes/SliceOrientation.h
 dicom/volumes/VolumeTextureSet.h
@@ -107,14 +109,12 @@ SET(io_util_sources
 io/util/FieldIO.cpp
 io/util/LineIO.cpp
 io/util/OSSWrapper.cpp
-io/util/VolumeChoice.cpp
 )
 
 SET(io_util_headers
 io/util/FieldIO.h
 io/util/LineIO.h
 io/util/OSSWrapper.h
-io/util/VolumeChoice.h
 )
 
 SET(io_util_templates

@@ -86,7 +86,7 @@ DICOMDirectory_CPtr VolumeChooserDialog::dicomdir() const
 	return m_dicomdir;
 }
 
-const boost::optional<VolumeChoice>& VolumeChooserDialog::volume_choice() const
+const boost::optional<DICOMVolumeChoice>& VolumeChooserDialog::volume_choice() const
 {
 	return m_volumeChoice;
 }
@@ -123,7 +123,7 @@ bool VolumeChooserDialog::construct_volume_choice()
 		}
 	}
 
-	m_volumeChoice.reset(VolumeChoice(m_filePrefix, patientKey, studyKey, seriesKey, minX, minY, minZ, maxX, maxY, maxZ, windowSettings));
+	m_volumeChoice.reset(DICOMVolumeChoice(m_filePrefix, patientKey, studyKey, seriesKey, minX, minY, minZ, maxX, maxY, maxZ, windowSettings));
 
 	return true;
 }
