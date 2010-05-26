@@ -1,10 +1,10 @@
 /***
- * millipede: VolumeLoader.h
+ * millipede: DICOMVolumeLoader.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VOLUMELOADER
-#define H_MILLIPEDE_VOLUMELOADER
+#ifndef H_MILLIPEDE_DICOMVOLUMELOADER
+#define H_MILLIPEDE_DICOMVOLUMELOADER
 
 #include <string>
 
@@ -21,7 +21,7 @@ namespace mp {
 typedef boost::shared_ptr<const class DICOMDirectory> DICOMDirectory_CPtr;
 typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 
-class VolumeLoader : public SimpleJob
+class DICOMVolumeLoader : public SimpleJob
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -31,7 +31,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	VolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice);
+	DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -46,7 +46,7 @@ private:
 };
 
 //#################### TYPEDEFS ####################
-typedef boost::shared_ptr<VolumeLoader> VolumeLoader_Ptr;
+typedef boost::shared_ptr<DICOMVolumeLoader> DICOMVolumeLoader_Ptr;
 
 }
 

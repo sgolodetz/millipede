@@ -64,11 +64,13 @@ dicom/util/WindowSettings.h
 ##
 SET(dicom_volumes_sources
 dicom/volumes/DICOMVolume.cpp
+dicom/volumes/DICOMVolumeLoader.cpp
 dicom/volumes/VolumeTextureSet.cpp
 )
 
 SET(dicom_volumes_headers
 dicom/volumes/DICOMVolume.h
+dicom/volumes/DICOMVolumeLoader.h
 dicom/volumes/SliceOrientation.h
 dicom/volumes/VolumeTextureSet.h
 dicom/volumes/VolumeTextureSetCreator.h
@@ -84,13 +86,11 @@ exceptions/FileNotFoundException.h
 SET(io_files_sources
 io/files/DICOMDIRFile.cpp
 io/files/VolumeChoiceFile.cpp
-io/files/VolumeLoader.cpp
 )
 
 SET(io_files_headers
 io/files/DICOMDIRFile.h
 io/files/VolumeChoiceFile.h
-io/files/VolumeLoader.h
 )
 
 ##

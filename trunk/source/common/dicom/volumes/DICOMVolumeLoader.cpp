@@ -1,9 +1,9 @@
 /***
- * millipede: VolumeLoader.cpp
+ * millipede: DICOMVolumeLoader.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "VolumeLoader.h"
+#include "DICOMVolumeLoader.h"
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
@@ -23,12 +23,12 @@ using boost::lexical_cast;
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-VolumeLoader::VolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice)
+DICOMVolumeLoader::DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const VolumeChoice& volumeChoice)
 :	m_dicomdir(dicomdir), m_volumeChoice(volumeChoice)
 {}
 
 //#################### PUBLIC METHODS ####################
-void VolumeLoader::execute()
+void DICOMVolumeLoader::execute()
 try
 {
 	typedef itk::GDCMImageIO ImageIO;
@@ -132,23 +132,23 @@ catch(std::exception& e)
 	set_status(e.what());
 }
 
-int VolumeLoader::length() const
+int DICOMVolumeLoader::length() const
 {
 	return m_volumeChoice.maxZ - m_volumeChoice.minZ + 1;
 }
 
-const DICOMVolume_Ptr& VolumeLoader::volume()
+const DICOMVolume_Ptr& DICOMVolumeLoader::volume()
 {
 	return m_volume;
 }
 
-const VolumeChoice& VolumeLoader::volume_choice() const
+const VolumeChoice& DICOMVolumeLoader::volume_choice() const
 {
 	return m_volumeChoice;
 }
 
 //#################### PRIVATE METHODS ####################
-std::string VolumeLoader::read_header_field(const itk::Image<int,2>::Pointer& image, const std::string& key)
+std::string DICOMVolumeLoader::read_header_field(const itk::Image<int,2>::Pointer& image, const std::string& key)
 {
 	const itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
 
