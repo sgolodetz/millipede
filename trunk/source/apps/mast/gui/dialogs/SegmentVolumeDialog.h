@@ -10,6 +10,11 @@
 
 #include <wx/propdlg.h>
 
+//#################### FORWARD DECLARATIONS ####################
+class wxPanel;
+class wxRadioBox;
+class wxSpinCtrl;
+
 namespace mp {
 
 class SegmentVolumeDialog : public wxPropertySheetDialog

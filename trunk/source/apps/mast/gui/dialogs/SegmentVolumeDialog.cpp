@@ -8,6 +8,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <wx/bookctrl.h>
+#include <wx/panel.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
 #include <wx/spinctrl.h>
