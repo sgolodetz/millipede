@@ -19,15 +19,15 @@ namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<const class DICOMDirectory> DICOMDirectory_CPtr;
-typedef boost::shared_ptr<class Volume> Volume_Ptr;
+typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 
 class VolumeLoader : public SimpleJob
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
 	DICOMDirectory_CPtr m_dicomdir;
+	DICOMVolume_Ptr m_volume;
 	VolumeChoice m_volumeChoice;
-	Volume_Ptr m_volume;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -37,7 +37,7 @@ public:
 public:
 	void execute();
 	int length() const;
-	const Volume_Ptr& volume();
+	const DICOMVolume_Ptr& volume();
 	const VolumeChoice& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################

@@ -1,10 +1,10 @@
 /***
- * millipede: Volume.h
+ * millipede: DICOMVolume.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VOLUME
-#define H_MILLIPEDE_VOLUME
+#ifndef H_MILLIPEDE_DICOMVOLUME
+#define H_MILLIPEDE_DICOMVOLUME
 
 #include <itkImage.h>
 
@@ -13,7 +13,7 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 class WindowSettings;
 
-class Volume
+class DICOMVolume
 {
 	//#################### TYPEDEFS ####################
 public:
@@ -32,7 +32,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit Volume(const BaseImagePointer& baseImage);
+	explicit DICOMVolume(const BaseImagePointer& baseImage);
 
 	//#################### PUBLIC METHODS ####################
 public:

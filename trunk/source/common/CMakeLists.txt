@@ -63,15 +63,15 @@ dicom/util/WindowSettings.h
 
 ##
 SET(dicom_volumes_sources
-dicom/volumes/Volume.cpp
+dicom/volumes/DICOMVolume.cpp
 dicom/volumes/VolumeTextureSet.cpp
 )
 
 SET(dicom_volumes_headers
+dicom/volumes/DICOMVolume.h
 dicom/volumes/SliceOrientation.h
-dicom/volumes/Volume.h
-dicom/volumes/VolumeTextureCreator.h
 dicom/volumes/VolumeTextureSet.h
+dicom/volumes/VolumeTextureSetCreator.h
 )
 
 ##

@@ -16,8 +16,8 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class Volume> Volume_Ptr;
-typedef shared_ptr<const class Volume> Volume_CPtr;
+typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
+typedef shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 typedef shared_ptr<const class VolumeTextureSet> VolumeTextureSet_CPtr;
 
@@ -42,29 +42,29 @@ public:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	DICOMVolume_Ptr m_dicomVolume;
+	VolumeTextureSet_Ptr m_dicomTextureSet;
 	SliceOrientation m_sliceOrientation;
 	ViewLocation m_viewLocation;			// view location in terms of the volume only (not based on actual slice numbers)
-	Volume_Ptr m_volume;
-	VolumeTextureSet_Ptr m_textureSet;
 
 	std::vector<Listener*> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionModel(const Volume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori);
+	PartitionModel(const DICOMVolume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	void add_listener(Listener *listener);
+	const VolumeTextureSet_Ptr& dicom_texture_set();
+	VolumeTextureSet_CPtr dicom_texture_set() const;
+	const DICOMVolume_Ptr& dicom_volume();
+	DICOMVolume_CPtr dicom_volume() const;
+	void set_dicom_texture_set(const VolumeTextureSet_Ptr& dicomTextureSet);
 	void set_slice_orientation(SliceOrientation ori);
 	void set_view_location(const ViewLocation& loc);
-	void set_volume_texture_set(const VolumeTextureSet_Ptr& textureSet);
 	SliceOrientation slice_orientation() const;
 	const ViewLocation& view_location() const;
-	const Volume_Ptr& volume();
-	Volume_CPtr volume() const;
-	const VolumeTextureSet_Ptr& volume_texture_set();
-	VolumeTextureSet_CPtr volume_texture_set() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

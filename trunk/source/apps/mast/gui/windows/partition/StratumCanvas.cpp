@@ -19,13 +19,13 @@ StratumCanvas::StratumCanvas(wxWindow *parent, wxGLContext *context, int *attrib
 //#################### PRIVATE METHODS ####################
 Texture_CPtr StratumCanvas::texture_to_display() const
 {
-	if(m_model && m_model->volume_texture_set())
+	if(m_model && m_model->dicom_texture_set())
 	{
 		switch(m_model->slice_orientation())
 		{
-			case ORIENT_XY:		return m_model->volume_texture_set()->texture(ORIENT_XY, m_model->view_location().z);
-			case ORIENT_XZ:		return m_model->volume_texture_set()->texture(ORIENT_XZ, m_model->view_location().y);
-			case ORIENT_YZ:		return m_model->volume_texture_set()->texture(ORIENT_YZ, m_model->view_location().x);
+			case ORIENT_XY:		return m_model->dicom_texture_set()->texture(ORIENT_XY, m_model->view_location().z);
+			case ORIENT_XZ:		return m_model->dicom_texture_set()->texture(ORIENT_XZ, m_model->view_location().y);
+			case ORIENT_YZ:		return m_model->dicom_texture_set()->texture(ORIENT_YZ, m_model->view_location().x);
 			default:			throw Exception("Unexpected slice orientation");
 		}
 	}

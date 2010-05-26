@@ -1,10 +1,10 @@
 /***
- * millipede: VolumeTextureCreator.h
+ * millipede: VolumeTextureSetCreator.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_VOLUMETEXTURECREATOR
-#define H_MILLIPEDE_VOLUMETEXTURECREATOR
+#ifndef H_MILLIPEDE_VOLUMETEXTURESETCREATOR
+#define H_MILLIPEDE_VOLUMETEXTURESETCREATOR
 
 #include <itkExtractImageFilter.h>
 
@@ -20,17 +20,12 @@ namespace mp {
 typedef shared_ptr<class Texture> Texture_Ptr;
 
 template <typename TPixel>
-class VolumeTextureCreator : public CompositeJob
+class VolumeTextureSetCreator : public CompositeJob
 {
 	//#################### TYPEDEFS ####################
 private:
 	typedef itk::Image<TPixel,2> Image2D;
 	typedef itk::Image<TPixel,3> Image3D;
-
-	//#################### PRIVATE VARIABLES ####################
-private:
-	typename Image2D::Pointer m_sliceImage;
-	std::vector<Texture_Ptr> m_textures;
 
 	//#################### NESTED CLASSES ####################
 private:
@@ -134,9 +129,14 @@ private:
 		}
 	};
 
+	//#################### PRIVATE VARIABLES ####################
+private:
+	typename Image2D::Pointer m_sliceImage;
+	std::vector<Texture_Ptr> m_textures;
+
 	//#################### CONSTRUCTORS ####################
 public:
-	VolumeTextureCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori, const VolumeTextureSet_Ptr& volumeTextureSet)
+	VolumeTextureSetCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori, const VolumeTextureSet_Ptr& volumeTextureSet)
 	{
 		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 

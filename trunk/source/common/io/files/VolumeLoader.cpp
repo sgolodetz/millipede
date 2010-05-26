@@ -17,7 +17,7 @@ using boost::lexical_cast;
 #include <itkRegionOfInterestImageFilter.h>
 
 #include <common/dicom/directories/DICOMDirectory.h>
-#include <common/dicom/volumes/Volume.h>
+#include <common/dicom/volumes/DICOMVolume.h>
 #include <common/exceptions/Exception.h>
 
 namespace mp {
@@ -122,7 +122,7 @@ try
 	joiner->Update();
 
 	Image3D::Pointer volumeImage = joiner->GetOutput();
-	m_volume.reset(new Volume(volumeImage));
+	m_volume.reset(new DICOMVolume(volumeImage));
 
 	set_finished();
 }
@@ -137,7 +137,7 @@ int VolumeLoader::length() const
 	return m_volumeChoice.maxZ - m_volumeChoice.minZ + 1;
 }
 
-const Volume_Ptr& VolumeLoader::volume()
+const DICOMVolume_Ptr& VolumeLoader::volume()
 {
 	return m_volume;
 }

@@ -22,9 +22,9 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
+typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 class PartitionCanvas;
 class StratumCanvas;
-typedef shared_ptr<class Volume> Volume_Ptr;
 typedef shared_ptr<class VolumeTextureSet> VolumeTextureSet_Ptr;
 
 class PartitionWindow : public wxFrame, public PartitionModel::Listener
@@ -55,7 +55,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context = NULL);
+	PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:

@@ -9,9 +9,8 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
-#include <common/dicom/volumes/Volume.h>
-#include <common/dicom/volumes/VolumeTextureCreator.h>
-#include <common/dicom/volumes/VolumeTextureSet.h>
+#include <common/dicom/volumes/DICOMVolume.h>
+#include <common/dicom/volumes/VolumeTextureSetCreator.h>
 #include <mast/gui/dialogs/SegmentVolumeDialog.h>
 #include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
@@ -40,7 +39,7 @@ enum
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const Volume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
+PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const VolumeChoice& volumeChoice, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100)),
 	m_model(new PartitionModel(volume,
 							   ViewLocation((volumeChoice.maxX - volumeChoice.minX)/2,
@@ -81,21 +80,21 @@ void PartitionWindow::calculate_canvas_size()
 	// of the images. We want to be able to show the images in axial (X-Y), sagittal (Y-Z) and coronal (X-Z)
 	// orientations, which dictates which dimensions we need to take into account for the canvas sizes.
 
-	Volume::Size volumeSize = m_model->volume()->size();
+	DICOMVolume::Size volumeSize = m_model->dicom_volume()->size();
 	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
 }
 
 bool PartitionWindow::create_textures(SliceOrientation ori)
 {
-	Volume::WindowedImageCPointer windowedImage = m_model->volume()->windowed_image(m_volumeChoice.windowSettings);
+	DICOMVolume::WindowedImageCPointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
-	VolumeTextureSet_Ptr volumeTextureSet(new VolumeTextureSet);
-	shared_ptr<Job> textureCreator(new VolumeTextureCreator<unsigned char>(windowedImage, ori, volumeTextureSet));
-	Job::execute_in_thread(textureCreator);
-	if(!show_progress_dialog(this, "Creating Textures", textureCreator)) return false;
+	VolumeTextureSet_Ptr textureSet(new VolumeTextureSet);
+	shared_ptr<Job> textureSetCreator(new VolumeTextureSetCreator<unsigned char>(windowedImage, ori, textureSet));
+	Job::execute_in_thread(textureSetCreator);
+	if(!show_progress_dialog(this, "Creating Slice Textures", textureSetCreator)) return false;
 
-	m_model->set_volume_texture_set(volumeTextureSet);
+	m_model->set_dicom_texture_set(textureSet);
 	return true;
 }
 
@@ -198,7 +197,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 void PartitionWindow::OnButtonSegmentVolume(wxCommandEvent&)
 {
 	// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentVolumeDialog dialog(this, m_model->volume()->size());
+	SegmentVolumeDialog dialog(this, m_model->dicom_volume()->size());
 	dialog.ShowModal();
 
 	// TODO
