@@ -27,12 +27,33 @@ private:
 private:
 	struct ExtractSubvolumeJob : SimpleJob
 	{
-		// TODO
+		void execute()
+		{
+			// TODO
+		}
+
+		int length() const
+		{
+			return 1;
+		}
+	};
+
+	struct GridCreatorJob : SimpleJob
+	{
+		void execute()
+		{
+			// TODO
+		}
+
+		int length() const
+		{
+			return 1;
+		}
 	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	// TODO
+	IPFG_Ptr& m_ipfGrid;
 
 	//#################### CONSTRUCTORS ####################
 public:
