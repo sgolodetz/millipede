@@ -75,7 +75,7 @@ void CTIPFBuilder::execute()
 	ADFilter::Pointer adFilter = ADFilter::New();
 	adFilter->SetInput(realImage);
 	adFilter->SetConductanceParameter(1.0);
-	adFilter->SetNumberOfIterations(10);
+	adFilter->SetNumberOfIterations(30);
 	adFilter->SetTimeStep(0.0625);
 
 	// Calculate the gradient magnitude of the smoothed image.

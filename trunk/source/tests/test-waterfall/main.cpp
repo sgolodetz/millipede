@@ -232,8 +232,8 @@ int main()
 try
 {
 	//basic_test();
-	real_image_test();
-	//job_test();
+	//real_image_test();
+	job_test();
 	return 0;
 }
 catch(std::exception& e)
