@@ -19,7 +19,7 @@ class IPFGridBuilder : public CompositeJob
 private:
 	typedef typename IPFBuilder::IPF IPF;
 	typedef typename IPFBuilder::IPF_Ptr IPF_Ptr;
-	typedef typename IPFGrid<IPF> IPFG;
+	typedef IPFGrid<IPF> IPFG;
 	typedef boost::shared_ptr<IPFG> IPFG_Ptr;
 	typedef typename IPFBuilder::SegmentationOptions SegmentationOptions;
 
