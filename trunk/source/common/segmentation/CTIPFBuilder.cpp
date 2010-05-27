@@ -33,6 +33,10 @@ void CTIPFBuilder::execute()
 
 	HounsfieldImage::Pointer hounsfieldImage = m_volume->base_image();
 
+	//~~~~~~~
+	// STEP 1
+	//~~~~~~~
+
 	set_status("Preprocessing image...");
 
 	// Construct the windowed image.
@@ -83,6 +87,11 @@ void CTIPFBuilder::execute()
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gmFilter->GetOutput();
 
 	set_progress(1);
+
+	//~~~~~~~
+	// STEP 2
+	//~~~~~~~
+
 	set_status("Running watershed...");
 
 	typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,3> WS;
@@ -100,28 +109,39 @@ void CTIPFBuilder::execute()
 	WS ws(gradientMagnitudeImage, offsets);
 
 	set_progress(2);
-	set_status("Creating initial partition forest...");
 
+	//~~~~~~~
+	// STEP 3
+	//~~~~~~~
+
+	set_status("Creating initial partition forest...");
 	boost::shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
 	boost::shared_ptr<CTImageBranchLayer> lowestBranchLayer = CTIPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
-	CTIPF_Ptr ipf(new CTIPF(leafLayer, lowestBranchLayer));
-
+	m_ipf.reset(new CTIPF(leafLayer, lowestBranchLayer));
 	set_progress(3);
+
+	//~~~~~~~
+	// STEP 4
+	//~~~~~~~
+
 	set_status("Creating rooted MST for lowest branch layer...");
-
 	RootedMST<int> mst(*lowestBranchLayer);
-
 	set_progress(4);
+
+	//~~~~~~~
+	// STEP 5
+	//~~~~~~~
+
 	set_status("Running waterfall...");
 
 	// Iteratively run a Nicholls waterfall pass on the MST until the forest is built.
 	typedef WaterfallPass<int>::Listener WaterfallPassListener;
 	NichollsWaterfallPass<int> waterfallPass;
-	boost::shared_ptr<WaterfallPassListener> listener = make_forest_building_waterfall_pass_listener(ipf);
+	boost::shared_ptr<WaterfallPassListener> listener = make_forest_building_waterfall_pass_listener(m_ipf);
 	waterfallPass.add_listener(listener);
-	while(mst.node_count() != 1 && ipf->highest_layer() < m_segmentationOptions.waterfallLayerLimit)
+	while(mst.node_count() != 1 && m_ipf->highest_layer() < m_segmentationOptions.waterfallLayerLimit)
 	{
-		ipf->clone_layer(ipf->highest_layer());
+		m_ipf->clone_layer(m_ipf->highest_layer());
 		waterfallPass.run(mst);
 	}
 
