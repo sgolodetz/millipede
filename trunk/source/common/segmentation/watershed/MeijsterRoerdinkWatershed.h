@@ -61,13 +61,9 @@ public:
 	typedef itk::Image<LowerCompletePixelType, Dimension> LowerCompleteImage;
 
 	typedef typename ArrowImage::Pointer ArrowImagePointer;
-	typedef typename ArrowImage::ConstPointer ArrowImageCPointer;
 	typedef typename InputImage::Pointer InputImagePointer;
-	typedef typename InputImage::ConstPointer InputImageCPointer;	
 	typedef typename LabelImage::Pointer LabelImagePointer;
-	typedef typename LabelImage::ConstPointer LabelImageCPointer;
 	typedef typename LowerCompleteImage::Pointer LowerCompleteImagePointer;
-	typedef typename LowerCompleteImage::ConstPointer LowerCompleteImageCPointer;
 
 	typedef itk::Offset<Dimension> NeighbourOffset;
 	typedef std::vector<NeighbourOffset> NeighbourOffsets;
@@ -139,9 +135,9 @@ public:
 
 	@return As described above
 	*/
-	ArrowImageCPointer arrows() const
+	ArrowImagePointer arrows() const
 	{
-		return ArrowImageCPointer(m_arrows);
+		return m_arrows;
 	}
 
 	/**
@@ -196,9 +192,9 @@ public:
 
 	@return As described above
 	*/
-	InputImageCPointer input() const
+	InputImagePointer input() const
 	{
-		return InputImageCPointer(m_input);
+		return m_input;
 	}
 
 	/**
@@ -224,9 +220,9 @@ public:
 
 	@return As described above
 	*/
-	LabelImageCPointer labels() const
+	LabelImagePointer labels() const
 	{
-		return LabelImageCPointer(m_labels);
+		return m_labels;
 	}
 
 	/**
@@ -238,9 +234,9 @@ public:
 
 	@return As described above
 	*/
-	LowerCompleteImageCPointer lower_complete() const
+	LowerCompleteImagePointer lower_complete() const
 	{
-		return LowerCompleteImageCPointer(m_lowerComplete);
+		return m_lowerComplete;
 	}
 
 	//#################### PRIVATE METHODS ####################

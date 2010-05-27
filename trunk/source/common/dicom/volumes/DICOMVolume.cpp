@@ -17,9 +17,9 @@ DICOMVolume::DICOMVolume(const BaseImagePointer& baseImage)
 {}
 
 //#################### PUBLIC METHODS ####################
-DICOMVolume::BaseImageCPointer DICOMVolume::base_image() const
+DICOMVolume::BaseImagePointer DICOMVolume::base_image() const
 {
-	return BaseImageCPointer(m_baseImage);
+	return m_baseImage;
 }
 
 DICOMVolume::Size DICOMVolume::size() const
@@ -27,7 +27,7 @@ DICOMVolume::Size DICOMVolume::size() const
 	return m_baseImage->GetLargestPossibleRegion().GetSize();
 }
 
-DICOMVolume::WindowedImageCPointer DICOMVolume::windowed_image(const WindowSettings& windowSettings) const
+DICOMVolume::WindowedImagePointer DICOMVolume::windowed_image(const WindowSettings& windowSettings) const
 {
 	typedef itk::IntensityWindowingImageFilter<BaseImage,WindowedImage> Windower;
 

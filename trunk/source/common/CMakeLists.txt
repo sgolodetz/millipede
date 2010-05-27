@@ -183,11 +183,15 @@ ogl/WrappedGL.h
 
 ##
 SET(segmentation_sources
+segmentation/CTIPFBuilder.cpp
 segmentation/CTSegmentationOptions.cpp
 )
 
 SET(segmentation_headers
+segmentation/CTIPFBuilder.h
 segmentation/CTSegmentationOptions.h
+segmentation/ForestBuildingWaterfallPassListener.h
+segmentation/IPFGridBuilder.h
 )
 
 ##

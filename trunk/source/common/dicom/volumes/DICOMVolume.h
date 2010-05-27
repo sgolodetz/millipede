@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_DICOMVOLUME
 #define H_MILLIPEDE_DICOMVOLUME
 
+#include <boost/shared_ptr.hpp>
+
 #include <itkImage.h>
 
 namespace mp {
@@ -19,12 +21,10 @@ class DICOMVolume
 public:
 	typedef itk::Image<int,3> BaseImage;
 	typedef BaseImage::Pointer BaseImagePointer;
-	typedef BaseImage::ConstPointer BaseImageCPointer;
 	typedef BaseImage::SizeType Size;
 
 	typedef itk::Image<unsigned char,3> WindowedImage;
 	typedef WindowedImage::Pointer WindowedImagePointer;
-	typedef WindowedImage::ConstPointer WindowedImageCPointer;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -36,10 +36,14 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	BaseImageCPointer base_image() const;
+	BaseImagePointer base_image() const;
 	Size size() const;
-	WindowedImageCPointer windowed_image(const WindowSettings& windowSettings) const;
+	WindowedImagePointer windowed_image(const WindowSettings& windowSettings) const;
 };
+
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<DICOMVolume> DICOMVolume_Ptr;
+typedef boost::shared_ptr<const DICOMVolume> DICOMVolume_CPtr;
 
 }
 

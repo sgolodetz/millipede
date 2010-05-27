@@ -168,7 +168,7 @@ void real_image_test()
 	std::cout << "Creating rooted MST...\n";
 	RootedMST<int> mst(*lowestBranchLayer);
 
-	// Iteratively run a Nicholls waterfall pass on the MST until the tree is built.
+	// Iteratively run a Nicholls waterfall pass on the MST until the forest is built.
 	NichollsWaterfallPass<int> pass;
 	boost::shared_ptr<IPFConstructionListener> listener(new IPFConstructionListener(ipf));
 	pass.add_listener(listener);

@@ -40,8 +40,8 @@ enum SegmentationType
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-SegmentCTVolumeDialog::SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize)
-:	m_volumeSize(volumeSize)
+SegmentCTVolumeDialog::SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize, const WindowSettings& windowSettings)
+:	m_volumeSize(volumeSize), m_windowSettings(windowSettings)
 {
 	Create(parent, wxID_ANY, wxT("Segment CT Volume"), wxDefaultPosition, wxDefaultSize);
 
@@ -68,7 +68,7 @@ void SegmentCTVolumeDialog::construct_segmentation_options()
 	itk::Size<3> subvolumeSize;
 	for(int i=0; i<3; ++i) subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
 	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
-	m_segmentationOptions = CTSegmentationOptions(inputType, subvolumeSize, waterfallLayerLimit);
+	m_segmentationOptions = CTSegmentationOptions(inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
 }
 
 wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)

@@ -8,6 +8,8 @@
 
 #include <itkSize.h>
 
+#include <common/dicom/util/WindowSettings.h>
+
 namespace mp {
 
 struct CTSegmentationOptions
@@ -24,9 +26,10 @@ struct CTSegmentationOptions
 	InputType inputType;
 	itk::Size<3> subvolumeSize;
 	int waterfallLayerLimit;
+	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-	CTSegmentationOptions(InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_);
+	CTSegmentationOptions(InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
 };
 
 }

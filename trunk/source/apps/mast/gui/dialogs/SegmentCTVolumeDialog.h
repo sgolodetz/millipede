@@ -26,6 +26,7 @@ class SegmentCTVolumeDialog : public wxPropertySheetDialog
 	//#################### PRIVATE VARIABLES ####################
 private:
 	itk::Size<3> m_volumeSize;
+	WindowSettings m_windowSettings;
 	boost::optional<CTSegmentationOptions> m_segmentationOptions;
 
 	wxRadioBox *m_inputType;
@@ -35,7 +36,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize);
+	SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize, const WindowSettings& windowSettings);
 
 	//#################### PUBLIC METHODS ####################
 public:

@@ -31,12 +31,12 @@ private:
 private:
 	struct ExtractSliceJob : SimpleJob
 	{
-		typename Image3D::ConstPointer volumeImage;
+		typename Image3D::Pointer volumeImage;
 		SliceOrientation ori;
 		int sliceIndex;
 		typename Image2D::Pointer& sliceImage;
 
-		ExtractSliceJob(const typename Image3D::ConstPointer& volumeImage_, SliceOrientation ori_, int sliceIndex_, typename Image2D::Pointer& sliceImage_)
+		ExtractSliceJob(const typename Image3D::Pointer& volumeImage_, SliceOrientation ori_, int sliceIndex_, typename Image2D::Pointer& sliceImage_)
 		:	volumeImage(volumeImage_), ori(ori_), sliceIndex(sliceIndex_), sliceImage(sliceImage_)
 		{}
 
@@ -136,7 +136,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SliceTextureSetCreator(const typename Image3D::ConstPointer& volumeImage, SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet)
+	SliceTextureSetCreator(const typename Image3D::Pointer& volumeImage, SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet)
 	{
 		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 

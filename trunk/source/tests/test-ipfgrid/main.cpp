@@ -3,9 +3,10 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include <common/partitionforests/images/IPFGrid.h>
 #include <common/partitionforests/images/SimpleImageBranchLayer.h>
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
+#include <common/segmentation/CTIPFBuilder.h>
+#include <common/segmentation/IPFGridBuilder.h>
 using namespace mp;
 
 void basic_test()
@@ -25,8 +26,7 @@ void basic_test()
 	int forestCount = 1;
 	for(int i=0; i<3; ++i) forestCount *= volumeSize[i] / subvolumeSize[i];
 
-	// Construct a vector containing the correct number of empty forests, but don't bother actually creating them,
-	// as that isn't the purpose of this test.
+	// Construct a vector containing the correct number of empty forests, but don't bother actually creating them, as that isn't the purpose of this test.
 	std::vector<IPFG::IPF_Ptr> forests(forestCount);
 
 	// Construct the grid of forests.
@@ -36,8 +36,15 @@ void basic_test()
 	assert(ipfg.forest_index_of(2,1,3) == 13);
 }
 
+void segmentation_test()
+{
+	typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
+	// TODO
+}
+
 int main()
 {
 	basic_test();
+	//segmentation_test();
 	return 0;
 }

@@ -8,8 +8,8 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTSegmentationOptions::CTSegmentationOptions(InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_)
-:	inputType(inputType_), subvolumeSize(subvolumeSize_), waterfallLayerLimit(waterfallLayerLimit_)
+CTSegmentationOptions::CTSegmentationOptions(InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_)
+:	inputType(inputType_), subvolumeSize(subvolumeSize_), waterfallLayerLimit(waterfallLayerLimit_), windowSettings(windowSettings_)
 {}
 
 }

@@ -87,7 +87,7 @@ void PartitionWindow::calculate_canvas_size()
 
 bool PartitionWindow::create_textures(SliceOrientation ori)
 {
-	DICOMVolume::WindowedImageCPointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
+	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
 	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
 	shared_ptr<Job> textureSetCreator(new SliceTextureSetCreator<unsigned char>(windowedImage, ori, textureSet));
@@ -197,7 +197,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 {
 	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size());
+	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
 	dialog.ShowModal();
 
 	if(dialog.segmentation_options())
