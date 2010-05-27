@@ -22,19 +22,19 @@ class CTIPFBuilder : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 public:
-	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> CTIPF;
-	typedef boost::shared_ptr<CTIPF> CTIPF_Ptr;
+	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
+	typedef boost::shared_ptr<IPF> IPF_Ptr;
 	typedef CTSegmentationOptions SegmentationOptions;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	CTIPF_Ptr& m_ipf;
+	IPF_Ptr& m_ipf;
 	CTSegmentationOptions m_segmentationOptions;
 	DICOMVolume_CPtr m_volume;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, CTIPF_Ptr& ipf);
+	CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf);
 
 	//#################### PUBLIC METHODS ####################
 public:

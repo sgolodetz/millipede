@@ -16,8 +16,19 @@ template <typename IPFBuilder>
 class IPFGridBuilder : public CompositeJob
 {
 	//#################### TYPEDEFS ####################
-public:
+private:
+	typedef typename IPFBuilder::IPF IPF;
+	typedef typename IPFBuilder::IPF_Ptr IPF_Ptr;
+	typedef typename IPFGrid<IPF> IPFG;
+	typedef boost::shared_ptr<IPFG> IPFG_Ptr;
 	typedef typename IPFBuilder::SegmentationOptions SegmentationOptions;
+
+	//#################### NESTED CLASSES ####################
+private:
+	struct ExtractSubvolumeJob : SimpleJob
+	{
+		// TODO
+	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -25,7 +36,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions)
+	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, IPFG_Ptr& ipfGrid)
 	{
 		// NYI
 		throw 23;

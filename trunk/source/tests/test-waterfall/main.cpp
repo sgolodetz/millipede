@@ -14,8 +14,10 @@ using boost::shared_ptr;
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
+#include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/base/PartitionForest.h>
 #include <common/partitionforests/images/IPFUtil.h>
+#include <common/segmentation/CTIPFBuilder.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 using namespace mp;
@@ -190,11 +192,48 @@ void real_image_test()
 	}
 }
 
+void job_test()
+{
+	typedef itk::Image<int,3> Image;
+	typedef itk::ImageFileReader<Image> Reader;
+
+	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
+	std::cout << "Loading input image...\n";
+	Reader::Pointer reader = Reader::New();
+	reader->SetFileName("../resources/test.bmp");
+	reader->Update();
+	Image::Pointer image = reader->GetOutput();
+
+	// Create a DICOM volume (obviously not a proper one, as the image being read in is actually a greyscale one).
+	DICOMVolume_Ptr volume(new DICOMVolume(image));
+
+	// Set the segmentation options.
+	itk::Size<3> size = image->GetLargestPossibleRegion().GetSize();
+	WindowSettings windowSettings(40, 400);	// dummy window settings
+	CTSegmentationOptions options(CTSegmentationOptions::INPUTTYPE_HOUNSFIELD, size, 10, windowSettings);
+
+	// Build the IPF.
+	std::cout << "Building IPF...\n";
+	typedef CTIPFBuilder::IPF_Ptr IPF_Ptr;
+	IPF_Ptr ipf;
+	Job_Ptr job(new CTIPFBuilder(volume, options, ipf));
+	Job::execute_in_thread(job);
+	while(!job->is_finished());
+
+	// Output the mosaic images for each of the partition forest layers.
+	std::cout << "Outputting mosaic images...\n";
+	for(int i=0; i<=ipf->highest_layer(); ++i)
+	{
+		output_mosaic_image(ipf, i, size[0], size[1]);
+	}
+}
+
 int main()
 try
 {
 	//basic_test();
 	real_image_test();
+	//job_test();
 	return 0;
 }
 catch(std::exception& e)

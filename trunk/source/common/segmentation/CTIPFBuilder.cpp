@@ -19,7 +19,7 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTIPFBuilder::CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, CTIPF_Ptr& ipf)
+CTIPFBuilder::CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf)
 :	m_ipf(ipf), m_segmentationOptions(segmentationOptions), m_volume(volume)
 {}
 
@@ -75,8 +75,8 @@ void CTIPFBuilder::execute()
 	ADFilter::Pointer adFilter = ADFilter::New();
 	adFilter->SetInput(realImage);
 	adFilter->SetConductanceParameter(1.0);
-	adFilter->SetNumberOfIterations(15);
-	adFilter->SetTimeStep(0.125);
+	adFilter->SetNumberOfIterations(10);
+	adFilter->SetTimeStep(0.0625);
 
 	// Calculate the gradient magnitude of the smoothed image.
 	typedef itk::GradientMagnitudeImageFilter<RealImage,GradientMagnitudeImage> GMFilter;
@@ -116,8 +116,8 @@ void CTIPFBuilder::execute()
 
 	set_status("Creating initial partition forest...");
 	boost::shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
-	boost::shared_ptr<CTImageBranchLayer> lowestBranchLayer = CTIPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
-	m_ipf.reset(new CTIPF(leafLayer, lowestBranchLayer));
+	boost::shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
+	m_ipf.reset(new IPF(leafLayer, lowestBranchLayer));
 	set_progress(3);
 
 	//~~~~~~~

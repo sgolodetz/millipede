@@ -11,7 +11,8 @@ using namespace mp;
 
 void basic_test()
 {
-	typedef IPFGrid<SimpleImageLeafLayer,SimpleImageBranchLayer> IPFG;
+	typedef PartitionForest<SimpleImageLeafLayer,SimpleImageBranchLayer> IPF;
+	typedef IPFGrid<IPF> IPFG;
 
 	// The volume as a whole is of size 4x4x4.
 	itk::Size<3> volumeSize;

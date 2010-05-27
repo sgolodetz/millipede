@@ -15,12 +15,11 @@
 
 namespace mp {
 
-template <typename LeafLayer, typename BranchLayer>
+template <typename IPF>
 class IPFGrid
 {
 	//#################### TYPEDEFS ####################
 public:
-	typedef PartitionForest<LeafLayer, BranchLayer> IPF;
 	typedef boost::shared_ptr<IPF> IPF_Ptr;
 	typedef boost::shared_ptr<const IPF> IPF_CPtr;
 
