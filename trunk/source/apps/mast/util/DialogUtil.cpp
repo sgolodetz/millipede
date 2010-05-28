@@ -42,7 +42,7 @@ wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& capt
 
 bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job)
 {
-	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), parent, wxPD_CAN_ABORT|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH);
+	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), parent, wxPD_AUTO_HIDE|wxPD_CAN_ABORT|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH);
 	dialog.SetSize(600, 200);
 
 	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
