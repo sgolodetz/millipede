@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_IPFGRIDBUILDER
 #define H_MILLIPEDE_IPFGRIDBUILDER
 
+#include <itkRegionOfInterestImageFilter.h>
+
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/jobs/CompositeJob.h>
 #include <common/partitionforests/images/IPFGrid.h>
@@ -27,9 +29,39 @@ private:
 private:
 	struct ExtractSubvolumeJob : SimpleJob
 	{
+		IPFGridBuilder *base;
+		int forestIndex;
+
+		ExtractSubvolumeJob(IPFGridBuilder *base_, int forestIndex_)
+		:	base(base_), forestIndex(forestIndex_)
+		{}
+
 		void execute()
 		{
-			// TODO
+			set_status("Extracting subvolume...");
+
+			typedef DICOMVolume::BaseImage Image;
+			typedef itk::RegionOfInterestImageFilter<Image,Image> RegionExtractor;
+			RegionExtractor::Pointer extractor = RegionExtractor::New();
+			extractor->SetInput(base->m_volume->base_image());
+
+			// Set the region to extract.
+			// Note: The index is calculated partly using the same formulae as those in ImageLeafLayer::{x,y,z}_of.
+			const itk::Size<3>& gridSize = base->m_gridSize;
+			const itk::Size<3>& subvolumeSize = base->m_segmentationOptions.subvolumeSize;
+			Image::RegionType region;
+			Image::IndexType index;
+			index[0] = (forestIndex % gridSize[0]) * subvolumeSize[0];
+			index[1] = ((forestIndex / gridSize[0]) % gridSize[1]) * subvolumeSize[1];
+			index[2] = (forestIndex / (gridSize[0] * gridSize[1])) * subvolumeSize[2];
+			region.SetIndex(index);
+			region.SetSize(base->m_segmentationOptions.subvolumeSize);
+			extractor->SetRegionOfInterest(region);
+
+			extractor->Update();
+			base->m_subvolume->reset(new DICOMVolume(extractor->GetOutput()));
+
+			set_finished();
 		}
 
 		int length() const
@@ -40,9 +72,17 @@ private:
 
 	struct GridCreatorJob : SimpleJob
 	{
+		IPFGridBuilder *base;
+
+		GridCreatorJob(IPFGridBuilder *base_)
+		:	base(base_)
+		{}
+
 		void execute()
 		{
-			// TODO
+			set_status("Creating forest grid...");
+			base->m_ipfGrid.reset(new IPFGrid(base->m_forests, m_base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
+			set_finished();
 		}
 
 		int length() const
@@ -53,14 +93,37 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	std::vector<IPF_Ptr> m_forests;
 	IPFG_Ptr& m_ipfGrid;
+	itk::Size<3> m_gridSize;
+	SegmentationOptions m_segmentationOptions;
+	boost::shared_ptr<DICOMVolume_CPtr> m_subvolume;
+	DICOMVolume_CPtr m_volume;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, IPFG_Ptr& ipfGrid)
+	:	m_ipfGrid(ipfGrid), m_segmentationOptions(segmentationOptions), m_subvolume(new DICOMVolume_CPtr), m_volume(volume)
 	{
-		// NYI
-		throw 23;
+		itk::Size<3> volumeSize = volume->size();
+		itk::Size<3> subvolumeSize = segmentationOptions.subvolumeSize;
+
+		int forestCount = 1;
+		for(int i=0; i<3; ++i)
+		{
+			m_gridSize[i] = volumeSize[i] / subvolumeSize[i];
+			forestCount *= m_gridSize[i];
+		}
+
+		m_forests.resize(forestCount);
+
+		for(int i=0; i<forestCount; ++i)
+		{
+			add_subjob(new ExtractSubvolumeJob(volume, i, m_subvolume));
+			add_subjob(new IPFBuilder(m_subvolume, m_segmentationOptions, m_forests[i]));
+		}
+
+		add_subjob(new GridCreatorJob(this));
 	}
 };
 

@@ -20,6 +20,10 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 CTIPFBuilder::CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf)
+:	m_ipf(ipf), m_segmentationOptions(segmentationOptions), m_volume(new DICOMVolume_CPtr(volume))
+{}
+
+CTIPFBuilder::CTIPFBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf)
 :	m_ipf(ipf), m_segmentationOptions(segmentationOptions), m_volume(volume)
 {}
 
@@ -31,7 +35,7 @@ void CTIPFBuilder::execute()
 	typedef itk::Image<float,3> RealImage;
 	typedef itk::Image<unsigned char,3> WindowedImage;
 
-	HounsfieldImage::Pointer hounsfieldImage = m_volume->base_image();
+	HounsfieldImage::Pointer hounsfieldImage = (*m_volume)->base_image();
 
 	//~~~~~~~
 	// STEP 1
@@ -40,7 +44,7 @@ void CTIPFBuilder::execute()
 	set_status("Preprocessing image...");
 
 	// Construct the windowed image.
-	WindowedImage::Pointer windowedImage = m_volume->windowed_image(m_segmentationOptions.windowSettings);
+	WindowedImage::Pointer windowedImage = (*m_volume)->windowed_image(m_segmentationOptions.windowSettings);
 
 	// Cast the input image (whether Hounsfield or windowed) to make its pixels real-valued.
 	RealImage::Pointer realImage;

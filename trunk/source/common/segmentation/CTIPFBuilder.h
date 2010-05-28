@@ -30,11 +30,12 @@ public:
 private:
 	IPF_Ptr& m_ipf;
 	CTSegmentationOptions m_segmentationOptions;
-	DICOMVolume_CPtr m_volume;
+	boost::shared_ptr<DICOMVolume_CPtr> m_volume;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf);
+	CTIPFBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf);
 
 	//#################### PUBLIC METHODS ####################
 public:
