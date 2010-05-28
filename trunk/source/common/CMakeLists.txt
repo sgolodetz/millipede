@@ -170,6 +170,7 @@ partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/IPFGrid.h
 partitionforests/images/IPFUtil.h
+partitionforests/images/MosaicImageCreator.h
 partitionforests/images/SimpleImageBranchLayer.h
 partitionforests/images/SimpleImageLeafLayer.h
 partitionforests/images/SimplePixelProperties.h

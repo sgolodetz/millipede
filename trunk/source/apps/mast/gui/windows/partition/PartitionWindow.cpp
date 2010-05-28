@@ -10,6 +10,7 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
+#include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/segmentation/CTIPFBuilder.h>
 #include <common/segmentation/IPFGridBuilder.h>
 #include <common/slices/SliceTextureSetCreator.h>
@@ -189,8 +190,6 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 		middleRightSizer->Add(middleRightBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleRight);
 
-	// TODO
-
 	sizer->Fit(this);
 }
 
@@ -211,6 +210,13 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 		Job::execute_in_thread(gridBuilder);
 		show_progress_dialog(this, "Building IPF Grid", gridBuilder);
 		// TODO
+
+#if 0
+		// TODO: Eventually this will end up as part of the above.
+		typedef CTIPFGridBuilder::IPF CTIPF;
+		itk::Image<unsigned char,3>::Pointer mosaicImage;
+		MosaicImageCreator<CTIPF> mosaicCreator(ipfGrid, 1, mosaicImage, true);
+#endif
 	}
 }
 
