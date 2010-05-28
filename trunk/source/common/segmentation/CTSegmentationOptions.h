@@ -23,13 +23,14 @@ struct CTSegmentationOptions
 	};
 
 	//#################### PUBLIC VARIABLES ####################
+	int adfIterations;
 	InputType inputType;
 	itk::Size<3> subvolumeSize;
 	int waterfallLayerLimit;
 	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-	CTSegmentationOptions(InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
+	CTSegmentationOptions(int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
 };
 
 }

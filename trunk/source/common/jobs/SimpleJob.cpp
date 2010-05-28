@@ -26,6 +26,12 @@ std::string SimpleJob::status() const
 }
 
 //#################### PROTECTED METHODS ####################
+void SimpleJob::increment_progress()
+{
+	boost::mutex::scoped_lock lock(m_mutex);
+	++m_progress;
+}
+
 void SimpleJob::set_finished()
 {
 	set_progress(length());

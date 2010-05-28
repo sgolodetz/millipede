@@ -28,6 +28,7 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	void increment_progress();
 	void set_finished();
 	void set_progress(int progress);
 	void set_status(const std::string& status);

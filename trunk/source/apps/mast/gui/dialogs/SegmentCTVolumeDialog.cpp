@@ -68,7 +68,7 @@ void SegmentCTVolumeDialog::construct_segmentation_options()
 	itk::Size<3> subvolumeSize;
 	for(int i=0; i<3; ++i) subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
 	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
-	m_segmentationOptions = CTSegmentationOptions(inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
+	m_segmentationOptions = CTSegmentationOptions(30, inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
 }
 
 wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)

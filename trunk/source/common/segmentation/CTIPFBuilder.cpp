@@ -78,7 +78,7 @@ void CTIPFBuilder::execute()
 
 	// Smooth this real image using anisotropic diffusion filtering.
 	typedef itk::GradientAnisotropicDiffusionImageFilter<RealImage,RealImage> ADFilter;
-	for(int i=0; i<30; ++i)
+	for(int i=0; i<m_segmentationOptions.adfIterations; ++i)
 	{
 		ADFilter::Pointer adFilter = ADFilter::New();
 		adFilter->SetInput(realImage);
@@ -87,7 +87,9 @@ void CTIPFBuilder::execute()
 		adFilter->SetTimeStep(0.0625);
 		adFilter->Update();
 		realImage = adFilter->GetOutput();
+
 		if(is_aborted()) return;
+		increment_progress();
 	}
 
 	// Calculate the gradient magnitude of the smoothed image.
@@ -97,9 +99,9 @@ void CTIPFBuilder::execute()
 	gmFilter->SetUseImageSpacingOff();
 	gmFilter->Update();
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gmFilter->GetOutput();
-	if(is_aborted()) return;
 
-	set_progress(1);
+	if(is_aborted()) return;
+	increment_progress();
 
 	//~~~~~~~
 	// STEP 2
@@ -120,9 +122,9 @@ void CTIPFBuilder::execute()
 
 	// Run the watershed algorithm on the gradient magnitude image.
 	WS ws(gradientMagnitudeImage, offsets);
-	if(is_aborted()) return;
 
-	set_progress(2);
+	if(is_aborted()) return;
+	increment_progress();
 
 	//~~~~~~~
 	// STEP 3
@@ -134,7 +136,7 @@ void CTIPFBuilder::execute()
 	boost::shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
 	if(is_aborted()) return;
 	m_ipf.reset(new IPF(leafLayer, lowestBranchLayer));
-	set_progress(3);
+	increment_progress();
 
 	//~~~~~~~
 	// STEP 4
@@ -143,7 +145,7 @@ void CTIPFBuilder::execute()
 	set_status("Creating rooted MST for lowest branch layer...");
 	RootedMST<int> mst(*lowestBranchLayer);
 	if(is_aborted()) return;
-	set_progress(4);
+	increment_progress();
 
 	//~~~~~~~
 	// STEP 5
@@ -169,7 +171,7 @@ void CTIPFBuilder::execute()
 
 int CTIPFBuilder::length() const
 {
-	return 5;
+	return m_segmentationOptions.adfIterations + 5;
 }
 
 }

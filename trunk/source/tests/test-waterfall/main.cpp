@@ -210,7 +210,7 @@ void job_test()
 	// Set the segmentation options.
 	itk::Size<3> size = image->GetLargestPossibleRegion().GetSize();
 	WindowSettings windowSettings(40, 400);	// dummy window settings
-	CTSegmentationOptions options(CTSegmentationOptions::INPUTTYPE_HOUNSFIELD, size, 10, windowSettings);
+	CTSegmentationOptions options(30, CTSegmentationOptions::INPUTTYPE_HOUNSFIELD, size, 10, windowSettings);
 
 	// Build the IPF.
 	std::cout << "Building IPF...\n";
@@ -232,8 +232,8 @@ int main()
 try
 {
 	//basic_test();
-	//real_image_test();
-	job_test();
+	real_image_test();
+	//job_test();
 	return 0;
 }
 catch(std::exception& e)
