@@ -10,6 +10,8 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
+#include <common/segmentation/CTIPFBuilder.h>
+#include <common/segmentation/IPFGridBuilder.h>
 #include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
 #include <mast/util/DialogUtil.h>
@@ -202,6 +204,12 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 	if(dialog.segmentation_options())
 	{
+		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
+		typedef CTIPFGridBuilder::IPFG_Ptr CTIPFGrid_Ptr;
+		CTIPFGrid_Ptr ipfGrid;
+		Job_Ptr gridBuilder(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));
+		Job::execute_in_thread(gridBuilder);
+		show_progress_dialog(this, "Building IPF Grid", gridBuilder);
 		// TODO
 	}
 }

@@ -18,7 +18,7 @@ template <typename IPFBuilder>
 class IPFGridBuilder : public CompositeJob
 {
 	//#################### TYPEDEFS ####################
-private:
+public:
 	typedef typename IPFBuilder::IPF IPF;
 	typedef typename IPFBuilder::IPF_Ptr IPF_Ptr;
 	typedef IPFGrid<IPF> IPFG;
@@ -81,7 +81,7 @@ private:
 		void execute()
 		{
 			set_status("Creating forest grid...");
-			base->m_ipfGrid.reset(new IPFGrid(base->m_forests, m_base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
+			base->m_ipfGrid.reset(new IPFG(base->m_forests, base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
 			set_finished();
 		}
 
@@ -119,7 +119,7 @@ public:
 
 		for(int i=0; i<forestCount; ++i)
 		{
-			add_subjob(new ExtractSubvolumeJob(volume, i, m_subvolume));
+			add_subjob(new ExtractSubvolumeJob(this, i));
 			add_subjob(new IPFBuilder(m_subvolume, m_segmentationOptions, m_forests[i]));
 		}
 

@@ -45,6 +45,7 @@ void CTIPFBuilder::execute()
 
 	// Construct the windowed image.
 	WindowedImage::Pointer windowedImage = (*m_volume)->windowed_image(m_segmentationOptions.windowSettings);
+	if(is_aborted()) return;
 
 	// Cast the input image (whether Hounsfield or windowed) to make its pixels real-valued.
 	RealImage::Pointer realImage;
@@ -73,22 +74,30 @@ void CTIPFBuilder::execute()
 			throw Exception("Unknown CT segmentation input type");	// this should never happen
 		}
 	}
+	if(is_aborted()) return;
 
-	// Set up an anisotropic diffusion filter to smooth this real image.
+	// Smooth this real image using anisotropic diffusion filtering.
 	typedef itk::GradientAnisotropicDiffusionImageFilter<RealImage,RealImage> ADFilter;
-	ADFilter::Pointer adFilter = ADFilter::New();
-	adFilter->SetInput(realImage);
-	adFilter->SetConductanceParameter(1.0);
-	adFilter->SetNumberOfIterations(30);
-	adFilter->SetTimeStep(0.0625);
+	for(int i=0; i<30; ++i)
+	{
+		ADFilter::Pointer adFilter = ADFilter::New();
+		adFilter->SetInput(realImage);
+		adFilter->SetConductanceParameter(1.0);
+		adFilter->SetNumberOfIterations(1);
+		adFilter->SetTimeStep(0.0625);
+		adFilter->Update();
+		realImage = adFilter->GetOutput();
+		if(is_aborted()) return;
+	}
 
 	// Calculate the gradient magnitude of the smoothed image.
 	typedef itk::GradientMagnitudeImageFilter<RealImage,GradientMagnitudeImage> GMFilter;
 	GMFilter::Pointer gmFilter = GMFilter::New();
-	gmFilter->SetInput(adFilter->GetOutput());
+	gmFilter->SetInput(realImage);
 	gmFilter->SetUseImageSpacingOff();
 	gmFilter->Update();
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gmFilter->GetOutput();
+	if(is_aborted()) return;
 
 	set_progress(1);
 
@@ -111,6 +120,7 @@ void CTIPFBuilder::execute()
 
 	// Run the watershed algorithm on the gradient magnitude image.
 	WS ws(gradientMagnitudeImage, offsets);
+	if(is_aborted()) return;
 
 	set_progress(2);
 
@@ -120,7 +130,9 @@ void CTIPFBuilder::execute()
 
 	set_status("Creating initial partition forest...");
 	boost::shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+	if(is_aborted()) return;
 	boost::shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
+	if(is_aborted()) return;
 	m_ipf.reset(new IPF(leafLayer, lowestBranchLayer));
 	set_progress(3);
 
@@ -130,6 +142,7 @@ void CTIPFBuilder::execute()
 
 	set_status("Creating rooted MST for lowest branch layer...");
 	RootedMST<int> mst(*lowestBranchLayer);
+	if(is_aborted()) return;
 	set_progress(4);
 
 	//~~~~~~~
@@ -146,7 +159,9 @@ void CTIPFBuilder::execute()
 	while(mst.node_count() != 1 && m_ipf->highest_layer() < m_segmentationOptions.waterfallLayerLimit)
 	{
 		m_ipf->clone_layer(m_ipf->highest_layer());
+		if(is_aborted()) return;
 		waterfallPass.run(mst);
+		if(is_aborted()) return;
 	}
 
 	set_finished();
