@@ -48,8 +48,10 @@ SegmentCTVolumeDialog::SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3
 	wxBookCtrlBase *notebook = GetBookCtrl();
 	wxPanel *basicPage = create_basic_page(notebook);
 	wxPanel *advancedPage = create_advanced_page(notebook);
+	wxPanel *modalityPage = create_modality_page(notebook);
 	notebook->AddPage(basicPage, wxT("Basic"), true);
 	notebook->AddPage(advancedPage, wxT("Advanced"), false);
+	notebook->AddPage(modalityPage, wxT("Modality-Specific"), false);
 
 	CreateButtons();
 	LayoutDialog();
@@ -64,11 +66,43 @@ const boost::optional<CTSegmentationOptions>& SegmentCTVolumeDialog::segmentatio
 //#################### PRIVATE METHODS ####################
 void SegmentCTVolumeDialog::construct_segmentation_options()
 {
+	int adfIterations = m_adfIterations->GetValue();
 	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
 	itk::Size<3> subvolumeSize;
 	for(int i=0; i<3; ++i) subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
 	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
-	m_segmentationOptions = CTSegmentationOptions(30, inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
+	m_segmentationOptions = CTSegmentationOptions(adfIterations, inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
+}
+
+wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
+{
+	wxPanel *panel = new wxPanel(parent);
+
+	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+	panel->SetSizer(sizer);
+
+	// Set up the spin control to select the number of anisotropic diffusion filtering iterations.
+	wxPanel *filteringPanel = new wxPanel(panel);
+	sizer->Add(filteringPanel);
+	wxGridSizer *filteringSizer = new wxGridSizer(0, 2, 0, 0);
+	filteringPanel->SetSizer(filteringSizer);
+
+	filteringSizer->Add(new wxStaticText(filteringPanel, wxID_ANY, wxT("ADF Iterations:")));
+	m_adfIterations = new wxSpinCtrl(filteringPanel, wxID_ANY, wxT("30"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 30);
+	filteringSizer->Add(m_adfIterations);
+
+	// Set up the spin control to select a waterfall layer limit.
+	wxPanel *waterfallPanel = new wxPanel(panel);
+	sizer->Add(waterfallPanel);
+	wxGridSizer *waterfallSizer = new wxGridSizer(0, 2, 0, 0);
+	waterfallPanel->SetSizer(waterfallSizer);
+
+	waterfallSizer->Add(new wxStaticText(waterfallPanel, wxID_ANY, wxT("Waterfall Layer Limit:")));
+	m_waterfallLayerLimit = new wxSpinCtrl(waterfallPanel, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 4);
+	waterfallSizer->Add(m_waterfallLayerLimit);
+
+	sizer->Fit(panel);
+	return panel;
 }
 
 wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)
@@ -113,7 +147,7 @@ wxPanel *SegmentCTVolumeDialog::create_basic_page(wxWindow *parent)
 	return panel;
 }
 
-wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
+wxPanel *SegmentCTVolumeDialog::create_modality_page(wxWindow *parent)
 {
 	wxPanel *panel = new wxPanel(parent);
 
@@ -126,18 +160,6 @@ wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
 	strings[CTSegmentationOptions::INPUTTYPE_HOUNSFIELD] = wxT("Use &Hounsfield Input");
 	m_inputType = new wxRadioBox(panel, wxID_ANY, wxT("Input Type"), wxDefaultPosition, wxDefaultSize, CTSegmentationOptions::INPUTTYPE_COUNT, strings, 1, wxRA_SPECIFY_COLS);
 	sizer->Add(m_inputType);
-
-	sizer->AddSpacer(10);
-
-	// Set up the spin control to select a waterfall layer limit.
-	wxPanel *limitPanel = new wxPanel(panel);
-	sizer->Add(limitPanel);
-	wxGridSizer *limitSizer = new wxGridSizer(0, 2, 0, 0);
-	limitPanel->SetSizer(limitSizer);
-
-	limitSizer->Add(new wxStaticText(limitPanel, wxID_ANY, wxT("Waterfall Layer Limit:")));
-	m_waterfallLayerLimit = new wxSpinCtrl(limitPanel, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 4);
-	limitSizer->Add(m_waterfallLayerLimit);
 
 	sizer->Fit(panel);
 	return panel;

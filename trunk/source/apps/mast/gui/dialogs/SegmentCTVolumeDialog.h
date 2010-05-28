@@ -29,6 +29,7 @@ private:
 	WindowSettings m_windowSettings;
 	boost::optional<CTSegmentationOptions> m_segmentationOptions;
 
+	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_inputType;
 	wxRadioBox *m_segmentationType;
 	wxSpinCtrl *m_subvolumeSizes[3];
@@ -45,8 +46,9 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void construct_segmentation_options();
-	wxPanel *create_basic_page(wxWindow *parent);
 	wxPanel *create_advanced_page(wxWindow *parent);
+	wxPanel *create_basic_page(wxWindow *parent);
+	wxPanel *create_modality_page(wxWindow *parent);
 
 	//#################### EVENT HANDLERS ####################
 public:
