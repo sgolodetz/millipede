@@ -230,6 +230,11 @@ textures/Texture.h
 textures/TextureFactory.h
 )
 
+##
+SET(util_headers
+util/ITKImageUtil.h
+)
+
 #################################################################
 # Collect the project files into sources, headers and templates #
 #################################################################
@@ -270,6 +275,7 @@ ${segmentation_waterfall_headers}
 ${segmentation_watershed_headers}
 ${slices_headers}
 ${textures_headers}
+${util_headers}
 )
 
 SET(templates
@@ -352,6 +358,9 @@ SOURCE_GROUP(slices\\.h FILES ${slices_headers})
 ##
 SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
+
+##
+SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ################################
 # Specify the libraries to use #

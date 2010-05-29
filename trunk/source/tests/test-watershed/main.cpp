@@ -20,138 +20,8 @@ using boost::shared_ptr;
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
+#include <common/util/ITKImageUtil.h>
 using namespace mp;
-
-//#################### HELPER FUNCTIONS ####################
-template <typename PixelType>
-typename itk::Image<PixelType,2>::Pointer create_2d_image(const PixelType *const pixels, int width, int height)
-{
-	typedef itk::Image<PixelType,2> Image;
-	typedef typename Image::Pointer ImagePointer;
-	typedef typename Image::IndexType Index;
-	typedef typename Image::RegionType Region;
-	typedef typename Image::SizeType Size;
-
-	Index start;
-	start.Fill(0);
-	Size size;
-	size[0] = width;
-	size[1] = height;
-	Region region;
-	region.SetIndex(start);
-	region.SetSize(size);
-	ImagePointer image = Image::New();
-	image->SetRegions(region);
-	image->Allocate();
-
-	const PixelType *p = pixels;
-	for(int y=0; y<height; ++y)
-	{
-		for(int x=0; x<width; ++x)
-		{
-			Index index;
-			index[0] = x;
-			index[1] = y;
-			image->SetPixel(index, *p++);
-		}
-	}
-
-	return image;
-}
-
-template <typename PixelType>
-typename itk::Image<PixelType,3>::Pointer create_3d_image(const PixelType *const pixels, int sizeX, int sizeY, int sizeZ)
-{
-	typedef itk::Image<PixelType,3> Image;
-	typedef typename Image::Pointer ImagePointer;
-	typedef typename Image::IndexType Index;
-	typedef typename Image::RegionType Region;
-	typedef typename Image::SizeType Size;
-
-	Index start;
-	start.Fill(0);
-	Size size;
-	size[0] = sizeX;
-	size[1] = sizeY;
-	size[2] = sizeZ;
-	Region region;
-	region.SetIndex(start);
-	region.SetSize(size);
-	ImagePointer image = Image::New();
-	image->SetRegions(region);
-	image->Allocate();
-
-	const PixelType *p = pixels;
-	for(int z=0; z<sizeZ; ++z)
-		for(int y=0; y<sizeY; ++y)
-			for(int x=0; x<sizeX; ++x)
-			{
-				Index index;
-				index[0] = x;
-				index[1] = y;
-				index[2] = z;
-				image->SetPixel(index, *p++);
-			}
-
-	return image;
-}
-
-template <typename ImagePointer>
-void output_2d_image(std::ostream& os, const ImagePointer& image)
-{
-	// FIXME: This is a hacky bit of test code - not for production use.
-	typedef typename ImagePointer::ObjectType Image;
-	typedef typename Image::IndexType Index;
-	typedef typename Image::SizeType Size;
-
-	assert(Size::GetSizeDimension() == 2);
-
-	const Size& size = image->GetLargestPossibleRegion().GetSize();
-	int width = size[0], height = size[1];
-
-	for(int y=0; y<height; ++y)
-	{
-		for(int x=0; x<width; ++x)
-		{
-			Index index;
-			index[0] = x;
-			index[1] = y;
-			os << image->GetPixel(index) << '\t';
-		}
-		os << '\n';
-	}
-}
-
-template <typename ImagePointer>
-void output_3d_image(std::ostream& os, const ImagePointer& image)
-{
-	// FIXME: This is a hacky bit of test code - not for production use.
-	typedef typename ImagePointer::ObjectType Image;
-	typedef typename Image::IndexType Index;
-	typedef typename Image::SizeType Size;
-
-	assert(Size::GetSizeDimension() == 3);
-
-	const Size& size = image->GetLargestPossibleRegion().GetSize();
-	int sizeX = size[0], sizeY = size[1], sizeZ = size[2];
-
-	for(int z=0; z<sizeZ; ++z)
-	{
-		if(z > 0) os << "---\n";
-		for(int y=0; y<sizeY; ++y)
-		{
-			for(int x=0; x<sizeX; ++x)
-			{
-				Index index;
-				index[0] = x;
-				index[1] = y;
-				index[2] = z;
-				os << image->GetPixel(index) << '\t';
-			}
-			os << '\n';
-		}
-	}
-}
 
 //#################### TEST FUNCTIONS ####################
 void basic_test()
@@ -167,8 +37,9 @@ void basic_test()
 		6,6,5,5,5,2,1
 	};
 
-	Image::Pointer image = create_2d_image(pixels, 7, 5);
-	output_2d_image(std::cout, image);
+	Image::Pointer image = ITKImageUtil::make_filled_image(7, 5, pixels);
+	ITKImageUtil::output_image(std::cout, image);
+	std::cout << '\n';
 
 	typedef MeijsterRoerdinkWatershed<int,2> WS;
 
@@ -183,14 +54,14 @@ void basic_test()
 	WS ws(image, offsets);
 
 	// Output the results.
+	ITKImageUtil::output_image(std::cout, ws.lower_complete());
 	std::cout << '\n';
-	output_2d_image(std::cout, ws.lower_complete());
 
+	ITKImageUtil::output_image(std::cout, ws.arrows());
 	std::cout << '\n';
-	output_2d_image(std::cout, ws.arrows());
 
+	ITKImageUtil::output_image(std::cout, ws.labels());
 	std::cout << '\n';
-	output_2d_image(std::cout, ws.labels());
 }
 
 void gradient_test()
@@ -209,8 +80,8 @@ void gradient_test()
 		5,5,5,9,9,3,3,3,
 	};
 
-	Image::Pointer image = create_2d_image(pixels, 8, 8);
-	output_2d_image(std::cout, image);
+	Image::Pointer image = ITKImageUtil::make_filled_image(8, 8, pixels);
+	ITKImageUtil::output_image(std::cout, image);
 	std::cout << '\n';
 
 	typedef itk::GradientMagnitudeImageFilter<Image,Image> GradientMagnitudeFilter;
@@ -220,7 +91,7 @@ void gradient_test()
 	gradientMagnitudeFilter->Update();
 
 	Image::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
-	output_2d_image(std::cout, gradientMagnitudeImage);
+	ITKImageUtil::output_image(std::cout, gradientMagnitudeImage);
 	std::cout << '\n';
 
 	typedef MeijsterRoerdinkWatershed<int,2> WS;
@@ -236,13 +107,13 @@ void gradient_test()
 	WS ws(gradientMagnitudeImage, offsets);
 
 	// Output the results.
-	output_2d_image(std::cout, ws.lower_complete());
+	ITKImageUtil::output_image(std::cout, ws.lower_complete());
 	std::cout << '\n';
 
-	output_2d_image(std::cout, ws.arrows());
+	ITKImageUtil::output_image(std::cout, ws.arrows());
 	std::cout << '\n';
 
-	output_2d_image(std::cout, ws.labels());
+	ITKImageUtil::output_image(std::cout, ws.labels());
 	std::cout << '\n';
 }
 
@@ -265,8 +136,8 @@ void forest_test()
 		5,5,5,9,9,3,3,3,
 	};
 
-	HounsfieldImage::Pointer hounsfieldImage = create_2d_image(pixels, 8, 8);
-	output_2d_image(std::cout, hounsfieldImage);
+	HounsfieldImage::Pointer hounsfieldImage = ITKImageUtil::make_filled_image(8, 8, pixels);
+	ITKImageUtil::output_image(std::cout, hounsfieldImage);
 	std::cout << '\n';
 
 	// This is not the proper way to do windowing - it's a hack for testing purposes.
@@ -284,7 +155,7 @@ void forest_test()
 	gradientMagnitudeFilter->Update();
 
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
-	output_2d_image(std::cout, gradientMagnitudeImage);
+	ITKImageUtil::output_image(std::cout, gradientMagnitudeImage);
 	std::cout << '\n';
 
 	typedef MeijsterRoerdinkWatershed<int,2> WS;
@@ -302,13 +173,13 @@ void forest_test()
 	WS ws(gradientMagnitudeImage, offsets);
 
 	// Output the results.
-	output_2d_image(std::cout, ws.lower_complete());
+	ITKImageUtil::output_image(std::cout, ws.lower_complete());
 	std::cout << '\n';
 
-	output_2d_image(std::cout, ws.arrows());
+	ITKImageUtil::output_image(std::cout, ws.arrows());
 	std::cout << '\n';
 
-	output_2d_image(std::cout, ws.labels());
+	ITKImageUtil::output_image(std::cout, ws.labels());
 	std::cout << '\n';
 
 	// Create the initial partition forest.

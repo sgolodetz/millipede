@@ -8,41 +8,8 @@
 #include <common/adts/RootedMST.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
+#include <common/util/ITKImageUtil.h>
 using namespace mp;
-
-template <typename TPixel>
-typename itk::Image<TPixel,3>::Pointer create_3d_image(const TPixel *const pixels, int sizeX, int sizeY, int sizeZ)
-{
-	typedef itk::Image<TPixel,3> Image;
-	typedef typename Image::Pointer ImagePointer;
-
-	typename Image::IndexType start;
-	start.Fill(0);
-	typename Image::SizeType size;
-	size[0] = sizeX;
-	size[1] = sizeY;
-	size[2] = sizeZ;
-	typename Image::RegionType region;
-	region.SetIndex(start);
-	region.SetSize(size);
-	ImagePointer image = Image::New();
-	image->SetRegions(region);
-	image->Allocate();
-
-	const TPixel *p = pixels;
-	for(int z=0; z<sizeZ; ++z)
-		for(int y=0; y<sizeY; ++y)
-			for(int x=0; x<sizeX; ++x)
-			{
-				typename Image::IndexType index;
-				index[0] = x;
-				index[1] = y;
-				index[2] = z;
-				image->SetPixel(index, *p++);
-			}
-
-	return image;
-}
 
 void adjacency_graph_mst()
 {
@@ -77,8 +44,8 @@ void ct_leaf_layer_mst()
 		9, 10, 15
 	};
 
-	HounsfieldImagePointer hounsfieldImage = create_3d_image(hounsfieldPixels, 3, 3, 2);
-	WindowedImagePointer windowedImage = create_3d_image(windowedPixels, 3, 3, 2);
+	HounsfieldImagePointer hounsfieldImage = ITKImageUtil::make_filled_image(3, 3, 2, hounsfieldPixels);
+	WindowedImagePointer windowedImage = ITKImageUtil::make_filled_image(3, 3, 2, windowedPixels);
 	GradientMagnitudeImagePointer gradientMagnitudeImage = hounsfieldImage;		// note: this is a hack (for testing purposes)
 
 	CTImageLeafLayer leafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage);

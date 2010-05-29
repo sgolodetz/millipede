@@ -8,27 +8,7 @@
 #include <itkShapedNeighborhoodIterator.h>
 #include <itkZeroFluxNeumannBoundaryCondition.h>
 
-namespace {
-
-template <typename TPixel>
-typename itk::Image<TPixel,2>::Pointer make_2d_image(int width, int height)
-{
-	typedef itk::Image<TPixel,2> Image;
-	typename Image::IndexType start;
-	start.Fill(0);
-	typename Image::SizeType size;
-	size[0] = width;
-	size[1] = height;
-	typename Image::RegionType region;
-	region.SetIndex(start);
-	region.SetSize(size);
-	typename Image::Pointer image = Image::New();
-	image->SetRegions(region);
-	image->Allocate();
-	return image;
-}
-
-}
+#include <common/util/ITKImageUtil.h>
 
 namespace mp {
 
@@ -40,7 +20,7 @@ itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<c
 	typedef itk::Image<unsigned char,2> Image;
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
 
-	Image::Pointer image = make_2d_image<unsigned char>(width, height);
+	Image::Pointer image = ITKImageUtil::make_image<unsigned char>(width, height);
 
 	Image::IndexType index;
 	int n = 0;
@@ -70,7 +50,7 @@ itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boo
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
 
 	// Create an image of the ancestors of the pixels in the specified layer.
-	AncestorImage::Pointer ancestorImage = make_2d_image<PFNodeID>(width, height);
+	AncestorImage::Pointer ancestorImage = ITKImageUtil::make_image<PFNodeID>(width, height);
 
 	AncestorImage::IndexType ancestorIndex;
 	int n = 0;
@@ -106,7 +86,7 @@ itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boo
 
 	// Create the mosaic image by traversing the ancestor image. We mark boundaries where appropriate, and
 	// obtain the non-boundary mosaic values from the properties of the ancestor nodes.
-	MosaicImage::Pointer mosaicImage = make_2d_image<unsigned char>(width, height);
+	MosaicImage::Pointer mosaicImage = ITKImageUtil::make_image<unsigned char>(width, height);
 
 	for(it.GoToBegin(); !it.IsAtEnd(); ++it)
 	{
