@@ -18,14 +18,33 @@ void PartitionModel::add_listener(Listener *listener)
 	m_listeners.push_back(listener);
 }
 
-const SliceTextureSet_Ptr& PartitionModel::dicom_texture_set()				{ return m_dicomTextureSet; }
-SliceTextureSet_CPtr PartitionModel::dicom_texture_set() const				{ return m_dicomTextureSet; }
-const DICOMVolume_Ptr& PartitionModel::dicom_volume()						{ return m_dicomVolume; }
-DICOMVolume_CPtr PartitionModel::dicom_volume() const						{ return m_dicomVolume; }
+SliceTextureSet_CPtr PartitionModel::dicom_texture_set() const					{ return m_dicomTextureSet; }
+DICOMVolume_CPtr PartitionModel::dicom_volume() const							{ return m_dicomVolume; }
+const PartitionModel::IPFG_Ptr& PartitionModel::ipf_grid()						{ return m_ipfGrid; }
+PartitionModel::IPFG_CPtr PartitionModel::ipf_grid() const						{ return m_ipfGrid; }
+
+SliceTextureSet_CPtr PartitionModel::partition_texture_set(int layer) const
+{
+	int n = layer - 1;
+	if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
+	else return SliceTextureSet_CPtr();
+}
 
 void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;
+	alert_listeners();
+}
+
+void PartitionModel::set_ipf_grid(const IPFG_Ptr& ipfGrid)
+{
+	m_ipfGrid = ipfGrid;
+	alert_listeners();
+}
+
+void PartitionModel::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
+{
+	m_partitionTextureSets = partitionTextureSets;
 	alert_listeners();
 }
 

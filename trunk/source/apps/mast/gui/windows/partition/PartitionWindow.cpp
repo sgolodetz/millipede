@@ -88,7 +88,7 @@ void PartitionWindow::calculate_canvas_size()
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
 }
 
-bool PartitionWindow::create_textures(SliceOrientation ori)
+bool PartitionWindow::create_dicom_textures(SliceOrientation ori)
 {
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
@@ -99,6 +99,48 @@ bool PartitionWindow::create_textures(SliceOrientation ori)
 
 	m_model->set_dicom_texture_set(textureSet);
 	return true;
+}
+
+bool PartitionWindow::create_partition_textures(SliceOrientation ori)
+{
+	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> CTIPF;
+	typedef IPFGrid<CTIPF> CTIPFGrid;
+	typedef boost::shared_ptr<const CTIPFGrid> CTIPFGrid_CPtr;
+
+	CTIPFGrid_CPtr ipfGrid = m_model->ipf_grid();
+	if(!ipfGrid) return false;
+	int highestLayer = ipfGrid->highest_layer();
+
+	// Create the mosaic images.
+	std::vector<itk::Image<unsigned char,3>::Pointer> mosaicImages(highestLayer);
+	CompositeJob_Ptr job(new CompositeJob);
+	for(int layer=1; layer<=highestLayer; ++layer)
+	{
+		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, layer, false, mosaicImages[layer-1]));
+	}
+	Job::execute_in_thread(job);
+	if(!show_progress_dialog(this, "Creating Mosaic Images", job)) return false;
+
+	// Create the partition texture sets.
+	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
+	job.reset(new CompositeJob);
+	for(int layer=1; layer<=highestLayer; ++layer)
+	{
+		partitionTextureSets[layer-1].reset(new SliceTextureSet);
+		job->add_subjob(new SliceTextureSetCreator<unsigned char>(mosaicImages[layer-1], ori, partitionTextureSets[layer-1]));
+	}
+	Job::execute_in_thread(job);
+	if(show_progress_dialog(this, "Creating Partition Texture Sets", job))
+	{
+		m_model->set_partition_texture_sets(partitionTextureSets);
+		return true;
+	}
+	else return false;
+}
+
+bool PartitionWindow::create_textures(SliceOrientation ori)
+{
+	return create_dicom_textures(ori);
 }
 
 void PartitionWindow::refresh_canvases()
@@ -204,17 +246,16 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 	if(dialog.segmentation_options())
 	{
 		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
-		typedef CTIPFGridBuilder::IPF CTIPF;
 		typedef CTIPFGridBuilder::IPFG_Ptr CTIPFGrid_Ptr;
 
-		boost::shared_ptr<CTIPFGrid_Ptr> ipfGrid(new CTIPFGrid_Ptr);
-		std::vector<itk::Image<unsigned char,3>::Pointer> mosaicImages;
-
-		CompositeJob_Ptr job(new CompositeJob);
-		job->add_subjob(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));
-		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, mosaicImages, false));
+		CTIPFGrid_Ptr ipfGrid;
+		Job_Ptr job(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));
 		Job::execute_in_thread(job);
-		show_progress_dialog(this, "Segmenting CT Volume", job);
+		if(show_progress_dialog(this, "Segmenting CT Volume", job))
+		{
+			m_model->set_ipf_grid(ipfGrid);
+			create_partition_textures(m_model->slice_orientation());
+		}
 	}
 }
 

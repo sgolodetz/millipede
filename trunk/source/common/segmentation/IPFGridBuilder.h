@@ -81,7 +81,7 @@ private:
 		void execute()
 		{
 			set_status("Creating forest grid...");
-			base->m_ipfGrid->reset(new IPFG(base->m_forests, base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
+			base->m_ipfGrid.reset(new IPFG(base->m_forests, base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
 			set_finished();
 		}
 
@@ -94,7 +94,7 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::vector<IPF_Ptr> m_forests;
-	boost::shared_ptr<IPFG_Ptr> m_ipfGrid;
+	IPFG_Ptr& m_ipfGrid;
 	itk::Size<3> m_gridSize;
 	SegmentationOptions m_segmentationOptions;
 	boost::shared_ptr<DICOMVolume_CPtr> m_subvolume;
@@ -102,7 +102,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, const boost::shared_ptr<IPFG_Ptr>& ipfGrid)
+	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, IPFG_Ptr& ipfGrid)
 	:	m_ipfGrid(ipfGrid), m_segmentationOptions(segmentationOptions), m_subvolume(new DICOMVolume_CPtr), m_volume(volume)
 	{
 		itk::Size<3> volumeSize = volume->size();
