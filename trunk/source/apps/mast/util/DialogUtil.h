@@ -26,7 +26,7 @@ wxFileDialog_Ptr construct_open_dialog(wxWindow *parent, const std::string& capt
 									   const std::string& defaultDir = ".", const std::string& defaultFilename = "");
 wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& caption, const std::string& wildcard,
 									   const std::string& defaultDir = ".", const std::string& defaultFilename = "");
-bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job);
+bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job, bool canAbort = true);
 
 }
 

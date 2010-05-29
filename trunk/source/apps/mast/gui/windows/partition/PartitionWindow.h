@@ -19,9 +19,11 @@ using boost::shared_ptr;
 #include <common/slices/SliceOrientation.h>
 #include <mast/models/PartitionModel.h>
 
+//#################### FORWARD DECLARATIONS ####################
+class wxButton;
+
 namespace mp {
 
-//#################### FORWARD DECLARATIONS ####################
 typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 class PartitionCanvas;
 typedef shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
@@ -41,6 +43,9 @@ private:
 	PartitionModel_Ptr m_model;
 	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
 	DICOMVolumeChoice m_volumeChoice;
+
+	// Top right
+	wxButton *m_segmentVolumeButton;
 
 	// Middle left
 	StratumCanvas *m_stratumCanvas;

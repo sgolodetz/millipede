@@ -119,7 +119,7 @@ bool PartitionWindow::create_partition_textures(SliceOrientation ori)
 		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, layer, false, mosaicImages[layer-1]));
 	}
 	Job::execute_in_thread(job);
-	if(!show_progress_dialog(this, "Creating Mosaic Images", job)) return false;
+	if(!show_progress_dialog(this, "Creating Mosaic Images", job, false)) return false;
 
 	// Create the partition texture sets.
 	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
@@ -130,7 +130,7 @@ bool PartitionWindow::create_partition_textures(SliceOrientation ori)
 		job->add_subjob(new SliceTextureSetCreator<unsigned char>(mosaicImages[layer-1], ori, partitionTextureSets[layer-1]));
 	}
 	Job::execute_in_thread(job);
-	if(show_progress_dialog(this, "Creating Partition Texture Sets", job))
+	if(show_progress_dialog(this, "Creating Partition Texture Sets", job, false))
 	{
 		m_model->set_partition_texture_sets(partitionTextureSets);
 		return true;
@@ -171,8 +171,8 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
 
 	// Top right
-	wxButton *segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_CT_VOLUME, wxT("Segment CT Volume..."));
-	sizer->Add(segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
+	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_CT_VOLUME, wxT("Segment CT Volume..."));
+	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	// Middle left
 	wxPanel *middleLeft = new wxPanel(this);
@@ -254,6 +254,7 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 		if(show_progress_dialog(this, "Segmenting CT Volume", job))
 		{
 			m_model->set_ipf_grid(ipfGrid);
+			m_segmentVolumeButton->Enable(false);
 			create_partition_textures(m_model->slice_orientation());
 		}
 	}

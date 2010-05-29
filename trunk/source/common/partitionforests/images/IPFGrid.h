@@ -26,6 +26,7 @@ public:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::vector<IPF_Ptr> m_forests;
+	itk::Size<3> m_gridSize;
 	itk::Size<3> m_subvolumeSize;
 	itk::Size<3> m_volumeSize;
 
@@ -33,7 +34,12 @@ private:
 public:
 	IPFGrid(const std::vector<IPF_Ptr>& forests, const itk::Size<3>& subvolumeSize, const itk::Size<3>& volumeSize)
 	:	m_forests(forests), m_subvolumeSize(subvolumeSize), m_volumeSize(volumeSize)
-	{}
+	{
+		for(int i=0; i<3; ++i)
+		{
+			m_gridSize[i] = m_volumeSize[i] / m_subvolumeSize[i];
+		}
+	}
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -59,7 +65,7 @@ public:
 		int subvolumeX = x / m_subvolumeSize[0];
 		int subvolumeY = y / m_subvolumeSize[1];
 		int subvolumeZ = z / m_subvolumeSize[2];
-		size_t index = (subvolumeZ * m_subvolumeSize[1] + subvolumeY) * m_subvolumeSize[0] + subvolumeX;
+		size_t index = (subvolumeZ * m_gridSize[1] + subvolumeY) * m_gridSize[0] + subvolumeX;
 		assert(0 <= index && index < m_forests.size());
 		return index;
 	}
