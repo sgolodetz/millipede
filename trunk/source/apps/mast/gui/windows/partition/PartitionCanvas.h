@@ -18,7 +18,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	Texture_CPtr texture_to_display() const;
+	SliceTextureSet_CPtr texture_set_to_display() const;
 };
 
 }

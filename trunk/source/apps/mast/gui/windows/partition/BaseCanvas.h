@@ -15,6 +15,7 @@ namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 typedef shared_ptr<class PartitionModel> PartitionModel_Ptr;
+typedef shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 typedef shared_ptr<const class Texture> Texture_CPtr;
 
 class BaseCanvas : public Canvas
@@ -29,7 +30,7 @@ public:
 
 	//#################### PRIVATE ABSTRACT METHODS ####################
 private:
-	virtual Texture_CPtr texture_to_display() const = 0;
+	virtual SliceTextureSet_CPtr texture_set_to_display() const = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:

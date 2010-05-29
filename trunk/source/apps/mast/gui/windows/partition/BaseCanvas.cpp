@@ -5,7 +5,10 @@
 
 #include "BaseCanvas.h"
 
+#include <common/exceptions/Exception.h>
+#include <common/slices/SliceTextureSet.h>
 #include <common/textures/Texture.h>
+#include <mast/models/PartitionModel.h>
 
 namespace mp {
 
@@ -25,7 +28,20 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glPushAttrib(GL_ENABLE_BIT);
 
-	Texture_CPtr texture = texture_to_display();
+	Texture_CPtr texture;
+	SliceTextureSet_CPtr textureSet = texture_set_to_display();
+	if(textureSet)
+	{
+		assert(m_model != NULL);	// the texture set will have come from the model, so it should be non-null
+		switch(m_model->slice_orientation())
+		{
+			case ORIENT_XY:		texture = textureSet->texture(ORIENT_XY, m_model->view_location().z); break;
+			case ORIENT_XZ:		texture = textureSet->texture(ORIENT_XZ, m_model->view_location().y); break;
+			case ORIENT_YZ:		texture = textureSet->texture(ORIENT_YZ, m_model->view_location().x); break;
+			default:			throw Exception("Unexpected slice orientation");
+		}
+	}
+
 	if(texture)
 	{
 		glEnable(GL_TEXTURE_2D);
