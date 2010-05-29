@@ -24,10 +24,10 @@ class wxButton;
 
 namespace mp {
 
+class DICOMCanvas;
 typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 class PartitionCanvas;
 typedef shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
-class StratumCanvas;
 
 class PartitionWindow : public wxFrame, public PartitionModel::Listener
 {
@@ -48,7 +48,7 @@ private:
 	wxButton *m_segmentVolumeButton;
 
 	// Middle left
-	StratumCanvas *m_stratumCanvas;
+	DICOMCanvas *m_dicomCanvas;
 	wxSlider *m_xSlider, *m_ySlider, *m_zSlider;
 
 	// Middle right

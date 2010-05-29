@@ -17,8 +17,8 @@
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
 #include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
+#include "DICOMCanvas.h"
 #include "PartitionCanvas.h"
-#include "StratumCanvas.h"
 using namespace mp;
 
 namespace {
@@ -58,7 +58,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	Show();
 	setup_gui(context);
 
-	m_stratumCanvas->setup(m_model);
+	m_dicomCanvas->setup(m_model);
 	m_partitionCanvas->setup(m_model);
 
 	create_textures(m_model->slice_orientation());
@@ -67,7 +67,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 //#################### PUBLIC METHODS ####################
 wxGLContext *PartitionWindow::get_context() const
 {
-	return m_stratumCanvas->GetContext();
+	return m_dicomCanvas->GetContext();
 }
 
 void PartitionWindow::model_changed()
@@ -152,7 +152,7 @@ bool PartitionWindow::create_textures(SliceOrientation ori)
 
 void PartitionWindow::refresh_canvases()
 {
-	m_stratumCanvas->Refresh();
+	m_dicomCanvas->Refresh();
 	m_partitionCanvas->Refresh();
 }
 
@@ -185,8 +185,8 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	wxPanel *middleLeft = new wxPanel(this);
 	wxBoxSizer *middleLeftSizer = new wxBoxSizer(wxVERTICAL);
 	middleLeft->SetSizer(middleLeftSizer);
-		m_stratumCanvas = new StratumCanvas(middleLeft, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
-		middleLeftSizer->Add(m_stratumCanvas);
+		m_dicomCanvas = new DICOMCanvas(middleLeft, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
+		middleLeftSizer->Add(m_dicomCanvas);
 
 		wxPanel *middleLeftBottom = new wxPanel(middleLeft);
 		wxFlexGridSizer *middleLeftBottomSizer = new wxFlexGridSizer(0, 2, 0, 0);
