@@ -72,8 +72,13 @@ wxGLContext *PartitionWindow::get_context() const
 
 void PartitionWindow::model_changed()
 {
+	ViewLocation loc = m_model->view_location();
+	m_xSlider->SetValue(loc.x);
+	m_ySlider->SetValue(loc.y);
+	m_zSlider->SetValue(loc.z);
+	m_layerSlider->SetValue(loc.layer);
+
 	refresh_canvases();
-	// TODO: Update slider values
 }
 
 //#################### PRIVATE METHODS ####################
@@ -101,14 +106,14 @@ bool PartitionWindow::create_dicom_textures(SliceOrientation ori)
 	return true;
 }
 
-bool PartitionWindow::create_partition_textures(SliceOrientation ori)
+void PartitionWindow::create_partition_textures(SliceOrientation ori)
 {
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> CTIPF;
 	typedef IPFGrid<CTIPF> CTIPFGrid;
 	typedef boost::shared_ptr<const CTIPFGrid> CTIPFGrid_CPtr;
 
 	CTIPFGrid_CPtr ipfGrid = m_model->ipf_grid();
-	if(!ipfGrid) return false;
+	if(!ipfGrid) return;
 	int highestLayer = ipfGrid->highest_layer();
 
 	// Create the mosaic images.
@@ -119,7 +124,7 @@ bool PartitionWindow::create_partition_textures(SliceOrientation ori)
 		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, layer, false, mosaicImages[layer-1]));
 	}
 	Job::execute_in_thread(job);
-	if(!show_progress_dialog(this, "Creating Mosaic Images", job, false)) return false;
+	show_progress_dialog(this, "Creating Mosaic Images", job, false);
 
 	// Create the partition texture sets.
 	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
@@ -130,17 +135,19 @@ bool PartitionWindow::create_partition_textures(SliceOrientation ori)
 		job->add_subjob(new SliceTextureSetCreator<unsigned char>(mosaicImages[layer-1], ori, partitionTextureSets[layer-1]));
 	}
 	Job::execute_in_thread(job);
-	if(show_progress_dialog(this, "Creating Partition Texture Sets", job, false))
-	{
-		m_model->set_partition_texture_sets(partitionTextureSets);
-		return true;
-	}
-	else return false;
+	show_progress_dialog(this, "Creating Partition Texture Sets", job, false);
+
+	m_model->set_partition_texture_sets(partitionTextureSets);
+	m_layerSlider->SetRange(1, highestLayer);
+	ViewLocation loc = m_model->view_location();
+	m_model->set_view_location(ViewLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
 }
 
 bool PartitionWindow::create_textures(SliceOrientation ori)
 {
-	return create_dicom_textures(ori);
+	if(!create_dicom_textures(ori)) return false;
+	create_partition_textures(ori);
+	return true;
 }
 
 void PartitionWindow::refresh_canvases()
@@ -296,7 +303,8 @@ void PartitionWindow::OnSliderZ(wxScrollEvent&)
 
 void PartitionWindow::OnSliderLayer(wxScrollEvent&)
 {
-	// TODO
+	ViewLocation loc = m_model->view_location();
+	m_model->set_view_location(ViewLocation(loc.x, loc.y, loc.z, m_layerSlider->GetValue()));
 }
 
 //#################### EVENT TABLE ####################

@@ -19,13 +19,14 @@ PartitionCanvas::PartitionCanvas(wxWindow *parent, wxGLContext *context, int *at
 //#################### PRIVATE METHODS ####################
 Texture_CPtr PartitionCanvas::texture_to_display() const
 {
-	if(m_model && m_model->partition_texture_set(2))
+	int layer = m_model->view_location().layer;
+	if(m_model && m_model->partition_texture_set(layer))
 	{
 		switch(m_model->slice_orientation())
 		{
-			case ORIENT_XY:		return m_model->partition_texture_set(2)->texture(ORIENT_XY, m_model->view_location().z);
-			case ORIENT_XZ:		return m_model->partition_texture_set(2)->texture(ORIENT_XZ, m_model->view_location().y);
-			case ORIENT_YZ:		return m_model->partition_texture_set(2)->texture(ORIENT_YZ, m_model->view_location().x);
+			case ORIENT_XY:		return m_model->partition_texture_set(layer)->texture(ORIENT_XY, m_model->view_location().z);
+			case ORIENT_XZ:		return m_model->partition_texture_set(layer)->texture(ORIENT_XZ, m_model->view_location().y);
+			case ORIENT_YZ:		return m_model->partition_texture_set(layer)->texture(ORIENT_YZ, m_model->view_location().x);
 			default:			throw Exception("Unexpected slice orientation");
 		}
 	}

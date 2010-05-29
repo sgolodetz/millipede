@@ -71,7 +71,7 @@ public:
 private:
 	void calculate_canvas_size();
 	bool create_dicom_textures(SliceOrientation ori);
-	bool create_partition_textures(SliceOrientation ori);
+	void create_partition_textures(SliceOrientation ori);
 	bool create_textures(SliceOrientation ori);
 	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
