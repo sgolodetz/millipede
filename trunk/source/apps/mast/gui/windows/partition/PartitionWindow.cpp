@@ -261,7 +261,6 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 		if(show_progress_dialog(this, "Segmenting CT Volume", job))
 		{
 			m_model->set_ipf_grid(ipfGrid);
-			m_segmentVolumeButton->Enable(false);
 			create_partition_textures(m_model->slice_orientation());
 		}
 	}
