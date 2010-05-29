@@ -231,7 +231,12 @@ textures/TextureFactory.h
 )
 
 ##
+SET(util_sources
+util/GridUtil.cpp
+)
+
 SET(util_headers
+util/GridUtil.h
 util/ITKImageUtil.h
 )
 
@@ -253,6 +258,7 @@ ${partitionforests_images_sources}
 ${segmentation_sources}
 ${slices_sources}
 ${textures_sources}
+${util_sources}
 )
 
 SET(headers
@@ -360,6 +366,7 @@ SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
 SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 
 ##
+SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ################################

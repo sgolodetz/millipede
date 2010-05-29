@@ -11,6 +11,7 @@
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/jobs/CompositeJob.h>
 #include <common/partitionforests/images/IPFGrid.h>
+#include <common/util/GridUtil.h>
 
 namespace mp {
 
@@ -46,14 +47,13 @@ private:
 			extractor->SetInput(base->m_volume->base_image());
 
 			// Set the region to extract.
-			// Note: The index is calculated partly using the same formulae as those in ImageLeafLayer::{x,y,z}_of.
 			const itk::Size<3>& gridSize = base->m_gridSize;
 			const itk::Size<3>& subvolumeSize = base->m_segmentationOptions.subvolumeSize;
 			Image::RegionType region;
 			Image::IndexType index;
-			index[0] = (forestIndex % gridSize[0]) * subvolumeSize[0];
-			index[1] = ((forestIndex / gridSize[0]) % gridSize[1]) * subvolumeSize[1];
-			index[2] = (forestIndex / (gridSize[0] * gridSize[1])) * subvolumeSize[2];
+			index[0] = GridUtil::x_of(forestIndex, gridSize[0]) * subvolumeSize[0];
+			index[1] = GridUtil::y_of(forestIndex, gridSize[0], gridSize[1]) * subvolumeSize[1];
+			index[2] = GridUtil::z_of(forestIndex, gridSize[0] * gridSize[1]) * subvolumeSize[2];
 			region.SetIndex(index);
 			region.SetSize(base->m_segmentationOptions.subvolumeSize);
 			extractor->SetRegionOfInterest(region);

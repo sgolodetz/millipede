@@ -74,6 +74,14 @@ public:
 		return m_forests[forest_index_of(x,y,z)];
 	}
 
+	int leaf_index_of(int x, int y, int z) const
+	{
+		int offsetX = x % m_subvolumeSize[0];
+		int offsetY = y % m_subvolumeSize[1];
+		int offsetZ = z % m_subvolumeSize[2];
+		return (offsetZ * m_subvolumeSize[1] + offsetY) * m_subvolumeSize[0] + offsetX;
+	}
+
 	const itk::Size<3>& subvolume_size() const
 	{
 		return m_subvolumeSize;

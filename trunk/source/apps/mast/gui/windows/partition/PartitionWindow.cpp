@@ -215,7 +215,7 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 		// TODO: Eventually this will end up as part of the above.
 		typedef CTIPFGridBuilder::IPF CTIPF;
 		itk::Image<unsigned char,3>::Pointer mosaicImage;
-		MosaicImageCreator<CTIPF> mosaicCreator(ipfGrid, 1, mosaicImage, true);
+		MosaicImageCreator<CTIPF> mosaicCreator(ipfGrid, 1, mosaicImage, false);
 #endif
 	}
 }

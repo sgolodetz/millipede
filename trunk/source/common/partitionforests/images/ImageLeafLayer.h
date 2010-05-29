@@ -11,6 +11,7 @@
 #include <common/adts/WeightedEdge.h>
 #include <common/exceptions/Exception.h>
 #include <common/partitionforests/base/IForestLayer.h>
+#include <common/util/GridUtil.h>
 
 namespace mp {
 
@@ -357,9 +358,9 @@ protected:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	int x_of(int n) const	{ return n % m_sizeX; }
-	int y_of(int n) const	{ return (n / m_sizeX) % m_sizeY; }
-	int z_of(int n) const	{ return n / m_sizeXY; }
+	int x_of(int n) const	{ return GridUtil::x_of(n, m_sizeX); }
+	int y_of(int n) const	{ return GridUtil::y_of(n, m_sizeX, m_sizeY); }
+	int z_of(int n) const	{ return GridUtil::z_of(n, m_sizeXY); }
 };
 
 }
