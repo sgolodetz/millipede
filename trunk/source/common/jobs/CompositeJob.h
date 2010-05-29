@@ -39,6 +39,9 @@ public:
 	std::string status() const;
 };
 
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<CompositeJob> CompositeJob_Ptr;
+
 }
 
 #endif

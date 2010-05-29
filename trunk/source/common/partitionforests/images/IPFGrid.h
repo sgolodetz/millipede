@@ -74,6 +74,17 @@ public:
 		return m_forests[forest_index_of(x,y,z)];
 	}
 
+	int highest_layer() const
+	{
+		int minHighestLayer = INT_MAX;
+		for(size_t i=0, size=m_forests.size(); i<size; ++i)
+		{
+			int highestLayer = m_forests[i]->highest_layer();
+			if(highestLayer < minHighestLayer) minHighestLayer = highestLayer;
+		}
+		return minHighestLayer;
+	}
+
 	int leaf_index_of(int x, int y, int z) const
 	{
 		int offsetX = x % m_subvolumeSize[0];

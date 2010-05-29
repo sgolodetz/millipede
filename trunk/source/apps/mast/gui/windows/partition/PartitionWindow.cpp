@@ -204,19 +204,17 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 	if(dialog.segmentation_options())
 	{
 		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
-		typedef CTIPFGridBuilder::IPFG_Ptr CTIPFGrid_Ptr;
-		CTIPFGrid_Ptr ipfGrid;
-		Job_Ptr gridBuilder(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));
-		Job::execute_in_thread(gridBuilder);
-		show_progress_dialog(this, "Building IPF Grid", gridBuilder);
-		// TODO
-
-#if 0
-		// TODO: Eventually this will end up as part of the above.
 		typedef CTIPFGridBuilder::IPF CTIPF;
-		itk::Image<unsigned char,3>::Pointer mosaicImage;
-		MosaicImageCreator<CTIPF> mosaicCreator(ipfGrid, 1, mosaicImage, false);
-#endif
+		typedef CTIPFGridBuilder::IPFG_Ptr CTIPFGrid_Ptr;
+
+		boost::shared_ptr<CTIPFGrid_Ptr> ipfGrid(new CTIPFGrid_Ptr);
+		std::vector<itk::Image<unsigned char,3>::Pointer> mosaicImages;
+
+		CompositeJob_Ptr job(new CompositeJob);
+		job->add_subjob(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));
+		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, mosaicImages, false));
+		Job::execute_in_thread(job);
+		show_progress_dialog(this, "Segmenting CT Volume", job);
 	}
 }
 

@@ -8,6 +8,7 @@
 
 #include <itkImage.h>
 
+#include <common/io/util/OSSWrapper.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/images/IPFGrid.h>
 #include <common/util/ITKImageUtil.h>
@@ -19,31 +20,37 @@ class MosaicImageCreator : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef boost::shared_ptr<IPF> IPF_Ptr;
+	typedef boost::shared_ptr<const IPF> IPF_CPtr;
 	typedef IPFGrid<IPF> IPFG;
-	typedef boost::shared_ptr<const IPFG> IPFG_CPtr;
+	typedef boost::shared_ptr<IPFG> IPFG_Ptr;
 	typedef itk::Image<unsigned char,3> MosaicImage;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	IPFG_CPtr m_ipfGrid;
-	int m_layerIndex;
+	boost::shared_ptr<IPFG_Ptr> m_ipfGrid;
 	bool m_withBoundaries;
-	MosaicImage::Pointer& m_mosaicImage;
+	std::vector<MosaicImage::Pointer>& m_mosaicImages;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MosaicImageCreator(const IPFG_CPtr& ipfGrid, int layerIndex, MosaicImage::Pointer& mosaicImage, bool withBoundaries)
-	:	m_ipfGrid(ipfGrid), m_layerIndex(layerIndex), m_mosaicImage(mosaicImage), m_withBoundaries(withBoundaries)
+	MosaicImageCreator(const boost::shared_ptr<IPFG_Ptr>& ipfGrid, std::vector<MosaicImage::Pointer>& mosaicImages, bool withBoundaries)
+	:	m_ipfGrid(ipfGrid), m_mosaicImages(mosaicImages), m_withBoundaries(withBoundaries)
 	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
 	void execute()
 	{
-		set_status("Creating mosaic image...");
-		if(m_withBoundaries)	execute_boundaries();
-		else					execute_no_boundaries();
+		set_status("Creating mosaic images...");
+		int highestLayer = (*m_ipfGrid)->highest_layer();
+		if(m_withBoundaries)
+		{
+			for(int i=1; i<=highestLayer; ++i) execute_boundaries(i);
+		}
+		else
+		{
+			for(int i=1; i<=highestLayer; ++i) execute_no_boundaries(i);
+		}
 		set_finished();
 	}
 
@@ -54,24 +61,25 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void execute_boundaries()
+	void execute_boundaries(int layerIndex)
 	{
 		// NYI
 		throw 23;
 	}
 
-	void execute_no_boundaries()
+	void execute_no_boundaries(int layerIndex)
 	{
-		itk::Size<3> size = m_ipfGrid->volume_size();
-		m_mosaicImage = ITKImageUtil::make_image<unsigned char>(size);
+		itk::Size<3> size = (*m_ipfGrid)->volume_size();
+		m_mosaicImages.push_back(ITKImageUtil::make_image<unsigned char>(size));
+		MosaicImage::Pointer mosaicImage = m_mosaicImages.back();
 
 		MosaicImage::IndexType index;
 		for(index[2]=0; index[2]<size[2]; ++index[2])
 			for(index[1]=0; index[1]<size[1]; ++index[1])
 				for(index[0]=0; index[0]<size[0]; ++index[0])
 				{
-					IPF_CPtr ipf = m_ipfGrid->forest_of(index[0], index[1], index[2]);
-					int n = m_ipfGrid->leaf_index_of(index[0], index[1], index[2]);
+					IPF_CPtr ipf = (*m_ipfGrid)->forest_of(index[0], index[1], index[2]);
+					int n = (*m_ipfGrid)->leaf_index_of(index[0], index[1], index[2]);
 
 					unsigned char mosaicValue;
 					if(layerIndex > 0)
@@ -81,10 +89,8 @@ private:
 					}
 					else mosaicValue = ipf->leaf_properties(n).grey_value();
 
-					m_mosaicImage->SetPixel(index, mosaicValue);
+					mosaicImage->SetPixel(index, mosaicValue);
 				}
-
-		return mosaicImage;
 	}
 };
 
