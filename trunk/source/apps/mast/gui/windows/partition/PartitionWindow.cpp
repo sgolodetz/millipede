@@ -73,9 +73,9 @@ wxGLContext *PartitionWindow::get_context() const
 void PartitionWindow::model_changed()
 {
 	ViewLocation loc = m_model->view_location();
-	m_xSlider->SetValue(loc.x);
-	m_ySlider->SetValue(loc.y);
-	m_zSlider->SetValue(loc.z);
+	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
+	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
+	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
 	m_layerSlider->SetValue(loc.layer);
 
 	refresh_canvases();
