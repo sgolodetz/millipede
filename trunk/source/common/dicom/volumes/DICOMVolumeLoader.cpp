@@ -40,12 +40,8 @@ try
 
 	// Set up the desired region for each of the slices.
 	Image2D::RegionType region;
-	Image2D::IndexType index;
-	index[0] = m_volumeChoice.minX;
-	index[1] = m_volumeChoice.minY;
-	Image2D::SizeType size;
-	size[0] = m_volumeChoice.maxX + 1 - m_volumeChoice.minX;
-	size[1] = m_volumeChoice.maxY + 1 - m_volumeChoice.minY;
+	Image2D::IndexType index = {{m_volumeChoice.minX, m_volumeChoice.minY}};
+	Image2D::SizeType size = {m_volumeChoice.maxX + 1 - m_volumeChoice.minX, m_volumeChoice.maxY + 1 - m_volumeChoice.minY};
 	region.SetIndex(index);
 	region.SetSize(size);
 

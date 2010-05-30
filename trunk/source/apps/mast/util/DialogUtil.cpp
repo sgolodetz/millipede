@@ -46,6 +46,7 @@ bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Jo
 	if(canAbort) style |= wxPD_CAN_ABORT;
 	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), parent, style);
 	dialog.SetSize(600, 200);
+	dialog.CenterOnParent();
 
 	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
 

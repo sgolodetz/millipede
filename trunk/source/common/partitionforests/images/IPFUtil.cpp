@@ -63,8 +63,7 @@ itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boo
 
 	// Set up an iterator to traverse the ancestor image, whilst allowing us to access the neighbours of each pixel.
 	typedef itk::ConstShapedNeighborhoodIterator<AncestorImage> ConstShapedNeighbourhoodIteratorType;
-	AncestorImage::SizeType radius;
-	radius.Fill(1);
+	AncestorImage::SizeType radius = {1,1};
 	ConstShapedNeighbourhoodIteratorType it(radius, ancestorImage, ancestorImage->GetLargestPossibleRegion());
 	std::vector<AncestorImage::OffsetType> offsets(4);
 	offsets[0][0] = 0;	offsets[0][1] = -1;

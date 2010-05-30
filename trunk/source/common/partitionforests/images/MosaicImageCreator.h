@@ -6,7 +6,8 @@
 #ifndef H_MILLIPEDE_MOSAICIMAGECREATOR
 #define H_MILLIPEDE_MOSAICIMAGECREATOR
 
-#include <itkImage.h>
+#include <itkConstantBoundaryCondition.h>
+#include <itkShapedNeighborhoodIterator.h>
 
 #include <common/io/util/OSSWrapper.h>
 #include <common/jobs/SimpleJob.h>
@@ -57,8 +58,87 @@ public:
 private:
 	void execute_boundaries()
 	{
-		// NYI
-		throw 23;
+		typedef itk::Image<PFNodeID,3> AncestorImage;
+		typedef itk::Image<int,3> ForestImage;
+
+		itk::Size<3> volumeSize = m_ipfGrid->volume_size();
+
+		// Create an image of the forest indices of each pixel, and another of their ancestors in the specified layer of their respective forests.
+		AncestorImage::Pointer ancestorImage = ITKImageUtil::make_image<PFNodeID>(volumeSize);
+		ForestImage::Pointer forestImage = ITKImageUtil::make_image<int>(volumeSize);
+
+		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
+		itk::Index<3> size = ITKImageUtil::make_index_from_size(volumeSize);
+
+		itk::Index<3> index;
+		for(index[2]=0; index[2]<size[2]; ++index[2])
+			for(index[1]=0; index[1]<size[1]; ++index[1])
+				for(index[0]=0; index[0]<size[0]; ++index[0])
+				{
+					int forestIndex = m_ipfGrid->forest_index_of(index[0], index[1], index[2]);
+					forestImage->SetPixel(index, forestIndex);
+
+					int n = m_ipfGrid->leaf_index_of(index[0], index[1], index[2]);
+					ancestorImage->SetPixel(index, m_ipfGrid->forest(forestIndex)->ancestor_of(PFNodeID(0, n), m_layerIndex));
+				}
+
+		// Set up iterators to traverse the forest and ancestor images, whilst allowing us to access the neighbours of each pixel.
+		typedef itk::ConstShapedNeighborhoodIterator<AncestorImage> AncestorNIT;
+		typedef itk::ConstShapedNeighborhoodIterator<ForestImage> ForestNIT;
+		itk::Size<3> radius = {1,1,1};
+		AncestorNIT ait(radius, ancestorImage, ancestorImage->GetLargestPossibleRegion());
+		ForestNIT fit(radius, forestImage, forestImage->GetLargestPossibleRegion());
+		std::vector<itk::Offset<3> > offsets(6);
+		offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
+		offsets[1][0] = 0;	offsets[1][1] = -1;	offsets[1][2] = 0;
+		offsets[2][0] = -1;	offsets[2][1] = 0;	offsets[2][2] = 0;
+		offsets[3][0] = 1;	offsets[3][1] = 0;	offsets[3][2] = 0;
+		offsets[4][0] = 0;	offsets[4][1] = 1;	offsets[4][2] = 0;
+		offsets[5][0] = 0;	offsets[5][1] = 0;	offsets[5][2] = 1;
+		for(std::vector<itk::Offset<3> >::const_iterator kt=offsets.begin(), kend=offsets.end(); kt!=kend; ++kt)
+		{
+			ait.ActivateOffset(*kt);
+			fit.ActivateOffset(*kt);
+		}
+
+		// Set up a boundary condition that makes forest pixels beyond the boundary equal to -1.
+		itk::ConstantBoundaryCondition<ForestImage> condition;
+		condition.SetConstant(-1);
+		fit.OverrideBoundaryCondition(&condition);
+
+		// Create the mosaic image by traversing the forest and ancestor images. We mark boundaries where appropriate,
+		// and obtain the non-boundary mosaic values from the properties of the ancestor nodes.
+		m_mosaicImage = ITKImageUtil::make_image<unsigned char>(volumeSize);
+
+		for(ait.GoToBegin(), fit.GoToBegin(); !fit.IsAtEnd(); ++ait, ++fit)
+		{
+			bool regionBoundary = false;
+			AncestorNIT::ConstIterator ajt = ait.Begin();
+			ForestNIT::ConstIterator fjt = fit.Begin(), fjend = fit.End();
+			for(; fjt!=fjend; ++ajt, ++fjt)
+			{
+				// If one of the pixel's neighbours is in the same forest and has a different ancestor, the pixel is a boundary.
+				if(fjt.Get() == fit.GetCenterPixel() && ajt.Get() != ait.GetCenterPixel())
+				{
+					regionBoundary = true;
+					break;
+				}
+			}
+
+			itk::Index<3> pixelIndex = ait.GetIndex();
+			unsigned char mosaicValue;
+			if(regionBoundary)
+			{
+				mosaicValue = 192;
+			}
+			else
+			{
+				IPF_CPtr ipf = m_ipfGrid->forest(fit.GetCenterPixel());
+				if(m_layerIndex > 0)	mosaicValue = static_cast<unsigned char>(ipf->branch_properties(ait.GetCenterPixel()).mean_grey_value());
+				else					mosaicValue = ipf->leaf_properties(ait.GetCenterPixel().index()).grey_value();
+			}
+			m_mosaicImage->SetPixel(pixelIndex, mosaicValue);
+		}
 	}
 
 	void execute_no_boundaries()

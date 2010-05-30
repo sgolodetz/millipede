@@ -121,7 +121,7 @@ void PartitionWindow::create_partition_textures(SliceOrientation ori)
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, layer, false, mosaicImages[layer-1]));
+		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, layer, true, mosaicImages[layer-1]));
 	}
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Mosaic Images", job, false);

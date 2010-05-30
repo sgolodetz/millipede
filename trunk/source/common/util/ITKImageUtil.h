@@ -52,19 +52,14 @@ typename itk::Image<TPixel,Dimension>::Pointer make_image(const itk::Size<Dimens
 template <typename TPixel>
 typename itk::Image<TPixel,2>::Pointer make_image(int sizeX, int sizeY)
 {
-	itk::Size<2> size;
-	size[0] = sizeX;
-	size[1] = sizeY;
+	itk::Size<2> size = {sizeX, sizeY};
 	return make_image<TPixel,2>(size);
 }
 
 template <typename TPixel>
 typename itk::Image<TPixel,3>::Pointer make_image(int sizeX, int sizeY, int sizeZ)
 {
-	itk::Size<3> size;
-	size[0] = sizeX;
-	size[1] = sizeY;
-	size[2] = sizeZ;
+	itk::Size<3> size = {sizeX, sizeY, sizeZ};
 	return make_image<TPixel,3>(size);
 }
 

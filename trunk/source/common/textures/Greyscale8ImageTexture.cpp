@@ -42,9 +42,7 @@ void Greyscale8ImageTexture::reload_image() const
 
 		resampler->SetDefaultPixelValue(50);
 
-		Image::SizeType newSize;
-		newSize[0] = desiredWidth;
-		newSize[1] = desiredHeight;
+		Image::SizeType newSize = {desiredWidth, desiredHeight};
 		resampler->SetSize(newSize);
 
 		resampler->SetOutputOrigin(m_image->GetOrigin());
