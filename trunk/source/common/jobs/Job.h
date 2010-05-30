@@ -23,6 +23,7 @@ private:
 	//#################### PROTECTED VARIABLES ####################
 protected:
 	mutable boost::mutex m_mutex;
+	std::string m_status;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -45,6 +46,14 @@ public:
 	static boost::shared_ptr<boost::thread> execute_in_thread(const boost::shared_ptr<Job>& job);
 	bool is_aborted() const;
 	bool is_finished() const;
+
+	//#################### PROTECTED METHODS ####################
+protected:
+	void set_status(const std::string& status);
+
+	//#################### PRIVATE METHODS ####################
+private:
+	static void safe_job_executor(const boost::shared_ptr<Job>& job);
 };
 
 //#################### TYPEDEFS ####################

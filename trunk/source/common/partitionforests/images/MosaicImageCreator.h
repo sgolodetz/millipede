@@ -129,7 +129,7 @@ private:
 			unsigned char mosaicValue;
 			if(regionBoundary)
 			{
-				mosaicValue = 192;
+				mosaicValue = std::numeric_limits<unsigned char>::max();
 			}
 			else
 			{

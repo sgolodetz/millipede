@@ -43,10 +43,4 @@ void SimpleJob::set_progress(int progress)
 	m_progress = progress;
 }
 
-void SimpleJob::set_status(const std::string& status)
-{
-	boost::mutex::scoped_lock lock(m_mutex);
-	m_status = status;
-}
-
 }

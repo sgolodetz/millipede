@@ -15,7 +15,6 @@ class SimpleJob : public Job
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_progress;
-	std::string m_status;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -31,7 +30,6 @@ protected:
 	void increment_progress();
 	void set_finished();
 	void set_progress(int progress);
-	void set_status(const std::string& status);
 };
 
 }
