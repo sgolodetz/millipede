@@ -85,7 +85,7 @@ private:
 		// Set up iterators to traverse the forest and ancestor images, whilst allowing us to access the neighbours of each pixel.
 		typedef itk::ConstShapedNeighborhoodIterator<AncestorImage> AncestorNIT;
 		typedef itk::ConstShapedNeighborhoodIterator<ForestImage> ForestNIT;
-		itk::Size<3> radius = {1,1,1};
+		itk::Size<3> radius = {{1,1,1}};
 		AncestorNIT ait(radius, ancestorImage, ancestorImage->GetLargestPossibleRegion());
 		ForestNIT fit(radius, forestImage, forestImage->GetLargestPossibleRegion());
 		std::vector<itk::Offset<3> > offsets(6);

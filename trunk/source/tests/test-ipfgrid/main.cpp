@@ -15,10 +15,10 @@ void basic_test()
 	typedef IPFGrid<IPF> IPFG;
 
 	// The volume as a whole is of size 4x4x4.
-	itk::Size<3> volumeSize = {4, 4, 4};
+	itk::Size<3> volumeSize = {{4, 4, 4}};
 
 	// Each forest will be constructed from a sub-volume of size 2x2x1.
-	itk::Size<3> subvolumeSize = {2, 2, 1};
+	itk::Size<3> subvolumeSize = {{2, 2, 1}};
 
 	int forestCount = 1;
 	for(int i=0; i<3; ++i) forestCount *= volumeSize[i] / subvolumeSize[i];
