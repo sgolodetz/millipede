@@ -8,6 +8,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <wx/bookctrl.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
@@ -64,14 +65,24 @@ const boost::optional<CTSegmentationOptions>& SegmentCTVolumeDialog::segmentatio
 }
 
 //#################### PRIVATE METHODS ####################
-void SegmentCTVolumeDialog::construct_segmentation_options()
+bool SegmentCTVolumeDialog::construct_segmentation_options()
 {
+	itk::Size<3> subvolumeSize;
+	for(int i=0; i<3; ++i)
+	{
+		subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
+
+		if(m_volumeSize[i] % subvolumeSize[i] != 0)
+		{
+			wxMessageBox(wxT("Error: The subvolume dimensions must be factors of the volume dimensions."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+			return false;
+		}
+	}
 	int adfIterations = m_adfIterations->GetValue();
 	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
-	itk::Size<3> subvolumeSize;
-	for(int i=0; i<3; ++i) subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
 	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
 	m_segmentationOptions = CTSegmentationOptions(adfIterations, inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
+	return true;
 }
 
 wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
@@ -170,8 +181,10 @@ wxPanel *SegmentCTVolumeDialog::create_modality_page(wxWindow *parent)
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void SegmentCTVolumeDialog::OnButtonOK(wxCommandEvent&)
 {
-	construct_segmentation_options();
-	Close();
+	if(construct_segmentation_options())
+	{
+		Close();
+	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
