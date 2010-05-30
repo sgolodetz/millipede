@@ -63,10 +63,13 @@ private:
 
 	void execute_no_boundaries()
 	{
-		itk::Size<3> size = m_ipfGrid->volume_size();
-		m_mosaicImage = ITKImageUtil::make_image<unsigned char>(size);
+		itk::Size<3> volumeSize = m_ipfGrid->volume_size();
+		m_mosaicImage = ITKImageUtil::make_image<unsigned char>(volumeSize);
 
-		MosaicImage::IndexType index;
+		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
+		itk::Index<3> size = ITKImageUtil::make_index_from_size(volumeSize);
+
+		itk::Index<3> index;
 		for(index[2]=0; index[2]<size[2]; ++index[2])
 			for(index[1]=0; index[1]<size[1]; ++index[1])
 				for(index[0]=0; index[0]<size[0]; ++index[0])

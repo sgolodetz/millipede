@@ -13,12 +13,6 @@ namespace mp {
 namespace ITKImageUtil {
 
 //#################### FUNCTIONS ####################
-template <typename ImagePointer, typename TPixel>
-void fill_image(const ImagePointer& image, const TPixel *const pixels)
-{
-	fill_image(image, pixels, *image);
-}
-
 template <typename TPixel, unsigned int Dimension>
 void fill_image(const typename itk::Image<TPixel,Dimension>::Pointer& image, const TPixel *const pixels, itk::Image<TPixel,Dimension>& /* dummy */)
 {
@@ -32,6 +26,12 @@ void fill_image(const typename itk::Image<TPixel,Dimension>::Pointer& image, con
 	{
 		it.Set(*p++);
 	}
+}
+
+template <typename ImagePointer, typename TPixel>
+void fill_image(const ImagePointer& image, const TPixel *const pixels)
+{
+	fill_image(image, pixels, *image);
 }
 
 template <typename TPixel, unsigned int Dimension>
@@ -92,17 +92,22 @@ typename itk::Image<TPixel,3>::Pointer make_filled_image(int sizeX, int sizeY, i
 	return image;
 }
 
-template <typename ImagePointer>
-void output_image(std::ostream& os, const ImagePointer& image)
+template <unsigned int Dimension>
+typename itk::Index<Dimension> make_index_from_size(const itk::Size<Dimension>& size)
 {
-	output_image(os, *image);
+	itk::Index<Dimension> index;
+	for(unsigned int i=0; i<Dimension; ++i) index[i] = static_cast<long>(size[i]);
+	return index;
 }
 
 template <typename TPixel>
 void output_image(std::ostream& os, const itk::Image<TPixel,2>& image)
 {
 	typedef itk::Image<TPixel,2> Image;
-	typename Image::SizeType size = image.GetLargestPossibleRegion().GetSize();
+
+	// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
+	typename Image::IndexType size = make_index_from_size(image.GetLargestPossibleRegion().GetSize());
+
 	typename Image::IndexType index;
 	for(index[1]=0; index[1]<size[1]; ++index[1])
 	{
@@ -118,7 +123,10 @@ template <typename TPixel>
 void output_image(std::ostream& os, const itk::Image<TPixel,3>& image)
 {
 	typedef itk::Image<TPixel,3> Image;
-	typedef Image::SizeType size = image.GetLargestPossibleRegion().GetSize();
+
+	// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
+	typename Image::IndexType size = make_index_from_size(image.GetLargestPossibleRegion().GetSize());
+
 	typename Image::IndexType index;
 	for(index[2]=0; index[2]<size[2]; ++index[2])
 	{
@@ -132,6 +140,12 @@ void output_image(std::ostream& os, const itk::Image<TPixel,3>& image)
 			os << '\n';
 		}
 	}
+}
+
+template <typename ImagePointer>
+void output_image(std::ostream& os, const ImagePointer& image)
+{
+	output_image(os, *image);
 }
 
 }
