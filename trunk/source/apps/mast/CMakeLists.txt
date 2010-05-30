@@ -20,15 +20,6 @@ Application.h
 )
 
 ##
-SET(gui_base_sources
-gui/base/Canvas.cpp
-)
-
-SET(gui_base_headers
-gui/base/Canvas.h
-)
-
-##
 SET(gui_dialogs_sources
 gui/dialogs/SegmentCTVolumeDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
@@ -37,6 +28,15 @@ gui/dialogs/VolumeChooserDialog.cpp
 SET(gui_dialogs_headers
 gui/dialogs/SegmentCTVolumeDialog.h
 gui/dialogs/VolumeChooserDialog.h
+)
+
+##
+SET(gui_util_sources
+gui/util/Canvas.cpp
+)
+
+SET(gui_util_headers
+gui/util/Canvas.h
 )
 
 ##
@@ -89,8 +89,8 @@ util/StringConversion.h
 
 SET(sources
 ${mast_sources}
-${gui_base_sources}
 ${gui_dialogs_sources}
+${gui_util_sources}
 ${gui_windows_main_sources}
 ${gui_windows_partition_sources}
 ${models_sources}
@@ -99,8 +99,8 @@ ${util_sources}
 
 SET(headers
 ${mast_headers}
-${gui_base_headers}
 ${gui_dialogs_headers}
+${gui_util_headers}
 ${gui_windows_main_headers}
 ${gui_windows_partition_headers}
 ${models_headers}
@@ -119,12 +119,12 @@ SOURCE_GROUP(.cpp FILES ${mast_sources})
 SOURCE_GROUP(.h FILES ${mast_headers})
 
 ##
-SOURCE_GROUP(gui\\base\\.cpp FILES ${gui_base_sources})
-SOURCE_GROUP(gui\\base\\.h FILES ${gui_base_headers})
-
-##
 SOURCE_GROUP(gui\\dialogs\\.cpp FILES ${gui_dialogs_sources})
 SOURCE_GROUP(gui\\dialogs\\.h FILES ${gui_dialogs_headers})
+
+##
+SOURCE_GROUP(gui\\util\\.cpp FILES ${gui_util_sources})
+SOURCE_GROUP(gui\\util\\.h FILES ${gui_util_headers})
 
 ##
 SOURCE_GROUP(gui\\windows\\main\\.cpp FILES ${gui_windows_main_sources})
