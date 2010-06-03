@@ -229,7 +229,7 @@ void real_image_test()
 	adFilter->SetTimeStep(0.125);
 
 	// Calculate the gradient magnitude of the smoothed image.
-	typedef itk::Image<int,2> GradientMagnitudeImage;
+	typedef itk::Image<short,2> GradientMagnitudeImage;
 	typedef itk::GradientMagnitudeImageFilter<RealImage,GradientMagnitudeImage> GradientMagnitudeFilter;
 	GradientMagnitudeFilter::Pointer gradientMagnitudeFilter = GradientMagnitudeFilter::New();
 	gradientMagnitudeFilter->SetInput(adFilter->GetOutput());
@@ -237,7 +237,7 @@ void real_image_test()
 	gradientMagnitudeFilter->Update();
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
 
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,2> WS;
 
 	// Run the watershed algorithm on the gradient magnitude image.
 	std::cout << "Running watershed...\n";

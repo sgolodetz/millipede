@@ -31,7 +31,7 @@ CTIPFBuilder::CTIPFBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, co
 //#################### PUBLIC METHODS ####################
 void CTIPFBuilder::execute()
 {
-	typedef itk::Image<int,3> GradientMagnitudeImage;
+	typedef itk::Image<short,3> GradientMagnitudeImage;
 	typedef itk::Image<int,3> HounsfieldImage;
 	typedef itk::Image<float,3> RealImage;
 	typedef itk::Image<unsigned char,3> WindowedImage;

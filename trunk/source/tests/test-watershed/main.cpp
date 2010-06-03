@@ -106,7 +106,7 @@ void forest_test()
 	// Create the Hounsfield and 'windowed' images.
 	typedef itk::Image<int,2> HounsfieldImage;
 	typedef itk::Image<unsigned char,2> WindowedImage;
-	typedef itk::Image<int,2> GradientMagnitudeImage;
+	typedef itk::Image<short,2> GradientMagnitudeImage;
 
 	int pixels[] =
 	{
@@ -143,7 +143,7 @@ void forest_test()
 	std::cout << '\n';
 
 	// Run the watershed algorithm on the gradient magnitude image.
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,2> WS;
 	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
 
 	// Output the results.
@@ -200,7 +200,7 @@ void real_image_test()
 	adFilter->SetTimeStep(0.125);
 
 	// Calculate the gradient magnitude of the smoothed image.
-	typedef itk::Image<int,2> GradientMagnitudeImage;
+	typedef itk::Image<short,2> GradientMagnitudeImage;
 	typedef itk::GradientMagnitudeImageFilter<RealImage,GradientMagnitudeImage> GradientMagnitudeFilter;
 	GradientMagnitudeFilter::Pointer gradientMagnitudeFilter = GradientMagnitudeFilter::New();
 	gradientMagnitudeFilter->SetInput(adFilter->GetOutput());
@@ -209,7 +209,7 @@ void real_image_test()
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
 
 	// Run the watershed algorithm on the gradient magnitude image.
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,2> WS;
 	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
 
 	std::cout << "Label Count: " << ws.label_count() << '\n';

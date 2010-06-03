@@ -14,17 +14,18 @@ class CTPixelProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	int m_gradientMagnitudeValue;
-	unsigned char m_greyValue;
+	// Note: Deliberately listed in non-increasing order of data size to try and minimize padding.
 	int m_hounsfieldValue;
+	short m_gradientMagnitudeValue;
+	unsigned char m_greyValue;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTPixelProperties(int gradientMagnitudeValue, unsigned char greyValue, int hounsfieldValue);
+	CTPixelProperties(short gradientMagnitudeValue, unsigned char greyValue, int hounsfieldValue);
 
 	//#################### PUBLIC METHODS ####################
 public:
-	int gradient_magnitude_value() const;
+	short gradient_magnitude_value() const;
 	unsigned char grey_value() const;
 	int hounsfield_value() const;
 };

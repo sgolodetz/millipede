@@ -20,7 +20,7 @@ void adjacency_graph_mst()
 
 void ct_leaf_layer_mst()
 {
-	typedef itk::Image<int,3>::Pointer GradientMagnitudeImagePointer;
+	typedef itk::Image<short,3>::Pointer GradientMagnitudeImagePointer;
 	typedef itk::Image<int,3>::Pointer HounsfieldImagePointer;
 	typedef itk::Image<unsigned char,3>::Pointer WindowedImagePointer;
 
@@ -44,9 +44,20 @@ void ct_leaf_layer_mst()
 		9, 10, 15
 	};
 
+	// Note: These aren't intended to be the correct values, they're just for testing purposes.
+	short gradientMagnitudePixels[] = {
+		-3, -3, -1,
+		2, 1, 0,
+		5, 4, 2,
+
+		10, 9, 8,
+		8, 11, 7,
+		6, 7, 12
+	};
+
 	HounsfieldImagePointer hounsfieldImage = ITKImageUtil::make_filled_image(3, 3, 2, hounsfieldPixels);
 	WindowedImagePointer windowedImage = ITKImageUtil::make_filled_image(3, 3, 2, windowedPixels);
-	GradientMagnitudeImagePointer gradientMagnitudeImage = hounsfieldImage;		// note: this is a hack (for testing purposes)
+	GradientMagnitudeImagePointer gradientMagnitudeImage = ITKImageUtil::make_filled_image(3, 3, 2, gradientMagnitudePixels);
 
 	CTImageLeafLayer leafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage);
 

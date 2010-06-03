@@ -21,10 +21,10 @@ public:
 	CTImageLeafLayer(const std::vector<CTPixelProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1);
 	CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage,
 					 const itk::Image<unsigned char,2>::Pointer& windowedImage,
-					 const itk::Image<int,2>::Pointer& gradientMagnitudeImage);
+					 const itk::Image<short,2>::Pointer& gradientMagnitudeImage);
 	CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage,
 					 const itk::Image<unsigned char,3>::Pointer& windowedImage,
-					 const itk::Image<int,3>::Pointer& gradientMagnitudeImage);
+					 const itk::Image<short,3>::Pointer& gradientMagnitudeImage);
 
 	//#################### PUBLIC METHODS ####################
 public:

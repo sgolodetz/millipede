@@ -15,11 +15,11 @@ CTImageLeafLayer::CTImageLeafLayer(const std::vector<CTPixelProperties>& nodePro
 
 CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage,
 								   const itk::Image<unsigned char,2>::Pointer& windowedImage,
-								   const itk::Image<int,2>::Pointer& gradientMagnitudeImage)
+								   const itk::Image<short,2>::Pointer& gradientMagnitudeImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
-	typedef itk::Image<int,2> GradientMagnitudeImage;
+	typedef itk::Image<short,2> GradientMagnitudeImage;
 	typedef itk::Image<unsigned char,2> WindowedImage;
 	typedef itk::Image<int,2> HounsfieldImage;
 
@@ -46,11 +46,11 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldI
 
 CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage,
 								   const itk::Image<unsigned char,3>::Pointer& windowedImage,
-								   const itk::Image<int,3>::Pointer& gradientMagnitudeImage)
+								   const itk::Image<short,3>::Pointer& gradientMagnitudeImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
-	typedef itk::Image<int,3> GradientMagnitudeImage;
+	typedef itk::Image<short,3> GradientMagnitudeImage;
 	typedef itk::Image<unsigned char,3> WindowedImage;
 	typedef itk::Image<int,3> HounsfieldImage;
 
