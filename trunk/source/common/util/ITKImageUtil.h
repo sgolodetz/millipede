@@ -15,6 +15,10 @@ namespace mp {
 namespace ITKImageUtil {
 
 //#################### FUNCTIONS ####################
+std::vector<itk::Offset<2> > make_4_connected_offsets();
+std::vector<itk::Offset<3> > make_6_connected_offsets();
+
+//#################### TEMPLATE FUNCTIONS ####################
 template <typename TPixel, unsigned int Dimension>
 void fill_image(const typename itk::Image<TPixel,Dimension>::Pointer& image, const TPixel *const pixels, itk::Image<TPixel,Dimension>& /* dummy */)
 {
@@ -95,28 +99,6 @@ typename itk::Index<Dimension> make_index_from_size(const itk::Size<Dimension>& 
 	itk::Index<Dimension> index;
 	for(unsigned int i=0; i<Dimension; ++i) index[i] = static_cast<long>(size[i]);
 	return index;
-}
-
-inline std::vector<itk::Offset<2> > make_4_connected_offsets()
-{
-	std::vector<itk::Offset<2> > offsets(4);
-	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
-	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
-	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
-	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
-	return offsets;
-}
-
-inline std::vector<itk::Offset<3> > make_6_connected_offsets()
-{
-	std::vector<itk::Offset<3> > offsets(6);
-	offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
-	offsets[1][0] = 0;	offsets[1][1] = -1;	offsets[1][2] = 0;
-	offsets[2][0] = -1;	offsets[2][1] = 0;	offsets[2][2] = 0;
-	offsets[3][0] = 1;	offsets[3][1] = 0;	offsets[3][2] = 0;
-	offsets[4][0] = 0;	offsets[4][1] = 1;	offsets[4][2] = 0;
-	offsets[5][0] = 0;	offsets[5][1] = 0;	offsets[5][2] = 1;
-	return offsets;
 }
 
 template <typename TPixel>

@@ -231,6 +231,7 @@ textures/TextureFactory.h
 ##
 SET(util_sources
 util/GridUtil.cpp
+util/ITKImageUtil.cpp
 )
 
 SET(util_headers
