@@ -7,8 +7,7 @@
 #define H_MILLIPEDE_ITKIMAGETEXTURE
 
 #include <itkAffineTransform.h>
-#include <itkLinearInterpolateImageFunction.h>
-#include <itkResampleImageFilter.h>
+#include <itkImage.h>
 
 #include "Texture.h"
 
@@ -42,7 +41,8 @@ protected:
 	/**
 	Calculate a version of the image that is resized so that its dimensions are powers of two if necessary.
 	*/
-	ImagePointer input_image() const
+	template <typename Resampler, typename Interpolator>
+	ImagePointer input_image(const typename Image::PixelType& defaultValue) const
 	{
 		itk::Size<2> size = image()->GetLargestPossibleRegion().GetSize();
 
@@ -54,14 +54,11 @@ protected:
 			return image();
 		}
 
-		typedef itk::LinearInterpolateImageFunction<Image> Interpolator;
-		typedef itk::ResampleImageFilter<Image,Image> Resampler;
-		typedef itk::AffineTransform<double,2> Transform;
-
 		typename Resampler::Pointer resampler = Resampler::New();
+		typedef itk::AffineTransform<double,2> Transform;
 		resampler->SetTransform(Transform::New());
 		resampler->SetInterpolator(Interpolator::New());
-		resampler->SetDefaultPixelValue(50);
+		resampler->SetDefaultPixelValue(defaultValue);
 		itk::Size<2> newSize = {{desiredWidth, desiredHeight}};
 		resampler->SetSize(newSize);
 		resampler->SetOutputOrigin(image()->GetOrigin());

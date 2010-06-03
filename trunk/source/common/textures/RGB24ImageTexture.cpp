@@ -5,6 +5,9 @@
 
 #include "RGB24ImageTexture.h"
 
+#include <itkVectorLinearInterpolateImageFunction.h>
+#include <itkVectorResampleImageFilter.h>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -17,6 +20,11 @@ RGB24ImageTexture::RGB24ImageTexture(const ImagePointer& image, const boost::opt
 //#################### PRIVATE METHODS ####################
 void RGB24ImageTexture::reload_image() const
 {
+	typedef itk::VectorLinearInterpolateImageFunction<Image> Interpolator;
+	typedef itk::VectorResampleImageFilter<Image,Image> Resampler;
+	ImagePointer input = input_image<Resampler,Interpolator>(50);
+	itk::Size<2> size = input->GetLargestPossibleRegion().GetSize();
+
 	// NYI
 	throw 23;
 }
