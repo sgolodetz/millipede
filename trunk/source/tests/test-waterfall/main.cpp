@@ -16,10 +16,10 @@ using boost::shared_ptr;
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/IPFUtil.h>
 #include <common/segmentation/CTIPFBuilder.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
+#include "IPFUtil.h"
 using namespace mp;
 
 typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;

@@ -7,8 +7,8 @@
 #define H_MILLIPEDE_IPFUTIL
 
 #include <common/partitionforests/base/PartitionForest.h>
-#include "CTImageBranchLayer.h"
-#include "CTImageLeafLayer.h"
+#include <common/partitionforests/images/CTImageBranchLayer.h>
+#include <common/partitionforests/images/CTImageLeafLayer.h>
 
 namespace mp {
 

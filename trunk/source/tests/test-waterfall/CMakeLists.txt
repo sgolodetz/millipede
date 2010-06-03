@@ -10,13 +10,21 @@ SET(targetname test-waterfall)
 # Specify the project files #
 #############################
 
-SET(sources main.cpp)
+SET(sources
+IPFUtil.cpp
+main.cpp
+)
+
+SET(headers
+IPFUtil.h
+)
 
 #############################
 # Specify the source groups #
 #############################
 
 SOURCE_GROUP(.cpp FILES ${sources})
+SOURCE_GROUP(.h FILES ${headers})
 
 ################################
 # Specify the libraries to use #
