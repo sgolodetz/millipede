@@ -88,13 +88,7 @@ private:
 		itk::Size<3> radius = {{1,1,1}};
 		AncestorNIT ait(radius, ancestorImage, ancestorImage->GetLargestPossibleRegion());
 		ForestNIT fit(radius, forestImage, forestImage->GetLargestPossibleRegion());
-		std::vector<itk::Offset<3> > offsets(6);
-		offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
-		offsets[1][0] = 0;	offsets[1][1] = -1;	offsets[1][2] = 0;
-		offsets[2][0] = -1;	offsets[2][1] = 0;	offsets[2][2] = 0;
-		offsets[3][0] = 1;	offsets[3][1] = 0;	offsets[3][2] = 0;
-		offsets[4][0] = 0;	offsets[4][1] = 1;	offsets[4][2] = 0;
-		offsets[5][0] = 0;	offsets[5][1] = 0;	offsets[5][2] = 1;
+		std::vector<itk::Offset<3> > offsets = ITKImageUtil::make_6_connected_offsets();
 		for(std::vector<itk::Offset<3> >::const_iterator kt=offsets.begin(), kend=offsets.end(); kt!=kend; ++kt)
 		{
 			ait.ActivateOffset(*kt);

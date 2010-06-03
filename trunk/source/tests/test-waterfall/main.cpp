@@ -77,11 +77,7 @@ itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boo
 	typedef itk::ConstShapedNeighborhoodIterator<AncestorImage> ConstShapedNeighbourhoodIteratorType;
 	AncestorImage::SizeType radius = {{1,1}};
 	ConstShapedNeighbourhoodIteratorType it(radius, ancestorImage, ancestorImage->GetLargestPossibleRegion());
-	std::vector<AncestorImage::OffsetType> offsets(4);
-	offsets[0][0] = 0;	offsets[0][1] = -1;
-	offsets[1][0] = -1;	offsets[1][1] = 0;
-	offsets[2][0] = 1;	offsets[2][1] = 0;
-	offsets[3][0] = 0;	offsets[3][1] = 1;
+	std::vector<AncestorImage::OffsetType> offsets = ITKImageUtil::make_4_connected_offsets();
 	for(size_t k=0, size=offsets.size(); k<size; ++k)
 	{
 		it.ActivateOffset(offsets[k]);
@@ -243,16 +239,9 @@ void real_image_test()
 
 	typedef MeijsterRoerdinkWatershed<int,2> WS;
 
-	// Specify the necessary offsets for 4-connectivity.
-	WS::NeighbourOffsets offsets(4);
-	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
-	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
-	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
-	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
-
 	// Run the watershed algorithm on the gradient magnitude image.
 	std::cout << "Running watershed...\n";
-	WS ws(gradientMagnitudeImage, offsets);
+	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
 	std::cout << "Layer 0 Node Count: " << ws.label_count() << '\n';
 
 	// Create the initial partition forest.

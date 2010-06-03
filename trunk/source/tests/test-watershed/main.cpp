@@ -41,17 +41,9 @@ void basic_test()
 	ITKImageUtil::output_image(std::cout, image);
 	std::cout << '\n';
 
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
-
-	// Specify the necessary offsets for 4-connectivity.
-	WS::NeighbourOffsets offsets(4);
-	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
-	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
-	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
-	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
-
 	// Run the watershed algorithm on the image.
-	WS ws(image, offsets);
+	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	WS ws(image, ITKImageUtil::make_4_connected_offsets());
 
 	// Output the results.
 	ITKImageUtil::output_image(std::cout, ws.lower_complete());
@@ -94,17 +86,9 @@ void gradient_test()
 	ITKImageUtil::output_image(std::cout, gradientMagnitudeImage);
 	std::cout << '\n';
 
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
-
-	// Specify the necessary offsets for 4-connectivity.
-	WS::NeighbourOffsets offsets(4);
-	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
-	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
-	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
-	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
-
 	// Run the watershed algorithm on the gradient magnitude image.
-	WS ws(gradientMagnitudeImage, offsets);
+	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
 
 	// Output the results.
 	ITKImageUtil::output_image(std::cout, ws.lower_complete());
@@ -158,19 +142,9 @@ void forest_test()
 	ITKImageUtil::output_image(std::cout, gradientMagnitudeImage);
 	std::cout << '\n';
 
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
-
-	// Specify the necessary offsets for 6-connectivity.
-	WS::NeighbourOffsets offsets(6);
-	offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
-	offsets[1][0] = 0;	offsets[1][1] = -1;	offsets[1][2] = 0;
-	offsets[2][0] = -1;	offsets[2][1] = 0;	offsets[2][2] = 0;
-	offsets[3][0] = 1;	offsets[3][1] = 0;	offsets[3][2] = 0;
-	offsets[4][0] = 0;	offsets[4][1] = 1;	offsets[4][2] = 0;
-	offsets[5][0] = 0;	offsets[5][1] = 0;	offsets[5][2] = 1;
-
 	// Run the watershed algorithm on the gradient magnitude image.
-	WS ws(gradientMagnitudeImage, offsets);
+	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
 
 	// Output the results.
 	ITKImageUtil::output_image(std::cout, ws.lower_complete());
@@ -234,17 +208,9 @@ void real_image_test()
 	gradientMagnitudeFilter->Update();
 	GradientMagnitudeImage::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
 
-	typedef MeijsterRoerdinkWatershed<int,2> WS;
-
-	// Specify the necessary offsets for 4-connectivity.
-	WS::NeighbourOffsets offsets(4);
-	offsets[0][0] = 0;		offsets[0][1] = -1;		// above
-	offsets[1][0] = -1;		offsets[1][1] = 0;		// left
-	offsets[2][0] = 1;		offsets[2][1] = 0;		// right
-	offsets[3][0] = 0;		offsets[3][1] = 1;		// below
-
 	// Run the watershed algorithm on the gradient magnitude image.
-	WS ws(gradientMagnitudeImage, offsets);
+	typedef MeijsterRoerdinkWatershed<int,2> WS;
+	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
 
 	std::cout << "Label Count: " << ws.label_count() << '\n';
 

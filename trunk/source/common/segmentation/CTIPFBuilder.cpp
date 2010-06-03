@@ -14,6 +14,7 @@
 #include <common/exceptions/Exception.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
+#include <common/util/ITKImageUtil.h>
 #include "ForestBuildingWaterfallPassListener.h"
 
 namespace mp {
@@ -109,19 +110,9 @@ void CTIPFBuilder::execute()
 
 	set_status("Running watershed...");
 
-	typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,3> WS;
-
-	// Specify the necessary offsets for 6-connectivity.
-	WS::NeighbourOffsets offsets(6);
-	offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
-	offsets[1][0] = 0;	offsets[1][1] = -1;	offsets[1][2] = 0;
-	offsets[2][0] = -1;	offsets[2][1] = 0;	offsets[2][2] = 0;
-	offsets[3][0] = 1;	offsets[3][1] = 0;	offsets[3][2] = 0;
-	offsets[4][0] = 0;	offsets[4][1] = 1;	offsets[4][2] = 0;
-	offsets[5][0] = 0;	offsets[5][1] = 0;	offsets[5][2] = 1;
-
 	// Run the watershed algorithm on the gradient magnitude image.
-	WS ws(gradientMagnitudeImage, offsets);
+	typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,3> WS;
+	WS ws(gradientMagnitudeImage, ITKImageUtil::make_6_connected_offsets());
 
 	if(is_aborted()) return;
 	increment_progress();
