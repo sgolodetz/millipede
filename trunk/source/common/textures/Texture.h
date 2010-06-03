@@ -32,8 +32,8 @@ protected:
 public:
 	virtual ~Texture();
 
-	//#################### PROTECTED ABSTRACT METHODS ####################
-protected:
+	//#################### PRIVATE ABSTRACT METHODS ####################
+private:
 	virtual void reload_image() const = 0;
 
 	//#################### PUBLIC METHODS ####################

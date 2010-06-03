@@ -8,30 +8,27 @@
 
 #include <boost/optional.hpp>
 
-#include <itkImage.h>
 #include <itkRGBPixel.h>
 
-#include "Texture.h"
+#include "ITKImageTexture.h"
 
 namespace mp {
 
-class RGB24ImageTexture : public Texture
+//#################### TYPEDEFS ####################
+typedef itk::RGBPixel<unsigned char> RGB24;
+typedef itk::Image<RGB24> RGB24Image;
+
+class RGB24ImageTexture : public ITKImageTexture<RGB24Image>
 {
 	//#################### FRIENDS ####################
 	friend class TextureFactory;
-
-	//#################### TYPEDEFS ####################
-private:
-	typedef itk::RGBPixel<unsigned char> RGB24;
-	typedef itk::Image<RGB24> Image;
-	typedef Image::Pointer ImagePointer;
 
 	//#################### CONSTRUCTORS ####################
 private:
 	RGB24ImageTexture(const ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp);
 
-	//#################### PROTECTED METHODS ####################
-protected:
+	//#################### PRIVATE METHODS ####################
+private:
 	void reload_image() const;
 };
 

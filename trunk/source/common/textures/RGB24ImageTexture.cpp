@@ -9,13 +9,12 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 RGB24ImageTexture::RGB24ImageTexture(const ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp)
-:	Texture(clamp)
+:	ITKImageTexture(image, clamp)
 {
-	// NYI
-	throw 23;
+	reload();
 }
 
-//#################### PROTECTED METHODS ####################
+//#################### PRIVATE METHODS ####################
 void RGB24ImageTexture::reload_image() const
 {
 	// NYI

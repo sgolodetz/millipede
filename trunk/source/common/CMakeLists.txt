@@ -227,6 +227,7 @@ textures/TextureFactory.cpp
 
 SET(textures_headers
 textures/Greyscale8ImageTexture.h
+textures/ITKImageTexture.h
 textures/RGB24ImageTexture.h
 textures/Texture.h
 textures/TextureFactory.h

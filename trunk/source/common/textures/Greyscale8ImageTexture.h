@@ -6,32 +6,24 @@
 #ifndef H_MILLIPEDE_GREYSCALE8IMAGETEXTURE
 #define H_MILLIPEDE_GREYSCALE8IMAGETEXTURE
 
-#include <itkImage.h>
-
-#include "Texture.h"
+#include "ITKImageTexture.h"
 
 namespace mp {
 
-class Greyscale8ImageTexture : public Texture
+//#################### TYPEDEFS ####################
+typedef itk::Image<unsigned char,2> Greyscale8Image;
+
+class Greyscale8ImageTexture : public ITKImageTexture<Greyscale8Image>
 {
 	//#################### FRIENDS ####################
 	friend class TextureFactory;
-
-	//#################### TYPEDEFS ####################
-private:
-	typedef itk::Image<unsigned char,2> Image;
-	typedef Image::Pointer ImagePointer;
-
-	//#################### PRIVATE VARIABLES ####################
-private:
-	ImagePointer m_image;
 
 	//#################### CONSTRUCTORS ####################
 private:
 	Greyscale8ImageTexture(const ImagePointer& image, bool clamp);
 
-	//#################### PROTECTED METHODS ####################
-protected:
+	//#################### PRIVATE METHODS ####################
+private:
 	void reload_image() const;
 };
 
