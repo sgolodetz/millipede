@@ -1,34 +1,34 @@
 /***
- * millipede: Greyscale8ImageTexture.h
- * Copyright Stuart Golodetz, 2009. All rights reserved.
+ * millipede: RGB24ImageTexture.h
+ * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_GREYSCALE8IMAGETEXTURE
-#define H_MILLIPEDE_GREYSCALE8IMAGETEXTURE
+#ifndef H_MILLIPEDE_RGB24IMAGETEXTURE
+#define H_MILLIPEDE_RGB24IMAGETEXTURE
+
+#include <boost/optional.hpp>
 
 #include <itkImage.h>
+#include <itkRGBPixel.h>
 
 #include "Texture.h"
 
 namespace mp {
 
-class Greyscale8ImageTexture : public Texture
+class RGB24ImageTexture : public Texture
 {
 	//#################### FRIENDS ####################
 	friend class TextureFactory;
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef itk::Image<unsigned char,2> Image;
+	typedef itk::RGBPixel<unsigned char> RGB24;
+	typedef itk::Image<RGB24> Image;
 	typedef Image::Pointer ImagePointer;
-
-	//#################### PRIVATE VARIABLES ####################
-private:
-	ImagePointer m_image;
 
 	//#################### CONSTRUCTORS ####################
 private:
-	Greyscale8ImageTexture(const ImagePointer& image, bool clamp);
+	RGB24ImageTexture(const ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp);
 
 	//#################### PROTECTED METHODS ####################
 protected:

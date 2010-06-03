@@ -220,12 +220,14 @@ slices/SliceTextureSetCreator.h
 ##
 SET(textures_sources
 textures/Greyscale8ImageTexture.cpp
+textures/RGB24ImageTexture.cpp
 textures/Texture.cpp
 textures/TextureFactory.cpp
 )
 
 SET(textures_headers
 textures/Greyscale8ImageTexture.h
+textures/RGB24ImageTexture.h
 textures/Texture.h
 textures/TextureFactory.h
 )

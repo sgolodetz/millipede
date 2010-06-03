@@ -6,10 +6,12 @@
 #ifndef H_MILLIPEDE_TEXTUREFACTORY
 #define H_MILLIPEDE_TEXTUREFACTORY
 
+#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
 #include <itkImage.h>
+#include <itkRGBPixel.h>
 
 namespace mp {
 
@@ -21,15 +23,21 @@ class TextureFactory
 	//#################### TYPEDEFS ####################
 private:
 	typedef itk::Image<unsigned char,2> Greyscale8Image;
-	typedef itk::Image<unsigned char,2>::Pointer Greyscale8ImagePointer;
+	typedef Greyscale8Image::Pointer Greyscale8ImagePointer;
+
+	typedef itk::RGBPixel<unsigned char> RGB24;
+	typedef itk::Image<RGB24,2> RGB24Image;
+	typedef RGB24Image::Pointer RGB24ImagePointer;
 
 	//#################### PUBLIC METHODS ####################
 public:
 	static Texture_Ptr create_texture(const Greyscale8ImagePointer& image, bool clamp = true);
+	static Texture_Ptr create_texture(const RGB24ImagePointer& image, const boost::optional<RGB24>& colourKey = boost::none, bool clamp = true);
 
 	//#################### PRIVATE METHODS ####################
 private:
 	static void check_dimensions(int width, int height);
+	static void check_dimensions(const itk::Size<2>& size);
 };
 
 }
