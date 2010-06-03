@@ -253,7 +253,7 @@ void PartitionWindow::OnButtonSegmentCTVolume(wxCommandEvent&)
 	if(dialog.segmentation_options())
 	{
 		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
-		typedef CTIPFGridBuilder::IPFG_Ptr CTIPFGrid_Ptr;
+		typedef CTIPFGridBuilder::IPFGrid_Ptr CTIPFGrid_Ptr;
 
 		CTIPFGrid_Ptr ipfGrid;
 		Job_Ptr job(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));

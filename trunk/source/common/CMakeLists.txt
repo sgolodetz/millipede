@@ -165,6 +165,7 @@ partitionforests/images/CTImageBranchLayer.h
 partitionforests/images/CTImageLeafLayer.h
 partitionforests/images/CTPixelProperties.h
 partitionforests/images/CTRegionProperties.h
+partitionforests/images/ForestGrid.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/IPFGrid.h

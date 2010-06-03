@@ -22,20 +22,20 @@ class MosaicImageCreator : public SimpleJob
 	//#################### TYPEDEFS ####################
 private:
 	typedef boost::shared_ptr<const IPF> IPF_CPtr;
-	typedef IPFGrid<IPF> IPFG;
-	typedef boost::shared_ptr<const IPFG> IPFG_CPtr;
+	typedef IPFGrid<IPF> IPFGridT;
+	typedef boost::shared_ptr<const IPFGridT> IPFGrid_CPtr;
 	typedef itk::Image<unsigned char,3> MosaicImage;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	IPFG_CPtr m_ipfGrid;
+	IPFGrid_CPtr m_ipfGrid;
 	int m_layerIndex;
 	MosaicImage::Pointer& m_mosaicImage;
 	bool m_withBoundaries;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MosaicImageCreator(const IPFG_CPtr& ipfGrid, int layerIndex, bool withBoundaries, MosaicImage::Pointer& mosaicImage)
+	MosaicImageCreator(const IPFGrid_CPtr& ipfGrid, int layerIndex, bool withBoundaries, MosaicImage::Pointer& mosaicImage)
 	:	m_ipfGrid(ipfGrid), m_layerIndex(layerIndex), m_mosaicImage(mosaicImage), m_withBoundaries(withBoundaries)
 	{}
 
@@ -75,11 +75,11 @@ private:
 			for(index[1]=0; index[1]<size[1]; ++index[1])
 				for(index[0]=0; index[0]<size[0]; ++index[0])
 				{
-					int forestIndex = m_ipfGrid->forest_index_of(index[0], index[1], index[2]);
+					int forestIndex = m_ipfGrid->element_index_of(index[0], index[1], index[2]);
 					forestImage->SetPixel(index, forestIndex);
 
 					int n = m_ipfGrid->leaf_index_of(index[0], index[1], index[2]);
-					ancestorImage->SetPixel(index, m_ipfGrid->forest(forestIndex)->ancestor_of(PFNodeID(0, n), m_layerIndex));
+					ancestorImage->SetPixel(index, m_ipfGrid->element(forestIndex)->ancestor_of(PFNodeID(0, n), m_layerIndex));
 				}
 
 		// Set up iterators to traverse the forest and ancestor images, whilst allowing us to access the neighbours of each pixel.
@@ -127,7 +127,7 @@ private:
 			}
 			else
 			{
-				IPF_CPtr ipf = m_ipfGrid->forest(fit.GetCenterPixel());
+				IPF_CPtr ipf = m_ipfGrid->element(fit.GetCenterPixel());
 				if(m_layerIndex > 0)	mosaicValue = static_cast<unsigned char>(ipf->branch_properties(ait.GetCenterPixel()).mean_grey_value());
 				else					mosaicValue = ipf->leaf_properties(ait.GetCenterPixel().index()).grey_value();
 			}
@@ -148,7 +148,7 @@ private:
 			for(index[1]=0; index[1]<size[1]; ++index[1])
 				for(index[0]=0; index[0]<size[0]; ++index[0])
 				{
-					IPF_CPtr ipf = m_ipfGrid->forest_of(index[0], index[1], index[2]);
+					IPF_CPtr ipf = m_ipfGrid->element_of(index[0], index[1], index[2]);
 					int n = m_ipfGrid->leaf_index_of(index[0], index[1], index[2]);
 
 					unsigned char mosaicValue;

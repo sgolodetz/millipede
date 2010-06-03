@@ -20,8 +20,8 @@ void PartitionModel::add_listener(Listener *listener)
 
 SliceTextureSet_CPtr PartitionModel::dicom_texture_set() const					{ return m_dicomTextureSet; }
 DICOMVolume_CPtr PartitionModel::dicom_volume() const							{ return m_dicomVolume; }
-const PartitionModel::IPFG_Ptr& PartitionModel::ipf_grid()						{ return m_ipfGrid; }
-PartitionModel::IPFG_CPtr PartitionModel::ipf_grid() const						{ return m_ipfGrid; }
+const PartitionModel::IPFGrid_Ptr& PartitionModel::ipf_grid()					{ return m_ipfGrid; }
+PartitionModel::IPFGrid_CPtr PartitionModel::ipf_grid() const					{ return m_ipfGrid; }
 
 SliceTextureSet_CPtr PartitionModel::partition_texture_set(int layer) const
 {
@@ -36,7 +36,7 @@ void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextu
 	alert_listeners();
 }
 
-void PartitionModel::set_ipf_grid(const IPFG_Ptr& ipfGrid)
+void PartitionModel::set_ipf_grid(const IPFGrid_Ptr& ipfGrid)
 {
 	m_ipfGrid = ipfGrid;
 	alert_listeners();

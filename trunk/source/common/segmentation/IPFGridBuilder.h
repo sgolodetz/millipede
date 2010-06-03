@@ -22,8 +22,8 @@ class IPFGridBuilder : public CompositeJob
 public:
 	typedef typename IPFBuilder::IPF IPF;
 	typedef typename IPFBuilder::IPF_Ptr IPF_Ptr;
-	typedef IPFGrid<IPF> IPFG;
-	typedef boost::shared_ptr<IPFG> IPFG_Ptr;
+	typedef IPFGrid<IPF> IPFGridT;
+	typedef boost::shared_ptr<IPFGridT> IPFGrid_Ptr;
 	typedef typename IPFBuilder::SegmentationOptions SegmentationOptions;
 
 	//#################### NESTED CLASSES ####################
@@ -81,7 +81,7 @@ private:
 		void execute()
 		{
 			set_status("Creating forest grid...");
-			base->m_ipfGrid.reset(new IPFG(base->m_forests, base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
+			base->m_ipfGrid.reset(new IPFGridT(base->m_forests, base->m_segmentationOptions.subvolumeSize, base->m_volume->size()));
 			set_finished();
 		}
 
@@ -94,7 +94,7 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::vector<IPF_Ptr> m_forests;
-	IPFG_Ptr& m_ipfGrid;
+	IPFGrid_Ptr& m_ipfGrid;
 	itk::Size<3> m_gridSize;
 	SegmentationOptions m_segmentationOptions;
 	boost::shared_ptr<DICOMVolume_CPtr> m_subvolume;
@@ -102,7 +102,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, IPFG_Ptr& ipfGrid)
+	IPFGridBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, IPFGrid_Ptr& ipfGrid)
 	:	m_ipfGrid(ipfGrid), m_segmentationOptions(segmentationOptions), m_subvolume(new DICOMVolume_CPtr), m_volume(volume)
 	{
 		itk::Size<3> volumeSize = volume->size();

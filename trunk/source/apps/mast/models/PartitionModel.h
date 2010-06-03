@@ -47,15 +47,15 @@ public:
 	//#################### TYPEDEFS ####################
 private:
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
-	typedef IPFGrid<IPF> IPFGrid;
-	typedef boost::shared_ptr<IPFGrid> IPFG_Ptr;
-	typedef boost::shared_ptr<const IPFGrid> IPFG_CPtr;
+	typedef IPFGrid<IPF> IPFGridT;
+	typedef boost::shared_ptr<IPFGridT> IPFGrid_Ptr;
+	typedef boost::shared_ptr<const IPFGridT> IPFGrid_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
-	IPFG_Ptr m_ipfGrid;
+	IPFGrid_Ptr m_ipfGrid;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	SliceOrientation m_sliceOrientation;
 	ViewLocation m_viewLocation;			// view location in terms of the volume only (not based on actual slice numbers)
@@ -71,11 +71,11 @@ public:
 	void add_listener(Listener *listener);
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	DICOMVolume_CPtr dicom_volume() const;
-	const IPFG_Ptr& ipf_grid();
-	IPFG_CPtr ipf_grid() const;
+	const IPFGrid_Ptr& ipf_grid();
+	IPFGrid_CPtr ipf_grid() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
-	void set_ipf_grid(const IPFG_Ptr& ipfGrid);
+	void set_ipf_grid(const IPFGrid_Ptr& ipfGrid);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	void set_slice_orientation(SliceOrientation ori);
 	void set_view_location(const ViewLocation& loc);
