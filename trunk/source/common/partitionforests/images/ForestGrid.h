@@ -31,13 +31,13 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	ForestGrid(const std::vector<Element_Ptr>& elements, const itk::Size<3>& subvolumeSize, const itk::Size<3>& volumeSize)
-	:	m_elements(elements), m_subvolumeSize(subvolumeSize), m_volumeSize(volumeSize)
 	{
-		for(int i=0; i<3; ++i)
-		{
-			m_gridSize[i] = m_volumeSize[i] / m_subvolumeSize[i];
-		}
+		initialise(elements, subvolumeSize, volumeSize);
 	}
+
+protected:
+	ForestGrid()
+	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -94,6 +94,20 @@ public:
 	const itk::Size<3>& volume_size() const
 	{
 		return m_volumeSize;
+	}
+
+	//#################### PROTECTED METHODS ####################
+protected:
+	void initialise(const std::vector<Element_Ptr>& elements, const itk::Size<3>& subvolumeSize, const itk::Size<3>& volumeSize)
+	{
+		m_elements = elements;
+		m_subvolumeSize = subvolumeSize;
+		m_volumeSize = volumeSize;
+
+		for(int i=0; i<3; ++i)
+		{
+			m_gridSize[i] = m_volumeSize[i] / m_subvolumeSize[i];
+		}
 	}
 };
 

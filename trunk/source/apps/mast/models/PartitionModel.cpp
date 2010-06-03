@@ -30,6 +30,9 @@ SliceTextureSet_CPtr PartitionModel::partition_texture_set(int layer) const
 	else return SliceTextureSet_CPtr();
 }
 
+const PartitionModel::IPFSelectionGrid_Ptr& PartitionModel::selection_grid()	{ return m_selectionGrid; }
+PartitionModel::IPFSelectionGrid_CPtr PartitionModel::selection_grid() const	{ return m_selectionGrid; }
+
 void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;
@@ -39,6 +42,7 @@ void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextu
 void PartitionModel::set_ipf_grid(const IPFGrid_Ptr& ipfGrid)
 {
 	m_ipfGrid = ipfGrid;
+	m_selectionGrid.reset(new IPFSelectionGridT(ipfGrid));
 	alert_listeners();
 }
 
