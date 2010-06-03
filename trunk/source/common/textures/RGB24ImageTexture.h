@@ -23,6 +23,10 @@ class RGB24ImageTexture : public ITKImageTexture<RGB24Image>
 	//#################### FRIENDS ####################
 	friend class TextureFactory;
 
+	//#################### PRIVATE VARIABLES ####################
+private:
+	boost::optional<RGB24> m_colourKey;
+
 	//#################### CONSTRUCTORS ####################
 private:
 	RGB24ImageTexture(const ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp);
@@ -30,6 +34,8 @@ private:
 	//#################### PRIVATE METHODS ####################
 private:
 	void reload_image() const;
+	void reload_image_with_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const;
+	void reload_image_without_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const;
 };
 
 }
