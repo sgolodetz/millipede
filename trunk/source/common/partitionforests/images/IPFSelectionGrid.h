@@ -20,10 +20,11 @@ public:
 	explicit IPFSelectionGrid(const boost::shared_ptr<IPFGrid>& ipfGrid)
 	{
 		int size = ipfGrid->element_count();
-		std::vector<Element_Ptr> selections(size);
+		std::vector<boost::shared_ptr<IPFSelection> > selections(size);
 		for(int i=0; i<size; ++i)
 		{
 			selections[i].reset(new IPFSelection(ipfGrid->element(i)));
+			ipfGrid->element(i)->add_listener(selections[i]);
 		}
 		initialise(selections, ipfGrid->subvolume_size(), ipfGrid->volume_size());
 	}

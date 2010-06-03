@@ -58,14 +58,14 @@ protected:
 		typedef itk::ResampleImageFilter<Image,Image> Resampler;
 		typedef itk::AffineTransform<double,2> Transform;
 
-		Resampler::Pointer resampler = Resampler::New();
+		typename Resampler::Pointer resampler = Resampler::New();
 		resampler->SetTransform(Transform::New());
 		resampler->SetInterpolator(Interpolator::New());
 		resampler->SetDefaultPixelValue(50);
-		Image::SizeType newSize = {{desiredWidth, desiredHeight}};
+		itk::Size<2> newSize = {{desiredWidth, desiredHeight}};
 		resampler->SetSize(newSize);
 		resampler->SetOutputOrigin(image()->GetOrigin());
-		Image::SpacingType newSpacing = image()->GetSpacing();
+		typename Image::SpacingType newSpacing = image()->GetSpacing();
 		newSpacing[0] *= (double)size[0] / desiredWidth;
 		newSpacing[1] *= (double)size[1] / desiredHeight;
 		resampler->SetOutputSpacing(newSpacing);

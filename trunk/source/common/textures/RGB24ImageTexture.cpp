@@ -9,7 +9,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 RGB24ImageTexture::RGB24ImageTexture(const ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp)
-:	ITKImageTexture(image, clamp)
+:	ITKImageTexture<RGB24Image>(image, clamp)
 {
 	reload();
 }

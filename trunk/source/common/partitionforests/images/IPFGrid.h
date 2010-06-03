@@ -16,8 +16,8 @@ class IPFGrid : public ForestGrid<IPF>
 {
 	//#################### CONSTRUCTORS ####################
 public:
-	IPFGrid(const std::vector<Element_Ptr>& forests, const itk::Size<3>& subvolumeSize, const itk::Size<3>& volumeSize)
-	:	ForestGrid(forests, subvolumeSize, volumeSize)
+	IPFGrid(const std::vector<boost::shared_ptr<IPF> >& forests, const itk::Size<3>& subvolumeSize, const itk::Size<3>& volumeSize)
+	:	ForestGrid<IPF>(forests, subvolumeSize, volumeSize)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -25,9 +25,9 @@ public:
 	int highest_layer() const
 	{
 		int minHighestLayer = INT_MAX;
-		for(int i=0, size=element_count(); i<size; ++i)
+		for(int i=0, size=this->element_count(); i<size; ++i)
 		{
-			int highestLayer = element(i)->highest_layer();
+			int highestLayer = this->element(i)->highest_layer();
 			if(highestLayer < minHighestLayer) minHighestLayer = highestLayer;
 		}
 		return minHighestLayer;

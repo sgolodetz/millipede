@@ -9,7 +9,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 Greyscale8ImageTexture::Greyscale8ImageTexture(const ImagePointer& image, bool clamp)
-:	ITKImageTexture(image, clamp)
+:	ITKImageTexture<Greyscale8Image>(image, clamp)
 {
 	reload();
 }
