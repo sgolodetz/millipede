@@ -9,7 +9,7 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-#include <mast/gui/util/Canvas.h>
+#include <mast/gui/components/canvas/Canvas.h>
 
 namespace mp {
 

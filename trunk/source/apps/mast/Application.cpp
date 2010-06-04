@@ -5,7 +5,7 @@
 
 #include "Application.h"
 
-#include <mast/gui/windows/main/MainWindow.h>
+#include <mast/gui/windows/MainWindow.h>
 
 namespace mp {
 

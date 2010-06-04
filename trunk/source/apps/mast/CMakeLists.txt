@@ -20,6 +20,30 @@ Application.h
 )
 
 ##
+SET(gui_components_canvas_sources
+gui/components/canvas/Canvas.cpp
+)
+
+SET(gui_components_canvas_headers
+gui/components/canvas/Canvas.h
+)
+
+##
+SET(gui_components_partitionview_sources
+gui/components/partitionview/BaseCanvas.cpp
+gui/components/partitionview/DICOMCanvas.cpp
+gui/components/partitionview/PartitionCanvas.cpp
+gui/components/partitionview/PartitionView.cpp
+)
+
+SET(gui_components_partitionview_headers
+gui/components/partitionview/BaseCanvas.h
+gui/components/partitionview/DICOMCanvas.h
+gui/components/partitionview/PartitionCanvas.h
+gui/components/partitionview/PartitionView.h
+)
+
+##
 SET(gui_dialogs_sources
 gui/dialogs/SegmentCTVolumeDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
@@ -43,38 +67,14 @@ gui/overlays/PartitionOverlayManager.h
 )
 
 ##
-SET(gui_util_sources
-gui/util/Canvas.cpp
+SET(gui_windows_sources
+gui/windows/MainWindow.cpp
+gui/windows/PartitionWindow.cpp
 )
 
-SET(gui_util_headers
-gui/util/Canvas.h
-)
-
-##
-SET(gui_windows_main_sources
-gui/windows/main/MainWindow.cpp
-)
-
-SET(gui_windows_main_headers
-gui/windows/main/MainWindow.h
-)
-
-##
-SET(gui_windows_partition_sources
-gui/windows/partition/BaseCanvas.cpp
-gui/windows/partition/DICOMCanvas.cpp
-gui/windows/partition/PartitionCanvas.cpp
-gui/windows/partition/PartitionView.cpp
-gui/windows/partition/PartitionWindow.cpp
-)
-
-SET(gui_windows_partition_headers
-gui/windows/partition/BaseCanvas.h
-gui/windows/partition/DICOMCanvas.h
-gui/windows/partition/PartitionCanvas.h
-gui/windows/partition/PartitionView.h
-gui/windows/partition/PartitionWindow.h
+SET(gui_windows_headers
+gui/windows/MainWindow.h
+gui/windows/PartitionWindow.h
 )
 
 ##
@@ -103,22 +103,22 @@ util/StringConversion.h
 
 SET(sources
 ${mast_sources}
+${gui_components_canvas_sources}
+${gui_components_partitionview_sources}
 ${gui_dialogs_sources}
 ${gui_overlays_sources}
-${gui_util_sources}
-${gui_windows_main_sources}
-${gui_windows_partition_sources}
+${gui_windows_sources}
 ${models_sources}
 ${util_sources}
 )
 
 SET(headers
 ${mast_headers}
+${gui_components_canvas_headers}
+${gui_components_partitionview_headers}
 ${gui_dialogs_headers}
 ${gui_overlays_headers}
-${gui_util_headers}
-${gui_windows_main_headers}
-${gui_windows_partition_headers}
+${gui_windows_headers}
 ${models_headers}
 ${util_headers}
 )
@@ -135,6 +135,14 @@ SOURCE_GROUP(.cpp FILES ${mast_sources})
 SOURCE_GROUP(.h FILES ${mast_headers})
 
 ##
+SOURCE_GROUP(gui\\components\\canvas\\.cpp FILES ${gui_components_canvas_sources})
+SOURCE_GROUP(gui\\components\\canvas\\.h FILES ${gui_components_canvas_headers})
+
+##
+SOURCE_GROUP(gui\\components\\partitionview\\.cpp FILES ${gui_components_partitionview_sources})
+SOURCE_GROUP(gui\\components\\partitionview\\.h FILES ${gui_components_partitionview_headers})
+
+##
 SOURCE_GROUP(gui\\dialogs\\.cpp FILES ${gui_dialogs_sources})
 SOURCE_GROUP(gui\\dialogs\\.h FILES ${gui_dialogs_headers})
 
@@ -143,16 +151,8 @@ SOURCE_GROUP(gui\\overlays\\.cpp FILES ${gui_overlays_sources})
 SOURCE_GROUP(gui\\overlays\\.h FILES ${gui_overlays_headers})
 
 ##
-SOURCE_GROUP(gui\\util\\.cpp FILES ${gui_util_sources})
-SOURCE_GROUP(gui\\util\\.h FILES ${gui_util_headers})
-
-##
-SOURCE_GROUP(gui\\windows\\main\\.cpp FILES ${gui_windows_main_sources})
-SOURCE_GROUP(gui\\windows\\main\\.h FILES ${gui_windows_main_headers})
-
-##
-SOURCE_GROUP(gui\\windows\\partition\\.cpp FILES ${gui_windows_partition_sources})
-SOURCE_GROUP(gui\\windows\\partition\\.h FILES ${gui_windows_partition_headers})
+SOURCE_GROUP(gui\\windows\\.cpp FILES ${gui_windows_sources})
+SOURCE_GROUP(gui\\windows\\.h FILES ${gui_windows_headers})
 
 ##
 SOURCE_GROUP(models\\.cpp FILES ${models_sources})

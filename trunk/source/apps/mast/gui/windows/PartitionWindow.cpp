@@ -7,8 +7,8 @@
 
 #include <wx/sizer.h>
 
+#include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/util/StringConversion.h>
-#include "PartitionView.h"
 
 namespace mp {
 
