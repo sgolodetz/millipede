@@ -5,6 +5,7 @@
 
 #include "PartitionCanvas.h"
 
+#include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/models/PartitionModel.h>
 
 namespace mp {
@@ -15,12 +16,17 @@ PartitionCanvas::PartitionCanvas(wxWindow *parent, wxGLContext *context, int *at
 {}
 
 //#################### PRIVATE METHODS ####################
+void PartitionCanvas::render_overlays(double left, double top, double right, double bottom) const
+{
+	overlay_manager()->render_partition_overlays(left, top, right, bottom);
+}
+
 SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
 {
-	if(m_model)
+	if(model())
 	{
-		int layer = m_model->view_location().layer;
-		return m_model->partition_texture_set(layer);
+		int layer = model()->view_location().layer;
+		return model()->partition_texture_set(layer);
 	}
 	else return SliceTextureSet_CPtr();
 }

@@ -102,19 +102,21 @@ public:
 	public:
 		virtual ~Listener() {}
 
-		virtual void layer_was_cloned(int index)													{}
-		virtual void layer_was_deleted(int index)													{}
-		virtual void layer_was_undeleted(int index)													{}
-		virtual void layer_will_be_deleted(int index)												{}
-		virtual void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results)		{}
-		virtual void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result)		{}
-		virtual void nodes_will_be_merged(const std::set<PFNodeID>& nodes)							{}
+		virtual void forest_changed()																{}
+		virtual void layer_was_cloned(int index)													{ forest_changed(); }
+		virtual void layer_was_deleted(int index)													{ forest_changed(); }
+		virtual void layer_was_undeleted(int index)													{ forest_changed(); }
+		virtual void layer_will_be_deleted(int index)												{ forest_changed(); }
+		virtual void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results)		{ forest_changed(); }
+		virtual void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result)		{ forest_changed(); }
+		virtual void nodes_will_be_merged(const std::set<PFNodeID>& nodes)							{ forest_changed(); }
 	};
 
 private:
 	class CompositeListener : public CompositeListenerBase<Listener>
 	{
 	public:
+		void forest_changed()															{ multicast(bind(&Listener::forest_changed, _1)); }
 		void layer_was_cloned(int index)												{ multicast(bind(&Listener::layer_was_cloned, _1, index)); }
 		void layer_was_deleted(int index)												{ multicast(bind(&Listener::layer_was_deleted, _1, index)); }
 		void layer_was_undeleted(int index)												{ multicast(bind(&Listener::layer_was_undeleted, _1, index)); }

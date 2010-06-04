@@ -25,12 +25,15 @@ class wxButton;
 namespace mp {
 
 class DICOMCanvas;
-typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 class PartitionCanvas;
-typedef shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
+typedef shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
+typedef shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 
 class PartitionWindow : public wxFrame, public PartitionModel::Listener
 {
+	//#################### FRIENDS ####################
+	friend class BaseCanvas;
+
 	//#################### TYPEDEFS ####################
 private:
 	typedef PartitionModel::ViewLocation ViewLocation;
@@ -42,6 +45,7 @@ private:
 	wxGLContext *m_context;
 	PartitionModel_Ptr m_model;
 	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
+	PartitionOverlayManager_Ptr m_overlayManager;
 	DICOMVolumeChoice m_volumeChoice;
 
 	// Top right
@@ -73,6 +77,9 @@ private:
 	bool create_dicom_textures(SliceOrientation ori);
 	void create_partition_textures(SliceOrientation ori);
 	bool create_textures(SliceOrientation ori);
+	PartitionModel_CPtr model() const;
+	PartitionOverlayManager_CPtr overlay_manager() const;
+	void recreate_overlays();
 	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
 

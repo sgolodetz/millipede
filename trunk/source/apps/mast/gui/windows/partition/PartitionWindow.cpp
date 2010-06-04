@@ -15,6 +15,8 @@
 #include <common/segmentation/IPFGridBuilder.h>
 #include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
+#include <mast/gui/overlays/IPFSelectionGridOverlay.h>
+#include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
@@ -50,6 +52,7 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 		ViewLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
 		ORIENT_XY)
 	),
+	m_overlayManager(new PartitionOverlayManager),
 	m_volumeChoice(volumeChoice)
 {
 	m_model->add_listener(this);
@@ -58,8 +61,8 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	Show();
 	setup_gui(context);
 
-	m_dicomCanvas->setup(m_model);
-	m_partitionCanvas->setup(m_model);
+	m_dicomCanvas->setup(this);
+	m_partitionCanvas->setup(this);
 
 	create_textures(m_model->slice_orientation());
 }
@@ -72,12 +75,14 @@ wxGLContext *PartitionWindow::get_context() const
 
 void PartitionWindow::model_changed()
 {
+	// Update sliders.
 	ViewLocation loc = m_model->view_location();
 	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
 	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
 	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
 	m_layerSlider->SetValue(loc.layer);
 
+	recreate_overlays();
 	refresh_canvases();
 }
 
@@ -148,6 +153,27 @@ bool PartitionWindow::create_textures(SliceOrientation ori)
 	if(!create_dicom_textures(ori)) return false;
 	create_partition_textures(ori);
 	return true;
+}
+
+PartitionModel_CPtr PartitionWindow::model() const
+{
+	return m_model;
+}
+
+PartitionOverlayManager_CPtr PartitionWindow::overlay_manager() const
+{
+	return m_overlayManager;
+}
+
+void PartitionWindow::recreate_overlays()
+{
+	m_overlayManager->clear_overlays();
+
+	PartitionModel::IPFSelectionGrid_CPtr selectionGrid = m_model->selection_grid();
+	if(selectionGrid)
+	{
+		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionGridOverlay(selectionGrid));
+	}
 }
 
 void PartitionWindow::refresh_canvases()

@@ -9,6 +9,7 @@
 #include <common/slices/SliceTextureSet.h>
 #include <common/textures/Texture.h>
 #include <mast/models/PartitionModel.h>
+#include "PartitionWindow.h"
 
 namespace mp {
 
@@ -28,22 +29,24 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	glPushAttrib(GL_ENABLE_BIT);
 
+	// Choose an image to render (if available).
 	Texture_CPtr texture;
 	SliceTextureSet_CPtr textureSet = texture_set_to_display();
 	if(textureSet)
 	{
-		assert(m_model != NULL);	// the texture set will have come from the model, so it should be non-null
-		switch(m_model->slice_orientation())
+		assert(model() != NULL);	// the texture set will have come from the model, so it should be non-null
+		switch(model()->slice_orientation())
 		{
-			case ORIENT_XY:		texture = textureSet->texture(ORIENT_XY, m_model->view_location().z); break;
-			case ORIENT_XZ:		texture = textureSet->texture(ORIENT_XZ, m_model->view_location().y); break;
-			case ORIENT_YZ:		texture = textureSet->texture(ORIENT_YZ, m_model->view_location().x); break;
+			case ORIENT_XY:		texture = textureSet->texture(ORIENT_XY, model()->view_location().z); break;
+			case ORIENT_XZ:		texture = textureSet->texture(ORIENT_XZ, model()->view_location().y); break;
+			case ORIENT_YZ:		texture = textureSet->texture(ORIENT_YZ, model()->view_location().x); break;
 			default:			throw Exception("Unexpected slice orientation");
 		}
 	}
 
 	if(texture)
 	{
+		// Render the image.
 		glEnable(GL_TEXTURE_2D);
 		texture->bind();
 		glColor3d(1,1,1);
@@ -67,11 +70,14 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	}
 
 	glPopAttrib();
+
+	// Render any overlays for this canvas.
+	render_overlays(0, 0, 511, 511);
 }
 
-void BaseCanvas::setup(const PartitionModel_Ptr& model)
+void BaseCanvas::setup(const PartitionWindow *partitionWindow)
 {
-	m_model = model;
+	m_partitionWindow = partitionWindow;
 
 	SetCurrent();
 
@@ -99,6 +105,17 @@ void BaseCanvas::setup(const PartitionModel_Ptr& model)
 	glLoadIdentity();
 
 	glOrtho(0, width, height, 0, 0.0, 2048.0);
+}
+
+//#################### PROTECTED METHODS ####################
+PartitionModel_CPtr BaseCanvas::model() const
+{
+	return m_partitionWindow->model();
+}
+
+PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
+{
+	return m_partitionWindow->overlay_manager();
 }
 
 }

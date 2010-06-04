@@ -45,7 +45,7 @@ public:
 	};
 
 	//#################### TYPEDEFS ####################
-private:
+public:
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
 	typedef IPFGrid<IPF> IPFGridT;
 	typedef boost::shared_ptr<IPFGridT> IPFGrid_Ptr;
