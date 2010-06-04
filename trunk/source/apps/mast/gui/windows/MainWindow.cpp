@@ -57,19 +57,15 @@ MainWindow::MainWindow(const std::string& title)
 
 //#################### PRIVATE METHODS ####################
 void MainWindow::load_test_volume(const std::string& volumeChoiceFilename)
+try
 {
-	try
-	{
-		check_file_exists(volumeChoiceFilename);
-	}
-	catch(std::exception&)
-	{
-		wxMessageBox(string_to_wxString("Couldn't find the test volume:\nDid you set the project's working directory to '$(TargetDir)'?"), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
-		return;
-	}
-
+	check_file_exists(volumeChoiceFilename);
 	DICOMVolumeChoice volumeChoice = VolumeChoiceFile::load(volumeChoiceFilename);
 	load_volume(volumeChoice);
+}
+catch(std::exception& e)
+{
+	wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
 }
 
 void MainWindow::load_volume(const DICOMVolumeChoice& volumeChoice)

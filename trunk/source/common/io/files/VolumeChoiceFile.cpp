@@ -15,7 +15,7 @@ namespace mp {
 //#################### LOADING METHODS ####################
 DICOMVolumeChoice VolumeChoiceFile::load(const std::string& filename)
 {
-	std::ifstream is(filename.c_str());
+	std::ifstream is(filename.c_str(), std::ios_base::binary);
 	if(is.fail()) throw Exception("Could not open " + filename + " for reading");
 	return VolumeChoiceSection::load(is);
 }
@@ -23,7 +23,7 @@ DICOMVolumeChoice VolumeChoiceFile::load(const std::string& filename)
 //#################### SAVING METHODS ####################
 void VolumeChoiceFile::save(const std::string& filename, const DICOMVolumeChoice& volumeChoice)
 {
-	std::ofstream os(filename.c_str());
+	std::ofstream os(filename.c_str(), std::ios_base::binary);
 	if(os.fail()) throw Exception("Could not open " + filename + " for writing");
 	VolumeChoiceSection::save(os, volumeChoice);
 }
