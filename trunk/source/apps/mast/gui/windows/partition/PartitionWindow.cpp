@@ -22,6 +22,8 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 	wxGridSizer *sizer = new wxGridSizer(1, 1, 0, 0);
 	SetSizer(sizer);
 
+	Show();
+
 	m_view = new PartitionView(this, volume, volumeChoice, context);
 	sizer->Add(m_view);
 

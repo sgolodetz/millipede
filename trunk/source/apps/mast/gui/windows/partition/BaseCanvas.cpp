@@ -110,12 +110,12 @@ void BaseCanvas::setup(const PartitionView *partitionView)
 //#################### PROTECTED METHODS ####################
 PartitionModel_CPtr BaseCanvas::model() const
 {
-	return m_partitionView->model();
+	return m_partitionView ? m_partitionView->model() : PartitionModel_CPtr();
 }
 
 PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 {
-	return m_partitionView->overlay_manager();
+	return m_partitionView ? m_partitionView->overlay_manager() : PartitionOverlayManager_CPtr();
 }
 
 }
