@@ -9,9 +9,9 @@
 #include <wx/msgdlg.h>
 
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
+#include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
 #include <mast/gui/windows/PartitionWindow.h>
-#include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
 
 namespace {

@@ -45,11 +45,13 @@ gui/components/partitionview/PartitionView.h
 
 ##
 SET(gui_dialogs_sources
+gui/dialogs/DialogUtil.cpp
 gui/dialogs/SegmentCTVolumeDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
 )
 
 SET(gui_dialogs_headers
+gui/dialogs/DialogUtil.h
 gui/dialogs/SegmentCTVolumeDialog.h
 gui/dialogs/VolumeChooserDialog.h
 )
@@ -88,12 +90,10 @@ models/PartitionModel.h
 
 ##
 SET(util_sources
-util/DialogUtil.cpp
 util/StringConversion.cpp
 )
 
 SET(util_headers
-util/DialogUtil.h
 util/StringConversion.h
 )
 

@@ -14,10 +14,10 @@
 #include <common/segmentation/CTIPFBuilder.h>
 #include <common/segmentation/IPFGridBuilder.h>
 #include <common/slices/SliceTextureSetCreator.h>
+#include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
 #include <mast/gui/overlays/IPFSelectionGridOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
-#include <mast/util/DialogUtil.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
 #include "PartitionCanvas.h"

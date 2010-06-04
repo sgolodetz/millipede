@@ -13,7 +13,7 @@
 #include <common/exceptions/FileNotFoundException.h>
 #include <common/jobs/Job.h>
 #include <common/jobs/MainThreadJobQueue.h>
-#include "StringConversion.h"
+#include <mast/util/StringConversion.h>
 
 namespace mp {
 
