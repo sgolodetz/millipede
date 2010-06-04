@@ -31,7 +31,7 @@ class VolumeChooserDialog : public wxPropertySheetDialog
 	//#################### PRIVATE VARIABLES ####################
 private:
 	DICOMDirectory_Ptr m_dicomdir;
-	std::string m_filePrefix;
+	std::string m_dicomdirFilename;
 	boost::optional<DICOMVolumeChoice> m_volumeChoice;
 
 	wxTreeCtrl *m_tree;

@@ -11,6 +11,8 @@
 #include <wx/sizer.h>
 
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
+#include <common/io/files/DICOMDIRFile.h>
+#include <common/io/files/VolumeChoiceFile.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
 #include <mast/gui/windows/PartitionWindow.h>
@@ -54,7 +56,29 @@ MainWindow::MainWindow(const std::string& title)
 }
 
 //#################### PRIVATE METHODS ####################
-void MainWindow::load_dicom_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice)
+void MainWindow::load_test_volume(const std::string& volumeChoiceFilename)
+{
+	try
+	{
+		check_file_exists(volumeChoiceFilename);
+	}
+	catch(std::exception&)
+	{
+		wxMessageBox(string_to_wxString("Couldn't find the test volume:\nDid you set the project's working directory to '$(TargetDir)'?"), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+		return;
+	}
+
+	DICOMVolumeChoice volumeChoice = VolumeChoiceFile::load(volumeChoiceFilename);
+	load_volume(volumeChoice);
+}
+
+void MainWindow::load_volume(const DICOMVolumeChoice& volumeChoice)
+{
+	DICOMDirectory_CPtr dicomdir = DICOMDIRFile::load(volumeChoice.dicomdirFilename);
+	load_volume(dicomdir, volumeChoice);
+}
+
+void MainWindow::load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice)
 {
 	DICOMVolumeLoader_Ptr loader(new DICOMVolumeLoader(dicomdir, volumeChoice));
 	Job::execute_in_thread(loader);
@@ -143,14 +167,7 @@ void MainWindow::setup_menus()
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void MainWindow::OnButtonOpenTestVolume1(wxCommandEvent&)
 {
-	try
-	{
-		// TODO
-	}
-	catch(std::exception& e)
-	{
-		wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
-	}
+	load_test_volume("../resources/testvolume1.vcf");
 }
 
 //~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
@@ -175,7 +192,7 @@ void MainWindow::OnCommonOpenDICOMDIR(wxCommandEvent&)
 
 			if(dialog.volume_choice())
 			{
-				load_dicom_volume(dialog.dicomdir(), *dialog.volume_choice());
+				load_volume(dialog.dicomdir(), *dialog.volume_choice());
 			}
 		}
 		catch(std::exception& e)

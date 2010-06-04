@@ -204,8 +204,23 @@ INCLUDE(${millipede_SOURCE_DIR}/LinkBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/LinkWxWidgets.cmake)
 
+##########################
+# Specify resource files #
+##########################
+
+SET(resources testvolume1.vcf)
+
+#########################################
+# Copy resource files to the build tree #
+#########################################
+
+FOREACH(resource ${resources})
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
+ENDFOREACH(resource)
+
 #############################
 # Specify things to install #
 #############################
 
 INSTALL(TARGETS ${targetname} DESTINATION bin/apps/${targetname}/bin)
+INSTALL(FILES ${resources} DESTINATION bin/apps/${targetname}/resources)

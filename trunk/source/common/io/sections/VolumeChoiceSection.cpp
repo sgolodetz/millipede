@@ -23,7 +23,7 @@ try
 	LineIO::read_checked_line(is, "VolumeChoice");
 	LineIO::read_checked_line(is, "{");
 
-	std::string filePrefix, patientHandle, studyHandle, seriesHandle;
+	std::string dicomdirFilename, patientHandle, studyHandle, seriesHandle;
 	int minX, minY, minZ, maxX, maxY, maxZ;
 	WindowSettings windowSettings;
 
@@ -44,14 +44,14 @@ try
 		boost::tie(name, value) = FieldIO::parse_field(line);
 
 		// Set the appropriate property.
-		if(name == "MaxX")			maxX = lexical_cast<int>(value);
+		if(name == "DICOMDIR")		dicomdirFilename = value;
+		else if(name == "MaxX")		maxX = lexical_cast<int>(value);
 		else if(name == "MaxY")		maxY = lexical_cast<int>(value);
 		else if(name == "MaxZ")		maxZ = lexical_cast<int>(value);
 		else if(name == "MinX")		minX = lexical_cast<int>(value);
 		else if(name == "MinY")		minY = lexical_cast<int>(value);
 		else if(name == "MinZ")		minZ = lexical_cast<int>(value);
 		else if(name == "Patient")	patientHandle = value;
-		else if(name == "Prefix")	filePrefix = value;
 		else if(name == "Series")	seriesHandle = value;
 		else if(name == "Study")	studyHandle = value;
 		else if(name == "Window")
@@ -64,7 +64,7 @@ try
 		else throw Exception("Unknown volume choice property: " + name);
 	}
 
-	return DICOMVolumeChoice(filePrefix, patientHandle, studyHandle, seriesHandle, minX, minY, minZ, maxX, maxY, maxZ, windowSettings);
+	return DICOMVolumeChoice(dicomdirFilename, patientHandle, studyHandle, seriesHandle, minX, minY, minZ, maxX, maxY, maxZ, windowSettings);
 }
 catch(bad_lexical_cast&)
 {
@@ -77,7 +77,7 @@ void VolumeChoiceSection::save(std::ostream& os, const DICOMVolumeChoice& volume
 	os << "VolumeChoice\n";
 	os << "{\n";
 
-	FieldIO::write_typed_field(os, "\tPrefix", volumeChoice.filePrefix);
+	FieldIO::write_typed_field(os, "\tDICOMDIR", volumeChoice.dicomdirFilename);
 	FieldIO::write_typed_field(os, "\tPatient", volumeChoice.patientKey);
 	FieldIO::write_typed_field(os, "\tStudy", volumeChoice.studyKey);
 	FieldIO::write_typed_field(os, "\tSeries", volumeChoice.seriesKey);

@@ -30,7 +30,9 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void load_dicom_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice);
+	void load_test_volume(const std::string& volumeChoiceFilename);
+	void load_volume(const DICOMVolumeChoice& volumeChoice);
+	void load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice);
 	void setup_gui();
 	void setup_menus();
 
