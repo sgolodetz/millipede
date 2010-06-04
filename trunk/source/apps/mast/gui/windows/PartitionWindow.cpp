@@ -15,7 +15,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
 								 wxGLContext *context)
-:	wxFrame(parent, -1, string_to_wxString(title), wxDefaultPosition, wxSize(100,100))
+:	wxFrame(parent, -1, string_to_wxString(title))
 {
 	SetBackgroundColour(wxColour(240,240,240));
 

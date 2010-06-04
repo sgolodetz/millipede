@@ -5,8 +5,10 @@
 
 #include "MainWindow.h"
 
+#include <wx/button.h>
 #include <wx/menu.h>
 #include <wx/msgdlg.h>
+#include <wx/sizer.h>
 
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
 #include <mast/gui/dialogs/DialogUtil.h>
@@ -31,18 +33,84 @@ enum
 	MENUID_HELP_ABOUT,
 };
 
+enum
+{
+	BUTTONID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	BUTTONID_OPENDICOMDIR,
+	BUTTONID_OPENTESTVOLUME1,
+	BUTTONID_EXIT,
+};
+
 }
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
 MainWindow::MainWindow(const std::string& title)
-:	wxFrame(NULL, wxID_ANY, string_to_wxString(title), wxDefaultPosition, wxSize(600,400))
+:	wxFrame(NULL, wxID_ANY, string_to_wxString(title))
 {
 	setup_menus();
+	setup_gui();
 }
 
 //#################### PRIVATE METHODS ####################
+void MainWindow::load_dicom_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice)
+{
+	DICOMVolumeLoader_Ptr loader(new DICOMVolumeLoader(dicomdir, volumeChoice));
+	Job::execute_in_thread(loader);
+	show_progress_dialog(this, "Loading DICOM Volume", loader);
+
+	if(!loader->is_aborted())
+	{
+		// Create a window for the user to interact with the new volume.
+		std::string caption = "MAST - " + loader->volume_choice().description() + " - Untitled";
+		PartitionWindow *partitionWindow = new PartitionWindow(this, caption, loader->volume(), loader->volume_choice());
+		partitionWindow->Show(true);
+	}
+}
+
+void MainWindow::setup_gui()
+{
+	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 0, 0);
+	SetSizer(sizer);
+
+	// Top left, top, top right and middle left
+	sizer->AddGrowableCol(0);
+	sizer->AddGrowableRow(0);
+	for(int i=0; i<4; ++i) sizer->AddSpacer(50);
+
+	// Middle
+	wxPanel *panel = new wxPanel(this);
+	panel->SetBackgroundColour(GetBackgroundColour());
+	sizer->Add(panel);
+
+	wxGridSizer *panelSizer = new wxGridSizer(0, 1, 10, 0);
+	panel->SetSizer(panelSizer);
+
+	wxSize buttonSize(300, 50);
+
+	std::vector<wxString> buttonCaptions;
+	buttonCaptions.push_back(wxT("Open DICOMDIR..."));
+	buttonCaptions.push_back(wxT("Open Test Volume 1"));
+	buttonCaptions.push_back(wxT("Exit"));
+
+	for(size_t i=0, size=buttonCaptions.size(); i<size; ++i)
+	{
+		wxButton *button = new wxButton(panel, BUTTONID_BASE + 1 + i, buttonCaptions[i], wxDefaultPosition, buttonSize);
+		wxFont font = button->GetFont();
+		font.SetPointSize(16);
+		button->SetFont(font);
+		panelSizer->Add(button, 0, wxALIGN_CENTER_HORIZONTAL);
+	}
+
+	// Middle right, bottom left, bottom and bottom right
+	sizer->AddGrowableCol(2);
+	sizer->AddGrowableRow(2);
+	for(int i=0; i<4; ++i) sizer->AddSpacer(50);
+
+	sizer->Fit(this);
+}
+
 void MainWindow::setup_menus()
 {
 	wxMenu *fileMenu = new wxMenu;
@@ -72,13 +140,26 @@ void MainWindow::setup_menus()
 
 //#################### EVENT HANDLERS ####################
 
-//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-void MainWindow::OnMenuFileExit(wxCommandEvent&)
+//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+void MainWindow::OnButtonOpenTestVolume1(wxCommandEvent&)
+{
+	try
+	{
+		// TODO
+	}
+	catch(std::exception& e)
+	{
+		wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+	}
+}
+
+//~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
+void MainWindow::OnCommonExit(wxCommandEvent&)
 {
 	Close();
 }
 
-void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
+void MainWindow::OnCommonOpenDICOMDIR(wxCommandEvent&)
 {
 	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open DICOMDIR", "DICOMDIR Files|DICOMDIR");
 	if(dialog->ShowModal() == wxID_OK)
@@ -94,17 +175,7 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 
 			if(dialog.volume_choice())
 			{
-				DICOMVolumeLoader_Ptr loader(new DICOMVolumeLoader(dialog.dicomdir(), *dialog.volume_choice()));
-				Job::execute_in_thread(loader);
-				show_progress_dialog(this, "Loading DICOM Volume", loader);
-
-				if(!loader->is_aborted())
-				{
-					// Create a window for the user to interact with the new volume.
-					std::string caption = "MAST - " + loader->volume_choice().description() + " - Untitled";
-					PartitionWindow *partitionWindow = new PartitionWindow(this, caption, loader->volume(), loader->volume_choice());
-					partitionWindow->Show(true);
-				}
+				load_dicom_volume(dialog.dicomdir(), *dialog.volume_choice());
 			}
 		}
 		catch(std::exception& e)
@@ -114,6 +185,7 @@ void MainWindow::OnMenuFileOpenDICOMDIR(wxCommandEvent&)
 	}
 }
 
+//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 {
 	std::ostringstream oss;
@@ -131,9 +203,14 @@ void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(BUTTONID_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
+	EVT_BUTTON(BUTTONID_OPENTESTVOLUME1, MainWindow::OnButtonOpenTestVolume1)
+	EVT_BUTTON(BUTTONID_EXIT, MainWindow::OnCommonExit)
+
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnMenuFileExit)
-	EVT_MENU(MENUID_FILE_OPEN_DICOMDIR, MainWindow::OnMenuFileOpenDICOMDIR)
+	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnCommonExit)
+	EVT_MENU(MENUID_FILE_OPEN_DICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
 END_EVENT_TABLE()
 

@@ -8,9 +8,15 @@
 
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include <wx/frame.h>
 
 namespace mp {
+
+//#################### FORWARD DECLARATIONS ####################
+typedef boost::shared_ptr<const class DICOMDirectory> DICOMDirectory_CPtr;
+struct DICOMVolumeChoice;
 
 class MainWindow : public wxFrame
 {
@@ -24,13 +30,20 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void load_dicom_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice);
+	void setup_gui();
 	void setup_menus();
 
 	//#################### EVENT HANDLERS ####################
 public:
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonOpenTestVolume1(wxCommandEvent&);
+
+	//~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
+	void OnCommonExit(wxCommandEvent&);
+	void OnCommonOpenDICOMDIR(wxCommandEvent&);
+
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-	void OnMenuFileExit(wxCommandEvent&);
-	void OnMenuFileOpenDICOMDIR(wxCommandEvent&);
 	void OnMenuHelpAbout(wxCommandEvent&);
 
 	//#################### EVENT TABLE ####################
