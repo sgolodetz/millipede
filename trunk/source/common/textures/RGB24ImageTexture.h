@@ -16,7 +16,7 @@ namespace mp {
 
 //#################### TYPEDEFS ####################
 typedef itk::RGBPixel<unsigned char> RGB24;
-typedef itk::Image<RGB24> RGB24Image;
+typedef itk::Image<RGB24,2> RGB24Image;
 
 class RGB24ImageTexture : public ITKImageTexture<RGB24Image>
 {

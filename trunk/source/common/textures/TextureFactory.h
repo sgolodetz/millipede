@@ -12,6 +12,7 @@ using boost::shared_ptr;
 
 #include <itkImage.h>
 #include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 
 namespace mp {
 
@@ -23,16 +24,18 @@ class TextureFactory
 	//#################### TYPEDEFS ####################
 private:
 	typedef itk::Image<unsigned char,2> Greyscale8Image;
-	typedef Greyscale8Image::Pointer Greyscale8ImagePointer;
 
 	typedef itk::RGBPixel<unsigned char> RGB24;
 	typedef itk::Image<RGB24,2> RGB24Image;
-	typedef RGB24Image::Pointer RGB24ImagePointer;
+
+	typedef itk::RGBAPixel<unsigned char> RGBA32;
+	typedef itk::Image<RGBA32,2> RGBA32Image;
 
 	//#################### PUBLIC METHODS ####################
 public:
-	static Texture_Ptr create_texture(const Greyscale8ImagePointer& image, bool clamp = true);
-	static Texture_Ptr create_texture(const RGB24ImagePointer& image, const boost::optional<RGB24>& colourKey = boost::none, bool clamp = true);
+	static Texture_Ptr create_texture(const Greyscale8Image::Pointer& image, bool clamp = true);
+	static Texture_Ptr create_texture(const RGB24Image::Pointer& image, const boost::optional<RGB24>& colourKey = boost::none, bool clamp = true);
+	static Texture_Ptr create_texture(const RGBA32Image::Pointer& image, bool clamp = true);
 
 	//#################### PRIVATE METHODS ####################
 private:

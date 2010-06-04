@@ -8,20 +8,27 @@
 #include <common/exceptions/Exception.h>
 #include "Greyscale8ImageTexture.h"
 #include "RGB24ImageTexture.h"
+#include "RGBA32ImageTexture.h"
 
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
-Texture_Ptr TextureFactory::create_texture(const Greyscale8ImagePointer& image, bool clamp)
+Texture_Ptr TextureFactory::create_texture(const Greyscale8Image::Pointer& image, bool clamp)
 {
 	check_dimensions(image->GetLargestPossibleRegion().GetSize());
 	return Texture_Ptr(new Greyscale8ImageTexture(image, clamp));
 }
 
-Texture_Ptr TextureFactory::create_texture(const RGB24ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp)
+Texture_Ptr TextureFactory::create_texture(const RGB24Image::Pointer& image, const boost::optional<RGB24>& colourKey, bool clamp)
 {
 	check_dimensions(image->GetLargestPossibleRegion().GetSize());
 	return Texture_Ptr(new RGB24ImageTexture(image, colourKey, clamp));
+}
+
+Texture_Ptr TextureFactory::create_texture(const RGBA32Image::Pointer& image, bool clamp)
+{
+	check_dimensions(image->GetLargestPossibleRegion().GetSize());
+	return Texture_Ptr(new RGBA32ImageTexture(image, clamp));
 }
 
 //#################### PRIVATE METHODS ####################

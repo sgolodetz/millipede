@@ -28,6 +28,9 @@ void PartitionOverlay::render(double left, double top, double right, double bott
 {
 	glPushAttrib(GL_ENABLE_BIT);
 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
 	glEnable(GL_TEXTURE_2D);
 	m_texture->bind();
 	glBegin(GL_QUADS);

@@ -7,7 +7,7 @@
 #define H_MILLIPEDE_IPFSELECTIONGRIDOVERLAY
 
 #include <common/partitionforests/images/IPFSelectionGrid.h>
-#include <common/textures/RGB24ImageTexture.h>
+#include <common/textures/RGBA32ImageTexture.h>
 #include "PartitionOverlay.h"
 
 namespace mp {
@@ -20,21 +20,18 @@ public:
 	explicit IPFSelectionGridOverlay(boost::shared_ptr<const IPFSelectionGrid<IPFSelection> > selectionGrid)
 	{
 		// TEMPORARY (test code)
-		RGB24Image::Pointer colouredImage = ITKImageUtil::make_image<RGB24>(512, 512);
+		RGBA32Image::Pointer colouredImage = ITKImageUtil::make_image<RGBA32>(512, 512);
 		for(int i=0; i<512; ++i)
 		{
 			for(int j=0; j<512; ++j)
 			{
 				itk::Index<2> index = {{i,j}};
-				RGB24 p;
-				p[0] = /*i == j ? 255 :*/ 0, p[1] = 0, p[2] = 0;
+				RGBA32 p;
+				p[0] = 255, p[1] = 0, p[2] = 0, p[3] = 0;
 				colouredImage->SetPixel(index, p);
 			}
 		}
-		RGB24 colourKey;
-		colourKey.Fill(0);
-
-		set_texture(TextureFactory::create_texture(colouredImage, colourKey));
+		set_texture(TextureFactory::create_texture(colouredImage));
 	}
 
 	//#################### PUBLIC METHODS ####################
