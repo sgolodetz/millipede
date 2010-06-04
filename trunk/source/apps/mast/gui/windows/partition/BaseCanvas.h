@@ -16,7 +16,7 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 typedef shared_ptr<const class PartitionModel> PartitionModel_CPtr;
 typedef shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
-class PartitionWindow;
+class PartitionView;
 typedef shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 typedef shared_ptr<const class Texture> Texture_CPtr;
 
@@ -24,7 +24,7 @@ class BaseCanvas : public Canvas
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	const PartitionWindow *m_partitionWindow;
+	const PartitionView *m_partitionView;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -38,7 +38,7 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	void render(wxPaintDC& dc) const;
-	void setup(const PartitionWindow *partitionWindow);
+	void setup(const PartitionView *partitionView);
 
 	//#################### PROTECTED METHODS ####################
 protected:

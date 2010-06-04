@@ -65,6 +65,7 @@ SET(gui_windows_partition_sources
 gui/windows/partition/BaseCanvas.cpp
 gui/windows/partition/DICOMCanvas.cpp
 gui/windows/partition/PartitionCanvas.cpp
+gui/windows/partition/PartitionView.cpp
 gui/windows/partition/PartitionWindow.cpp
 )
 
@@ -72,6 +73,7 @@ SET(gui_windows_partition_headers
 gui/windows/partition/BaseCanvas.h
 gui/windows/partition/DICOMCanvas.h
 gui/windows/partition/PartitionCanvas.h
+gui/windows/partition/PartitionView.h
 gui/windows/partition/PartitionWindow.h
 )
 

@@ -9,7 +9,7 @@
 #include <common/slices/SliceTextureSet.h>
 #include <common/textures/Texture.h>
 #include <mast/models/PartitionModel.h>
-#include "PartitionWindow.h"
+#include "PartitionView.h"
 
 namespace mp {
 
@@ -75,9 +75,9 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	render_overlays(0, 0, 511, 511);
 }
 
-void BaseCanvas::setup(const PartitionWindow *partitionWindow)
+void BaseCanvas::setup(const PartitionView *partitionView)
 {
-	m_partitionWindow = partitionWindow;
+	m_partitionView = partitionView;
 
 	SetCurrent();
 
@@ -110,12 +110,12 @@ void BaseCanvas::setup(const PartitionWindow *partitionWindow)
 //#################### PROTECTED METHODS ####################
 PartitionModel_CPtr BaseCanvas::model() const
 {
-	return m_partitionWindow->model();
+	return m_partitionView->model();
 }
 
 PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 {
-	return m_partitionWindow->overlay_manager();
+	return m_partitionView->overlay_manager();
 }
 
 }
