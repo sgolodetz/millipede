@@ -63,7 +63,7 @@ gui/overlays/PartitionOverlayManager.cpp
 )
 
 SET(gui_overlays_headers
-gui/overlays/IPFSelectionGridOverlay.h
+gui/overlays/IPFSelectionOverlay.h
 gui/overlays/PartitionOverlay.h
 gui/overlays/PartitionOverlayManager.h
 )

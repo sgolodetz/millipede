@@ -37,9 +37,9 @@ void BaseCanvas::render(wxPaintDC& dc) const
 		assert(model() != NULL);	// the texture set will have come from the model, so it should be non-null
 		switch(model()->slice_orientation())
 		{
-			case ORIENT_XY:		texture = textureSet->texture(ORIENT_XY, model()->view_location().z); break;
-			case ORIENT_XZ:		texture = textureSet->texture(ORIENT_XZ, model()->view_location().y); break;
-			case ORIENT_YZ:		texture = textureSet->texture(ORIENT_YZ, model()->view_location().x); break;
+			case ORIENT_XY:		texture = textureSet->texture(ORIENT_XY, model()->slice_location().z); break;
+			case ORIENT_XZ:		texture = textureSet->texture(ORIENT_XZ, model()->slice_location().y); break;
+			case ORIENT_YZ:		texture = textureSet->texture(ORIENT_YZ, model()->slice_location().x); break;
 			default:			throw Exception("Unexpected slice orientation");
 		}
 	}

@@ -15,6 +15,7 @@ using boost::shared_ptr;
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/partitionforests/images/IPFGrid.h>
 #include <common/partitionforests/images/IPFSelectionGrid.h>
+#include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 
 namespace mp {
@@ -35,15 +36,6 @@ public:
 		virtual void model_changed() = 0;
 	};
 
-	struct ViewLocation
-	{
-		int x, y, z, layer;
-
-		ViewLocation(int x_, int y_, int z_, int layer_)
-		:	x(x_), y(y_), z(z_), layer(layer_)
-		{}
-	};
-
 	//#################### TYPEDEFS ####################
 public:
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
@@ -61,16 +53,16 @@ private:
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
 	IPFGrid_Ptr m_ipfGrid;
-	IPFSelectionGrid_Ptr m_selectionGrid;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
+	IPFSelectionGrid_Ptr m_selectionGrid;
+	SliceLocation m_sliceLocation;			// slice location in terms of the volume only (not based on actual slice numbers)
 	SliceOrientation m_sliceOrientation;
-	ViewLocation m_viewLocation;			// view location in terms of the volume only (not based on actual slice numbers)
 
 	std::vector<Listener*> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionModel(const DICOMVolume_Ptr& volume, const ViewLocation& loc, SliceOrientation ori);
+	PartitionModel(const DICOMVolume_Ptr& volume, const SliceLocation& loc, SliceOrientation ori);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -85,10 +77,10 @@ public:
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
 	void set_ipf_grid(const IPFGrid_Ptr& ipfGrid);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
+	void set_slice_location(const SliceLocation& loc);
 	void set_slice_orientation(SliceOrientation ori);
-	void set_view_location(const ViewLocation& loc);
+	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;
-	const ViewLocation& view_location() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

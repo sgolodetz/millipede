@@ -1,23 +1,26 @@
 /***
- * millipede: IPFSelectionGridOverlay.h
+ * millipede: IPFSelectionOverlay.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_IPFSELECTIONGRIDOVERLAY
-#define H_MILLIPEDE_IPFSELECTIONGRIDOVERLAY
+#ifndef H_MILLIPEDE_IPFSELECTIONOVERLAY
+#define H_MILLIPEDE_IPFSELECTIONOVERLAY
 
 #include <common/partitionforests/images/IPFSelectionGrid.h>
+#include <common/slices/SliceLocation.h>
+#include <common/slices/SliceOrientation.h>
 #include <common/textures/RGBA32ImageTexture.h>
 #include "PartitionOverlay.h"
 
 namespace mp {
 
-class IPFSelectionGridOverlay : public PartitionOverlay
+class IPFSelectionOverlay : public PartitionOverlay
 {
 	//#################### CONSTRUCTORS ####################
 public:
 	template <typename IPFSelection>
-	explicit IPFSelectionGridOverlay(boost::shared_ptr<const IPFSelectionGrid<IPFSelection> > selectionGrid)
+	explicit IPFSelectionOverlay(boost::shared_ptr<const IPFSelectionGrid<IPFSelection> > selectionGrid, const SliceLocation& sliceLocation,
+								 SliceOrientation sliceOrientation)
 	{
 		// TEMPORARY (test code)
 		RGBA32Image::Pointer colouredImage = ITKImageUtil::make_image<RGBA32>(512, 512);

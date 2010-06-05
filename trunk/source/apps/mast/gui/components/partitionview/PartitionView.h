@@ -16,6 +16,7 @@ using boost::shared_ptr;
 #include <wx/slider.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
+#include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 #include <mast/models/PartitionModel.h>
 
@@ -36,15 +37,14 @@ class PartitionView : public wxPanel, public PartitionModel::Listener
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel::ViewLocation ViewLocation;
-	typedef shared_ptr<ViewLocation> ViewLocation_Ptr;
+	typedef shared_ptr<SliceLocation> SliceLocation_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
 	PartitionModel_Ptr m_model;
-	boost::optional<ViewLocation> m_oldViewLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
+	boost::optional<SliceLocation> m_oldSliceLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
 	PartitionOverlayManager_Ptr m_overlayManager;
 	DICOMVolumeChoice m_volumeChoice;
 

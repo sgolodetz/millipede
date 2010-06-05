@@ -212,6 +212,7 @@ slices/SliceTextureSet.cpp
 )
 
 SET(slices_headers
+slices/SliceLocation.h
 slices/SliceOrientation.h
 slices/SliceTextureSet.h
 slices/SliceTextureSetCreator.h

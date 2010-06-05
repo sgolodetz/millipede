@@ -16,7 +16,7 @@
 #include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
-#include <mast/gui/overlays/IPFSelectionGridOverlay.h>
+#include <mast/gui/overlays/IPFSelectionOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
@@ -48,7 +48,7 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)),
 	m_model(new PartitionModel(
 		volume,
-		ViewLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
+		SliceLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
 		ORIENT_XY)
 	),
 	m_overlayManager(new PartitionOverlayManager),
@@ -74,7 +74,7 @@ wxGLContext *PartitionView::get_context() const
 void PartitionView::model_changed()
 {
 	// Update sliders.
-	ViewLocation loc = m_model->view_location();
+	SliceLocation loc = m_model->slice_location();
 	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
 	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
 	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
@@ -142,8 +142,8 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 
 	m_model->set_partition_texture_sets(partitionTextureSets);
 	m_layerSlider->SetRange(1, highestLayer);
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
+	SliceLocation loc = m_model->slice_location();
+	m_model->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
 }
 
 bool PartitionView::create_textures(SliceOrientation ori)
@@ -170,7 +170,7 @@ void PartitionView::recreate_overlays()
 	PartitionModel::IPFSelectionGrid_CPtr selectionGrid = m_model->selection_grid();
 	if(selectionGrid)
 	{
-		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionGridOverlay(selectionGrid));
+		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selectionGrid, m_model->slice_location(), m_model->slice_orientation()));
 	}
 }
 
@@ -217,17 +217,17 @@ void PartitionView::setup_gui(wxGLContext *context)
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX + m_model->view_location().x, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX + m_model->slice_location().x, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
 			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY + m_model->view_location().y, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY + m_model->slice_location().y, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_model->view_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_model->slice_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);
@@ -308,26 +308,26 @@ void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnSliderX(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
+	SliceLocation loc = m_model->slice_location();
+	m_model->set_slice_location(SliceLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
 }
 
 void PartitionView::OnSliderY(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
+	SliceLocation loc = m_model->slice_location();
+	m_model->set_slice_location(SliceLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
 }
 
 void PartitionView::OnSliderZ(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
+	SliceLocation loc = m_model->slice_location();
+	m_model->set_slice_location(SliceLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
 }
 
 void PartitionView::OnSliderLayer(wxScrollEvent&)
 {
-	ViewLocation loc = m_model->view_location();
-	m_model->set_view_location(ViewLocation(loc.x, loc.y, loc.z, m_layerSlider->GetValue()));
+	SliceLocation loc = m_model->slice_location();
+	m_model->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, m_layerSlider->GetValue()));
 }
 
 //#################### EVENT TABLE ####################

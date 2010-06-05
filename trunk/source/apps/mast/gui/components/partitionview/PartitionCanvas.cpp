@@ -25,7 +25,7 @@ SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
 {
 	if(model())
 	{
-		int layer = model()->view_location().layer;
+		int layer = model()->slice_location().layer;
 		return model()->partition_texture_set(layer);
 	}
 	else return SliceTextureSet_CPtr();

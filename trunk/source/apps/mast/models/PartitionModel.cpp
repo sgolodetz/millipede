@@ -8,8 +8,8 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionModel::PartitionModel(const DICOMVolume_Ptr& dicomVolume, const ViewLocation& loc, SliceOrientation ori)
-:	m_dicomVolume(dicomVolume), m_sliceOrientation(ori), m_viewLocation(loc)
+PartitionModel::PartitionModel(const DICOMVolume_Ptr& dicomVolume, const SliceLocation& loc, SliceOrientation ori)
+:	m_dicomVolume(dicomVolume), m_sliceLocation(loc), m_sliceOrientation(ori)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -52,21 +52,21 @@ void PartitionModel::set_partition_texture_sets(const std::vector<SliceTextureSe
 	alert_listeners();
 }
 
+void PartitionModel::set_slice_location(const SliceLocation& loc)
+{
+	// TODO: Validate location against bounds
+	m_sliceLocation = loc;
+	alert_listeners();
+}
+
 void PartitionModel::set_slice_orientation(SliceOrientation ori)
 {
 	m_sliceOrientation = ori;
 	alert_listeners();
 }
 
-void PartitionModel::set_view_location(const ViewLocation& loc)
-{
-	// TODO: Validate location against bounds
-	m_viewLocation = loc;
-	alert_listeners();
-}
-
+const SliceLocation& PartitionModel::slice_location() const					{ return m_sliceLocation; }
 SliceOrientation PartitionModel::slice_orientation() const					{ return m_sliceOrientation; }
-const PartitionModel::ViewLocation& PartitionModel::view_location() const	{ return m_viewLocation; }
 
 //#################### PRIVATE METHODS ####################
 void PartitionModel::alert_listeners()
