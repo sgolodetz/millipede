@@ -12,7 +12,9 @@
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/segmentation/CTIPFBuilder.h>
+#include <common/segmentation/CTLowestLayersBuilder.h>
 #include <common/segmentation/IPFGridBuilder.h>
+#include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
@@ -276,6 +278,7 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 	if(dialog.segmentation_options())
 	{
+#if 1
 		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
 		typedef CTIPFGridBuilder::IPFGrid_Ptr CTIPFGrid_Ptr;
 
@@ -287,6 +290,19 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 			m_model->set_ipf_grid(ipfGrid);
 			create_partition_textures(m_model->slice_orientation());
 		}
+#else
+		typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
+		typedef CTVolumeIPFBuilder::VolumeIPF_Ptr VolumeIPF_Ptr;
+
+		VolumeIPF_Ptr volumeIPF;
+		Job_Ptr job(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
+		Job::execute_in_thread(job);
+		if(show_progress_dialog(this, "Segmenting CT Volume", job))
+		{
+			//m_model->set_volume_ipf(volumeIPF);
+			create_partition_textures(m_model->slice_orientation());
+		}
+#endif
 	}
 }
 
