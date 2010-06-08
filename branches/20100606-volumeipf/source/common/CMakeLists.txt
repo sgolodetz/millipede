@@ -188,6 +188,7 @@ SET(segmentation_sources
 segmentation/CTIPFBuilder.cpp
 segmentation/CTLowestLayersBuilder.cpp
 segmentation/CTSegmentationOptions.cpp
+segmentation/SubvolumeToVolumeIndexMapper.cpp
 )
 
 SET(segmentation_headers
@@ -196,6 +197,7 @@ segmentation/CTLowestLayersBuilder.h
 segmentation/CTSegmentationOptions.h
 segmentation/ForestBuildingWaterfallPassListener.h
 segmentation/IPFGridBuilder.h
+segmentation/SubvolumeToVolumeIndexMapper.h
 segmentation/VolumeIPFBuilder.h
 )
 

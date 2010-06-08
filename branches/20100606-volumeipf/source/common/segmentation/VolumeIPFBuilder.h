@@ -16,6 +16,7 @@
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/util/GridUtil.h>
 #include "ForestBuildingWaterfallPassListener.h"
+#include "SubvolumeToVolumeIndexMapper.h"
 
 namespace mp {
 
@@ -91,18 +92,18 @@ private:
 			set_status("Combining leaf layers...");
 
 			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
-			itk::Size<3> volumeSize = base->m_volume->size();
+			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 			std::vector<CTPixelProperties> nodeProperties(volumeSize[0] * volumeSize[1] * volumeSize[2]);
 
 			for(int i=0; i<subvolumeCount; ++i)
 			{
-				int subvolumeOffset = base->calculate_subvolume_offset(i);
+				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
 
 				for(typename LeafLayer::LeafNodeConstIterator jt=base->m_leafLayers[i]->leaf_nodes_cbegin(), jend=base->m_leafLayers[i]->leaf_nodes_cend();
 					jt!=jend; ++jt)
 				{
 					// Calculate the index of the leaf node in the combined leaf layer.
-					int leafIndex = jt.index() + subvolumeOffset;
+					int leafIndex = indexMapper(jt.index());
 
 					// Copy it across to the correct place in the combined node properties.
 					nodeProperties[leafIndex] = jt->properties();
@@ -132,45 +133,29 @@ private:
 		{
 			set_status("Combining lowest branch layers...");
 
+			std::vector<std::set<int> > groups;
+
 			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
-			base->m_combinedLowestBranchLayer.reset(new BranchLayer);
+			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 
 			for(int i=0; i<subvolumeCount; ++i)
 			{
-				int subvolumeOffset = base->calculate_subvolume_offset(i);
+				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
 
-				// Migrate the nodes across.
 				for(typename BranchLayer::BranchNodeConstIterator jt=base->m_lowestBranchLayers[i]->branch_nodes_cbegin(),
 					jend=base->m_lowestBranchLayers[i]->branch_nodes_cend(); jt!=jend; ++jt)
 				{
-					// Calculate the index of the branch node in the combined lowest branch layer.
-					int branchIndex = jt.index() + subvolumeOffset;
-
-					// Create the branch node in the combined lowest branch layer.
-					base->m_combinedLowestBranchLayer->set_node_properties(branchIndex, jt->properties());
-
-					// Migrate the forest links across.
 					const std::set<int>& children = jt->children();
-					std::set<int> newChildren;
+					std::set<int> group;
 					for(std::set<int>::const_iterator kt=children.begin(), kend=children.end(); kt!=kend; ++kt)
 					{
-						newChildren.insert(*kt + subvolumeOffset);
+						group.insert(indexMapper(*kt));
 					}
-
-					base->m_combinedLowestBranchLayer->set_node_children(branchIndex, newChildren);
-					for(std::set<int>::const_iterator kt=newChildren.begin(), kend=newChildren.end(); kt!=kend; ++kt)
-					{
-						base->m_combinedLeafLayer->set_node_parent(*kt, branchIndex);
-					}
-				}
-
-				// Migrate the graph edges across.
-				for(typename BranchLayer::EdgeConstIterator jt=base->m_lowestBranchLayers[i]->edges_cbegin(),
-					jend=base->m_lowestBranchLayers[i]->edges_cend(); jt!=jend; ++jt)
-				{
-					base->m_combinedLowestBranchLayer->set_edge_weight(jt->u + subvolumeOffset, jt->v + subvolumeOffset, jt->weight);
+					groups.push_back(group);
 				}
 			}
+
+			base->m_combinedLowestBranchLayer = VolumeIPFT::make_lowest_branch_layer(base->m_combinedLeafLayer, groups);
 
 			set_finished();
 		}
@@ -238,9 +223,13 @@ private:
 			std::vector<NichollsWaterfallPass<int> > waterfallPasses(subvolumeCount);
 			for(int i=0; i<subvolumeCount; ++i)
 			{
+#if 0
 				int nodeOffset = base->calculate_subvolume_offset(i);
 				boost::shared_ptr<WaterfallPassListener> listener = make_forest_building_waterfall_pass_listener(volumeIPF, nodeOffset);
 				waterfallPasses[i].add_listener(listener);
+#else
+				// TODO
+#endif
 			}
 
 			while(volumeIPF->highest_layer() < base->m_segmentationOptions.waterfallLayerLimit)
@@ -304,14 +293,6 @@ public:
 		add_subjob(new CombineLowestBranchLayersJob(this));
 		add_subjob(new CreateForestJob(this));
 		add_subjob(new WaterfallJob(this));
-	}
-
-	//#################### PRIVATE METHODS ####################
-private:
-	int calculate_subvolume_offset(int subvolumeIndex) const
-	{
-		// NYI
-		throw 23;
 	}
 };
 
