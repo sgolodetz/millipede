@@ -165,11 +165,8 @@ partitionforests/images/CTImageBranchLayer.h
 partitionforests/images/CTImageLeafLayer.h
 partitionforests/images/CTPixelProperties.h
 partitionforests/images/CTRegionProperties.h
-partitionforests/images/ForestGrid.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
-partitionforests/images/IPFGrid.h
-partitionforests/images/IPFSelectionGrid.h
 partitionforests/images/MosaicImageCreator.h
 partitionforests/images/SimpleImageBranchLayer.h
 partitionforests/images/SimpleImageLeafLayer.h
@@ -185,18 +182,15 @@ ogl/WrappedGL.h
 
 ##
 SET(segmentation_sources
-segmentation/CTIPFBuilder.cpp
 segmentation/CTLowestLayersBuilder.cpp
 segmentation/CTSegmentationOptions.cpp
 segmentation/SubvolumeToVolumeIndexMapper.cpp
 )
 
 SET(segmentation_headers
-segmentation/CTIPFBuilder.h
 segmentation/CTLowestLayersBuilder.h
 segmentation/CTSegmentationOptions.h
 segmentation/ForestBuildingWaterfallPassListener.h
-segmentation/IPFGridBuilder.h
 segmentation/SubvolumeToVolumeIndexMapper.h
 segmentation/VolumeIPFBuilder.h
 )
