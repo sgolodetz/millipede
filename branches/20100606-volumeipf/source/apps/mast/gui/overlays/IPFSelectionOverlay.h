@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_IPFSELECTIONOVERLAY
 #define H_MILLIPEDE_IPFSELECTIONOVERLAY
 
-#include <common/partitionforests/images/IPFSelectionGrid.h>
+#include <common/partitionforests/base/PartitionForestSelection.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 #include <common/textures/RGBA32ImageTexture.h>
@@ -18,9 +18,9 @@ class IPFSelectionOverlay : public PartitionOverlay
 {
 	//#################### CONSTRUCTORS ####################
 public:
-	template <typename IPFSelection>
-	explicit IPFSelectionOverlay(boost::shared_ptr<const IPFSelectionGrid<IPFSelection> > selectionGrid, const SliceLocation& sliceLocation,
-								 SliceOrientation sliceOrientation)
+	template <typename LeafLayer, typename BranchLayer>
+	explicit IPFSelectionOverlay(boost::shared_ptr<const PartitionForestSelection<LeafLayer,BranchLayer> > selection,
+								 const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
 	{
 		// TEMPORARY (test code)
 		RGBA32Image::Pointer colouredImage = ITKImageUtil::make_image<RGBA32>(512, 512);
