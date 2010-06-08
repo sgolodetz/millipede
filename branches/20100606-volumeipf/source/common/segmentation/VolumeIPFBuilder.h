@@ -105,7 +105,7 @@ private:
 					// Calculate the index of the leaf node in the combined leaf layer.
 					int leafIndex = indexMapper(jt.index());
 
-					// Copy it across to the correct place in the combined node properties.
+					// Copy the node's properties across to the correct place in the combined node properties.
 					nodeProperties[leafIndex] = jt->properties();
 				}
 			}
@@ -218,18 +218,17 @@ private:
 			set_status("Running waterfall...");
 
 			VolumeIPF_Ptr volumeIPF = base->m_volumeIPF;
+			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 
+			// Note: We must maintain explicit handles to these listeners while the waterfall passes are running (otherwise it's assumed they've been destroyed).
 			typedef WaterfallPass<int>::Listener WaterfallPassListener;
+			std::vector<boost::shared_ptr<WaterfallPassListener> > listeners(subvolumeCount);
 			std::vector<NichollsWaterfallPass<int> > waterfallPasses(subvolumeCount);
 			for(int i=0; i<subvolumeCount; ++i)
 			{
-#if 0
-				int nodeOffset = base->calculate_subvolume_offset(i);
-				boost::shared_ptr<WaterfallPassListener> listener = make_forest_building_waterfall_pass_listener(volumeIPF, nodeOffset);
-				waterfallPasses[i].add_listener(listener);
-#else
-				// TODO
-#endif
+				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
+				listeners[i] = make_forest_building_waterfall_pass_listener(volumeIPF, indexMapper);
+				waterfallPasses[i].add_listener(listeners[i]);
 			}
 
 			while(volumeIPF->highest_layer() < base->m_segmentationOptions.waterfallLayerLimit)
