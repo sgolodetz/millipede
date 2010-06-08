@@ -64,7 +64,7 @@ public:
 	/// The properties associated with a leaf node
 	typedef typename LeafLayer::NodeProperties LeafProperties;
 
-private:
+protected:
 	typedef shared_ptr<BranchLayer> BranchLayer_Ptr;
 	typedef shared_ptr<ICommandManager> ICommandManager_Ptr;
 	typedef IForestLayer<BranchProperties,EdgeWeight> IForestLayerT;

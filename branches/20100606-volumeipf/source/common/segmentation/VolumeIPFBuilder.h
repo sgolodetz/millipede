@@ -8,11 +8,14 @@
 
 #include <itkRegionOfInterestImageFilter.h>
 
+#include <common/adts/RootedMST.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/io/util/OSSWrapper.h>
 #include <common/jobs/CompositeJob.h>
 #include <common/partitionforests/images/VolumeIPF.h>
+#include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/util/GridUtil.h>
+#include "ForestBuildingWaterfallPassListener.h"
 
 namespace mp {
 
@@ -75,11 +78,11 @@ private:
 		}
 	};
 
-	struct LeafLayersCombinerJob : SimpleJob
+	struct CombineLeafLayersJob : SimpleJob
 	{
 		VolumeIPFBuilder *base;
 
-		explicit LeafLayersCombinerJob(VolumeIPFBuilder *base_)
+		explicit CombineLeafLayersJob(VolumeIPFBuilder *base_)
 		:	base(base_)
 		{}
 
@@ -87,7 +90,26 @@ private:
 		{
 			set_status("Combining leaf layers...");
 
-			// TODO
+			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
+			itk::Size<3> volumeSize = base->m_volume->size();
+			std::vector<CTPixelProperties> nodeProperties(volumeSize[0] * volumeSize[1] * volumeSize[2]);
+
+			for(int i=0; i<subvolumeCount; ++i)
+			{
+				int subvolumeOffset = base->calculate_subvolume_offset(i);
+
+				for(typename LeafLayer::LeafNodeConstIterator jt=base->m_leafLayers[i]->leaf_nodes_cbegin(), jend=base->m_leafLayers[i]->leaf_nodes_cend();
+					jt!=jend; ++jt)
+				{
+					// Calculate the index of the leaf node in the combined leaf layer.
+					int leafIndex = jt.index() + subvolumeOffset;
+
+					// Copy it across to the correct place in the combined node properties.
+					nodeProperties[leafIndex] = jt->properties();
+				}
+			}
+
+			base->m_combinedLeafLayer.reset(new LeafLayer(nodeProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
 
 			set_finished();
 		}
@@ -98,11 +120,11 @@ private:
 		}
 	};
 
-	struct LowestBranchLayersCombinerJob : SimpleJob
+	struct CombineLowestBranchLayersJob : SimpleJob
 	{
 		VolumeIPFBuilder *base;
 
-		explicit LowestBranchLayersCombinerJob(VolumeIPFBuilder *base_)
+		explicit CombineLowestBranchLayersJob(VolumeIPFBuilder *base_)
 		:	base(base_)
 		{}
 
@@ -110,7 +132,45 @@ private:
 		{
 			set_status("Combining lowest branch layers...");
 
-			// TODO
+			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
+			base->m_combinedLowestBranchLayer.reset(new BranchLayer);
+
+			for(int i=0; i<subvolumeCount; ++i)
+			{
+				int subvolumeOffset = base->calculate_subvolume_offset(i);
+
+				// Migrate the nodes across.
+				for(typename BranchLayer::BranchNodeConstIterator jt=base->m_lowestBranchLayers[i]->branch_nodes_cbegin(),
+					jend=base->m_lowestBranchLayers[i]->branch_nodes_cend(); jt!=jend; ++jt)
+				{
+					// Calculate the index of the branch node in the combined lowest branch layer.
+					int branchIndex = jt.index() + subvolumeOffset;
+
+					// Create the branch node in the combined lowest branch layer.
+					base->m_combinedLowestBranchLayer->set_node_properties(branchIndex, jt->properties());
+
+					// Migrate the forest links across.
+					const std::set<int>& children = jt->children();
+					std::set<int> newChildren;
+					for(std::set<int>::const_iterator kt=children.begin(), kend=children.end(); kt!=kend; ++kt)
+					{
+						newChildren.insert(*kt + subvolumeOffset);
+					}
+
+					base->m_combinedLowestBranchLayer->set_node_children(branchIndex, newChildren);
+					for(std::set<int>::const_iterator kt=newChildren.begin(), kend=newChildren.end(); kt!=kend; ++kt)
+					{
+						base->m_combinedLeafLayer->set_node_parent(*kt, branchIndex);
+					}
+				}
+
+				// Migrate the graph edges across.
+				for(typename BranchLayer::EdgeConstIterator jt=base->m_lowestBranchLayers[i]->edges_cbegin(),
+					jend=base->m_lowestBranchLayers[i]->edges_cend(); jt!=jend; ++jt)
+				{
+					base->m_combinedLowestBranchLayer->set_edge_weight(jt->u + subvolumeOffset, jt->v + subvolumeOffset, jt->weight);
+				}
+			}
 
 			set_finished();
 		}
@@ -121,20 +181,18 @@ private:
 		}
 	};
 
-	struct ForestCreatorJob : SimpleJob
+	struct CreateForestJob : SimpleJob
 	{
 		VolumeIPFBuilder *base;
 
-		explicit ForestCreatorJob(VolumeIPFBuilder *base_)
+		explicit CreateForestJob(VolumeIPFBuilder *base_)
 		:	base(base_)
 		{}
 
 		void execute()
 		{
 			set_status("Creating initial partition forest...");
-
-			// TODO
-
+			base->m_volumeIPF.reset(new VolumeIPFT(base->m_volume->size(), base->m_combinedLeafLayer, base->m_combinedLowestBranchLayer));
 			set_finished();
 		}
 
@@ -147,29 +205,69 @@ private:
 	struct WaterfallJob : SimpleJob
 	{
 		VolumeIPFBuilder *base;
-		int subvolumeIndex;
+		int subvolumeCount;
 
-		WaterfallJob(VolumeIPFBuilder *base_, int subvolumeIndex_)
-		:	base(base_), subvolumeIndex(subvolumeIndex_)
+		explicit WaterfallJob(VolumeIPFBuilder *base_)
+		:	base(base_), subvolumeCount(static_cast<int>(base->m_leafLayers.size()))
 		{}
 
 		void execute()
 		{
-			set_status(OSSWrapper() << "Running waterfall " << subvolumeIndex << "...");
+			//~~~~~~~
+			// STEP 1
+			//~~~~~~~
 
-			// TODO
+			std::vector<boost::shared_ptr<RootedMST<int> > > msts(subvolumeCount);
+			for(int i=0; i<subvolumeCount; ++i)
+			{
+				set_status(OSSWrapper() << "Creating rooted MST " << i << "...");
+				msts[i].reset(new RootedMST<int>(*(base->m_lowestBranchLayers[i])));
+				if(is_aborted()) return;
+				increment_progress();
+			}
+
+			//~~~~~~~
+			// STEP 2
+			//~~~~~~~
+
+			set_status("Running waterfall...");
+
+			VolumeIPF_Ptr volumeIPF = base->m_volumeIPF;
+
+			typedef WaterfallPass<int>::Listener WaterfallPassListener;
+			std::vector<NichollsWaterfallPass<int> > waterfallPasses(subvolumeCount);
+			for(int i=0; i<subvolumeCount; ++i)
+			{
+				int nodeOffset = base->calculate_subvolume_offset(i);
+				boost::shared_ptr<WaterfallPassListener> listener = make_forest_building_waterfall_pass_listener(volumeIPF, nodeOffset);
+				waterfallPasses[i].add_listener(listener);
+			}
+
+			while(volumeIPF->highest_layer() < base->m_segmentationOptions.waterfallLayerLimit)
+			{
+				volumeIPF->clone_layer(volumeIPF->highest_layer());
+				if(is_aborted()) return;
+
+				for(int i=0; i<subvolumeCount; ++i)
+				{
+					if(msts[i]->node_count() != 1) waterfallPasses[i].run(*msts[i]);
+				}
+				if(is_aborted()) return;
+			}
 
 			set_finished();
 		}
 
 		int length() const
 		{
-			return 1;
+			return subvolumeCount + 1;
 		}
 	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	LeafLayer_Ptr m_combinedLeafLayer;
+	BranchLayer_Ptr m_combinedLowestBranchLayer;
 	itk::Size<3> m_gridSize;
 	std::vector<LeafLayer_Ptr> m_leafLayers;
 	std::vector<BranchLayer_Ptr> m_lowestBranchLayers;
@@ -202,14 +300,18 @@ public:
 			add_subjob(new LowestLayersBuilder(m_subvolume, m_segmentationOptions, m_leafLayers[i], m_lowestBranchLayers[i]));
 		}
 
-		add_subjob(new LeafLayersCombinerJob(this));
-		add_subjob(new LowestBranchLayersCombinerJob(this));
-		add_subjob(new ForestCreatorJob(this));
+		add_subjob(new CombineLeafLayersJob(this));
+		add_subjob(new CombineLowestBranchLayersJob(this));
+		add_subjob(new CreateForestJob(this));
+		add_subjob(new WaterfallJob(this));
+	}
 
-		for(int i=0; i<subvolumeCount; ++i)
-		{
-			add_subjob(new WaterfallJob(this, i));
-		}
+	//#################### PRIVATE METHODS ####################
+private:
+	int calculate_subvolume_offset(int subvolumeIndex) const
+	{
+		// NYI
+		throw 23;
 	}
 };
 

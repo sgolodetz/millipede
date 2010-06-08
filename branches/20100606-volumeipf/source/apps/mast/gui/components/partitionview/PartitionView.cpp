@@ -299,7 +299,7 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 		Job::execute_in_thread(job);
 		if(show_progress_dialog(this, "Segmenting CT Volume", job))
 		{
-			//m_model->set_volume_ipf(volumeIPF);
+			m_model->set_volume_ipf(volumeIPF);
 			create_partition_textures(m_model->slice_orientation());
 		}
 #endif

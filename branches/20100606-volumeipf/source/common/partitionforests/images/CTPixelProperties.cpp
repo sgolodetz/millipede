@@ -10,8 +10,16 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
+CTPixelProperties::CTPixelProperties()
+:	m_hounsfieldValue(0),
+	m_gradientMagnitudeValue(0),
+	m_greyValue(0)
+{}
+
 CTPixelProperties::CTPixelProperties(short gradientMagnitudeValue, unsigned char greyValue, int hounsfieldValue)
-:	m_hounsfieldValue(hounsfieldValue), m_gradientMagnitudeValue(gradientMagnitudeValue), m_greyValue(greyValue)
+:	m_hounsfieldValue(hounsfieldValue),
+	m_gradientMagnitudeValue(gradientMagnitudeValue),
+	m_greyValue(greyValue)
 {}
 
 //#################### PUBLIC METHODS ####################
