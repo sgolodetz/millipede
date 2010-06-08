@@ -113,6 +113,7 @@ bool PartitionView::create_dicom_textures(SliceOrientation ori)
 
 void PartitionView::create_partition_textures(SliceOrientation ori)
 {
+#if 0
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> CTIPF;
 	typedef IPFGrid<CTIPF> CTIPFGrid;
 	typedef boost::shared_ptr<const CTIPFGrid> CTIPFGrid_CPtr;
@@ -130,6 +131,24 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 	}
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Mosaic Images", job, false);
+#else
+	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> CTVolumeIPF;
+	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
+
+	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(!volumeIPF) return;
+	int highestLayer = volumeIPF->highest_layer();
+
+	// Create the mosaic images.
+	std::vector<itk::Image<unsigned char,3>::Pointer> mosaicImages(highestLayer);
+	CompositeJob_Ptr job(new CompositeJob);
+	for(int layer=1; layer<=highestLayer; ++layer)
+	{
+		job->add_subjob(new MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer>(volumeIPF, layer, false, mosaicImages[layer-1]));
+	}
+	Job::execute_in_thread(job);
+	show_progress_dialog(this, "Creating Mosaic Images", job, false);
+#endif
 
 	// Create the partition texture sets.
 	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
@@ -278,7 +297,7 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 	if(dialog.segmentation_options())
 	{
-#if 1
+#if 0
 		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
 		typedef CTIPFGridBuilder::IPFGrid_Ptr CTIPFGrid_Ptr;
 

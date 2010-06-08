@@ -90,11 +90,9 @@ private:
 		void execute()
 		{
 			set_status("Combining leaf layers...");
-
 			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 			std::vector<CTPixelProperties> nodeProperties(volumeSize[0] * volumeSize[1] * volumeSize[2]);
-
 			for(int i=0; i<subvolumeCount; ++i)
 			{
 				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
@@ -109,9 +107,7 @@ private:
 					nodeProperties[leafIndex] = jt->properties();
 				}
 			}
-
 			base->m_combinedLeafLayer.reset(new LeafLayer(nodeProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
-
 			set_finished();
 		}
 
@@ -132,12 +128,9 @@ private:
 		void execute()
 		{
 			set_status("Combining lowest branch layers...");
-
 			std::vector<std::set<int> > groups;
-
 			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
-
 			for(int i=0; i<subvolumeCount; ++i)
 			{
 				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
@@ -154,9 +147,7 @@ private:
 					groups.push_back(group);
 				}
 			}
-
 			base->m_combinedLowestBranchLayer = VolumeIPFT::make_lowest_branch_layer(base->m_combinedLeafLayer, groups);
-
 			set_finished();
 		}
 
@@ -238,7 +229,10 @@ private:
 
 				for(int i=0; i<subvolumeCount; ++i)
 				{
-					if(msts[i]->node_count() != 1) waterfallPasses[i].run(*msts[i]);
+					if(msts[i]->node_count() != 1)
+					{
+						waterfallPasses[i].run(*msts[i]);
+					}
 				}
 				if(is_aborted()) return;
 			}

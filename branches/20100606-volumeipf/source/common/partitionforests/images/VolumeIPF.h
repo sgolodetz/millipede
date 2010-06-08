@@ -50,8 +50,7 @@ public:
 	*/
 	int leaf_of_position(const itk::Index<3>& position) const
 	{
-		// NYI
-		throw 23;
+		return (position[2] * m_volumeSize[1] + position[1]) * m_volumeSize[0] + position[0];
 	}
 
 	/**
@@ -64,6 +63,16 @@ public:
 	{
 		// NYI
 		throw 23;
+	}
+
+	/**
+	@brief	Returns the size of the volume represented by the partition forest.
+
+	@return As described
+	*/
+	const itk::Size<3>& volume_size() const
+	{
+		return m_volumeSize;
 	}
 };
 
