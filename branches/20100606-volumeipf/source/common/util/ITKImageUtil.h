@@ -10,12 +10,15 @@
 
 #include <itkImageRegionIterator.h>
 
+#include <common/slices/SliceOrientation.h>
+
 namespace mp {
 
 namespace ITKImageUtil {
 
 //#################### FUNCTIONS ####################
 std::vector<itk::Offset<2> > make_4_connected_offsets();
+std::vector<itk::Offset<3> > make_4_connected_offsets(SliceOrientation ori);
 std::vector<itk::Offset<3> > make_6_connected_offsets();
 
 //#################### TEMPLATE FUNCTIONS ####################

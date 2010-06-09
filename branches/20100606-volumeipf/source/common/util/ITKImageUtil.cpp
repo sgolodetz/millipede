@@ -20,6 +20,33 @@ std::vector<itk::Offset<2> > make_4_connected_offsets()
 	return offsets;
 }
 
+std::vector<itk::Offset<3> > make_4_connected_offsets(SliceOrientation ori)
+{
+	std::vector<itk::Offset<3> > offsets(4);
+	switch(ori)
+	{
+		case ORIENT_XY:
+			offsets[0][0] = 0;	offsets[0][1] = -1;	offsets[0][2] = 0;
+			offsets[1][0] = -1;	offsets[1][1] = 0;	offsets[1][2] = 0;
+			offsets[2][0] = 1;	offsets[2][1] = 0;	offsets[2][2] = 0;
+			offsets[3][0] = 0;	offsets[3][1] = 1;	offsets[3][2] = 0;
+			break;
+		case ORIENT_XZ:
+			offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
+			offsets[1][0] = -1;	offsets[1][1] = 0;	offsets[1][2] = 0;
+			offsets[2][0] = 1;	offsets[2][1] = 0;	offsets[2][2] = 0;
+			offsets[3][0] = 0;	offsets[3][1] = 0;	offsets[3][2] = 1;
+			break;
+		case ORIENT_YZ:
+			offsets[0][0] = 0;	offsets[0][1] = 0;	offsets[0][2] = -1;
+			offsets[1][0] = 0;	offsets[1][1] = -1;	offsets[1][2] = 0;
+			offsets[2][0] = 0;	offsets[2][1] = 1;	offsets[2][2] = 0;
+			offsets[3][0] = 0;	offsets[3][1] = 0;	offsets[3][2] = 1;
+			break;
+	}
+	return offsets;
+}
+
 std::vector<itk::Offset<3> > make_6_connected_offsets()
 {
 	std::vector<itk::Offset<3> > offsets(6);
