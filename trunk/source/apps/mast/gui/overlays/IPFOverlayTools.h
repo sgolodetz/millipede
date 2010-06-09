@@ -17,10 +17,35 @@ namespace mp {
 namespace IPFOverlayTools {
 
 //#################### FUNCTIONS ####################
+/**
+@brief	Calculates the bounding indices, width and height of a volume slice.
+
+The bounding indices are 3D positions sliceBegin and sliceEnd such that precisely the pixels in the slice lie in [sliceBegin,sliceEnd).
+
+@param[in]	volumeSize			The size of the volume
+@param[in]	sliceLocation		The slice's location within the volume (only one of the coordinates is relevant, namely that specified by the slice orientation)
+@param[in]	sliceOrientation	The slice's orientation within the volume (XY, XZ or YZ)
+@param[out]	sliceBegin			The lower bounding index of the slice
+@param[out]	sliceEnd			The upper bounding index of the slice
+@param[out]	width				The width of the slice
+@param[out]	height				The height of the slice
+*/
 void calculate_slice_parameters(const itk::Size<3>& volumeSize, const SliceLocation& sliceLocation, SliceOrientation sliceOrientation,
 								itk::Index<3>& sliceBegin, itk::Index<3>& sliceEnd, int& width, int& height);
 
 //#################### TEMPLATE FUNCTIONS ####################
+/**
+@brief	Draws a node in a volume IPF onto an image corresponding to a slice through the volume the IPF represents.
+
+@param[in]	volumeIPF			The volume IPF
+@param[in]	node				The node to draw
+@param[in]	image				The image onto which to draw it
+@param[in]	sliceBegin			The lower bounding index of the slice
+@param[in]	sliceEnd			The upper bounding index of the slice
+@param[in]	sliceOrientation	The orientation of the slice (XY, XZ or YZ)
+@param[in]	colour				The colour with which to draw the node
+@param[in]	boundariesOnly		Whether or not to draw just the boundary of the node
+*/
 template <typename VolumeIPF_CPtr>
 void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Image::Pointer image,
 			   const itk::Index<3>& sliceBegin, const itk::Index<3>& sliceEnd, SliceOrientation sliceOrientation,
