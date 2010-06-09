@@ -22,9 +22,9 @@ class MosaicImageCreator : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef itk::Image<unsigned char,3> MosaicImage;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
-	typedef itk::Image<unsigned char,3> MosaicImage;
 
 	//#################### PRIVATE VARIABLES ####################
 private:

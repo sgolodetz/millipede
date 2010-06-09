@@ -26,7 +26,6 @@ class VolumeIPFBuilder : public CompositeJob
 	//#################### TYPEDEFS ####################
 public:
 	typedef typename LowestLayersBuilder::IPF IPF;
-	typedef typename LowestLayersBuilder::IPF_Ptr IPF_Ptr;
 	typedef typename IPF::LeafLayer LeafLayer;
 	typedef typename IPF::BranchLayer BranchLayer;
 	typedef boost::shared_ptr<LeafLayer> LeafLayer_Ptr;
