@@ -60,6 +60,20 @@ void PartitionModel::set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
 {
 	m_volumeIPF = volumeIPF;
 	m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
+
+#if 0
+	if(m_sliceOrientation == ORIENT_XY)
+	{
+		itk::Index<3> pos = {{60, 280, 0}};
+		m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), pos));
+	}
+	else if(m_sliceOrientation == ORIENT_XZ)
+	{
+		itk::Index<3> pos = {{60, 0, 50}};
+		m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), pos));
+	}
+#endif
+
 	alert_listeners();
 }
 
