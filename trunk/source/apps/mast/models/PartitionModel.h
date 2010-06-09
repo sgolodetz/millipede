@@ -24,7 +24,7 @@ typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
 typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
-template <typename LeafLayer, typename BranchLayer>
+template <typename LeafLayer, typename BranchLayer, typename FeatureID>
 class PartitionModel
 {
 	//#################### NESTED CLASSES ####################
@@ -41,6 +41,10 @@ public:
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
+	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,FeatureID> VolumeIPFMultiFeatureSelectionT;
+	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
+	typedef boost::shared_ptr<const VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_CPtr;
+
 	typedef VolumeIPFSelection<LeafLayer,BranchLayer> VolumeIPFSelectionT;
 	typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFSelectionT> VolumeIPFSelection_CPtr;
@@ -49,6 +53,7 @@ public:
 private:
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
+	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	VolumeIPFSelection_Ptr m_selection;
 	SliceLocation m_sliceLocation;			// slice location in terms of the volume only (not based on actual slice numbers)
@@ -65,9 +70,30 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(Listener *listener)			{ m_listeners.push_back(listener); }
-	SliceTextureSet_CPtr dicom_texture_set() const	{ return m_dicomTextureSet; }
-	DICOMVolume_CPtr dicom_volume() const			{ return m_dicomVolume; }
+	void add_listener(Listener *listener)
+	{
+		m_listeners.push_back(listener);
+	}
+
+	SliceTextureSet_CPtr dicom_texture_set() const
+	{
+		return m_dicomTextureSet;
+	}
+
+	DICOMVolume_CPtr dicom_volume() const
+	{
+		return m_dicomVolume;
+	}
+
+	const VolumeIPFMultiFeatureSelection_Ptr& multi_feature_selection()
+	{
+		return m_multiFeatureSelection;
+	}
+
+	VolumeIPFMultiFeatureSelection_CPtr multi_feature_selection() const
+	{
+		return m_multiFeatureSelection;
+	}
 
 	SliceTextureSet_CPtr partition_texture_set(int layer) const
 	{
@@ -76,8 +102,15 @@ public:
 		else return SliceTextureSet_CPtr();
 	}
 
-	const VolumeIPFSelection_Ptr& selection()		{ return m_selection; }
-	VolumeIPFSelection_CPtr selection() const		{ return m_selection; }
+	const VolumeIPFSelection_Ptr& selection()
+	{
+		return m_selection;
+	}
+
+	VolumeIPFSelection_CPtr selection() const
+	{
+		return m_selection;
+	}
 
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 	{
@@ -108,6 +141,7 @@ public:
 	{
 		m_volumeIPF = volumeIPF;
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
+		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
 
 #if 0
 		if(m_sliceOrientation == ORIENT_XY)
@@ -125,10 +159,25 @@ public:
 		alert_listeners();
 	}
 
-	const SliceLocation& slice_location() const		{ return m_sliceLocation; }
-	SliceOrientation slice_orientation() const		{ return m_sliceOrientation; }
-	const VolumeIPF_Ptr& volume_ipf()				{ return m_volumeIPF; }
-	VolumeIPF_CPtr volume_ipf() const				{ return m_volumeIPF; }
+	const SliceLocation& slice_location() const
+	{
+		return m_sliceLocation;
+	}
+
+	SliceOrientation slice_orientation() const
+	{
+		return m_sliceOrientation;
+	}
+
+	const VolumeIPF_Ptr& volume_ipf()
+	{
+		return m_volumeIPF;
+	}
+
+	VolumeIPF_CPtr volume_ipf() const
+	{
+		return m_volumeIPF;
+	}
 
 	//#################### PRIVATE METHODS ####################
 private:

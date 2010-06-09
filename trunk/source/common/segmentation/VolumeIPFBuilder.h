@@ -105,6 +105,9 @@ private:
 					// Copy the node's properties across to the correct place in the combined node properties.
 					nodeProperties[leafIndex] = jt->properties();
 				}
+
+				// There's no more use for the subvolume's leaf layer, so free up the memory (space is at a premium during forest construction).
+				base->m_leafLayers[i].reset();
 			}
 			base->m_combinedLeafLayer.reset(new LeafLayer(nodeProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
 			set_finished();
@@ -197,6 +200,10 @@ private:
 			{
 				set_status(OSSWrapper() << "Creating rooted MST " << i << "...");
 				msts[i].reset(new RootedMST<int>(*(base->m_lowestBranchLayers[i])));
+
+				// There's no more use for the subvolume's lowest branch layer, so free up the memory (space is at a premium during forest construction).
+				base->m_lowestBranchLayers[i].reset();
+
 				if(is_aborted()) return;
 				increment_progress();
 			}

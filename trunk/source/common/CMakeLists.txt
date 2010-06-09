@@ -161,6 +161,7 @@ partitionforests/images/SimpleRegionProperties.cpp
 )
 
 SET(partitionforests_images_headers
+partitionforests/images/AbdominalFeatureID.h
 partitionforests/images/CTImageBranchLayer.h
 partitionforests/images/CTImageLeafLayer.h
 partitionforests/images/CTPixelProperties.h
