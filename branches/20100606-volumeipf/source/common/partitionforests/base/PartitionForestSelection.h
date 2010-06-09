@@ -205,7 +205,7 @@ public:
 	private:
 		void check_for_descendants()
 		{
-			if(m_nodeIt != m_base->nodes_end())
+			if(m_nodeIt != m_base->nodes_cend())
 			{
 				const PFNodeID& node = *m_nodeIt;
 				if(node.layer() > m_viewLayer)

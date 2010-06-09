@@ -68,6 +68,8 @@ public:
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	DICOMVolume_CPtr dicom_volume() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
+	const IPFSelection_Ptr& selection();
+	IPFSelection_CPtr selection() const;
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	void set_slice_location(const SliceLocation& loc);

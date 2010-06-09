@@ -28,6 +28,9 @@ SliceTextureSet_CPtr PartitionModel::partition_texture_set(int layer) const
 	else return SliceTextureSet_CPtr();
 }
 
+const PartitionModel::IPFSelection_Ptr& PartitionModel::selection()				{ return m_selection; }
+PartitionModel::IPFSelection_CPtr PartitionModel::selection() const				{ return m_selection; }
+
 void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;

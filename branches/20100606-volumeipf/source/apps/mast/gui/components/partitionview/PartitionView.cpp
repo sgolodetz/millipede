@@ -166,13 +166,11 @@ void PartitionView::recreate_overlays()
 {
 	m_overlayManager->clear_overlays();
 
-#if 0
-	PartitionModel::IPFSelectionGrid_CPtr selectionGrid = m_model->selection_grid();
-	if(selectionGrid)
+	PartitionModel::IPFSelection_CPtr selection = m_model->selection();
+	if(selection)
 	{
-		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selectionGrid, m_model->slice_location(), m_model->slice_orientation()));
+		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selection, m_model->slice_location(), m_model->slice_orientation()));
 	}
-#endif
 }
 
 void PartitionView::refresh_canvases()
