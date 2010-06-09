@@ -97,6 +97,9 @@ public:
 	void OnSliderZ(wxScrollEvent&);
 	void OnSliderLayer(wxScrollEvent&);
 
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateSliderLayer(wxUpdateUIEvent& e);
+
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
 };

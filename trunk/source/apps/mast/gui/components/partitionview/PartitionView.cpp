@@ -257,7 +257,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 		middleRightBottom->SetSizer(middleRightBottomSizer);
 			wxStaticText *layerText = new wxStaticText(middleRightBottom, wxID_ANY, wxT("Layer: "));
 			middleRightBottomSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
-			m_layerSlider = new wxSlider(middleRightBottom, SLIDERID_LAYER, 999, 999, 999, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_layerSlider = new wxSlider(middleRightBottom, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleRightBottomSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
 		middleRightSizer->Add(middleRightBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleRight);
@@ -329,6 +329,12 @@ void PartitionView::OnSliderLayer(wxScrollEvent&)
 	m_model->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, m_layerSlider->GetValue()));
 }
 
+//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->partition_texture_set(1).get() != NULL);
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
@@ -342,6 +348,9 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_COMMAND_SCROLL(SLIDERID_Y, PartitionView::OnSliderY)
 	EVT_COMMAND_SCROLL(SLIDERID_Z, PartitionView::OnSliderZ)
 	EVT_COMMAND_SCROLL(SLIDERID_LAYER, PartitionView::OnSliderLayer)
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(SLIDERID_LAYER, PartitionView::OnUpdateSliderLayer)
 END_EVENT_TABLE()
 
 }

@@ -80,7 +80,7 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 		}
 
 		// Project the position into image coordinates.
-		itk::Index<2> imagePos;
+		itk::Index<2> imagePos = {{-1, -1}};
 		switch(sliceOrientation)
 		{
 			case ORIENT_XY:	imagePos[0] = volumePos[0]; imagePos[1] = volumePos[1]; break;

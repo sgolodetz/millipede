@@ -70,7 +70,7 @@ public:
 	PFNodeID node_of(int layerIndex, const itk::Index<3>& position) const
 	{
 		int n = leaf_of_position(position);
-		return ancestor_of(PFNodeID(0,n), layerIndex);
+		return this->ancestor_of(PFNodeID(0,n), layerIndex);
 	}
 
 	/**
