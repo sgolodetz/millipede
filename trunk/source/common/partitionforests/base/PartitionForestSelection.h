@@ -241,7 +241,7 @@ public:
 public:
 	void clear()
 	{
-		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(&PartitionForestSelection<LeafLayer,BranchLayer>::clear_impl, _1), "Clear Selection")));
+		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(boost::mem_fn(&PartitionForestSelection<LeafLayer,BranchLayer>::clear_impl), _1), "Clear Selection")));
 	}
 
 	bool contains(const PFNodeID& node) const
