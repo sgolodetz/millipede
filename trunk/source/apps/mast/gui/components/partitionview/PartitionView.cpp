@@ -46,7 +46,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)),
-	m_model(new PartitionModel(
+	m_model(new PartitionModelT(
 		volume,
 		SliceLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
 		ORIENT_XY)
@@ -152,7 +152,7 @@ bool PartitionView::create_textures(SliceOrientation ori)
 	return true;
 }
 
-PartitionModel_CPtr PartitionView::model() const
+PartitionView::PartitionModel_CPtr PartitionView::model() const
 {
 	return m_model;
 }
@@ -166,7 +166,7 @@ void PartitionView::recreate_overlays()
 {
 	m_overlayManager->clear_overlays();
 
-	PartitionModel::VolumeIPFSelection_CPtr selection = m_model->selection();
+	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
 	if(selection)
 	{
 		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selection, m_model->slice_location(), m_model->slice_orientation()));

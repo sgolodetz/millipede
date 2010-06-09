@@ -8,7 +8,6 @@
 
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 #include <wx/glcanvas.h>
 #include <wx/listctrl.h>
@@ -16,6 +15,8 @@ using boost::shared_ptr;
 #include <wx/slider.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
+#include <common/partitionforests/images/CTImageBranchLayer.h>
+#include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 #include <mast/models/PartitionModel.h>
@@ -27,17 +28,19 @@ namespace mp {
 
 class DICOMCanvas;
 class PartitionCanvas;
-typedef shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
-typedef shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
+typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
+typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 
-class PartitionView : public wxPanel, public PartitionModel::Listener
+class PartitionView : public wxPanel, public PartitionModel<CTImageLeafLayer,CTImageBranchLayer>::Listener
 {
 	//#################### FRIENDS ####################
 	friend class BaseCanvas;
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef shared_ptr<SliceLocation> SliceLocation_Ptr;
+	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer> PartitionModelT;
+	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
+	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:

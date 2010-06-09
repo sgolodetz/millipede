@@ -9,12 +9,14 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
+#include <common/partitionforests/images/CTImageBranchLayer.h>
+#include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <mast/gui/components/canvas/Canvas.h>
+#include <mast/models/PartitionModel.h>
 
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<const class PartitionModel> PartitionModel_CPtr;
 typedef shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 class PartitionView;
 typedef shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
@@ -22,6 +24,10 @@ typedef shared_ptr<const class Texture> Texture_CPtr;
 
 class BaseCanvas : public Canvas
 {
+	//#################### TYPEDEFS ####################
+private:
+	typedef shared_ptr<const PartitionModel<CTImageLeafLayer,CTImageBranchLayer> > PartitionModel_CPtr;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	const PartitionView *m_partitionView;

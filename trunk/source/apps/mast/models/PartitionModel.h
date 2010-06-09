@@ -9,10 +9,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
-#include <common/partitionforests/images/CTImageBranchLayer.h>
-#include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
@@ -22,11 +19,12 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
-typedef shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
-typedef shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
-typedef shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
+typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
+typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
+typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
+typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
+template <typename LeafLayer, typename BranchLayer>
 class PartitionModel
 {
 	//#################### NESTED CLASSES ####################
@@ -39,11 +37,11 @@ public:
 
 	//#################### TYPEDEFS ####################
 public:
-	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> VolumeIPFT;
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
-	typedef VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer> VolumeIPFSelectionT;
+	typedef VolumeIPFSelection<LeafLayer,BranchLayer> VolumeIPFSelectionT;
 	typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFSelectionT> VolumeIPFSelection_CPtr;
 
@@ -61,34 +59,87 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionModel(const DICOMVolume_Ptr& volume, const SliceLocation& loc, SliceOrientation ori);
+	PartitionModel(const DICOMVolume_Ptr& dicomVolume, const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
+	:	m_dicomVolume(dicomVolume), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation)
+	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(Listener *listener);
-	SliceTextureSet_CPtr dicom_texture_set() const;
-	DICOMVolume_CPtr dicom_volume() const;
-	SliceTextureSet_CPtr partition_texture_set(int layer) const;
-	const VolumeIPFSelection_Ptr& selection();
-	VolumeIPFSelection_CPtr selection() const;
-	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
-	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
-	void set_slice_location(const SliceLocation& loc);
-	void set_slice_orientation(SliceOrientation ori);
-	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF);
-	const SliceLocation& slice_location() const;
-	SliceOrientation slice_orientation() const;
-	const VolumeIPF_Ptr& volume_ipf();
-	VolumeIPF_CPtr volume_ipf() const;
+	void add_listener(Listener *listener)			{ m_listeners.push_back(listener); }
+	SliceTextureSet_CPtr dicom_texture_set() const	{ return m_dicomTextureSet; }
+	DICOMVolume_CPtr dicom_volume() const			{ return m_dicomVolume; }
+
+	SliceTextureSet_CPtr partition_texture_set(int layer) const
+	{
+		int n = layer - 1;
+		if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
+		else return SliceTextureSet_CPtr();
+	}
+
+	const VolumeIPFSelection_Ptr& selection()		{ return m_selection; }
+	VolumeIPFSelection_CPtr selection() const		{ return m_selection; }
+
+	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
+	{
+		m_dicomTextureSet = dicomTextureSet;
+		alert_listeners();
+	}
+
+	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
+	{
+		m_partitionTextureSets = partitionTextureSets;
+		alert_listeners();
+	}
+
+	void set_slice_location(const SliceLocation& loc)
+	{
+		// TODO: Validate location against bounds
+		m_sliceLocation = loc;
+		alert_listeners();
+	}
+
+	void set_slice_orientation(SliceOrientation ori)
+	{
+		m_sliceOrientation = ori;
+		alert_listeners();
+	}
+
+	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
+	{
+		m_volumeIPF = volumeIPF;
+		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
+
+#if 0
+		if(m_sliceOrientation == ORIENT_XY)
+		{
+			itk::Index<3> pos = {{60, 280, 0}};
+			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), pos));
+		}
+		else if(m_sliceOrientation == ORIENT_XZ)
+		{
+			itk::Index<3> pos = {{60, 0, 50}};
+			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), pos));
+		}
+#endif
+
+		alert_listeners();
+	}
+
+	const SliceLocation& slice_location() const		{ return m_sliceLocation; }
+	SliceOrientation slice_orientation() const		{ return m_sliceOrientation; }
+	const VolumeIPF_Ptr& volume_ipf()				{ return m_volumeIPF; }
+	VolumeIPF_CPtr volume_ipf() const				{ return m_volumeIPF; }
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void alert_listeners();
+	void alert_listeners()
+	{
+		for(size_t i=0, size=m_listeners.size(); i<size; ++i)
+		{
+			m_listeners[i]->model_changed();
+		}
+	}
 };
-
-//#################### TYPEDEFS ####################
-typedef shared_ptr<PartitionModel> PartitionModel_Ptr;
-typedef shared_ptr<const PartitionModel> PartitionModel_CPtr;
 
 }
 

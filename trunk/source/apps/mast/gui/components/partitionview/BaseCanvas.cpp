@@ -108,7 +108,7 @@ void BaseCanvas::setup(const PartitionView *partitionView)
 }
 
 //#################### PROTECTED METHODS ####################
-PartitionModel_CPtr BaseCanvas::model() const
+BaseCanvas::PartitionModel_CPtr BaseCanvas::model() const
 {
 	return m_partitionView ? m_partitionView->model() : PartitionModel_CPtr();
 }

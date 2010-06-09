@@ -82,10 +82,6 @@ gui/windows/PartitionWindow.h
 )
 
 ##
-SET(models_sources
-models/PartitionModel.cpp
-)
-
 SET(models_headers
 models/PartitionModel.h
 )
@@ -110,7 +106,6 @@ ${gui_components_partitionview_sources}
 ${gui_dialogs_sources}
 ${gui_overlays_sources}
 ${gui_windows_sources}
-${models_sources}
 ${util_sources}
 )
 
@@ -157,7 +152,6 @@ SOURCE_GROUP(gui\\windows\\.cpp FILES ${gui_windows_sources})
 SOURCE_GROUP(gui\\windows\\.h FILES ${gui_windows_headers})
 
 ##
-SOURCE_GROUP(models\\.cpp FILES ${models_sources})
 SOURCE_GROUP(models\\.h FILES ${models_headers})
 
 ##
