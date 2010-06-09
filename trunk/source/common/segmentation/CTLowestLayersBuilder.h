@@ -1,10 +1,10 @@
 /***
- * millipede: CTIPFBuilder.h
+ * millipede: CTLowestLayersBuilder.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_CTIPFBUILDER
-#define H_MILLIPEDE_CTIPFBUILDER
+#ifndef H_MILLIPEDE_CTLOWESTLAYERSBUILDER
+#define H_MILLIPEDE_CTLOWESTLAYERSBUILDER
 
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/base/PartitionForest.h>
@@ -18,24 +18,27 @@ namespace mp {
 struct CTSegmentationOptions;
 typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 
-class CTIPFBuilder : public SimpleJob
+class CTLowestLayersBuilder : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 public:
+	typedef boost::shared_ptr<CTImageBranchLayer> CTImageBranchLayer_Ptr;
+	typedef boost::shared_ptr<CTImageLeafLayer> CTImageLeafLayer_Ptr;
 	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
 	typedef boost::shared_ptr<IPF> IPF_Ptr;
 	typedef CTSegmentationOptions SegmentationOptions;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	IPF_Ptr& m_ipf;
+	CTImageLeafLayer_Ptr& m_leafLayer;
+	CTImageBranchLayer_Ptr& m_lowestBranchLayer;
 	CTSegmentationOptions m_segmentationOptions;
 	boost::shared_ptr<DICOMVolume_CPtr> m_volume;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf);
-	CTIPFBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf);
+	CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer);
+	CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer);
 
 	//#################### PUBLIC METHODS ####################
 public:

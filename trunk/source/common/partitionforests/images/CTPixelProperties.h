@@ -21,6 +21,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
+	CTPixelProperties();
 	CTPixelProperties(short gradientMagnitudeValue, unsigned char greyValue, int hounsfieldValue);
 
 	//#################### PUBLIC METHODS ####################

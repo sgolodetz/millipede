@@ -239,6 +239,11 @@ public:
 		else throw Exception(OSSWrapper() << "No such node: " << n);
 	}
 
+	int node_count() const
+	{
+		return m_graph.node_count();
+	}
+
 	std::vector<int> node_indices() const
 	{
 		return m_graph.node_indices();

@@ -11,8 +11,8 @@
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
-#include <common/segmentation/CTIPFBuilder.h>
-#include <common/segmentation/IPFGridBuilder.h>
+#include <common/segmentation/CTLowestLayersBuilder.h>
+#include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
@@ -111,20 +111,19 @@ bool PartitionView::create_dicom_textures(SliceOrientation ori)
 
 void PartitionView::create_partition_textures(SliceOrientation ori)
 {
-	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> CTIPF;
-	typedef IPFGrid<CTIPF> CTIPFGrid;
-	typedef boost::shared_ptr<const CTIPFGrid> CTIPFGrid_CPtr;
+	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> CTVolumeIPF;
+	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
 
-	CTIPFGrid_CPtr ipfGrid = m_model->ipf_grid();
-	if(!ipfGrid) return;
-	int highestLayer = ipfGrid->highest_layer();
+	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(!volumeIPF) return;
+	int highestLayer = volumeIPF->highest_layer();
 
 	// Create the mosaic images.
 	std::vector<itk::Image<unsigned char,3>::Pointer> mosaicImages(highestLayer);
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		job->add_subjob(new MosaicImageCreator<CTIPF>(ipfGrid, layer, true, mosaicImages[layer-1]));
+		job->add_subjob(new MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer>(volumeIPF, layer, ori, true, mosaicImages[layer-1]));
 	}
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Mosaic Images", job, false);
@@ -167,10 +166,10 @@ void PartitionView::recreate_overlays()
 {
 	m_overlayManager->clear_overlays();
 
-	PartitionModel::IPFSelectionGrid_CPtr selectionGrid = m_model->selection_grid();
-	if(selectionGrid)
+	PartitionModel::IPFSelection_CPtr selection = m_model->selection();
+	if(selection)
 	{
-		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selectionGrid, m_model->slice_location(), m_model->slice_orientation()));
+		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selection, m_model->slice_location(), m_model->slice_orientation()));
 	}
 }
 
@@ -276,15 +275,15 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 	if(dialog.segmentation_options())
 	{
-		typedef IPFGridBuilder<CTIPFBuilder> CTIPFGridBuilder;
-		typedef CTIPFGridBuilder::IPFGrid_Ptr CTIPFGrid_Ptr;
+		typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
+		typedef CTVolumeIPFBuilder::VolumeIPF_Ptr VolumeIPF_Ptr;
 
-		CTIPFGrid_Ptr ipfGrid;
-		Job_Ptr job(new CTIPFGridBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), ipfGrid));
+		VolumeIPF_Ptr volumeIPF;
+		Job_Ptr job(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
 		Job::execute_in_thread(job);
 		if(show_progress_dialog(this, "Segmenting CT Volume", job))
 		{
-			m_model->set_ipf_grid(ipfGrid);
+			m_model->set_volume_ipf(volumeIPF);
 			create_partition_textures(m_model->slice_orientation());
 		}
 	}

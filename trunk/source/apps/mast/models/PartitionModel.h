@@ -11,10 +11,10 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
+#include <common/partitionforests/base/PartitionForestSelection.h>
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
-#include <common/partitionforests/images/IPFGrid.h>
-#include <common/partitionforests/images/IPFSelectionGrid.h>
+#include <common/partitionforests/images/VolumeIPF.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 
@@ -38,25 +38,23 @@ public:
 
 	//#################### TYPEDEFS ####################
 public:
-	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
-	typedef IPFGrid<IPF> IPFGridT;
-	typedef boost::shared_ptr<IPFGridT> IPFGrid_Ptr;
-	typedef boost::shared_ptr<const IPFGridT> IPFGrid_CPtr;
+	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> VolumeIPFT;
+	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
+	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
 	typedef PartitionForestSelection<CTImageLeafLayer,CTImageBranchLayer> IPFSelection;
-	typedef IPFSelectionGrid<IPFSelection> IPFSelectionGridT;
-	typedef boost::shared_ptr<IPFSelectionGridT> IPFSelectionGrid_Ptr;
-	typedef boost::shared_ptr<const IPFSelectionGridT> IPFSelectionGrid_CPtr;
+	typedef boost::shared_ptr<IPFSelection> IPFSelection_Ptr;
+	typedef boost::shared_ptr<const IPFSelection> IPFSelection_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
-	IPFGrid_Ptr m_ipfGrid;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
-	IPFSelectionGrid_Ptr m_selectionGrid;
+	IPFSelection_Ptr m_selection;
 	SliceLocation m_sliceLocation;			// slice location in terms of the volume only (not based on actual slice numbers)
 	SliceOrientation m_sliceOrientation;
+	VolumeIPF_Ptr m_volumeIPF;
 
 	std::vector<Listener*> m_listeners;
 
@@ -69,18 +67,18 @@ public:
 	void add_listener(Listener *listener);
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	DICOMVolume_CPtr dicom_volume() const;
-	const IPFGrid_Ptr& ipf_grid();
-	IPFGrid_CPtr ipf_grid() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
-	const IPFSelectionGrid_Ptr& selection_grid();
-	IPFSelectionGrid_CPtr selection_grid() const;
+	const IPFSelection_Ptr& selection();
+	IPFSelection_CPtr selection() const;
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
-	void set_ipf_grid(const IPFGrid_Ptr& ipfGrid);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	void set_slice_location(const SliceLocation& loc);
 	void set_slice_orientation(SliceOrientation ori);
+	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF);
 	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;
+	const VolumeIPF_Ptr& volume_ipf();
+	VolumeIPF_CPtr volume_ipf() const;
 
 	//#################### PRIVATE METHODS ####################
 private:

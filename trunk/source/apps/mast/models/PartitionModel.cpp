@@ -20,8 +20,6 @@ void PartitionModel::add_listener(Listener *listener)
 
 SliceTextureSet_CPtr PartitionModel::dicom_texture_set() const					{ return m_dicomTextureSet; }
 DICOMVolume_CPtr PartitionModel::dicom_volume() const							{ return m_dicomVolume; }
-const PartitionModel::IPFGrid_Ptr& PartitionModel::ipf_grid()					{ return m_ipfGrid; }
-PartitionModel::IPFGrid_CPtr PartitionModel::ipf_grid() const					{ return m_ipfGrid; }
 
 SliceTextureSet_CPtr PartitionModel::partition_texture_set(int layer) const
 {
@@ -30,19 +28,12 @@ SliceTextureSet_CPtr PartitionModel::partition_texture_set(int layer) const
 	else return SliceTextureSet_CPtr();
 }
 
-const PartitionModel::IPFSelectionGrid_Ptr& PartitionModel::selection_grid()	{ return m_selectionGrid; }
-PartitionModel::IPFSelectionGrid_CPtr PartitionModel::selection_grid() const	{ return m_selectionGrid; }
+const PartitionModel::IPFSelection_Ptr& PartitionModel::selection()				{ return m_selection; }
+PartitionModel::IPFSelection_CPtr PartitionModel::selection() const				{ return m_selection; }
 
 void PartitionModel::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;
-	alert_listeners();
-}
-
-void PartitionModel::set_ipf_grid(const IPFGrid_Ptr& ipfGrid)
-{
-	m_ipfGrid = ipfGrid;
-	m_selectionGrid.reset(new IPFSelectionGridT(ipfGrid));
 	alert_listeners();
 }
 
@@ -65,8 +56,17 @@ void PartitionModel::set_slice_orientation(SliceOrientation ori)
 	alert_listeners();
 }
 
+void PartitionModel::set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
+{
+	m_volumeIPF = volumeIPF;
+	m_selection.reset(new IPFSelection(volumeIPF));
+	alert_listeners();
+}
+
 const SliceLocation& PartitionModel::slice_location() const					{ return m_sliceLocation; }
 SliceOrientation PartitionModel::slice_orientation() const					{ return m_sliceOrientation; }
+const PartitionModel::VolumeIPF_Ptr& PartitionModel::volume_ipf()			{ return m_volumeIPF; }
+PartitionModel::VolumeIPF_CPtr PartitionModel::volume_ipf() const			{ return m_volumeIPF; }
 
 //#################### PRIVATE METHODS ####################
 void PartitionModel::alert_listeners()

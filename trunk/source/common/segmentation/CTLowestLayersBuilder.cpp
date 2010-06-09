@@ -1,35 +1,34 @@
 /***
- * millipede: CTIPFBuilder.cpp
+ * millipede: CTLowestLayersBuilder.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CTIPFBuilder.h"
+#include "CTLowestLayersBuilder.h"
 
 #include <itkCastImageFilter.h>
 #include <itkGradientAnisotropicDiffusionImageFilter.h>
 #include <itkGradientMagnitudeImageFilter.h>
 
-#include <common/adts/RootedMST.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/exceptions/Exception.h>
-#include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 #include <common/util/ITKImageUtil.h>
-#include "ForestBuildingWaterfallPassListener.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTIPFBuilder::CTIPFBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf)
-:	m_ipf(ipf), m_segmentationOptions(segmentationOptions), m_volume(new DICOMVolume_CPtr(volume))
+CTLowestLayersBuilder::CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions,
+											 CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer)
+:	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions), m_volume(new DICOMVolume_CPtr(volume))
 {}
 
-CTIPFBuilder::CTIPFBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, IPF_Ptr& ipf)
-:	m_ipf(ipf), m_segmentationOptions(segmentationOptions), m_volume(volume)
+CTLowestLayersBuilder::CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions,
+											 CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer)
+:	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions), m_volume(volume)
 {}
 
 //#################### PUBLIC METHODS ####################
-void CTIPFBuilder::execute()
+void CTLowestLayersBuilder::execute()
 {
 	typedef itk::Image<short,3> GradientMagnitudeImage;
 	typedef itk::Image<int,3> HounsfieldImage;
@@ -121,48 +120,19 @@ void CTIPFBuilder::execute()
 	// STEP 3
 	//~~~~~~~
 
-	set_status("Creating initial partition forest...");
-	boost::shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+	set_status("Creating lowest forest layers...");
+
+	m_leafLayer.reset(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
 	if(is_aborted()) return;
-	boost::shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
+	m_lowestBranchLayer = IPF::make_lowest_branch_layer(m_leafLayer, ws.calculate_groups());
+	
 	if(is_aborted()) return;
-	m_ipf.reset(new IPF(leafLayer, lowestBranchLayer));
-	increment_progress();
-
-	//~~~~~~~
-	// STEP 4
-	//~~~~~~~
-
-	set_status("Creating rooted MST for lowest branch layer...");
-	RootedMST<int> mst(*lowestBranchLayer);
-	if(is_aborted()) return;
-	increment_progress();
-
-	//~~~~~~~
-	// STEP 5
-	//~~~~~~~
-
-	set_status("Running waterfall...");
-
-	// Iteratively run a Nicholls waterfall pass on the MST until the forest is built.
-	typedef WaterfallPass<int>::Listener WaterfallPassListener;
-	NichollsWaterfallPass<int> waterfallPass;
-	boost::shared_ptr<WaterfallPassListener> listener = make_forest_building_waterfall_pass_listener(m_ipf);
-	waterfallPass.add_listener(listener);
-	while(mst.node_count() != 1 && m_ipf->highest_layer() < m_segmentationOptions.waterfallLayerLimit)
-	{
-		m_ipf->clone_layer(m_ipf->highest_layer());
-		if(is_aborted()) return;
-		waterfallPass.run(mst);
-		if(is_aborted()) return;
-	}
-
 	set_finished();
 }
 
-int CTIPFBuilder::length() const
+int CTLowestLayersBuilder::length() const
 {
-	return m_segmentationOptions.adfIterations + 5;
+	return m_segmentationOptions.adfIterations + 3;
 }
 
 }

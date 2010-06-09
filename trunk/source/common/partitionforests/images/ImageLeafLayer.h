@@ -292,6 +292,11 @@ public:
 		return LeafNodeIterator(new LeafNodeIteratorImpl(static_cast<int>(m_nodes.size()), m_nodes));
 	}
 
+	int node_count() const
+	{
+		return static_cast<int>(m_nodes.size());
+	}
+
 	std::vector<int> node_indices() const
 	{
 		int size = static_cast<int>(m_nodes.size());

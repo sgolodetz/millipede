@@ -131,6 +131,7 @@ public:
 	virtual EdgeConstIterator edges_cend() const = 0;
 	virtual bool has_edge(int u, int v) const = 0;
 	virtual bool has_node(int n) const = 0;
+	virtual int node_count() const = 0;
 	virtual std::vector<int> node_indices() const = 0;
 	virtual int node_parent(int n) const = 0;
 	virtual NodeIterator nodes_begin() = 0;

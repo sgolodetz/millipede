@@ -37,14 +37,18 @@ This class template provides a generic implementation of partition forests that 
 in multiple contexts. Clients must provide their own leaf layer and branch layer implementations,
 since the way in which these can be implemented efficiently varies with context.
 
-@tparam	LeafLayer		The type containing the client's implementation of a leaf layer
-@tparam BranchLayer		The type containing the client's implementation of a branch layer
+@tparam	LeafLayerType		The type containing the client's implementation of a leaf layer
+@tparam BranchLayerType		The type containing the client's implementation of a branch layer
 */
-template <typename LeafLayer, typename BranchLayer>
+template <typename LeafLayerType, typename BranchLayerType>
 class PartitionForest
 {
 	//#################### TYPEDEFS ####################
 public:
+	/// The types of layer used (exposing them to clients)
+	typedef BranchLayerType BranchLayer;
+	typedef LeafLayerType LeafLayer;
+
 	/// The properties associated with a branch node
 	typedef typename BranchLayer::NodeProperties BranchProperties;
 
@@ -60,7 +64,7 @@ public:
 	/// The properties associated with a leaf node
 	typedef typename LeafLayer::NodeProperties LeafProperties;
 
-private:
+protected:
 	typedef shared_ptr<BranchLayer> BranchLayer_Ptr;
 	typedef shared_ptr<ICommandManager> ICommandManager_Ptr;
 	typedef IForestLayer<BranchProperties,EdgeWeight> IForestLayerT;
@@ -233,6 +237,14 @@ public:
 		if(lowestBranchLayer) m_branchLayers.push_back(lowestBranchLayer);
 	}
 
+	//#################### DESTRUCTOR ####################
+public:
+	/**
+	@brief	The destructor is virtual because other classes may want to derive from PartitionForest.
+	*/
+	virtual ~PartitionForest()
+	{}
+
 	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
 private:
 	/**
@@ -394,6 +406,29 @@ public:
 	void set_command_manager(const ICommandManager_Ptr& commandManager)
 	{
 		m_commandManager = commandManager;
+	}
+
+	//@}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	@name	Graph Accessors
+	*/
+	//@{
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	std::vector<Edge> adjacent_edges(const PFNodeID& node) const
+	{
+		IForestLayer_CPtr layer = checked_forest_layer(node.layer());
+		if(!layer) throw Exception(OSSWrapper() << "Invalid layer: " << node.layer());
+		return layer->adjacent_edges(node.index());
+	}
+
+	std::vector<int> adjacent_nodes(const PFNodeID& node) const
+	{
+		IForestLayer_CPtr layer = checked_forest_layer(node.layer());
+		if(!layer) throw Exception(OSSWrapper() << "Invalid layer: " << node.layer());
+		return layer->adjacent_nodes(node.index());
 	}
 
 	//@}
