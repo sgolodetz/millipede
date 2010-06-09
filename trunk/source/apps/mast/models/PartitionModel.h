@@ -11,10 +11,10 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-#include <common/partitionforests/base/PartitionForestSelection.h>
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/partitionforests/images/VolumeIPF.h>
+#include <common/partitionforests/images/VolumeIPFSelection.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 
@@ -42,16 +42,16 @@ public:
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
-	typedef PartitionForestSelection<CTImageLeafLayer,CTImageBranchLayer> IPFSelection;
-	typedef boost::shared_ptr<IPFSelection> IPFSelection_Ptr;
-	typedef boost::shared_ptr<const IPFSelection> IPFSelection_CPtr;
+	typedef VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer> VolumeIPFSelectionT;
+	typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
+	typedef boost::shared_ptr<const VolumeIPFSelectionT> VolumeIPFSelection_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
-	IPFSelection_Ptr m_selection;
+	VolumeIPFSelection_Ptr m_selection;
 	SliceLocation m_sliceLocation;			// slice location in terms of the volume only (not based on actual slice numbers)
 	SliceOrientation m_sliceOrientation;
 	VolumeIPF_Ptr m_volumeIPF;
@@ -68,8 +68,8 @@ public:
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	DICOMVolume_CPtr dicom_volume() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
-	const IPFSelection_Ptr& selection();
-	IPFSelection_CPtr selection() const;
+	const VolumeIPFSelection_Ptr& selection();
+	VolumeIPFSelection_CPtr selection() const;
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	void set_slice_location(const SliceLocation& loc);

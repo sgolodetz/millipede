@@ -232,6 +232,11 @@ public:
 		m_nodes.resize(m_forest->highest_layer() + 1);
 	}
 
+	//#################### DESTRUCTOR ####################
+public:
+	virtual ~PartitionForestSelection()
+	{}
+
 	//#################### PUBLIC METHODS ####################
 public:
 	void clear()

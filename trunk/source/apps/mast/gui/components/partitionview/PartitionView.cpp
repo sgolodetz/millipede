@@ -166,7 +166,7 @@ void PartitionView::recreate_overlays()
 {
 	m_overlayManager->clear_overlays();
 
-	PartitionModel::IPFSelection_CPtr selection = m_model->selection();
+	PartitionModel::VolumeIPFSelection_CPtr selection = m_model->selection();
 	if(selection)
 	{
 		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selection, m_model->slice_location(), m_model->slice_orientation()));

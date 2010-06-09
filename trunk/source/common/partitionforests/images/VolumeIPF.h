@@ -10,6 +10,7 @@
 #include <itkSize.h>
 
 #include <common/partitionforests/base/PartitionForest.h>
+#include <common/util/GridUtil.h>
 
 namespace mp {
 
@@ -67,8 +68,10 @@ public:
 	*/
 	itk::Index<3> position_of_leaf(int leafIndex) const
 	{
-		// NYI
-		throw 23;
+		itk::Index<3> position = {{	GridUtil::x_of(leafIndex, m_volumeSize[0]),
+									GridUtil::y_of(leafIndex, m_volumeSize[0], m_volumeSize[1]),
+									GridUtil::z_of(leafIndex, m_volumeSize[0] * m_volumeSize[1])	}};
+		return position;
 	}
 
 	/**
