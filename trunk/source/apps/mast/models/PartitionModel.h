@@ -14,6 +14,7 @@ using boost::shared_ptr;
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/partitionforests/images/VolumeIPF.h>
+#include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>

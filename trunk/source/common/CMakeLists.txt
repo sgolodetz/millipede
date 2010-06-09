@@ -173,6 +173,7 @@ partitionforests/images/SimpleImageLeafLayer.h
 partitionforests/images/SimplePixelProperties.h
 partitionforests/images/SimpleRegionProperties.h
 partitionforests/images/VolumeIPF.h
+partitionforests/images/VolumeIPFMultiFeatureSelection.h
 partitionforests/images/VolumeIPFSelection.h
 )
 

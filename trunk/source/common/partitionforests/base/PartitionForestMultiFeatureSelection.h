@@ -41,6 +41,11 @@ public:
 	:	m_commandManager(new BasicCommandManager), m_forest(forest)
 	{}
 
+	//#################### DESTRUCTOR ####################
+public:
+	virtual ~PartitionForestMultiFeatureSelection()
+	{}
+
 	//#################### PUBLIC METHODS ####################
 public:
 	void clear_all()
