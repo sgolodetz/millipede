@@ -419,14 +419,14 @@ public:
 
 	std::vector<Edge> adjacent_edges(const PFNodeID& node) const
 	{
-		IForestLayer_CPtr layer = checked_forest_layer(node.layer());
+		IForestLayer_Ptr layer = checked_forest_layer(node.layer());
 		if(!layer) throw Exception(OSSWrapper() << "Invalid layer: " << node.layer());
 		return layer->adjacent_edges(node.index());
 	}
 
 	std::vector<int> adjacent_nodes(const PFNodeID& node) const
 	{
-		IForestLayer_CPtr layer = checked_forest_layer(node.layer());
+		IForestLayer_Ptr layer = checked_forest_layer(node.layer());
 		if(!layer) throw Exception(OSSWrapper() << "Invalid layer: " << node.layer());
 		return layer->adjacent_nodes(node.index());
 	}

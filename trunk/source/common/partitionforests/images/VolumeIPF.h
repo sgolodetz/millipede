@@ -6,7 +6,8 @@
 #ifndef H_MILLIPEDE_VOLUMEIPF
 #define H_MILLIPEDE_VOLUMEIPF
 
-#include <itkImage.h>
+#include <itkIndex.h>
+#include <itkSize.h>
 
 #include <common/partitionforests/base/PartitionForest.h>
 
@@ -15,6 +16,11 @@ namespace mp {
 template <typename LeafLayer, typename BranchLayer>
 class VolumeIPF : public PartitionForest<LeafLayer,BranchLayer>
 {
+	//#################### TYPEDEFS ####################
+private:
+	typedef typename PartitionForest<LeafLayer,BranchLayer>::LeafLayer_Ptr LeafLayer_Ptr;
+	typedef typename PartitionForest<LeafLayer,BranchLayer>::BranchLayer_Ptr BranchLayer_Ptr;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	itk::Size<3> m_volumeSize;
