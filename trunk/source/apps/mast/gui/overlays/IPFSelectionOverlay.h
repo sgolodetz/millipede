@@ -10,6 +10,7 @@
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 #include <common/textures/RGBA32ImageTexture.h>
+#include <common/util/ITKImageUtil.h>
 #include "PartitionOverlay.h"
 
 namespace mp {
@@ -35,7 +36,17 @@ class IPFSelectionOverlay : public PartitionOverlay
 
 			if(boundariesOnly)
 			{
-				// TODO
+				bool boundary = false;
+				std::vector<itk::Offset<3> > offsets = ITKImageUtil::make_4_connected_offsets(sliceOrientation);
+				for(size_t i=0, size=offsets.size(); i<size; ++i)
+				{
+					if(volumeIPF->node_of(node.layer(), volumePos + offsets[i]) != node)
+					{
+						boundary = true;
+						break;
+					}
+				}
+				if(!boundary) continue;
 			}
 
 			// Project the position into image coordinates.

@@ -68,13 +68,12 @@ private:
 		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
 		itk::Index<3> size = ITKImageUtil::make_index_from_size(volumeSize);
 
-		itk::Index<3> index;
-		for(index[2]=0; index[2]<size[2]; ++index[2])
-			for(index[1]=0; index[1]<size[1]; ++index[1])
-				for(index[0]=0; index[0]<size[0]; ++index[0])
+		itk::Index<3> p;
+		for(p[2]=0; p[2]<size[2]; ++p[2])
+			for(p[1]=0; p[1]<size[1]; ++p[1])
+				for(p[0]=0; p[0]<size[0]; ++p[0])
 				{
-					int n = m_volumeIPF->leaf_of_position(index);
-					ancestorImage->SetPixel(index, m_volumeIPF->ancestor_of(PFNodeID(0,n), m_layerIndex));
+					ancestorImage->SetPixel(p, m_volumeIPF->node_of(m_layerIndex, p));
 				}
 
 		// Set up an iterator to traverse the ancestor image, whilst allowing us to access the neighbours of each pixel.
