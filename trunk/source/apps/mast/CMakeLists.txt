@@ -58,11 +58,13 @@ gui/dialogs/VolumeChooserDialog.h
 
 ##
 SET(gui_overlays_sources
+gui/overlays/IPFOverlayTools.cpp
 gui/overlays/PartitionOverlay.cpp
 gui/overlays/PartitionOverlayManager.cpp
 )
 
 SET(gui_overlays_headers
+gui/overlays/IPFOverlayTools.h
 gui/overlays/IPFSelectionOverlay.h
 gui/overlays/PartitionOverlay.h
 gui/overlays/PartitionOverlayManager.h
