@@ -37,6 +37,7 @@ enum
 {
 	BUTTONID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	BUTTONID_OPENDICOMDIR,
+	BUTTONID_OPENSAVEDVOLUMECHOICE,
 	BUTTONID_OPENTESTVOLUME1,
 	BUTTONID_EXIT,
 };
@@ -109,6 +110,7 @@ void MainWindow::setup_gui()
 
 	std::vector<wxString> buttonCaptions;
 	buttonCaptions.push_back(wxT("Open DICOMDIR..."));
+	buttonCaptions.push_back(wxT("Open Saved Volume Choice..."));
 	buttonCaptions.push_back(wxT("Open Test Volume 1"));
 	buttonCaptions.push_back(wxT("Exit"));
 
@@ -192,6 +194,16 @@ void MainWindow::OnCommonOpenDICOMDIR(wxCommandEvent&)
 	}
 }
 
+void MainWindow::OnCommonOpenSavedVolumeChoice(wxCommandEvent&)
+{
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Saved Volume Choice", "Volume Choice Files (*.vcf)|*.vcf");
+	if(dialog->ShowModal() == wxID_OK)
+	{
+		std::string path = wxString_to_string(dialog->GetPath());
+		load_saved_volume_choice(path);
+	}
+}
+
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 {
@@ -212,12 +224,14 @@ void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	EVT_BUTTON(BUTTONID_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
+	EVT_BUTTON(BUTTONID_OPENSAVEDVOLUMECHOICE, MainWindow::OnCommonOpenSavedVolumeChoice)
 	EVT_BUTTON(BUTTONID_OPENTESTVOLUME1, MainWindow::OnButtonOpenTestVolume1)
 	EVT_BUTTON(BUTTONID_EXIT, MainWindow::OnCommonExit)
 
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnCommonExit)
 	EVT_MENU(MENUID_FILE_OPEN_DICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
+	EVT_MENU(MENUID_FILE_OPEN_SAVEDVOLUMECHOICE, MainWindow::OnCommonOpenSavedVolumeChoice)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
 END_EVENT_TABLE()
 

@@ -44,6 +44,7 @@ public:
 	//~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
 	void OnCommonExit(wxCommandEvent&);
 	void OnCommonOpenDICOMDIR(wxCommandEvent&);
+	void OnCommonOpenSavedVolumeChoice(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	void OnMenuHelpAbout(wxCommandEvent&);
