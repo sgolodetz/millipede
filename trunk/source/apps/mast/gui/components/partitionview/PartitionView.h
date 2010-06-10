@@ -102,6 +102,9 @@ public:
 	void OnSliderLayer(wxScrollEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateSliderX(wxUpdateUIEvent& e);
+	void OnUpdateSliderY(wxUpdateUIEvent& e);
+	void OnUpdateSliderZ(wxUpdateUIEvent& e);
 	void OnUpdateSliderLayer(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################

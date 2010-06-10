@@ -340,6 +340,21 @@ void PartitionView::OnSliderLayer(wxScrollEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+void PartitionView::OnUpdateSliderX(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->slice_orientation() == ORIENT_YZ);
+}
+
+void PartitionView::OnUpdateSliderY(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->slice_orientation() == ORIENT_XZ);
+}
+
+void PartitionView::OnUpdateSliderZ(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->slice_orientation() == ORIENT_XY);
+}
+
 void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
 {
 	e.Enable(m_model->partition_texture_set(1).get() != NULL);
@@ -360,6 +375,9 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_COMMAND_SCROLL(SLIDERID_LAYER, PartitionView::OnSliderLayer)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(SLIDERID_X, PartitionView::OnUpdateSliderX)
+	EVT_UPDATE_UI(SLIDERID_Y, PartitionView::OnUpdateSliderY)
+	EVT_UPDATE_UI(SLIDERID_Z, PartitionView::OnUpdateSliderZ)
 	EVT_UPDATE_UI(SLIDERID_LAYER, PartitionView::OnUpdateSliderLayer)
 END_EVENT_TABLE()
 

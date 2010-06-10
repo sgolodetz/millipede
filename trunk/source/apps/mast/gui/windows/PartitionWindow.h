@@ -24,6 +24,7 @@ class PartitionWindow : public wxFrame
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
+	wxMenuBar *m_menuBar;
 	PartitionView *m_view;
 
 	//#################### CONSTRUCTORS ####################
@@ -33,6 +34,11 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	wxGLContext *get_context() const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context);
+	void setup_menus();
 };
 
 }
