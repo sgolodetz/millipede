@@ -10,6 +10,19 @@ namespace mp {
 namespace ITKImageUtil {
 
 //#################### FUNCTIONS ####################
+itk::Index<3> make_index(long x, long y, long z)
+{
+	itk::Index<3> ret = {{x,y,z}};
+	return ret;
+}
+
+itk::RGBAPixel<unsigned char> make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+	itk::RGBAPixel<unsigned char> p;
+	p[0] = r, p[1] = g, p[2] = b, p[3] = a;
+	return p;
+}
+
 std::vector<itk::Offset<2> > make_4_connected_offsets()
 {
 	std::vector<itk::Offset<2> > offsets(4);

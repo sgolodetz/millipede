@@ -11,8 +11,8 @@
 
 namespace mp {
 
-template <typename LeafLayer, typename BranchLayer, typename FeatureID>
-class VolumeIPFMultiFeatureSelection : public PartitionForestMultiFeatureSelection<LeafLayer,BranchLayer,FeatureID>
+template <typename LeafLayer, typename BranchLayer, typename Feature>
+class VolumeIPFMultiFeatureSelection : public PartitionForestMultiFeatureSelection<LeafLayer,BranchLayer,Feature>
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -27,7 +27,7 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit VolumeIPFMultiFeatureSelection(const VolumeIPF_Ptr& volumeIPF)
-	:	PartitionForestMultiFeatureSelection<LeafLayer,BranchLayer,FeatureID>(volumeIPF), m_volumeIPF(volumeIPF)
+	:	PartitionForestMultiFeatureSelection<LeafLayer,BranchLayer,Feature>(volumeIPF), m_volumeIPF(volumeIPF)
 	{}
 
 	//#################### PUBLIC METHODS ####################

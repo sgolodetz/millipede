@@ -60,7 +60,7 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 }
 
 //#################### TESTS ####################
-enum SimpleFeatureID
+enum SimpleFeature
 {
 	KIDNEY,
 	LIVER,
@@ -71,7 +71,7 @@ void feature_selection_test()
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
 
-	typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeatureID> MFS;
+	typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeature> MFS;
 	typedef boost::shared_ptr<MFS> MFS_Ptr;
 	MFS_Ptr mfs(new MFS(ipf));
 	mfs->set_command_manager(manager);
@@ -82,7 +82,7 @@ void feature_selection_test()
 	mfs->clear_feature(LIVER);
 	manager->undo();
 	mfs->identify_feature(PFNodeID(3,0), KIDNEY);
-	std::vector<SimpleFeatureID> features = mfs->features_of(PFNodeID(0,7));
+	std::vector<SimpleFeature> features = mfs->features_of(PFNodeID(0,7));
 	mfs->clear_all();
 	manager->undo();
 }

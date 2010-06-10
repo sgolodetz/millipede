@@ -152,6 +152,7 @@ partitionforests/base/PFNodeID.h
 
 ##
 SET(partitionforests_images_sources
+partitionforests/images/AbdominalFeature.cpp
 partitionforests/images/CTImageLeafLayer.cpp
 partitionforests/images/CTPixelProperties.cpp
 partitionforests/images/CTRegionProperties.cpp
@@ -161,7 +162,7 @@ partitionforests/images/SimpleRegionProperties.cpp
 )
 
 SET(partitionforests_images_headers
-partitionforests/images/AbdominalFeatureID.h
+partitionforests/images/AbdominalFeature.h
 partitionforests/images/CTImageBranchLayer.h
 partitionforests/images/CTImageLeafLayer.h
 partitionforests/images/CTPixelProperties.h

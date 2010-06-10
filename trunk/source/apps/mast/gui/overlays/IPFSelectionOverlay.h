@@ -29,9 +29,9 @@ public:
 
 		if(sliceLocation.layer <= volumeIPF->highest_layer())
 		{
-			RGBA32 fc, bc;	// fill and boundary colours
-			fc[0] = 255, fc[1] = 0, fc[2] = 0, fc[3] = 50;
-			bc[0] = 255, bc[1] = 0, bc[2] = 0, bc[3] = 255;
+			// Fill and boundary colours.
+			RGBA32 fc = ITKImageUtil::make_rgba32(255,0,0,50);
+			RGBA32 bc = ITKImageUtil::make_rgba32(255,0,0,255);
 
 			typedef typename VolumeIPFSelection<LeafLayer,BranchLayer>::ViewNodeConstIterator Iter;
 			for(Iter it=selection->view_at_layer_cbegin(sliceLocation.layer), iend=selection->view_at_layer_cend(sliceLocation.layer); it!=iend; ++it)

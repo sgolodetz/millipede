@@ -15,7 +15,7 @@
 #include <wx/slider.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
-#include <common/partitionforests/images/AbdominalFeatureID.h>
+#include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
@@ -32,14 +32,14 @@ class PartitionCanvas;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 
-class PartitionView : public wxPanel, public PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeatureID>::Listener
+class PartitionView : public wxPanel, public PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
 {
 	//#################### FRIENDS ####################
 	friend class BaseCanvas;
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeatureID> PartitionModelT;
+	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 

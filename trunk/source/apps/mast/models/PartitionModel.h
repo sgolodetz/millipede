@@ -24,7 +24,7 @@ typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
 typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
-template <typename LeafLayer, typename BranchLayer, typename FeatureID>
+template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
 {
 	//#################### NESTED CLASSES ####################
@@ -41,7 +41,7 @@ public:
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
-	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,FeatureID> VolumeIPFMultiFeatureSelectionT;
+	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
 	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_CPtr;
 
@@ -146,13 +146,12 @@ public:
 #if 0
 		if(m_sliceOrientation == ORIENT_XY)
 		{
-			itk::Index<3> pos = {{60, 280, 0}};
-			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), pos));
+			m_multiFeatureSelection->identify_feature(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(60,280,0)), AF_KIDNEY);
+			m_multiFeatureSelection->identify_feature(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(300,150,0)), AF_LIVER);
 		}
 		else if(m_sliceOrientation == ORIENT_XZ)
 		{
-			itk::Index<3> pos = {{60, 0, 50}};
-			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), pos));
+			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(60,0,50)));
 		}
 #endif
 

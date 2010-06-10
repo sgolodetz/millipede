@@ -16,7 +16,7 @@ namespace mp_PartitionForestMultiFeatureSelection {
 
 using namespace boost;
 
-template <typename LeafLayer, typename BranchLayer, typename FeatureID>
+template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionForestMultiFeatureSelection
 {
 	//#################### TYPEDEFS ####################
@@ -29,11 +29,13 @@ private:
 	typedef shared_ptr<PartitionForestSelectionT> PartitionForestSelection_Ptr;
 	typedef shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 
+	typedef PartitionForestMultiFeatureSelection<LeafLayer,BranchLayer,Feature> PartitionForestMultiFeatureSelectionT;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	ICommandManager_Ptr m_commandManager;
 	PartitionForest_Ptr m_forest;
-	mutable std::map<FeatureID,PartitionForestSelection_Ptr> m_selections;
+	mutable std::map<Feature,PartitionForestSelection_Ptr> m_selections;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -51,31 +53,31 @@ public:
 	void clear_all()
 	{
 		CommandSequenceGuard guard(m_commandManager, "Clear All Features");
-		for(typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			it->second->clear();
 		}
 	}
 
-	void clear_feature(FeatureID featureID)
+	void clear_feature(const Feature& feature)
 	{
-		typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it = m_selections.find(featureID);
+		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
 		if(it != m_selections.end()) it->second->clear();
 	}
 
 	bool empty() const
 	{
-		for(typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			if(!it->second->empty()) return false;
 		}
 		return true;
 	}
 
-	std::vector<FeatureID> features_of(const PFNodeID& node) const
+	std::vector<Feature> features_of(const PFNodeID& node) const
 	{
-		std::vector<FeatureID> ret;
-		for(typename std::map<FeatureID,PartitionForestSelection_Ptr>::const_iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		std::vector<Feature> ret;
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::const_iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			if(it->second->contains(node)) ret.push_back(it->first);
 		}
@@ -87,39 +89,46 @@ public:
 		return m_forest;
 	}
 
-	void identify_feature(const PFNodeID& node, FeatureID featureID)
+	void identify_feature(const PFNodeID& node, const Feature& feature)
 	{
-		typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it = m_selections.find(featureID);
+		selection(feature)->select_node(node);
+	}
+
+	PartitionForestSelection_CPtr selection(const Feature& feature) const
+	{
+		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
 		if(it == m_selections.end())
 		{
 			PartitionForestSelection_Ptr selection(new PartitionForestSelectionT(m_forest));
 			selection->set_command_manager(m_commandManager);
 			m_forest->add_listener(selection);
-			it = m_selections.insert(std::make_pair(featureID, selection)).first;
+			it = m_selections.insert(std::make_pair(feature, selection)).first;
 		}
-		const PartitionForestSelection_Ptr& selection = it->second;
-		selection->select_node(node);
-	}
-
-	PartitionForestSelection_CPtr selection(FeatureID featureID) const
-	{
-		return m_selections[featureID];
+		return it->second;
 	}
 
 	void set_command_manager(const ICommandManager_Ptr& commandManager)
 	{
 		m_commandManager = commandManager;
-		for(typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			it->second->set_command_manager(commandManager);
 		}
 	}
 
-	void unidentify_feature(const PFNodeID& node, FeatureID featureID)
+	void unidentify_feature(const PFNodeID& node, const Feature& feature)
 	{
-		typename std::map<FeatureID,PartitionForestSelection_Ptr>::iterator it = m_selections.find(featureID);
+		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
 		if(it == m_selections.end()) return;
 		it->second->deselect_node(node);
+	}
+
+	//#################### PRIVATE METHODS ####################
+private:
+	PartitionForestSelection_Ptr selection(const Feature& feature)
+	{
+		PartitionForestSelection_CPtr s = const_cast<const PartitionForestMultiFeatureSelectionT*>(this)->selection(feature);
+		return boost::const_pointer_cast<PartitionForestSelectionT>(s);
 	}
 };
 

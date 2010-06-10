@@ -173,7 +173,10 @@ void PartitionView::recreate_overlays()
 	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
 	if(multiFeatureSelection)
 	{
-		m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori));
+		Map<AbdominalFeature,RGBA32> colourMap;
+		colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
+		colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,0,100));
+		m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap));
 	}
 
 	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
