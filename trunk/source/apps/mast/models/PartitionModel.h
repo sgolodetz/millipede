@@ -15,6 +15,7 @@
 #include <common/partitionforests/images/VolumeIPFSelection.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
+#include <common/util/ITKImageUtil.h>
 
 namespace mp {
 
