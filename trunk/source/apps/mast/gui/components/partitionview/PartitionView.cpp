@@ -34,6 +34,7 @@ enum
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
+	BUTTONID_VISUALIZE_IN_3D,
 	SLIDERID_X,
 	SLIDERID_Y,
 	SLIDERID_Z,
@@ -175,7 +176,7 @@ void PartitionView::recreate_overlays()
 	{
 		Map<AbdominalFeature,RGBA32> colourMap;
 		colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
-		colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,0,100));
+		colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
 		m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap));
 	}
 
@@ -256,6 +257,11 @@ void PartitionView::setup_gui(wxGLContext *context)
 
 		wxButton *viewYZButton = new wxButton(middle, BUTTONID_VIEW_YZ, wxT("View Y-Z (usually Sagittal)"));
 		middleSizer->Add(viewYZButton, 0, wxALIGN_CENTER_HORIZONTAL);
+
+		middleSizer->AddSpacer(10);
+
+		wxButton *visualizeIn3DButton = new wxButton(middle, BUTTONID_VISUALIZE_IN_3D, wxT("Visualize in 3D..."));
+		middleSizer->Add(visualizeIn3DButton, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middle);
 
 	// Middle right
