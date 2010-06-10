@@ -118,7 +118,7 @@ void MainWindow::setup_gui()
 	{
 		wxButton *button = new wxButton(panel, BUTTONID_BASE + 1 + i, buttonCaptions[i], wxDefaultPosition, buttonSize);
 		wxFont font = button->GetFont();
-		font.SetPointSize(16);
+		font.SetPointSize(14);
 		button->SetFont(font);
 		panelSizer->Add(button, 0, wxALIGN_CENTER_HORIZONTAL);
 	}

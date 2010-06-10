@@ -16,6 +16,7 @@
 #include <common/slices/SliceTextureSetCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
+#include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
@@ -166,10 +167,19 @@ void PartitionView::recreate_overlays()
 {
 	m_overlayManager->clear_overlays();
 
+	SliceLocation loc = m_model->slice_location();
+	SliceOrientation ori = m_model->slice_orientation();
+
+	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
+	if(multiFeatureSelection)
+	{
+		m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori));
+	}
+
 	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
 	if(selection)
 	{
-		m_overlayManager->insert_overlay_at_bottom(new IPFSelectionOverlay(selection, m_model->slice_location(), m_model->slice_orientation()));
+		m_overlayManager->insert_overlay_at_top("IPFSelection", new IPFSelectionOverlay(selection, loc, ori));
 	}
 }
 

@@ -17,8 +17,8 @@ class IPFSelectionOverlay : public PartitionOverlay
 	//#################### CONSTRUCTORS ####################
 public:
 	template <typename LeafLayer, typename BranchLayer>
-	explicit IPFSelectionOverlay(const boost::shared_ptr<const VolumeIPFSelection<LeafLayer,BranchLayer> >& selection,
-								 const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
+	IPFSelectionOverlay(const boost::shared_ptr<const VolumeIPFSelection<LeafLayer,BranchLayer> >& selection, const SliceLocation& sliceLocation,
+						SliceOrientation sliceOrientation)
 	{
 		boost::shared_ptr<const VolumeIPF<LeafLayer,BranchLayer> > volumeIPF = selection->volume_ipf();
 		itk::Index<3> sliceBegin, sliceEnd;
@@ -42,13 +42,6 @@ public:
 		}
 
 		set_texture(TextureFactory::create_texture(image));
-	}
-
-	//#################### PUBLIC METHODS ####################
-public:
-	std::string name() const
-	{
-		return "IPFSelection";
 	}
 };
 

@@ -14,15 +14,15 @@ namespace {
 //#################### LOCAL CLASSES ####################
 struct NamePred
 {
-	std::string m_otherName;
+	std::string m_name;
 
-	explicit NamePred(const std::string& otherName)
-	:	m_otherName(otherName)
+	explicit NamePred(const std::string& name)
+	:	m_name(name)
 	{}
 
-	bool operator()(const PartitionOverlay_Ptr& overlay) const
+	bool operator()(const std::pair<std::string,PartitionOverlay_Ptr>& p) const
 	{
-		return overlay->name() == m_otherName;
+		return p.first == m_name;
 	}
 };
 
@@ -41,38 +41,38 @@ void PartitionOverlayManager::erase_overlay(const std::string& name)
 	m_overlays.erase(find_overlay(name));
 }
 
-void PartitionOverlayManager::insert_overlay_above(PartitionOverlay *overlay, const std::string& otherName)
+void PartitionOverlayManager::insert_overlay_above(const std::string& name, PartitionOverlay *overlay, const std::string& otherName)
 {
 	OverlayIter it = find_overlay(otherName);
 	if(it == m_overlays.end()) throw Exception("No such overlay: " + otherName);
 	++it;
-	m_overlays.insert(it, PartitionOverlay_Ptr(overlay));
+	m_overlays.insert(it, std::make_pair(name, PartitionOverlay_Ptr(overlay)));
 }
 
-void PartitionOverlayManager::insert_overlay_at_bottom(PartitionOverlay *overlay)
+void PartitionOverlayManager::insert_overlay_at_bottom(const std::string& name, PartitionOverlay *overlay)
 {
-	m_overlays.push_front(PartitionOverlay_Ptr(overlay));
+	m_overlays.push_front(std::make_pair(name, PartitionOverlay_Ptr(overlay)));
 }
 
-void PartitionOverlayManager::insert_overlay_at_top(PartitionOverlay *overlay)
+void PartitionOverlayManager::insert_overlay_at_top(const std::string& name, PartitionOverlay *overlay)
 {
-	m_overlays.push_back(PartitionOverlay_Ptr(overlay));
+	m_overlays.push_back(std::make_pair(name, PartitionOverlay_Ptr(overlay)));
 }
 
-void PartitionOverlayManager::insert_overlay_below(PartitionOverlay *overlay, const std::string& otherName)
+void PartitionOverlayManager::insert_overlay_below(const std::string& name, PartitionOverlay *overlay, const std::string& otherName)
 {
 	OverlayIter it = find_overlay(otherName);
 	if(it == m_overlays.end()) throw Exception("No such overlay: " + otherName);
-	m_overlays.insert(it, PartitionOverlay_Ptr(overlay));
+	m_overlays.insert(it, std::make_pair(name, PartitionOverlay_Ptr(overlay)));
 }
 
 void PartitionOverlayManager::render_dicom_overlays(double left, double top, double right, double bottom) const
 {
 	for(OverlayCIter it=m_overlays.begin(), iend=m_overlays.end(); it!=iend; ++it)
 	{
-		if((*it)->on_dicom_canvas())
+		if(it->second->on_dicom_canvas())
 		{
-			(*it)->render(left, top, right, bottom);
+			it->second->render(left, top, right, bottom);
 		}
 	}
 }
@@ -81,9 +81,9 @@ void PartitionOverlayManager::render_partition_overlays(double left, double top,
 {
 	for(OverlayCIter it=m_overlays.begin(), iend=m_overlays.end(); it!=iend; ++it)
 	{
-		if((*it)->on_partition_canvas())
+		if(it->second->on_partition_canvas())
 		{
-			(*it)->render(left, top, right, bottom);
+			it->second->render(left, top, right, bottom);
 		}
 	}
 }

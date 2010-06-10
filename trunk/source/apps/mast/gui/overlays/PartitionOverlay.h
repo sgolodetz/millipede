@@ -25,10 +25,6 @@ private:
 public:
 	virtual ~PartitionOverlay();
 
-	//#################### PUBLIC ABSTRACT METHODS ####################
-public:
-	virtual std::string name() const = 0;
-
 	//#################### PUBLIC METHODS ####################
 public:
 	virtual bool on_dicom_canvas() const;
