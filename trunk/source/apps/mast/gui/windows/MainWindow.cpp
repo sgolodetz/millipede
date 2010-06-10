@@ -27,11 +27,9 @@ enum
 	MENUID_FILE_EXIT,
 	MENUID_FILE_OPEN,
 	MENUID_FILE_OPEN_DICOMDIR,
-	MENUID_FILE_OPEN_MODEL,
-	MENUID_FILE_OPEN_VOLUMECHOICE,
+	MENUID_FILE_OPEN_SAVEDVOLUME,
+	MENUID_FILE_OPEN_SAVEDVOLUMECHOICE,
 	MENUID_FILE_REPLACE_VOLUMECHOICESECTION,
-	MENUID_FILE_SAVE_MODEL,
-	MENUID_FILE_SAVE_VOLUMECHOICE,
 	MENUID_HELP_ABOUT,
 };
 
@@ -56,7 +54,7 @@ MainWindow::MainWindow(const std::string& title)
 }
 
 //#################### PRIVATE METHODS ####################
-void MainWindow::load_test_volume(const std::string& volumeChoiceFilename)
+void MainWindow::load_saved_volume_choice(const std::string& volumeChoiceFilename)
 try
 {
 	check_file_exists(volumeChoiceFilename);
@@ -136,13 +134,9 @@ void MainWindow::setup_menus()
 	wxMenu *fileMenu = new wxMenu;
 	wxMenu *fileOpenMenu = new wxMenu;
 	fileMenu->AppendSubMenu(fileOpenMenu, wxT("&Open"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_DICOMDIR, wxT("&DICOMDIR...\tCtrl+Shift+O"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_MODEL, wxT("&Model...\tCtrl+O"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_VOLUMECHOICE, wxT("&Volume Choice...\tCtrl+Alt+O"));
-	wxMenu *fileSaveMenu = new wxMenu;
-	fileMenu->AppendSubMenu(fileSaveMenu, wxT("&Save"));
-		fileSaveMenu->Append(MENUID_FILE_SAVE_MODEL, wxT("&Model...\tCtrl+S"));
-		fileSaveMenu->Append(MENUID_FILE_SAVE_VOLUMECHOICE, wxT("&Volume Choice...\tCtrl+Alt+S"));
+		fileOpenMenu->Append(MENUID_FILE_OPEN_DICOMDIR, wxT("&DICOMDIR...\tCtrl+O"));
+		fileOpenMenu->Append(MENUID_FILE_OPEN_SAVEDVOLUME, wxT("&Saved Volume...\tCtrl+Shift+O"));
+		fileOpenMenu->Append(MENUID_FILE_OPEN_SAVEDVOLUMECHOICE, wxT("&Saved Volume Choice...\tCtrl+Alt+O"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(MENUID_FILE_REPLACE_VOLUMECHOICESECTION, wxT("&Replace Volume Choice Section..."));
 	fileMenu->AppendSeparator();
@@ -163,7 +157,7 @@ void MainWindow::setup_menus()
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void MainWindow::OnButtonOpenTestVolume1(wxCommandEvent&)
 {
-	load_test_volume("../resources/testvolume1.vcf");
+	load_saved_volume_choice("../resources/testvolume1.vcf");
 }
 
 //~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
