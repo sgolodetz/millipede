@@ -22,11 +22,7 @@ void CompositeJob::abort()
 	Job::abort();
 
 	boost::mutex::scoped_lock lock(m_mutex);
-	if(m_currentJob)
-	{
-		m_currentJob->abort();
-		m_currentJob.reset();
-	}
+	if(m_currentJob) m_currentJob->abort();
 }
 
 void CompositeJob::add_subjob(Job *job)
@@ -85,6 +81,11 @@ void CompositeJob::execute()
 
 			m_progress += curLength;
 		}
+		else if(m_currentJob->is_aborted())
+		{
+			boost::mutex::scoped_lock lock(m_mutex);
+			m_currentJob.reset();
+		}
 	}
 }
 
@@ -96,13 +97,13 @@ int CompositeJob::length() const
 int CompositeJob::progress() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);
-	return m_progress + (m_currentJob ? m_currentJob->progress() : 0);
+	return m_progress + (m_currentJob && !m_currentJob->is_aborted() ? m_currentJob->progress() : 0);
 }
 
 std::string CompositeJob::status() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);
-	return m_currentJob ? m_currentJob->status() : m_status;
+	return m_currentJob && !m_currentJob->is_aborted() ? m_currentJob->status() : m_status;
 }
 
 }
