@@ -14,6 +14,15 @@
 
 namespace mp {
 
+/**
+@brief	A volume image partition forest is a specialization of the partition forest concept to volume images.
+
+This class template exists to add volume image-related functionality to partition forests,
+such as a way of converting between volume coordinates and leaf indices.
+
+@tparam	LeafLayer	The type containing the client's implementation of a leaf layer
+@tparam	BranchLayer	The type containing the client's implementation of a branch layer
+*/
 template <typename LeafLayer, typename BranchLayer>
 class VolumeIPF : public PartitionForest<LeafLayer,BranchLayer>
 {

@@ -142,6 +142,7 @@ public:
 	{
 		m_volumeIPF = volumeIPF;
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
+		volumeIPF->add_listener(m_selection);
 		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
 
 #if 0

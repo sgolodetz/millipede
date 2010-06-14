@@ -45,8 +45,10 @@ class PartitionForest
 {
 	//#################### TYPEDEFS ####################
 public:
-	/// The types of layer used (exposing them to clients)
+	/// The type of branch layer used (exposing it to clients)
 	typedef BranchLayerType BranchLayer;
+
+	/// The type of leaf layer used (exposing it to clients)
 	typedef LeafLayerType LeafLayer;
 
 	/// The properties associated with a branch node
