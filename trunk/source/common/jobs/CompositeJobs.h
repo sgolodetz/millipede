@@ -85,16 +85,6 @@ public:
 		job->set_main_thread_job_queue(main_thread_job_queue());
 	}
 
-	void add_main_thread_subjob(Job *job)
-	{
-		add_main_thread_subjob(Job_Ptr(job));
-	}
-
-	void add_main_thread_subjob(const Job_Ptr& job)
-	{
-		add_subjob(job, JTS_MAINTHREAD);
-	}
-
 	void execute()
 	{
 		// Note:	Composite jobs with main-thread-only sub-jobs MUST be run in their own thread. (More precisely, they must be

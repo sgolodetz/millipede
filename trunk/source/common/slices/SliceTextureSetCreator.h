@@ -145,7 +145,7 @@ public:
 		for(unsigned int i=0; i<volumeSize[ori]; ++i)
 		{
 			add_subjob(new ExtractSliceJob(volumeImage, ori, i, m_sliceImage));
-			add_main_thread_subjob(new CreateTextureJob(m_sliceImage, i, m_textures[i]));
+			add_subjob(new CreateTextureJob(m_sliceImage, i, m_textures[i]), JTS_MAINTHREAD);
 		}
 
 		add_subjob(new TextureSetFillerJob(sliceTextureSet, ori, m_textures));

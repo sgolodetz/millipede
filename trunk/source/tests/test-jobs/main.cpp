@@ -128,7 +128,7 @@ boost::shared_ptr<Job> construct_job()
 {
 	boost::shared_ptr<CompositeJob> job(new CompositeJob);
 	job->add_subjob(new OtherThreadJob(0));
-	job->add_main_thread_subjob(new MainThreadJob);
+	job->add_subjob(new MainThreadJob, JTS_MAINTHREAD);
 	job->add_subjob(new OtherThreadJob(1));
 	return job;
 }
