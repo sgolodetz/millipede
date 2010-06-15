@@ -5,11 +5,13 @@
 
 #include "Job.h"
 
+#include "MainThreadJobQueue.h"
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
 Job::Job()
-:	m_aborted(false)
+:	m_aborted(false), m_mainThreadJobQueue(new MainThreadJobQueue)
 {}
 
 //#################### DESTRUCTOR ####################
@@ -37,6 +39,16 @@ bool Job::is_aborted() const
 bool Job::is_finished() const
 {
 	return progress() == length();
+}
+
+MainThreadJobQueue_Ptr Job::main_thread_job_queue()
+{
+	return m_mainThreadJobQueue;
+}
+
+void Job::set_main_thread_job_queue(const MainThreadJobQueue_Ptr& mainThreadJobQueue)
+{
+	m_mainThreadJobQueue = mainThreadJobQueue;
 }
 
 //#################### PROTECTED METHODS ####################

@@ -35,7 +35,7 @@ struct TestJob : SimpleJob
 	}
 };
 
-void f()
+void f(MainThreadJobQueue& jobQueue)
 {
 	const unsigned long ITERATIONS = 10;
 	for(unsigned long i=0; i<ITERATIONS; ++i)
@@ -47,15 +47,14 @@ void f()
 
 	for(int i=0; i<10; ++i)
 	{
-		MainThreadJobQueue::instance().queue_job(new TestJob(i));
+		jobQueue.queue_job(new TestJob(i));
 	}
 }
 
 void test1()
 {
-	boost::thread th(&f);
-
-	MainThreadJobQueue& jobQueue = MainThreadJobQueue::instance();
+	MainThreadJobQueue jobQueue;
+	boost::thread th(boost::bind(&f, boost::ref(jobQueue)));
 
 	const unsigned long ITERATIONS = 20;
 	for(unsigned long i=0; i<ITERATIONS; ++i)
@@ -136,7 +135,7 @@ boost::shared_ptr<Job> construct_job()
 
 void show_progress(const boost::shared_ptr<Job>& job)
 {
-	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
+	MainThreadJobQueue_Ptr mtjq = job->main_thread_job_queue();
 
 	int length = job->length();
 	int lastProgress = -1;
@@ -168,10 +167,10 @@ void show_progress(const boost::shared_ptr<Job>& job)
 			}
 		}
 
-		if(mtjq.has_jobs())
+		if(mtjq->has_jobs())
 		{
 			std::cout << "[Main Thread] Executing Sub-Job\n";
-			mtjq.run_next_job();
+			mtjq->run_next_job();
 		}
 	}
 

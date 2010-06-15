@@ -34,6 +34,7 @@ void CompositeJob::add_subjob(const Job_Ptr& job)
 {
 	m_jobs.push_back(std::make_pair(job, false));
 	m_length += job->length();
+	job->set_main_thread_job_queue(main_thread_job_queue());
 }
 
 void CompositeJob::add_main_thread_subjob(Job *job)
@@ -45,6 +46,7 @@ void CompositeJob::add_main_thread_subjob(const Job_Ptr& job)
 {
 	m_jobs.push_back(std::make_pair(job, true));
 	m_length += job->length();
+	job->set_main_thread_job_queue(main_thread_job_queue());
 }
 
 void CompositeJob::execute()
@@ -65,7 +67,7 @@ void CompositeJob::execute()
 			m_currentJob = m_jobs[i].first;
 		}
 
-		if(m_jobs[i].second) MainThreadJobQueue::instance().queue_job(m_currentJob);
+		if(m_jobs[i].second) main_thread_job_queue()->queue_job(m_currentJob);
 		else m_currentJob->execute();
 
 		while(!m_currentJob->is_aborted() && !m_currentJob->is_finished());
@@ -98,6 +100,15 @@ int CompositeJob::progress() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);
 	return m_progress + (m_currentJob && !m_currentJob->is_aborted() ? m_currentJob->progress() : 0);
+}
+
+void CompositeJob::set_main_thread_job_queue(const MainThreadJobQueue_Ptr& mainThreadJobQueue)
+{
+	Job::set_main_thread_job_queue(mainThreadJobQueue);
+	for(size_t i=0, size=m_jobs.size(); i<size; ++i)
+	{
+		m_jobs[i].first->set_main_thread_job_queue(mainThreadJobQueue);
+	}
 }
 
 std::string CompositeJob::status() const

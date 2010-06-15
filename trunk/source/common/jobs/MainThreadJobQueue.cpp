@@ -7,16 +7,6 @@
 
 namespace mp {
 
-//#################### SINGLETON IMPLEMENTATION ####################
-MainThreadJobQueue::MainThreadJobQueue()
-{}
-
-MainThreadJobQueue& MainThreadJobQueue::instance()
-{
-	static MainThreadJobQueue s_instance;
-	return s_instance;
-}
-
 //#################### PUBLIC METHODS ####################
 void MainThreadJobQueue::clear()
 {

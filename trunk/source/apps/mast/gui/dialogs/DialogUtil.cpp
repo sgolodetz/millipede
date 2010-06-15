@@ -48,7 +48,7 @@ bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Jo
 	dialog.SetSize(600, 200);
 	dialog.CenterOnParent();
 
-	MainThreadJobQueue& mtjq = MainThreadJobQueue::instance();
+	MainThreadJobQueue_Ptr mtjq = job->main_thread_job_queue();
 
 	while(!job->is_finished())
 	{
@@ -67,14 +67,11 @@ bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Jo
 		}
 
 		// If any sub-jobs have been queued to run in the main thread, run the next one in the queue.
-		if(mtjq.has_jobs())
+		if(mtjq->has_jobs())
 		{
-			mtjq.run_next_job();
+			mtjq->run_next_job();
 		}
 	}
-
-	// If there are any remaining jobs on the main thread job queue (e.g. if we aborted), clear them.
-	mtjq.clear();
 
 	return job->is_finished();
 }

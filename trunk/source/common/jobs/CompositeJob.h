@@ -36,6 +36,7 @@ public:
 	void execute();
 	int length() const;
 	int progress() const;
+	void set_main_thread_job_queue(const MainThreadJobQueue_Ptr& mainThreadJobQueue);
 	std::string status() const;
 };
 

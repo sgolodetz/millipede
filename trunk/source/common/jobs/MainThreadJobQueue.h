@@ -21,12 +21,6 @@ private:
 	std::queue<Job_Ptr> m_jobs;
 	mutable boost::mutex m_mutex;
 
-	//#################### SINGLETON IMPLEMENTATION ####################
-private:
-	MainThreadJobQueue();
-public:
-	static MainThreadJobQueue& instance();
-
 	//#################### PUBLIC METHODS ####################
 public:
 	void clear();

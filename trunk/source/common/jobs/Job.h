@@ -14,11 +14,15 @@
 
 namespace mp {
 
+//#################### FORWARD DECLARATIONS ####################
+typedef boost::shared_ptr<class MainThreadJobQueue> MainThreadJobQueue_Ptr;
+
 class Job
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
 	bool m_aborted;
+	MainThreadJobQueue_Ptr m_mainThreadJobQueue;
 
 	//#################### PROTECTED VARIABLES ####################
 protected:
@@ -46,6 +50,8 @@ public:
 	static boost::shared_ptr<boost::thread> execute_in_thread(const boost::shared_ptr<Job>& job);
 	bool is_aborted() const;
 	bool is_finished() const;
+	MainThreadJobQueue_Ptr main_thread_job_queue();
+	virtual void set_main_thread_job_queue(const MainThreadJobQueue_Ptr& mainThreadJobQueue);
 
 	//#################### PROTECTED METHODS ####################
 protected:
