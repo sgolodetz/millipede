@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_CTLOWESTLAYERSBUILDER
 #define H_MILLIPEDE_CTLOWESTLAYERSBUILDER
 
-#include <common/jobs/SimplePipelineJob.h>
+#include <common/jobs/SimpleJobs.h>
 #include <common/partitionforests/base/PartitionForest.h>
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>

@@ -124,11 +124,11 @@ jobs/MainThreadJobQueue.cpp
 )
 
 SET(jobs_headers
-jobs/CompositePipelineJob.h
+jobs/CompositeJobs.h
 jobs/Job.h
 jobs/MainThreadJobQueue.h
 jobs/PipelineJob.h
-jobs/SimplePipelineJob.h
+jobs/SimpleJobs.h
 )
 
 ##

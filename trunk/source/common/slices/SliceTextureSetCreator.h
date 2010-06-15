@@ -9,8 +9,8 @@
 #include <itkExtractImageFilter.h>
 
 #include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositePipelineJob.h>
-#include <common/jobs/SimplePipelineJob.h>
+#include <common/jobs/CompositeJobs.h>
+#include <common/jobs/SimpleJobs.h>
 #include <common/textures/TextureFactory.h>
 #include "SliceTextureSet.h"
 

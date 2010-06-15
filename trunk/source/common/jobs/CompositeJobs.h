@@ -1,10 +1,10 @@
 /***
- * millipede: CompositePipelineJob.h
+ * millipede: CompositeJobs.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_COMPOSITEPIPELINEJOB
-#define H_MILLIPEDE_COMPOSITEPIPELINEJOB
+#ifndef H_MILLIPEDE_COMPOSITEJOBS
+#define H_MILLIPEDE_COMPOSITEJOBS
 
 #include <utility>
 #include <vector>

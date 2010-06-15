@@ -1,10 +1,10 @@
 /***
- * millipede: SimplePipelineJob.h
+ * millipede: SimpleJobs.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_SIMPLEPIPELINEJOB
-#define H_MILLIPEDE_SIMPLEPIPELINEJOB
+#ifndef H_MILLIPEDE_SIMPLEJOBS
+#define H_MILLIPEDE_SIMPLEJOBS
 
 #include <common/util/NullType.h>
 #include "PipelineJob.h"

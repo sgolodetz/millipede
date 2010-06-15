@@ -9,9 +9,9 @@
 #include <boost/thread.hpp>
 
 #include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositePipelineJob.h>
+#include <common/jobs/CompositeJobs.h>
 #include <common/jobs/MainThreadJobQueue.h>
-#include <common/jobs/SimplePipelineJob.h>
+#include <common/jobs/SimpleJobs.h>
 using namespace mp;
 
 //#################### TEST 1 ####################
