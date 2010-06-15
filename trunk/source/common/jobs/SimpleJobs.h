@@ -28,33 +28,33 @@ public:
 public:
 	int progress() const
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
+		boost::mutex::scoped_lock lock(this->m_mutex);
 		return m_progress;
 	}
 
 	std::string status() const
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
-		return m_status;
+		boost::mutex::scoped_lock lock(this->m_mutex);
+		return this->m_status;
 	}
 
 	//#################### PROTECTED METHODS ####################
 protected:
 	void increment_progress()
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
-		++m_progress;
+		boost::mutex::scoped_lock lock(this->m_mutex);
+		++this->m_progress;
 	}
 
 	void set_finished()
 	{
-		set_progress(length());
+		set_progress(this->length());
 	}
 
 	void set_progress(int progress)
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
-		m_progress = progress;
+		boost::mutex::scoped_lock lock(this->m_mutex);
+		this->m_progress = progress;
 	}
 };
 

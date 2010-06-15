@@ -43,7 +43,7 @@ public:
 	{
 		Job::abort();
 
-		boost::mutex::scoped_lock lock(m_mutex);
+		boost::mutex::scoped_lock lock(this->m_mutex);
 		if(m_currentJob) m_currentJob->abort();
 	}
 
@@ -56,7 +56,7 @@ public:
 	template <typename OtherOutput>
 	void add_input_subjob(const boost::shared_ptr<PipelineJob<Input,OtherOutput> >& job, JobThreadSpecifier threadSpecifier = JTS_ANYTHREAD)
 	{
-		job->set_input_handle(get_input_handle());
+		job->set_input_handle(this->get_input_handle());
 		add_subjob(job, threadSpecifier);
 	}
 
@@ -82,7 +82,7 @@ public:
 	{
 		m_jobs.push_back(std::make_pair(job, threadSpecifier));
 		m_length += job->length();
-		job->set_main_thread_job_queue(main_thread_job_queue());
+		job->set_main_thread_job_queue(this->main_thread_job_queue());
 	}
 
 	void execute()
@@ -93,24 +93,24 @@ public:
 		//			never happen while the main thread job queue is stalled. In order to avoid problems, it is generally best to
 		//			run composite jobs using Job::execute_in_thread().
 
-		for(size_t i=0, size=m_jobs.size(); i<size && !is_aborted(); ++i)
+		for(size_t i=0, size=m_jobs.size(); i<size && !this->is_aborted(); ++i)
 		{
 			// Set the pointer to the current job. Note that this is the only method in which the pointer is modified,
 			// so we only need to acquire a mutex whilst actually modifying the pointer (we know it won't be changed
 			// elsewhere). Note that boost::shared_ptr is thread-safe for simultaneous reads by multiple threads.
 			{
-				boost::mutex::scoped_lock lock(m_mutex);
+				boost::mutex::scoped_lock lock(this->m_mutex);
 				m_currentJob = m_jobs[i].first;
 			}
 
-			if(m_jobs[i].second == JTS_MAINTHREAD) main_thread_job_queue()->queue_job(m_currentJob);
+			if(m_jobs[i].second == JTS_MAINTHREAD) this->main_thread_job_queue()->queue_job(m_currentJob);
 			else m_currentJob->execute();
 
 			while(!m_currentJob->is_aborted() && !m_currentJob->is_finished());
 
 			if(m_currentJob->is_finished())
 			{
-				boost::mutex::scoped_lock lock(m_mutex);
+				boost::mutex::scoped_lock lock(this->m_mutex);
 				int curLength = m_currentJob->length();
 
 				// It is crucial to reset the current job pointer here, because the progress calculation
@@ -121,7 +121,7 @@ public:
 			}
 			else if(m_currentJob->is_aborted())
 			{
-				boost::mutex::scoped_lock lock(m_mutex);
+				boost::mutex::scoped_lock lock(this->m_mutex);
 				m_currentJob.reset();
 			}
 		}
@@ -134,7 +134,7 @@ public:
 
 	int progress() const
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
+		boost::mutex::scoped_lock lock(this->m_mutex);
 		return m_progress + (m_currentJob && !m_currentJob->is_aborted() ? m_currentJob->progress() : 0);
 	}
 
@@ -149,8 +149,8 @@ public:
 
 	std::string status() const
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
-		return m_currentJob && !m_currentJob->is_aborted() ? m_currentJob->status() : m_status;
+		boost::mutex::scoped_lock lock(this->m_mutex);
+		return m_currentJob && !m_currentJob->is_aborted() ? m_currentJob->status() : this->m_status;
 	}
 };
 
