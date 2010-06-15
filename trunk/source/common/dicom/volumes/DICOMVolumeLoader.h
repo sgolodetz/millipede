@@ -13,7 +13,7 @@
 #include <itkImage.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
-#include <common/jobs/SimpleJob.h>
+#include <common/jobs/SimplePipelineJob.h>
 
 namespace mp {
 

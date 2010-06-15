@@ -119,17 +119,16 @@ io/util/FieldIO.tpp
 
 ##
 SET(jobs_sources
-jobs/CompositeJob.cpp
 jobs/Job.cpp
 jobs/MainThreadJobQueue.cpp
-jobs/SimpleJob.cpp
 )
 
 SET(jobs_headers
-jobs/CompositeJob.h
+jobs/CompositePipelineJob.h
 jobs/Job.h
 jobs/MainThreadJobQueue.h
-jobs/SimpleJob.h
+jobs/PipelineJob.h
+jobs/SimplePipelineJob.h
 )
 
 ##
@@ -249,6 +248,7 @@ util/ITKImageUtil.cpp
 SET(util_headers
 util/GridUtil.h
 util/ITKImageUtil.h
+util/NullType.h
 )
 
 #################################################################

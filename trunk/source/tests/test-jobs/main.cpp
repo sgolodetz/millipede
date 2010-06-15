@@ -9,9 +9,9 @@
 #include <boost/thread.hpp>
 
 #include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositeJob.h>
+#include <common/jobs/CompositePipelineJob.h>
 #include <common/jobs/MainThreadJobQueue.h>
-#include <common/jobs/SimpleJob.h>
+#include <common/jobs/SimplePipelineJob.h>
 using namespace mp;
 
 //#################### TEST 1 ####################
@@ -185,9 +185,70 @@ void test2()
 	show_progress(job);
 }
 
+//#################### TEST 3 ####################
+struct SourceJob : SimpleSourceJob<int>
+{
+	void execute()
+	{
+		set_output(23);
+		set_finished();
+	}
+
+	int length() const
+	{
+		return 1;
+	}
+};
+
+struct IntermediateJob : SimplePipelineJob<int,double>
+{
+	void execute()
+	{
+		set_output(get_input() * 2.0);
+		set_finished();
+	}
+
+	int length() const
+	{
+		return 1;
+	}
+};
+
+struct FinalJob : SimplePipelineJob<double,double>
+{
+	void execute()
+	{
+		set_output(get_input());
+		set_finished();
+	}
+
+	int length() const
+	{
+		return 1;
+	}
+};
+
+void test3()
+{
+	typedef CompositePipelineJob<NullType,double> CompositeJob;
+	boost::shared_ptr<CompositeJob> compositeJob(new CompositeJob);
+	SourceJob *jobA = new SourceJob;
+	IntermediateJob *jobB = new IntermediateJob;
+	FinalJob *jobC = new FinalJob;
+	jobB->set_input_handle(jobA->get_output_handle());
+	jobC->set_input_handle(jobB->get_output_handle());
+	compositeJob->add_subjob(jobA);
+	compositeJob->add_subjob(jobB);
+	compositeJob->add_output_subjob(jobC);
+	Job::execute_in_thread(compositeJob);
+	while(!compositeJob->is_finished());
+	std::cout << compositeJob->get_output() << '\n';
+}
+
 int main()
 {
 	//test1();
 	test2();
+	//test3();
 	return 0;
 }
