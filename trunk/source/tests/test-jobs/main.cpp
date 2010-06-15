@@ -186,11 +186,11 @@ void test2()
 }
 
 //#################### TEST 3 ####################
-struct SourceJob : SimpleSourceJob<int>
+struct InitialJob : SimplePipelineJob<int,int>
 {
 	void execute()
 	{
-		set_output(23);
+		set_output(get_input());
 		set_finished();
 	}
 
@@ -230,16 +230,19 @@ struct FinalJob : SimplePipelineJob<double,double>
 
 void test3()
 {
-	typedef CompositePipelineJob<NullType,double> CompositeJob;
-	boost::shared_ptr<CompositeJob> compositeJob(new CompositeJob);
-	SourceJob *jobA = new SourceJob;
+	InitialJob *jobA = new InitialJob;
 	IntermediateJob *jobB = new IntermediateJob;
 	FinalJob *jobC = new FinalJob;
 	jobB->set_input_handle(jobA->get_output_handle());
 	jobC->set_input_handle(jobB->get_output_handle());
-	compositeJob->add_subjob(jobA);
+
+	typedef CompositePipelineJob<int,double> CompositeJob;
+	boost::shared_ptr<CompositeJob> compositeJob(new CompositeJob);
+	compositeJob->add_input_subjob(jobA);
 	compositeJob->add_subjob(jobB);
 	compositeJob->add_output_subjob(jobC);
+
+	compositeJob->set_input(23);
 	Job::execute_in_thread(compositeJob);
 	while(!compositeJob->is_finished());
 	std::cout << compositeJob->get_output() << '\n';
