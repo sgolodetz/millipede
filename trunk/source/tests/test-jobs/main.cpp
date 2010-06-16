@@ -10,7 +10,7 @@
 
 #include <common/io/util/OSSWrapper.h>
 #include <common/jobs/CompositeJob.h>
-#include <common/jobs/JobData.h>
+#include <common/jobs/DataHook.h>
 #include <common/jobs/MainThreadJobQueue.h>
 #include <common/jobs/SimpleJob.h>
 using namespace mp;
@@ -190,54 +190,54 @@ void test2()
 class InitialJob : public SimpleJob
 {
 private:
-	JobData<int> m_input;
-	JobData<int> m_output;
+	DataHook<int> m_input;
+	DataHook<int> m_output;
 public:
-	void execute()											{ m_output.set(m_input.get() + 23); set_finished(); }
-	JobData<int> get_output_handle() const					{ return m_output; }
-	int length() const										{ return 1; }
-	void set_input_handle(const JobData<int>& input)		{ m_input = input; }
+	void execute()										{ m_output.set(m_input.get() + 23); set_finished(); }
+	DataHook<int> get_output_hook() const				{ return m_output; }
+	int length() const									{ return 1; }
+	void set_input_hook(const DataHook<int>& input)		{ m_input = input; }
 };
 
 class IntermediateJob : public SimpleJob
 {
 private:
-	JobData<int> m_input;
-	JobData<double> m_output;
+	DataHook<int> m_input;
+	DataHook<double> m_output;
 public:
-	void execute()											{ m_output.set(m_input.get() * 2.0); set_finished(); }
-	JobData<double> get_output_handle() const				{ return m_output; }
-	int length() const										{ return 1; }
-	void set_input_handle(const JobData<int>& input)		{ m_input = input; }
+	void execute()										{ m_output.set(m_input.get() * 2.0); set_finished(); }
+	DataHook<double> get_output_hook() const			{ return m_output; }
+	int length() const									{ return 1; }
+	void set_input_hook(const DataHook<int>& input)		{ m_input = input; }
 };
 
 class FinalJob : public SimpleJob
 {
 private:
-	JobData<double> m_input;
-	JobData<double> m_output;
+	DataHook<double> m_input;
+	DataHook<double> m_output;
 public:
-	void execute()											{ m_output.set(m_input.get() + 9.0); set_finished(); }
-	JobData<double> get_output_handle() const				{ return m_output; }
-	int length() const										{ return 1; }
-	void set_input_handle(const JobData<double>& input)		{ m_input = input; }
+	void execute()										{ m_output.set(m_input.get() + 9.0); set_finished(); }
+	DataHook<double> get_output_hook() const			{ return m_output; }
+	int length() const									{ return 1; }
+	void set_input_hook(const DataHook<double>& input)	{ m_input = input; }
 };
 
 class OverallJob : public CompositeJob
 {
 private:
-	JobData<int> m_input;
-	JobData<double> m_output;
+	DataHook<int> m_input;
+	DataHook<double> m_output;
 public:
 	OverallJob()
 	{
 		InitialJob *jobA = new InitialJob;
 		IntermediateJob *jobB = new IntermediateJob;
 		FinalJob *jobC = new FinalJob;
-		jobA->set_input_handle(m_input);
-		jobB->set_input_handle(jobA->get_output_handle());
-		jobC->set_input_handle(jobB->get_output_handle());
-		m_output = jobC->get_output_handle();
+		jobA->set_input_hook(m_input);
+		jobB->set_input_hook(jobA->get_output_hook());
+		jobC->set_input_hook(jobB->get_output_hook());
+		m_output = jobC->get_output_hook();
 		add_subjob(jobA);
 		add_subjob(jobB);
 		add_subjob(jobC);

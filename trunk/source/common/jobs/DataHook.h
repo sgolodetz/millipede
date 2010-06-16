@@ -1,10 +1,10 @@
 /***
- * millipede: JobData.h
+ * millipede: DataHook.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_JOBDATA
-#define H_MILLIPEDE_JOBDATA
+#ifndef H_MILLIPEDE_DATAHOOK
+#define H_MILLIPEDE_DATAHOOK
 
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
@@ -12,7 +12,7 @@
 namespace mp {
 
 template <typename T>
-class JobData
+class DataHook
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -20,7 +20,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	JobData()
+	DataHook()
 	:	m_data(new boost::optional<T>)
 	{}
 

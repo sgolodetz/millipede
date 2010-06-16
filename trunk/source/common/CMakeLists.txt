@@ -127,8 +127,8 @@ jobs/SimpleJob.cpp
 
 SET(jobs_headers
 jobs/CompositeJob.h
+jobs/DataHook.h
 jobs/Job.h
-jobs/JobData.h
 jobs/MainThreadJobQueue.h
 jobs/SimpleJob.h
 )
