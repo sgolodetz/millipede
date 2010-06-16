@@ -140,7 +140,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SliceTextureSetFiller(SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet, const typename Image3D::SizeType& volumeSize)
+	SliceTextureSetFiller(SliceOrientation ori, const typename Image3D::SizeType& volumeSize, const SliceTextureSet_Ptr& sliceTextureSet)
 	:	m_volumeImageHook(new DataHook<typename Image3D::Pointer>)
 	{
 		TextureSetFillerJob *textureSetFillerJob = new TextureSetFillerJob(ori, sliceTextureSet);

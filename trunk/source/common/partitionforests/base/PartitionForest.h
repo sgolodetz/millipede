@@ -419,6 +419,17 @@ public:
 	//@{
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	/**
+	@brief	Returns the edges adjacent to the specified forest node in its layer.
+
+	@param[in]	node	The ID of the node
+	@pre
+		-	0 <= node.layer() <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+		-	If the specified ID does not refer to a valid node
+	@return	As described
+	*/
 	std::vector<Edge> adjacent_edges(const PFNodeID& node) const
 	{
 		IForestLayer_Ptr layer = checked_forest_layer(node.layer());
@@ -426,6 +437,19 @@ public:
 		return layer->adjacent_edges(node.index());
 	}
 
+	/**
+	@brief	Returns the indices of the nodes adjacent to the specified forest node in its layer.
+
+	The indices are merely the index components of the adjacent nodes' IDs.
+
+	@param[in]	node	The ID of the node
+	@pre
+		-	0 <= node.layer() <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+		-	If the specified ID does not refer to a valid node
+	@return	As described
+	*/
 	std::vector<int> adjacent_nodes(const PFNodeID& node) const
 	{
 		IForestLayer_Ptr layer = checked_forest_layer(node.layer());

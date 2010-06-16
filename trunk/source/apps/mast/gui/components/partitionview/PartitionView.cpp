@@ -103,7 +103,7 @@ bool PartitionView::create_dicom_textures(SliceOrientation ori)
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
 	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
-	shared_ptr<SliceTextureSetFiller<unsigned char> > filler(new SliceTextureSetFiller<unsigned char>(ori, textureSet, m_model->dicom_volume()->size()));
+	shared_ptr<SliceTextureSetFiller<unsigned char> > filler(new SliceTextureSetFiller<unsigned char>(ori, m_model->dicom_volume()->size(), textureSet));
 	filler->set_volume_image(windowedImage);
 	Job::execute_in_thread(filler);
 	if(!show_progress_dialog(this, "Creating Slice Textures", filler)) return false;
@@ -131,7 +131,7 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 		typedef MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer> MIC;
 		typedef SliceTextureSetFiller<unsigned char> TSF;
 		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
-		TSF *textureSetFiller = new TSF(ori, partitionTextureSets[layer-1], volumeIPF->volume_size());
+		TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), partitionTextureSets[layer-1]);
 		textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
 
 		job->add_subjob(mosaicImageCreator);
