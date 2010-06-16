@@ -13,7 +13,7 @@
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/segmentation/CTLowestLayersBuilder.h>
 #include <common/segmentation/VolumeIPFBuilder.h>
-#include <common/slices/SliceTextureSetCreator.h>
+#include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
@@ -103,9 +103,9 @@ bool PartitionView::create_dicom_textures(SliceOrientation ori)
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
 	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
-	shared_ptr<Job> textureSetCreator(new SliceTextureSetCreator<unsigned char>(windowedImage, ori, textureSet));
-	Job::execute_in_thread(textureSetCreator);
-	if(!show_progress_dialog(this, "Creating Slice Textures", textureSetCreator)) return false;
+	shared_ptr<Job> textureSetFiller(new SliceTextureSetFiller<unsigned char>(windowedImage, ori, textureSet));
+	Job::execute_in_thread(textureSetFiller);
+	if(!show_progress_dialog(this, "Creating Slice Textures", textureSetFiller)) return false;
 
 	m_model->set_dicom_texture_set(textureSet);
 	return true;
@@ -136,7 +136,7 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
 		partitionTextureSets[layer-1].reset(new SliceTextureSet);
-		job->add_subjob(new SliceTextureSetCreator<unsigned char>(mosaicImages[layer-1], ori, partitionTextureSets[layer-1]));
+		job->add_subjob(new SliceTextureSetFiller<unsigned char>(mosaicImages[layer-1], ori, partitionTextureSets[layer-1]));
 	}
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Partition Texture Sets", job, false);

@@ -1,26 +1,24 @@
 /***
- * millipede: SliceTextureSetCreator.h
+ * millipede: SliceTextureSetFiller.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_SLICETEXTURESETCREATOR
-#define H_MILLIPEDE_SLICETEXTURESETCREATOR
+#ifndef H_MILLIPEDE_SLICETEXTURESETFILLER
+#define H_MILLIPEDE_SLICETEXTURESETFILLER
 
 #include <itkExtractImageFilter.h>
 
 #include <common/io/util/OSSWrapper.h>
 #include <common/jobs/CompositeJob.h>
+#include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/textures/TextureFactory.h>
 #include "SliceTextureSet.h"
 
 namespace mp {
 
-//#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class Texture> Texture_Ptr;
-
 template <typename TPixel>
-class SliceTextureSetCreator : public CompositeJob
+class SliceTextureSetFiller : public CompositeJob
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -31,24 +29,24 @@ private:
 private:
 	struct ExtractSliceJob : SimpleJob
 	{
-		typename Image3D::Pointer volumeImage;
 		SliceOrientation ori;
 		int sliceIndex;
-		typename Image2D::Pointer& sliceImage;
+		DataHook<typename Image2D::Pointer> sliceImageHook;
+		DataHook<typename Image3D::Pointer> volumeImageHook;
 
-		ExtractSliceJob(const typename Image3D::Pointer& volumeImage_, SliceOrientation ori_, int sliceIndex_, typename Image2D::Pointer& sliceImage_)
-		:	volumeImage(volumeImage_), ori(ori_), sliceIndex(sliceIndex_), sliceImage(sliceImage_)
+		ExtractSliceJob(SliceOrientation ori_, int sliceIndex_)
+		:	ori(ori_), sliceIndex(sliceIndex_)
 		{}
 
 		void execute()
 		{
 			set_status(OSSWrapper() << "Extracting slice " << sliceIndex << "...");
 
-			typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
+			typename Image3D::SizeType volumeSize = volumeImageHook.get()->GetLargestPossibleRegion().GetSize();
 
 			typedef itk::ExtractImageFilter<Image3D,Image2D> Extractor;
 			typename Extractor::Pointer extractor = Extractor::New();
-			extractor->SetInput(volumeImage);
+			extractor->SetInput(volumeImageHook.get());
 
 			typename Image3D::IndexType index;
 			typename Image3D::SizeType size;
@@ -69,7 +67,7 @@ private:
 			if(is_aborted()) return;
 			extractor->Update();
 			if(is_aborted()) return;
-			sliceImage = extractor->GetOutput();
+			sliceImageHook.set(extractor->GetOutput());
 			if(is_aborted()) return;
 
 			set_finished();
@@ -83,18 +81,18 @@ private:
 
 	struct CreateTextureJob : SimpleJob
 	{
-		const typename Image2D::Pointer& sliceImage;
+		DataHook<typename Image2D::Pointer> sliceImageHook;
 		int sliceIndex;
-		Texture_Ptr& texture;
+		DataHook<Texture_Ptr> textureHook;
 
-		CreateTextureJob(const typename Image2D::Pointer& sliceImage_, int sliceIndex_, Texture_Ptr& texture_)
-		:	sliceImage(sliceImage_), sliceIndex(sliceIndex_), texture(texture_)
+		explicit CreateTextureJob(int sliceIndex_)
+		:	sliceIndex(sliceIndex_)
 		{}
 
 		void execute()
 		{
 			set_status(OSSWrapper() << "Creating texture for slice " << sliceIndex << "...");
-			texture = TextureFactory::create_texture(sliceImage);
+			textureHook.set(TextureFactory::create_texture(sliceImageHook.get()));
 			if(is_aborted()) return;
 			set_finished();
 		}
@@ -107,18 +105,25 @@ private:
 
 	struct TextureSetFillerJob : SimpleJob
 	{
-		SliceTextureSet_Ptr sliceTextureSet;
 		SliceOrientation ori;
-		const std::vector<Texture_Ptr>& textures;
+		SliceTextureSet_Ptr sliceTextureSet;
+		std::vector<DataHook<Texture_Ptr> > textureHooks;
 
-		TextureSetFillerJob(const SliceTextureSet_Ptr& sliceTextureSet_, SliceOrientation ori_, const std::vector<Texture_Ptr>& textures_)
-		:	sliceTextureSet(sliceTextureSet_), ori(ori_), textures(textures_)
+		TextureSetFillerJob(SliceOrientation ori_, const SliceTextureSet_Ptr& sliceTextureSet_)
+		:	ori(ori_), sliceTextureSet(sliceTextureSet_)
 		{}
 
 		void execute()
 		{
 			set_status("Filling texture set...");
+
+			std::vector<Texture_Ptr> textures;
+			for(size_t i=0, size=textureHooks.size(); i<size; ++i)
+			{
+				textures.push_back(textureHooks[i].get());
+			}
 			sliceTextureSet->set_textures(ori, textures);
+
 			if(is_aborted()) return;
 			set_finished();
 		}
@@ -129,26 +134,27 @@ private:
 		}
 	};
 
-	//#################### PRIVATE VARIABLES ####################
-private:
-	typename Image2D::Pointer m_sliceImage;
-	std::vector<Texture_Ptr> m_textures;
-
 	//#################### CONSTRUCTORS ####################
 public:
-	SliceTextureSetCreator(const typename Image3D::Pointer& volumeImage, SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet)
+	SliceTextureSetFiller(const typename Image3D::Pointer& volumeImage, SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet)
 	{
 		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
 
-		m_textures.resize(volumeSize[ori]);
-
+		TextureSetFillerJob *textureSetFillerJob = new TextureSetFillerJob(ori, sliceTextureSet);
 		for(unsigned int i=0; i<volumeSize[ori]; ++i)
 		{
-			add_subjob(new ExtractSliceJob(volumeImage, ori, i, m_sliceImage));
-			add_main_thread_subjob(new CreateTextureJob(m_sliceImage, i, m_textures[i]));
+			ExtractSliceJob *extractSliceJob = new ExtractSliceJob(ori, i);
+			CreateTextureJob *createTextureJob = new CreateTextureJob(i);
+
+			extractSliceJob->volumeImageHook.set(volumeImage);
+			createTextureJob->sliceImageHook = extractSliceJob->sliceImageHook;
+			textureSetFillerJob->textureHooks.push_back(createTextureJob->textureHook);
+
+			add_subjob(extractSliceJob);
+			add_main_thread_subjob(createTextureJob);
 		}
 
-		add_subjob(new TextureSetFillerJob(sliceTextureSet, ori, m_textures));
+		add_subjob(textureSetFillerJob);
 	}
 };
 
