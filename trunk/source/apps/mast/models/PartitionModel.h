@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <common/commands/UndoableCommandManager.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
@@ -52,6 +53,7 @@ public:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	ICommandManager_Ptr m_commandManager;
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
@@ -66,7 +68,7 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	PartitionModel(const DICOMVolume_Ptr& dicomVolume, const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
-	:	m_dicomVolume(dicomVolume), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation)
+	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -74,6 +76,16 @@ public:
 	void add_listener(Listener *listener)
 	{
 		m_listeners.push_back(listener);
+	}
+
+	const ICommandManager_Ptr& command_manager()
+	{
+		return m_commandManager;
+	}
+
+	ICommandManager_CPtr command_manager() const
+	{
+		return m_commandManager;
 	}
 
 	SliceTextureSet_CPtr dicom_texture_set() const
@@ -141,9 +153,12 @@ public:
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
 	{
 		m_volumeIPF = volumeIPF;
+		volumeIPF->set_command_manager(m_commandManager);
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
+		m_selection->set_command_manager(m_commandManager);
 		volumeIPF->add_listener(m_selection);
 		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
+		m_multiFeatureSelection->set_command_manager(m_commandManager);
 
 #if 0
 		if(m_sliceOrientation == ORIENT_XY)

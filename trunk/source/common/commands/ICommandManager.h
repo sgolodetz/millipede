@@ -35,6 +35,7 @@ public:
 
 //#################### TYPEDEFS ####################
 typedef boost::shared_ptr<ICommandManager> ICommandManager_Ptr;
+typedef boost::shared_ptr<const ICommandManager> ICommandManager_CPtr;
 
 }
 

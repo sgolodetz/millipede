@@ -73,6 +73,8 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	wxGLContext *get_context() const;
+	const PartitionModel_Ptr& model();
+	PartitionModel_CPtr model() const;
 	void model_changed();
 
 	//#################### PRIVATE METHODS ####################
@@ -81,7 +83,6 @@ private:
 	bool create_dicom_textures(SliceOrientation ori);
 	void create_partition_textures(SliceOrientation ori);
 	bool create_textures(SliceOrientation ori);
-	PartitionModel_CPtr model() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	void recreate_overlays();
 	void refresh_canvases();

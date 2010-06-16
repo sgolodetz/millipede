@@ -29,7 +29,7 @@ namespace {
 //#################### LOCAL CONSTANTS ####################
 enum
 {
-	ID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	ID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	BUTTONID_SEGMENT_CT_VOLUME,
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
@@ -71,6 +71,16 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 wxGLContext *PartitionView::get_context() const
 {
 	return m_dicomCanvas->GetContext();
+}
+
+const PartitionView::PartitionModel_Ptr& PartitionView::model()
+{
+	return m_model;
+}
+
+PartitionView::PartitionModel_CPtr PartitionView::model() const
+{
+	return m_model;
 }
 
 void PartitionView::model_changed()
@@ -151,11 +161,6 @@ bool PartitionView::create_textures(SliceOrientation ori)
 	if(!create_dicom_textures(ori)) return false;
 	create_partition_textures(ori);
 	return true;
-}
-
-PartitionView::PartitionModel_CPtr PartitionView::model() const
-{
-	return m_model;
 }
 
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const

@@ -39,6 +39,22 @@ public:
 private:
 	void setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context);
 	void setup_menus();
+
+	//#################### EVENT HANDLERS ####################
+public:
+	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
+	void OnMenuActionsClearHistory(wxCommandEvent&);
+	void OnMenuActionsRedo(wxCommandEvent&);
+	void OnMenuActionsUndo(wxCommandEvent&);
+	void OnMenuFileExit(wxCommandEvent&);
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e);
+	void OnUpdateMenuActionsRedo(wxUpdateUIEvent& e);
+	void OnUpdateMenuActionsUndo(wxUpdateUIEvent& e);
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
 
 }

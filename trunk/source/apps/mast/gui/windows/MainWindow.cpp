@@ -23,7 +23,16 @@ namespace {
 //#################### LOCAL CONSTANTS ####################
 enum
 {
-	ID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	BUTTONID_BASE = wxID_HIGHEST,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	BUTTONID_OPENDICOMDIR,
+	BUTTONID_OPENSAVEDVOLUMECHOICE,
+	BUTTONID_OPENTESTVOLUME1,
+	BUTTONID_EXIT,
+};
+
+enum
+{
+	MENUID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	MENUID_FILE_EXIT,
 	MENUID_FILE_OPEN,
 	MENUID_FILE_OPEN_DICOMDIR,
@@ -31,15 +40,6 @@ enum
 	MENUID_FILE_OPEN_SAVEDVOLUMECHOICE,
 	MENUID_FILE_REPLACE_VOLUMECHOICESECTION,
 	MENUID_HELP_ABOUT,
-};
-
-enum
-{
-	BUTTONID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-	BUTTONID_OPENDICOMDIR,
-	BUTTONID_OPENSAVEDVOLUMECHOICE,
-	BUTTONID_OPENTESTVOLUME1,
-	BUTTONID_EXIT,
 };
 
 }
