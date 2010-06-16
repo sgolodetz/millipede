@@ -10,6 +10,7 @@
 #include <itkZeroFluxNeumannBoundaryCondition.h>
 
 #include <common/io/util/OSSWrapper.h>
+#include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/slices/SliceOrientation.h>
@@ -29,15 +30,15 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_layerIndex;
-	MosaicImage::Pointer& m_mosaicImage;
+	DataHook<MosaicImage::Pointer> m_mosaicImageHook;
 	SliceOrientation m_sliceOrientation;
 	VolumeIPF_CPtr m_volumeIPF;
 	bool m_withBoundaries;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MosaicImageCreator(const VolumeIPF_CPtr& volumeIPF, int layerIndex, SliceOrientation sliceOrientation, bool withBoundaries, MosaicImage::Pointer& mosaicImage)
-	:	m_layerIndex(layerIndex), m_mosaicImage(mosaicImage), m_sliceOrientation(sliceOrientation), m_volumeIPF(volumeIPF), m_withBoundaries(withBoundaries)
+	MosaicImageCreator(const VolumeIPF_CPtr& volumeIPF, int layerIndex, SliceOrientation sliceOrientation, bool withBoundaries)
+	:	m_layerIndex(layerIndex), m_sliceOrientation(sliceOrientation), m_volumeIPF(volumeIPF), m_withBoundaries(withBoundaries)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -48,6 +49,11 @@ public:
 		if(m_withBoundaries)	execute_boundaries();
 		else					execute_no_boundaries();
 		set_finished();
+	}
+
+	const DataHook<MosaicImage::Pointer>& get_mosaic_image_hook() const
+	{
+		return m_mosaicImageHook;
 	}
 
 	int length() const
@@ -94,7 +100,7 @@ private:
 
 		// Create the mosaic image by traversing the ancestor image. We mark boundaries where appropriate,
 		// and obtain the non-boundary mosaic values from the properties of the ancestor nodes.
-		m_mosaicImage = ITKImageUtil::make_image<unsigned char>(volumeSize);
+		MosaicImage::Pointer mosaicImage = ITKImageUtil::make_image<unsigned char>(volumeSize);
 
 		for(it.GoToBegin(); !it.IsAtEnd(); ++it)
 		{
@@ -119,14 +125,16 @@ private:
 				if(m_layerIndex > 0)	mosaicValue = static_cast<unsigned char>(m_volumeIPF->branch_properties(it.GetCenterPixel()).mean_grey_value());
 				else					mosaicValue = m_volumeIPF->leaf_properties(it.GetCenterPixel().index()).grey_value();
 			}
-			m_mosaicImage->SetPixel(it.GetIndex(), mosaicValue);
+			mosaicImage->SetPixel(it.GetIndex(), mosaicValue);
 		}
+
+		m_mosaicImageHook.set(mosaicImage);
 	}
 
 	void execute_no_boundaries()
 	{
 		itk::Size<3> volumeSize = m_volumeIPF->volume_size();
-		m_mosaicImage = ITKImageUtil::make_image<unsigned char>(volumeSize);
+		MosaicImage::Pointer mosaicImage = ITKImageUtil::make_image<unsigned char>(volumeSize);
 
 		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
 		itk::Index<3> size = ITKImageUtil::make_index_from_size(volumeSize);
@@ -146,8 +154,10 @@ private:
 					}
 					else mosaicValue = m_volumeIPF->leaf_properties(n).grey_value();
 
-					m_mosaicImage->SetPixel(index, mosaicValue);
+					mosaicImage->SetPixel(index, mosaicValue);
 				}
+
+		m_mosaicImageHook.set(mosaicImage);
 	}
 };
 

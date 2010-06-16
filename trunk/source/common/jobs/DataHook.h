@@ -14,9 +14,9 @@ namespace mp {
 /**
 @brief	A data hook is an indirect holder of data.
 
-It is useful when you know that your data must come from a particular source, but that source hasn't produced it yet.
+It is useful when you know that your data must come from a particular source, but that source can't produce it yet.
 For instance, when implementing a job pipeline, there might be a producer/consumer relationship between jobs A and B.
-B requires data from A to function, but at the point at which the pipeline is being set up, A has not yet run, and its
+B requires data from A to function, but at the point at which the pipeline is being set up, A cannot yet run, and its
 output (the input to B) is not available. Data hooks provide a solution to the problem: all that is necessary is to give
 A an output hook and B an input hook, and then connect the two together (by setting one equal to the other). A then sets
 its output using the output hook's set() method, and B later retrieves it using its input hook's get().
@@ -49,6 +49,18 @@ public:
 	bool empty() const
 	{
 		return *m_data != boost::none;
+	}
+
+	/**
+	@brief	Gets the contents of the data hook.
+
+	@pre
+		-	set() must have been called beforehand
+	@return	As described
+	*/
+	T& get()
+	{
+		return **m_data;
 	}
 
 	/**

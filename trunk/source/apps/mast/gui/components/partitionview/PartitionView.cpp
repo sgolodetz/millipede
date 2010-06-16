@@ -103,9 +103,10 @@ bool PartitionView::create_dicom_textures(SliceOrientation ori)
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
 	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
-	shared_ptr<Job> textureSetFiller(new SliceTextureSetFiller<unsigned char>(windowedImage, ori, textureSet));
-	Job::execute_in_thread(textureSetFiller);
-	if(!show_progress_dialog(this, "Creating Slice Textures", textureSetFiller)) return false;
+	shared_ptr<SliceTextureSetFiller<unsigned char> > filler(new SliceTextureSetFiller<unsigned char>(ori, textureSet, m_model->dicom_volume()->size()));
+	filler->set_volume_image(windowedImage);
+	Job::execute_in_thread(filler);
+	if(!show_progress_dialog(this, "Creating Slice Textures", filler)) return false;
 
 	m_model->set_dicom_texture_set(textureSet);
 	return true;
@@ -120,23 +121,21 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 	if(!volumeIPF) return;
 	int highestLayer = volumeIPF->highest_layer();
 
-	// Create the mosaic images.
-	std::vector<itk::Image<unsigned char,3>::Pointer> mosaicImages(highestLayer);
+	// Create the partition texture sets.
+	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		job->add_subjob(new MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer>(volumeIPF, layer, ori, true, mosaicImages[layer-1]));
-	}
-	Job::execute_in_thread(job);
-	show_progress_dialog(this, "Creating Mosaic Images", job, false);
-
-	// Create the partition texture sets.
-	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
-	job.reset(new CompositeJob);
-	for(int layer=1; layer<=highestLayer; ++layer)
-	{
 		partitionTextureSets[layer-1].reset(new SliceTextureSet);
-		job->add_subjob(new SliceTextureSetFiller<unsigned char>(mosaicImages[layer-1], ori, partitionTextureSets[layer-1]));
+
+		typedef MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer> MIC;
+		typedef SliceTextureSetFiller<unsigned char> TSF;
+		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
+		TSF *textureSetFiller = new TSF(ori, partitionTextureSets[layer-1], volumeIPF->volume_size());
+		textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
+
+		job->add_subjob(mosaicImageCreator);
+		job->add_subjob(textureSetFiller);
 	}
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Partition Texture Sets", job, false);

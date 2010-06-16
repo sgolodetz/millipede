@@ -32,7 +32,7 @@ private:
 		SliceOrientation ori;
 		int sliceIndex;
 		DataHook<typename Image2D::Pointer> sliceImageHook;
-		DataHook<typename Image3D::Pointer> volumeImageHook;
+		boost::shared_ptr<DataHook<typename Image3D::Pointer> > volumeImageHook;
 
 		ExtractSliceJob(SliceOrientation ori_, int sliceIndex_)
 		:	ori(ori_), sliceIndex(sliceIndex_)
@@ -42,11 +42,11 @@ private:
 		{
 			set_status(OSSWrapper() << "Extracting slice " << sliceIndex << "...");
 
-			typename Image3D::SizeType volumeSize = volumeImageHook.get()->GetLargestPossibleRegion().GetSize();
+			typename Image3D::SizeType volumeSize = volumeImageHook->get()->GetLargestPossibleRegion().GetSize();
 
 			typedef itk::ExtractImageFilter<Image3D,Image2D> Extractor;
 			typename Extractor::Pointer extractor = Extractor::New();
-			extractor->SetInput(volumeImageHook.get());
+			extractor->SetInput(volumeImageHook->get());
 
 			typename Image3D::IndexType index;
 			typename Image3D::SizeType size;
@@ -134,19 +134,22 @@ private:
 		}
 	};
 
+	//#################### PRIVATE VARIABLES ####################
+private:
+	boost::shared_ptr<DataHook<typename Image3D::Pointer> > m_volumeImageHook;
+
 	//#################### CONSTRUCTORS ####################
 public:
-	SliceTextureSetFiller(const typename Image3D::Pointer& volumeImage, SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet)
+	SliceTextureSetFiller(SliceOrientation ori, const SliceTextureSet_Ptr& sliceTextureSet, const typename Image3D::SizeType& volumeSize)
+	:	m_volumeImageHook(new DataHook<typename Image3D::Pointer>)
 	{
-		typename Image3D::SizeType volumeSize = volumeImage->GetLargestPossibleRegion().GetSize();
-
 		TextureSetFillerJob *textureSetFillerJob = new TextureSetFillerJob(ori, sliceTextureSet);
 		for(unsigned int i=0; i<volumeSize[ori]; ++i)
 		{
 			ExtractSliceJob *extractSliceJob = new ExtractSliceJob(ori, i);
 			CreateTextureJob *createTextureJob = new CreateTextureJob(i);
 
-			extractSliceJob->volumeImageHook.set(volumeImage);
+			extractSliceJob->volumeImageHook = m_volumeImageHook;
 			createTextureJob->sliceImageHook = extractSliceJob->sliceImageHook;
 			textureSetFillerJob->textureHooks.push_back(createTextureJob->textureHook);
 
@@ -155,6 +158,16 @@ public:
 		}
 
 		add_subjob(textureSetFillerJob);
+	}
+
+	void set_volume_image(const typename Image3D::Pointer& volumeImage)
+	{
+		m_volumeImageHook->set(volumeImage);
+	}
+
+	void set_volume_image_hook(const DataHook<typename Image3D::Pointer>& volumeImageHook)
+	{
+		*m_volumeImageHook = volumeImageHook;
 	}
 };
 
