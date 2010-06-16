@@ -339,7 +339,7 @@ private:
 			if(it.Get() == 0)
 			{
 				m_labels->SetPixel(it.GetIndex(), m_labelCount);
-				minima.add_node(m_labelCount, it.GetIndex());
+				minima.add_element(m_labelCount, it.GetIndex());
 				++m_labelCount;
 			}
 		}}
@@ -374,7 +374,7 @@ private:
 					if(jt.Get() == 0)
 					{
 						Index neighbourIndex = it.GetIndex() + jt.GetNeighborhoodOffset();
-						minima.union_nodes(m_labels->GetPixel(it.GetIndex()), m_labels->GetPixel(neighbourIndex));
+						minima.union_sets(m_labels->GetPixel(it.GetIndex()), m_labels->GetPixel(neighbourIndex));
 					}
 				}
 			}

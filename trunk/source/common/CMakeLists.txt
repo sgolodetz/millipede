@@ -14,10 +14,6 @@ adts/RootedMST.h
 adts/WeightedEdge.h
 )
 
-SET(adts_templates
-adts/DisjointSetForest.tpp
-)
-
 ##
 SET(commands_sources
 commands/BasicCommandManager.cpp
@@ -250,6 +246,7 @@ util/ITKImageUtil.cpp
 SET(util_headers
 util/GridUtil.h
 util/ITKImageUtil.h
+util/NullType.h
 )
 
 #################################################################
@@ -297,7 +294,6 @@ ${util_headers}
 )
 
 SET(templates
-${adts_templates}
 ${io_util_templates}
 )
 
@@ -307,7 +303,6 @@ ${io_util_templates}
 
 ##
 SOURCE_GROUP(adts\\.h FILES ${adts_headers})
-SOURCE_GROUP(adts\\.tpp FILES ${adts_templates})
 
 ##
 SOURCE_GROUP(commands\\.cpp FILES ${commands_sources})

@@ -11,6 +11,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <common/util/NullType.h>
 #include "AdjacencyGraph.h"
 #include "PriorityQueue.h"
 
@@ -19,10 +20,6 @@ namespace mp {
 template <typename EdgeWeight>
 class RootedMST
 {
-	//#################### NESTED CLASSES ####################
-private:
-	struct NullType {};
-
 	//#################### TYPEDEFS ####################
 private:
 	typedef AdjacencyGraph<int, EdgeWeight> BaseGraph;	// each node stores the index of its parent
