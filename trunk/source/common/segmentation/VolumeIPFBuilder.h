@@ -11,7 +11,7 @@
 #include <common/adts/RootedMST.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositeJobs.h>
+#include <common/jobs/CompositeJob.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/util/GridUtil.h>

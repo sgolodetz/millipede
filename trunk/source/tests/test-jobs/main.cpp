@@ -9,9 +9,10 @@
 #include <boost/thread.hpp>
 
 #include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositeJobs.h>
+#include <common/jobs/CompositeJob.h>
+#include <common/jobs/JobData.h>
 #include <common/jobs/MainThreadJobQueue.h>
-#include <common/jobs/SimpleJobs.h>
+#include <common/jobs/SimpleJob.h>
 using namespace mp;
 
 //#################### TEST 1 ####################
@@ -128,7 +129,7 @@ boost::shared_ptr<Job> construct_job()
 {
 	boost::shared_ptr<CompositeJob> job(new CompositeJob);
 	job->add_subjob(new OtherThreadJob(0));
-	job->add_subjob(new MainThreadJob, JTS_MAINTHREAD);
+	job->add_main_thread_subjob(new MainThreadJob);
 	job->add_subjob(new OtherThreadJob(1));
 	return job;
 }
@@ -186,72 +187,79 @@ void test2()
 }
 
 //#################### TEST 3 ####################
-struct InitialJob : SimplePipelineJob<int,int>
+class InitialJob : public SimpleJob
 {
-	void execute()
-	{
-		set_output(get_input());
-		set_finished();
-	}
-
-	int length() const
-	{
-		return 1;
-	}
+private:
+	JobData<int> m_input;
+	JobData<int> m_output;
+public:
+	void execute()											{ m_output.set(m_input.get() + 23); set_finished(); }
+	JobData<int> get_output_handle() const					{ return m_output; }
+	int length() const										{ return 1; }
+	void set_input_handle(const JobData<int>& input)		{ m_input = input; }
 };
 
-struct IntermediateJob : SimplePipelineJob<int,double>
+class IntermediateJob : public SimpleJob
 {
-	void execute()
-	{
-		set_output(get_input() * 2.0);
-		set_finished();
-	}
-
-	int length() const
-	{
-		return 1;
-	}
+private:
+	JobData<int> m_input;
+	JobData<double> m_output;
+public:
+	void execute()											{ m_output.set(m_input.get() * 2.0); set_finished(); }
+	JobData<double> get_output_handle() const				{ return m_output; }
+	int length() const										{ return 1; }
+	void set_input_handle(const JobData<int>& input)		{ m_input = input; }
 };
 
-struct FinalJob : SimplePipelineJob<double,double>
+class FinalJob : public SimpleJob
 {
-	void execute()
+private:
+	JobData<double> m_input;
+	JobData<double> m_output;
+public:
+	void execute()											{ m_output.set(m_input.get() + 9.0); set_finished(); }
+	JobData<double> get_output_handle() const				{ return m_output; }
+	int length() const										{ return 1; }
+	void set_input_handle(const JobData<double>& input)		{ m_input = input; }
+};
+
+class OverallJob : public CompositeJob
+{
+private:
+	JobData<int> m_input;
+	JobData<double> m_output;
+public:
+	OverallJob()
 	{
-		set_output(get_input());
-		set_finished();
+		InitialJob *jobA = new InitialJob;
+		IntermediateJob *jobB = new IntermediateJob;
+		FinalJob *jobC = new FinalJob;
+		jobA->set_input_handle(m_input);
+		jobB->set_input_handle(jobA->get_output_handle());
+		jobC->set_input_handle(jobB->get_output_handle());
+		m_output = jobC->get_output_handle();
+		add_subjob(jobA);
+		add_subjob(jobB);
+		add_subjob(jobC);
 	}
 
-	int length() const
-	{
-		return 1;
-	}
+	double get_output() const	{ return m_output.get(); }
+	void set_input(int input)	{ m_input.set(input); }
 };
 
 void test3()
 {
-	InitialJob *jobA = new InitialJob;
-	IntermediateJob *jobB = new IntermediateJob;
-	FinalJob *jobC = new FinalJob;
-	jobB->set_input_handle(jobA->get_output_handle());
-	jobC->set_input_handle(jobB->get_output_handle());
-
-	typedef CompositePipelineJob<int,double> CompositeJob;
-	boost::shared_ptr<CompositeJob> compositeJob(new CompositeJob);
-	compositeJob->add_input_subjob(jobA);
-	compositeJob->add_subjob(jobB);
-	compositeJob->add_output_subjob(jobC);
-
-	compositeJob->set_input(23);
-	Job::execute_in_thread(compositeJob);
-	while(!compositeJob->is_finished());
-	std::cout << compositeJob->get_output() << '\n';
+	boost::shared_ptr<OverallJob> job(new OverallJob);
+	Job::execute_in_thread(job);
+	job->set_input(84);
+	while(!job->is_finished());
+	std::cout << job->get_output() << '\n';
 }
 
 int main()
 {
 	//test1();
-	test2();
-	//test3();
+	//test2();
+	test3();
 	return 0;
 }

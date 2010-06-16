@@ -10,7 +10,7 @@
 #include <itkZeroFluxNeumannBoundaryCondition.h>
 
 #include <common/io/util/OSSWrapper.h>
-#include <common/jobs/SimpleJobs.h>
+#include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/slices/SliceOrientation.h>
 #include <common/util/ITKImageUtil.h>
