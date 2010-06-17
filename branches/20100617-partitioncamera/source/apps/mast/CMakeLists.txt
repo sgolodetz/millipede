@@ -42,6 +42,7 @@ gui/components/partitionview/BaseCanvas.h
 gui/components/partitionview/DICOMCanvas.h
 gui/components/partitionview/PartitionCamera.h
 gui/components/partitionview/PartitionCanvas.h
+gui/components/partitionview/PartitionModel.h
 gui/components/partitionview/PartitionView.h
 )
 
@@ -85,11 +86,6 @@ gui/windows/PartitionWindow.h
 )
 
 ##
-SET(models_headers
-models/PartitionModel.h
-)
-
-##
 SET(util_sources
 util/StringConversion.cpp
 )
@@ -119,7 +115,6 @@ ${gui_components_partitionview_headers}
 ${gui_dialogs_headers}
 ${gui_overlays_headers}
 ${gui_windows_headers}
-${models_headers}
 ${util_headers}
 )
 
@@ -153,9 +148,6 @@ SOURCE_GROUP(gui\\overlays\\.h FILES ${gui_overlays_headers})
 ##
 SOURCE_GROUP(gui\\windows\\.cpp FILES ${gui_windows_sources})
 SOURCE_GROUP(gui\\windows\\.h FILES ${gui_windows_headers})
-
-##
-SOURCE_GROUP(models\\.h FILES ${models_headers})
 
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})

@@ -19,8 +19,8 @@
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
-#include <mast/models/PartitionModel.h>
 #include "PartitionCamera.h"
+#include "PartitionModel.h"
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;

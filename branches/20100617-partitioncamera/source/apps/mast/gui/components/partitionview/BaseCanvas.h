@@ -12,7 +12,7 @@
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <mast/gui/components/canvas/Canvas.h>
-#include <mast/models/PartitionModel.h>
+#include "PartitionModel.h"
 
 namespace mp {
 

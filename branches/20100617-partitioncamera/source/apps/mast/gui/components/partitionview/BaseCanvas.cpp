@@ -8,7 +8,6 @@
 #include <common/exceptions/Exception.h>
 #include <common/slices/SliceTextureSet.h>
 #include <common/textures/Texture.h>
-#include <mast/models/PartitionModel.h>
 #include "PartitionView.h"
 
 namespace mp {
