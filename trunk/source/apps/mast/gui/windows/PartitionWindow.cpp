@@ -153,15 +153,6 @@ void PartitionWindow::setup_menus()
 
 //#################### EVENT HANDLERS ####################
 
-//~~~~~~~~~~~~~~~~~~~~ IDLE ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnInternalIdle()
-{
-	if(wxUpdateUIEvent::CanUpdate(this))
-	{
-		UpdateWindowUI(wxUPDATE_UI_FROMIDLE);
-	}
-}
-
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)				{ m_commandManager->clear_history(); }
 void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)						{ m_commandManager->redo(); }
@@ -180,12 +171,10 @@ void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
 {
 	if(m_commandManager->can_redo())
 	{
-		e.Enable(true);
 		e.SetText(string_to_wxString("&Redo " + m_commandManager->redo_description() + "\tCtrl+Y"));
 	}
 	else
 	{
-		e.Enable(false);
 		e.SetText("Cannot Redo\tCtrl+Y");
 	}
 }
@@ -194,12 +183,10 @@ void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
 {
 	if(m_commandManager->can_undo())
 	{
-		e.Enable(true);
 		e.SetText(string_to_wxString("&Undo " + m_commandManager->undo_description() + "\tCtrl+Z"));
 	}
 	else
 	{
-		e.Enable(false);
 		e.SetText("Cannot Undo\tCtrl+Z");
 	}
 }
