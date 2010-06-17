@@ -209,7 +209,8 @@ void PartitionView::setup_gui(wxGLContext *context)
 		WX_GL_RGBA,
 		WX_GL_DEPTH_SIZE,
 		16,
-		WX_GL_DOUBLEBUFFER
+		WX_GL_DOUBLEBUFFER,
+		0
 	};
 
 	// Top left
