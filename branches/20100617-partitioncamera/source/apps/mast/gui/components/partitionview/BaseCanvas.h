@@ -7,7 +7,6 @@
 #define H_MILLIPEDE_BASECANVAS
 
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/CTImageBranchLayer.h>
@@ -18,16 +17,17 @@ using boost::shared_ptr;
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
+typedef boost::shared_ptr<const class PartitionCamera> PartitionCamera_CPtr;
+typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 class PartitionView;
-typedef shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
-typedef shared_ptr<const class Texture> Texture_CPtr;
+typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
+typedef boost::shared_ptr<const class Texture> Texture_CPtr;
 
 class BaseCanvas : public Canvas
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef shared_ptr<const PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> > PartitionModel_CPtr;
+	typedef boost::shared_ptr<const PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> > PartitionModel_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -49,6 +49,7 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	PartitionCamera_CPtr camera() const;
 	PartitionModel_CPtr model() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 };

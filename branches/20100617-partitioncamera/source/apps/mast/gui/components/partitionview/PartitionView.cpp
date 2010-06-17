@@ -48,14 +48,16 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)),
-	m_model(new PartitionModelT(
-		volume,
+	m_camera(new PartitionCamera(
 		SliceLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
-		ORIENT_XY)
-	),
+		ORIENT_XY,
+		volume->size()
+	)),
+	m_model(new PartitionModelT(volume)),
 	m_overlayManager(new PartitionOverlayManager),
 	m_volumeChoice(volumeChoice)
 {
+	m_camera->add_listener(this);
 	m_model->add_listener(this);
 
 	calculate_canvas_size();
@@ -64,10 +66,28 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_dicomCanvas->setup(this);
 	m_partitionCanvas->setup(this);
 
-	create_textures(m_model->slice_orientation());
+	create_textures(m_camera->slice_orientation());
 }
 
 //#################### PUBLIC METHODS ####################
+PartitionCamera_CPtr PartitionView::camera() const
+{
+	return m_camera;
+}
+
+void PartitionView::camera_changed()
+{
+	// Update sliders.
+	SliceLocation loc = m_camera->slice_location();
+	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
+	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
+	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
+	m_layerSlider->SetValue(loc.layer);
+
+	recreate_overlays();
+	refresh_canvases();
+}
+
 wxGLContext *PartitionView::get_context() const
 {
 	return m_dicomCanvas->GetContext();
@@ -85,13 +105,6 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 
 void PartitionView::model_changed()
 {
-	// Update sliders.
-	SliceLocation loc = m_model->slice_location();
-	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
-	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
-	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
-	m_layerSlider->SetValue(loc.layer);
-
 	recreate_overlays();
 	refresh_canvases();
 }
@@ -152,8 +165,9 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 
 	m_model->set_partition_texture_sets(partitionTextureSets);
 	m_layerSlider->SetRange(1, highestLayer);
-	SliceLocation loc = m_model->slice_location();
-	m_model->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
+	SliceLocation loc = m_camera->slice_location();
+	m_camera->change_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2), "Ensure Layer Is In Range");
+	// TODO: Clear action history
 }
 
 bool PartitionView::create_textures(SliceOrientation ori)
@@ -172,8 +186,8 @@ void PartitionView::recreate_overlays()
 {
 	m_overlayManager->clear_overlays();
 
-	SliceLocation loc = m_model->slice_location();
-	SliceOrientation ori = m_model->slice_orientation();
+	SliceLocation loc = m_camera->slice_location();
+	SliceOrientation ori = m_camera->slice_orientation();
 
 	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
 	if(multiFeatureSelection)
@@ -235,17 +249,17 @@ void PartitionView::setup_gui(wxGLContext *context)
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX + m_model->slice_location().x, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX + m_camera->slice_location().x, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
 			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY + m_model->slice_location().y, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY + m_camera->slice_location().y, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_model->slice_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_camera->slice_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);
@@ -308,65 +322,65 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 		if(show_progress_dialog(this, "Segmenting CT Volume", job))
 		{
 			m_model->set_volume_ipf(volumeIPF);
-			create_partition_textures(m_model->slice_orientation());
+			create_partition_textures(m_camera->slice_orientation());
 		}
 	}
 }
 
 void PartitionView::OnButtonViewXY(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_XY)) m_model->set_slice_orientation(ORIENT_XY);
+	if(create_textures(ORIENT_XY)) m_camera->change_slice_orientation(ORIENT_XY, "Change Orientation");
 }
 
 void PartitionView::OnButtonViewXZ(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_XZ)) m_model->set_slice_orientation(ORIENT_XZ);
+	if(create_textures(ORIENT_XZ)) m_camera->change_slice_orientation(ORIENT_XZ, "Change Orientation");
 }
 
 void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_YZ)) m_model->set_slice_orientation(ORIENT_YZ);
+	if(create_textures(ORIENT_YZ)) m_camera->change_slice_orientation(ORIENT_YZ, "Change Orientation");
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnSliderX(wxScrollEvent&)
 {
-	SliceLocation loc = m_model->slice_location();
-	m_model->set_slice_location(SliceLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer));
+	SliceLocation loc = m_camera->slice_location();
+	m_camera->change_slice_location(SliceLocation(m_xSlider->GetValue() - m_xSlider->GetMin(), loc.y, loc.z, loc.layer), "Change X Position");
 }
 
 void PartitionView::OnSliderY(wxScrollEvent&)
 {
-	SliceLocation loc = m_model->slice_location();
-	m_model->set_slice_location(SliceLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer));
+	SliceLocation loc = m_camera->slice_location();
+	m_camera->change_slice_location(SliceLocation(loc.x, m_ySlider->GetValue() - m_ySlider->GetMin(), loc.z, loc.layer), "Change Y Position");
 }
 
 void PartitionView::OnSliderZ(wxScrollEvent&)
 {
-	SliceLocation loc = m_model->slice_location();
-	m_model->set_slice_location(SliceLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer));
+	SliceLocation loc = m_camera->slice_location();
+	m_camera->change_slice_location(SliceLocation(loc.x, loc.y, m_zSlider->GetValue() - m_zSlider->GetMin(), loc.layer), "Change Z Position");
 }
 
 void PartitionView::OnSliderLayer(wxScrollEvent&)
 {
-	SliceLocation loc = m_model->slice_location();
-	m_model->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, m_layerSlider->GetValue()));
+	SliceLocation loc = m_camera->slice_location();
+	m_camera->change_slice_location(SliceLocation(loc.x, loc.y, loc.z, m_layerSlider->GetValue()), "Change Layer");
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnUpdateSliderX(wxUpdateUIEvent& e)
 {
-	e.Enable(m_model->slice_orientation() == ORIENT_YZ);
+	e.Enable(m_camera->slice_orientation() == ORIENT_YZ);
 }
 
 void PartitionView::OnUpdateSliderY(wxUpdateUIEvent& e)
 {
-	e.Enable(m_model->slice_orientation() == ORIENT_XZ);
+	e.Enable(m_camera->slice_orientation() == ORIENT_XZ);
 }
 
 void PartitionView::OnUpdateSliderZ(wxUpdateUIEvent& e)
 {
-	e.Enable(m_model->slice_orientation() == ORIENT_XY);
+	e.Enable(m_camera->slice_orientation() == ORIENT_XY);
 }
 
 void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)

@@ -7,6 +7,7 @@
 
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/models/PartitionModel.h>
+#include "PartitionCamera.h"
 
 namespace mp {
 
@@ -25,7 +26,7 @@ SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
 {
 	if(model())
 	{
-		int layer = model()->slice_location().layer;
+		int layer = camera()->slice_location().layer;
 		return model()->partition_texture_set(layer);
 	}
 	else return SliceTextureSet_CPtr();

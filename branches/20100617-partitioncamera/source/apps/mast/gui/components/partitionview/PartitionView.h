@@ -19,8 +19,8 @@
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
-#include <common/slices/SliceOrientation.h>
 #include <mast/models/PartitionModel.h>
+#include "PartitionCamera.h"
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;
@@ -32,7 +32,10 @@ class PartitionCanvas;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 
-class PartitionView : public wxPanel, public PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
+class PartitionView
+:	public wxPanel,
+	public PartitionCamera::Listener,
+	public PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
 {
 	//#################### FRIENDS ####################
 	friend class BaseCanvas;
@@ -45,6 +48,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	PartitionCamera_Ptr m_camera;
 	int m_canvasWidth, m_canvasHeight;
 	wxGLContext *m_context;
 	PartitionModel_Ptr m_model;
@@ -72,6 +76,8 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	PartitionCamera_CPtr camera() const;
+	void camera_changed();
 	wxGLContext *get_context() const;
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;

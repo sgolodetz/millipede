@@ -32,6 +32,7 @@ gui/components/canvas/Canvas.h
 SET(gui_components_partitionview_sources
 gui/components/partitionview/BaseCanvas.cpp
 gui/components/partitionview/DICOMCanvas.cpp
+gui/components/partitionview/PartitionCamera.cpp
 gui/components/partitionview/PartitionCanvas.cpp
 gui/components/partitionview/PartitionView.cpp
 )
@@ -39,6 +40,7 @@ gui/components/partitionview/PartitionView.cpp
 SET(gui_components_partitionview_headers
 gui/components/partitionview/BaseCanvas.h
 gui/components/partitionview/DICOMCanvas.h
+gui/components/partitionview/PartitionCamera.h
 gui/components/partitionview/PartitionCanvas.h
 gui/components/partitionview/PartitionView.h
 )

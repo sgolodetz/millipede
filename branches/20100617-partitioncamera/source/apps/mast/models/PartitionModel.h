@@ -14,8 +14,6 @@
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
-#include <common/slices/SliceLocation.h>
-#include <common/slices/SliceOrientation.h>
 #include <common/util/ITKImageUtil.h>
 
 namespace mp {
@@ -59,16 +57,14 @@ private:
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	VolumeIPFSelection_Ptr m_selection;
-	SliceLocation m_sliceLocation;			// slice location in terms of the volume only (not based on actual slice numbers)
-	SliceOrientation m_sliceOrientation;
 	VolumeIPF_Ptr m_volumeIPF;
 
 	std::vector<Listener*> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionModel(const DICOMVolume_Ptr& dicomVolume, const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
-	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation)
+	explicit PartitionModel(const DICOMVolume_Ptr& dicomVolume)
+	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -137,19 +133,6 @@ public:
 		alert_listeners();
 	}
 
-	void set_slice_location(const SliceLocation& loc)
-	{
-		// TODO: Validate location against bounds
-		m_sliceLocation = loc;
-		alert_listeners();
-	}
-
-	void set_slice_orientation(SliceOrientation ori)
-	{
-		m_sliceOrientation = ori;
-		alert_listeners();
-	}
-
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
 	{
 		m_volumeIPF = volumeIPF;
@@ -173,16 +156,6 @@ public:
 #endif
 
 		alert_listeners();
-	}
-
-	const SliceLocation& slice_location() const
-	{
-		return m_sliceLocation;
-	}
-
-	SliceOrientation slice_orientation() const
-	{
-		return m_sliceOrientation;
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()
