@@ -83,6 +83,7 @@ public:
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
 	void model_changed();
+	void segment_volume();
 
 	//#################### PRIVATE METHODS ####################
 private:

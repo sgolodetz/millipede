@@ -18,10 +18,11 @@ namespace {
 enum
 {
 	MENUID_BASE = wxID_HIGHEST,		// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-	MENUID_FILE_EXIT,
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
+	MENUID_FILE_EXIT,
+	MENUID_SEGMENTATION_SEGMENTCTVOLUME,
 };
 
 }
@@ -86,7 +87,7 @@ void PartitionWindow::setup_menus()
 	selectionMenu->Append(wxID_ANY, wxT("&Clear Selection"));
 
 	wxMenu *segmentationMenu = new wxMenu;
-	segmentationMenu->Append(wxID_ANY, wxT("Segment CT &Volume..."));
+	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTCTVOLUME, wxT("Segment CT &Volume..."));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(wxID_ANY, wxT("&Clone Current Layer"));
 	segmentationMenu->Append(wxID_ANY, wxT("&Delete Current Layer"));
@@ -150,6 +151,7 @@ void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)			{ m_commandMa
 void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)					{ m_commandManager->redo(); }
 void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)					{ m_commandManager->undo(); }
 void PartitionWindow::OnMenuFileExit(wxCommandEvent&)						{ Close(); }
+void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)	{ m_view->segment_volume(); }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)	{ e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo()); }
@@ -163,6 +165,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_REDO, PartitionWindow::OnMenuActionsRedo)
 	EVT_MENU(MENUID_ACTIONS_UNDO, PartitionWindow::OnMenuActionsUndo)
 	EVT_MENU(MENUID_FILE_EXIT, PartitionWindow::OnMenuFileExit)
+	EVT_MENU(MENUID_SEGMENTATION_SEGMENTCTVOLUME, PartitionWindow::OnMenuSegmentationSegmentCTVolume)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnUpdateMenuActionsClearHistory)

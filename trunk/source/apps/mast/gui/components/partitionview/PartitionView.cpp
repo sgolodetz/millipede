@@ -113,6 +113,28 @@ void PartitionView::model_changed()
 	refresh_canvases();
 }
 
+void PartitionView::segment_volume()
+{
+	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
+	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
+	dialog.ShowModal();
+
+	if(dialog.segmentation_options())
+	{
+		typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
+		typedef CTVolumeIPFBuilder::VolumeIPF_Ptr VolumeIPF_Ptr;
+
+		VolumeIPF_Ptr volumeIPF;
+		Job_Ptr job(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
+		Job::execute_in_thread(job);
+		if(show_progress_dialog(this, "Segmenting CT Volume", job))
+		{
+			m_model->set_volume_ipf(volumeIPF);
+			create_partition_textures(m_camera->slice_orientation());
+		}
+	}
+}
+
 //#################### PRIVATE METHODS ####################
 void PartitionView::calculate_canvas_size()
 {
@@ -316,24 +338,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 {
-	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
-	dialog.ShowModal();
-
-	if(dialog.segmentation_options())
-	{
-		typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
-		typedef CTVolumeIPFBuilder::VolumeIPF_Ptr VolumeIPF_Ptr;
-
-		VolumeIPF_Ptr volumeIPF;
-		Job_Ptr job(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
-		Job::execute_in_thread(job);
-		if(show_progress_dialog(this, "Segmenting CT Volume", job))
-		{
-			m_model->set_volume_ipf(volumeIPF);
-			create_partition_textures(m_camera->slice_orientation());
-		}
-	}
+	segment_volume();
 }
 
 void PartitionView::OnButtonViewXY(wxCommandEvent&)
