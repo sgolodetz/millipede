@@ -6,7 +6,7 @@
 #include "DICOMCanvas.h"
 
 #include <mast/gui/overlays/PartitionOverlayManager.h>
-#include <mast/models/PartitionModel.h>
+#include "PartitionCamera.h"
 
 namespace mp {
 
@@ -23,7 +23,7 @@ void DICOMCanvas::render_overlays(double left, double top, double right, double 
 
 SliceTextureSet_CPtr DICOMCanvas::texture_set_to_display() const
 {
-	if(model()) return model()->dicom_texture_set();
+	if(camera()) return camera()->dicom_texture_set();
 	else return SliceTextureSet_CPtr();
 }
 

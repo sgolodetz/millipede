@@ -23,7 +23,8 @@ This implementation uses the well-known union-by-rank and path compression optim
 yield an amortised complexity for key operations of O(a(n)), where a is the (extremely slow-growing)
 inverse of the Ackermann function.
 
-The implementation also allows clients to attach arbitrary data to each element, which can be useful for some algorithms.
+The implementation also allows clients to attach arbitrary data to each element, which can be useful for
+some algorithms.
 
 @tparam	T	The type of data to attach to each element (arbitrary)
 */

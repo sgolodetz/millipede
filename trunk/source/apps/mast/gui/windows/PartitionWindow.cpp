@@ -8,6 +8,7 @@
 #include <wx/menu.h>
 #include <wx/sizer.h>
 
+#include <common/commands/UndoableCommandManager.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/util/StringConversion.h>
 
@@ -30,7 +31,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
 								 wxGLContext *context)
-:	wxFrame(parent, -1, string_to_wxString(title))
+:	wxFrame(parent, -1, string_to_wxString(title)), m_commandManager(new UndoableCommandManager)
 {
 	setup_menus();
 	setup_gui(volume, volumeChoice, context);
@@ -52,7 +53,7 @@ void PartitionWindow::setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolume
 
 	Show();
 
-	m_view = new PartitionView(this, volume, volumeChoice, context);
+	m_view = new PartitionView(this, volume, volumeChoice, m_commandManager, context);
 	sizer->Add(m_view);
 
 	sizer->Fit(this);
@@ -145,20 +146,15 @@ void PartitionWindow::setup_menus()
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)	{ m_view->model()->command_manager()->clear_history(); }
-void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)			{ m_view->model()->command_manager()->redo(); }
-void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)			{ m_view->model()->command_manager()->undo(); }
-void PartitionWindow::OnMenuFileExit(wxCommandEvent&)				{ Close(); }
+void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)			{ m_commandManager->clear_history(); }
+void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)					{ m_commandManager->redo(); }
+void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)					{ m_commandManager->undo(); }
+void PartitionWindow::OnMenuFileExit(wxCommandEvent&)						{ Close(); }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
-{
-	ICommandManager_CPtr commandManager = m_view->model()->command_manager();
-	e.Enable(commandManager->can_undo() || commandManager->can_redo());
-}
-
-void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)	{ e.Enable(m_view->model()->command_manager()->can_redo()); }
-void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)	{ e.Enable(m_view->model()->command_manager()->can_undo()); }
+void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)	{ e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo()); }
+void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)			{ e.Enable(m_commandManager->can_redo()); }
+void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)			{ e.Enable(m_commandManager->can_undo()); }
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)

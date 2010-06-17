@@ -14,8 +14,6 @@
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
-#include <common/slices/SliceLocation.h>
-#include <common/slices/SliceOrientation.h>
 #include <common/util/ITKImageUtil.h>
 
 namespace mp {
@@ -23,8 +21,6 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
-typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
-typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
@@ -54,21 +50,16 @@ public:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	ICommandManager_Ptr m_commandManager;
-	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
-	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
-	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
-	VolumeIPFSelection_Ptr m_selection;
-	SliceLocation m_sliceLocation;			// slice location in terms of the volume only (not based on actual slice numbers)
-	SliceOrientation m_sliceOrientation;
-	VolumeIPF_Ptr m_volumeIPF;
-
 	std::vector<Listener*> m_listeners;
+	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
+	VolumeIPFSelection_Ptr m_selection;
+	VolumeIPF_Ptr m_volumeIPF;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionModel(const DICOMVolume_Ptr& dicomVolume, const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
-	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation)
+	explicit PartitionModel(const DICOMVolume_Ptr& dicomVolume)
+	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -76,21 +67,6 @@ public:
 	void add_listener(Listener *listener)
 	{
 		m_listeners.push_back(listener);
-	}
-
-	const ICommandManager_Ptr& command_manager()
-	{
-		return m_commandManager;
-	}
-
-	ICommandManager_CPtr command_manager() const
-	{
-		return m_commandManager;
-	}
-
-	SliceTextureSet_CPtr dicom_texture_set() const
-	{
-		return m_dicomTextureSet;
 	}
 
 	DICOMVolume_CPtr dicom_volume() const
@@ -108,13 +84,6 @@ public:
 		return m_multiFeatureSelection;
 	}
 
-	SliceTextureSet_CPtr partition_texture_set(int layer) const
-	{
-		int n = layer - 1;
-		if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
-		else return SliceTextureSet_CPtr();
-	}
-
 	const VolumeIPFSelection_Ptr& selection()
 	{
 		return m_selection;
@@ -125,40 +94,24 @@ public:
 		return m_selection;
 	}
 
-	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
+	void set_command_manager(const ICommandManager_Ptr& commandManager)
 	{
-		m_dicomTextureSet = dicomTextureSet;
-		alert_listeners();
-	}
-
-	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
-	{
-		m_partitionTextureSets = partitionTextureSets;
-		alert_listeners();
-	}
-
-	void set_slice_location(const SliceLocation& loc)
-	{
-		// TODO: Validate location against bounds
-		m_sliceLocation = loc;
-		alert_listeners();
-	}
-
-	void set_slice_orientation(SliceOrientation ori)
-	{
-		m_sliceOrientation = ori;
-		alert_listeners();
+		m_commandManager = commandManager;
+		if(m_volumeIPF) m_volumeIPF->set_command_manager(commandManager);
+		if(m_selection) m_selection->set_command_manager(commandManager);
+		if(m_multiFeatureSelection) m_multiFeatureSelection->set_command_manager(commandManager);
 	}
 
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
 	{
+		m_commandManager->clear_history();
+
 		m_volumeIPF = volumeIPF;
-		volumeIPF->set_command_manager(m_commandManager);
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
-		m_selection->set_command_manager(m_commandManager);
-		volumeIPF->add_listener(m_selection);
 		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
-		m_multiFeatureSelection->set_command_manager(m_commandManager);
+
+		volumeIPF->add_listener(m_selection);
+		set_command_manager(m_commandManager);
 
 #if 0
 		if(m_sliceOrientation == ORIENT_XY)
@@ -173,16 +126,6 @@ public:
 #endif
 
 		alert_listeners();
-	}
-
-	const SliceLocation& slice_location() const
-	{
-		return m_sliceLocation;
-	}
-
-	SliceOrientation slice_orientation() const
-	{
-		return m_sliceOrientation;
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()
