@@ -131,7 +131,7 @@ bool PartitionView::create_dicom_textures(SliceOrientation ori)
 	Job::execute_in_thread(filler);
 	if(!show_progress_dialog(this, "Creating Slice Textures", filler)) return false;
 
-	m_model->set_dicom_texture_set(textureSet);
+	m_camera->set_dicom_texture_set(textureSet);
 	return true;
 }
 
@@ -163,7 +163,7 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Partition Texture Sets", job, false);
 
-	m_model->set_partition_texture_sets(partitionTextureSets);
+	m_camera->set_partition_texture_sets(partitionTextureSets);
 	m_layerSlider->SetRange(1, highestLayer);
 	SliceLocation loc = m_camera->slice_location();
 	m_camera->change_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2), "Ensure Layer Is In Range");
@@ -385,7 +385,7 @@ void PartitionView::OnUpdateSliderZ(wxUpdateUIEvent& e)
 
 void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
 {
-	e.Enable(m_model->partition_texture_set(1).get() != NULL);
+	e.Enable(m_camera->partition_texture_set(1).get() != NULL);
 }
 
 //#################### EVENT TABLE ####################

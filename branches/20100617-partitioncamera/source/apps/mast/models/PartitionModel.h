@@ -21,8 +21,6 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
-typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
-typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
@@ -52,14 +50,11 @@ public:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	ICommandManager_Ptr m_commandManager;
-	SliceTextureSet_Ptr m_dicomTextureSet;
 	DICOMVolume_Ptr m_dicomVolume;
+	std::vector<Listener*> m_listeners;
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
-	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	VolumeIPFSelection_Ptr m_selection;
 	VolumeIPF_Ptr m_volumeIPF;
-
-	std::vector<Listener*> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -84,11 +79,6 @@ public:
 		return m_commandManager;
 	}
 
-	SliceTextureSet_CPtr dicom_texture_set() const
-	{
-		return m_dicomTextureSet;
-	}
-
 	DICOMVolume_CPtr dicom_volume() const
 	{
 		return m_dicomVolume;
@@ -104,13 +94,6 @@ public:
 		return m_multiFeatureSelection;
 	}
 
-	SliceTextureSet_CPtr partition_texture_set(int layer) const
-	{
-		int n = layer - 1;
-		if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
-		else return SliceTextureSet_CPtr();
-	}
-
 	const VolumeIPFSelection_Ptr& selection()
 	{
 		return m_selection;
@@ -119,18 +102,6 @@ public:
 	VolumeIPFSelection_CPtr selection() const
 	{
 		return m_selection;
-	}
-
-	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
-	{
-		m_dicomTextureSet = dicomTextureSet;
-		alert_listeners();
-	}
-
-	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
-	{
-		m_partitionTextureSets = partitionTextureSets;
-		alert_listeners();
 	}
 
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)

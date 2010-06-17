@@ -86,9 +86,33 @@ void PartitionCamera::change_slice_orientation(SliceOrientation sliceOrientation
 	m_commandManager->execute(Command_Ptr(new ChangeSliceOrientationCommand(this, sliceOrientation, description)));
 }
 
+SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const
+{
+	return m_dicomTextureSet;
+}
+
+SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
+{
+	int n = layer - 1;
+	if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
+	else return SliceTextureSet_CPtr();
+}
+
 void PartitionCamera::set_command_manager(const ICommandManager_Ptr& commandManager)
 {
 	m_commandManager = commandManager;
+}
+
+void PartitionCamera::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
+{
+	m_dicomTextureSet = dicomTextureSet;
+	alert_listeners();
+}
+
+void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
+{
+	m_partitionTextureSets = partitionTextureSets;
+	alert_listeners();
 }
 
 const SliceLocation& PartitionCamera::slice_location() const
