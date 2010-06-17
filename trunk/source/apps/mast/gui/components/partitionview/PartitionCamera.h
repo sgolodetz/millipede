@@ -53,8 +53,16 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void add_listener(Listener *listener);
-	void change_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription);
 	SliceTextureSet_CPtr dicom_texture_set() const;
+	void goto_next_layer();
+	void goto_next_slice();
+	void goto_previous_layer();
+	void goto_previous_slice();
+	void goto_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription);
+	bool has_next_layer() const;
+	bool has_next_slice() const;
+	bool has_previous_layer() const;
+	bool has_previous_slice() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void set_command_manager(const ICommandManager_Ptr& commandManager);
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
@@ -68,6 +76,7 @@ public:
 private:
 	void alert_listeners();
 	void check_slice_location(const SliceLocation& sliceLocation) const;
+	int highest_layer() const;
 };
 
 //#################### TYPEDEFS ####################

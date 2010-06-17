@@ -22,6 +22,10 @@ enum
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
 	MENUID_FILE_EXIT,
+	MENUID_NAVIGATION_NEXTLAYER,
+	MENUID_NAVIGATION_NEXTSLICE,
+	MENUID_NAVIGATION_PREVIOUSLAYER,
+	MENUID_NAVIGATION_PREVIOUSSLICE,
 	MENUID_SEGMENTATION_SEGMENTCTVOLUME,
 };
 
@@ -75,11 +79,11 @@ void PartitionWindow::setup_menus()
 	actionsMenu->Append(MENUID_ACTIONS_CLEARHISTORY, wxT("&Clear History"));
 
 	wxMenu *navigationMenu = new wxMenu;
-	navigationMenu->Append(wxID_ANY, wxT("&Next Slice"));
-	navigationMenu->Append(wxID_ANY, wxT("&Previous Slice"));
+	navigationMenu->Append(MENUID_NAVIGATION_NEXTSLICE, wxT("&Next Slice\tDown"));
+	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSSLICE, wxT("&Previous Slice\tUp"));
 	navigationMenu->AppendSeparator();
-	navigationMenu->Append(wxID_ANY, wxT("N&ext Layer"));
-	navigationMenu->Append(wxID_ANY, wxT("P&revious Layer"));
+	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
+	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("P&revious Layer\tLeft"));
 
 	wxMenu *selectionMenu = new wxMenu;
 	selectionMenu->Append(wxID_ANY, wxT("&Select Nodes By ID..."));
@@ -124,6 +128,8 @@ void PartitionWindow::setup_menus()
 	featureMenu->AppendSubMenu(selectMarkedMenu, wxT("&Select Marked"));
 		selectMarkedMenu->Append(wxID_ANY, wxT("&Kidney"));
 		// TODO: Other features (possibly via iterating over the feature ID enumeration)
+	featureMenu->AppendSeparator();
+	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(wxID_ANY, wxT("&Visualize in 3D..."));
@@ -147,16 +153,24 @@ void PartitionWindow::setup_menus()
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)			{ m_commandManager->clear_history(); }
-void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)					{ m_commandManager->redo(); }
-void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)					{ m_commandManager->undo(); }
-void PartitionWindow::OnMenuFileExit(wxCommandEvent&)						{ Close(); }
-void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)	{ m_view->segment_volume(); }
+void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)				{ m_commandManager->clear_history(); }
+void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)						{ m_commandManager->redo(); }
+void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)						{ m_commandManager->undo(); }
+void PartitionWindow::OnMenuFileExit(wxCommandEvent&)							{ Close(); }
+void PartitionWindow::OnMenuNavigationNextLayer(wxCommandEvent&)				{ m_view->camera()->goto_next_layer(); }
+void PartitionWindow::OnMenuNavigationNextSlice(wxCommandEvent&)				{ m_view->camera()->goto_next_slice(); }
+void PartitionWindow::OnMenuNavigationPreviousLayer(wxCommandEvent&)			{ m_view->camera()->goto_previous_layer(); }
+void PartitionWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)			{ m_view->camera()->goto_previous_slice(); }
+void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)		{ m_view->segment_volume(); }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)	{ e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo()); }
-void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)			{ e.Enable(m_commandManager->can_redo()); }
-void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)			{ e.Enable(m_commandManager->can_undo()); }
+void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)		{ e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo()); }
+void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)				{ e.Enable(m_commandManager->can_redo()); }
+void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)				{ e.Enable(m_commandManager->can_undo()); }
+void PartitionWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)		{ e.Enable(m_view->camera()->has_next_layer()); }
+void PartitionWindow::OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e)		{ e.Enable(m_view->camera()->has_next_slice()); }
+void PartitionWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)	{ e.Enable(m_view->camera()->has_previous_layer()); }
+void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)	{ e.Enable(m_view->camera()->has_previous_slice()); }
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
@@ -165,12 +179,20 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_REDO, PartitionWindow::OnMenuActionsRedo)
 	EVT_MENU(MENUID_ACTIONS_UNDO, PartitionWindow::OnMenuActionsUndo)
 	EVT_MENU(MENUID_FILE_EXIT, PartitionWindow::OnMenuFileExit)
+	EVT_MENU(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnMenuNavigationNextLayer)
+	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnMenuNavigationNextSlice)
+	EVT_MENU(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnMenuNavigationPreviousLayer)
+	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnMenuNavigationPreviousSlice)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTCTVOLUME, PartitionWindow::OnMenuSegmentationSegmentCTVolume)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnUpdateMenuActionsClearHistory)
 	EVT_UPDATE_UI(MENUID_ACTIONS_REDO, PartitionWindow::OnUpdateMenuActionsRedo)
 	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, PartitionWindow::OnUpdateMenuActionsUndo)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnUpdateMenuNavigationNextLayer)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnUpdateMenuNavigationNextSlice)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnUpdateMenuNavigationPreviousLayer)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnUpdateMenuNavigationPreviousSlice)
 END_EVENT_TABLE()
 
 }

@@ -74,6 +74,11 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 }
 
 //#################### PUBLIC METHODS ####################
+const PartitionCamera_Ptr& PartitionView::camera()
+{
+	return m_camera;
+}
+
 PartitionCamera_CPtr PartitionView::camera() const
 {
 	return m_camera;
@@ -95,11 +100,6 @@ void PartitionView::camera_changed()
 wxGLContext *PartitionView::get_context() const
 {
 	return m_dicomCanvas->GetContext();
-}
-
-const PartitionView::PartitionModel_Ptr& PartitionView::model()
-{
-	return m_model;
 }
 
 PartitionView::PartitionModel_CPtr PartitionView::model() const
@@ -362,7 +362,7 @@ void PartitionView::OnReleaseSlider(wxScrollEvent&)
 	SliceLocation loc = m_camera->slice_location();
 	if(m_oldSliceLocation && *m_oldSliceLocation != loc)
 	{
-		m_camera->change_slice_location(*m_oldSliceLocation, loc, "Change Slice Location");
+		m_camera->goto_slice_location(*m_oldSliceLocation, loc, "Goto Slice Location");
 		m_oldSliceLocation = boost::none;
 	}
 }

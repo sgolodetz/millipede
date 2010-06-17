@@ -48,12 +48,20 @@ public:
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
 	void OnMenuFileExit(wxCommandEvent&);
+	void OnMenuNavigationNextLayer(wxCommandEvent&);
+	void OnMenuNavigationNextSlice(wxCommandEvent&);
+	void OnMenuNavigationPreviousLayer(wxCommandEvent&);
+	void OnMenuNavigationPreviousSlice(wxCommandEvent&);
 	void OnMenuSegmentationSegmentCTVolume(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e);
 	void OnUpdateMenuActionsRedo(wxUpdateUIEvent& e);
 	void OnUpdateMenuActionsUndo(wxUpdateUIEvent& e);
+	void OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e);
+	void OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e);
+	void OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e);
+	void OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

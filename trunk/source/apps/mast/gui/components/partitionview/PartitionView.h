@@ -77,10 +77,10 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	const PartitionCamera_Ptr& camera();
 	PartitionCamera_CPtr camera() const;
 	void camera_changed();
 	wxGLContext *get_context() const;
-	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
 	void model_changed();
 	void segment_volume();

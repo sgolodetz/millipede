@@ -49,15 +49,63 @@ void PartitionCamera::add_listener(Listener *listener)
 	m_listeners.push_back(listener);
 }
 
-void PartitionCamera::change_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription)
+SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const
+{
+	return m_dicomTextureSet;
+}
+
+void PartitionCamera::goto_next_layer()
+{
+	SliceLocation loc = m_sliceLocation;
+	++loc.layer;
+	goto_slice_location(m_sliceLocation, loc, "Goto Next Layer");
+}
+
+void PartitionCamera::goto_next_slice()
+{
+	SliceLocation loc = m_sliceLocation;
+	++loc[m_sliceOrientation];
+	goto_slice_location(m_sliceLocation, loc, "Goto Next Slice");
+}
+
+void PartitionCamera::goto_previous_layer()
+{
+	SliceLocation loc = m_sliceLocation;
+	--loc.layer;
+	goto_slice_location(m_sliceLocation, loc, "Goto Previous Layer");
+}
+
+void PartitionCamera::goto_previous_slice()
+{
+	SliceLocation loc = m_sliceLocation;
+	--loc[m_sliceOrientation];
+	goto_slice_location(m_sliceLocation, loc, "Goto Previous Slice");
+}
+
+void PartitionCamera::goto_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription)
 {
 	check_slice_location(sliceLocation);
 	m_commandManager->execute(Command_Ptr(new ChangeSliceLocationCommand(this, oldSliceLocation, sliceLocation, commandDescription)));
 }
 
-SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const
+bool PartitionCamera::has_next_layer() const
 {
-	return m_dicomTextureSet;
+	return m_sliceLocation.layer < highest_layer();
+}
+
+bool PartitionCamera::has_next_slice() const
+{
+	return m_sliceLocation[m_sliceOrientation] < m_volumeSize[m_sliceOrientation] - 1;
+}
+
+bool PartitionCamera::has_previous_layer() const
+{
+	return  m_sliceLocation.layer > 1;
+}
+
+bool PartitionCamera::has_previous_slice() const
+{
+	return m_sliceLocation[m_sliceOrientation] > 0;
 }
 
 SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
@@ -118,6 +166,11 @@ void PartitionCamera::alert_listeners()
 void PartitionCamera::check_slice_location(const SliceLocation& sliceLocation) const
 {
 	// TODO
+}
+
+int PartitionCamera::highest_layer() const
+{
+	return static_cast<int>(m_partitionTextureSets.size());
 }
 
 }
