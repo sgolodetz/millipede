@@ -104,6 +104,8 @@ public:
 
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
 	{
+		m_commandManager->clear_history();
+
 		m_volumeIPF = volumeIPF;
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
 		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));

@@ -36,29 +36,6 @@ struct PartitionCamera::ChangeSliceLocationCommand : Command
 	}
 };
 
-struct PartitionCamera::ChangeSliceOrientationCommand : Command
-{
-	PartitionCamera *m_base;
-	SliceOrientation m_oldSliceOrientation;
-	SliceOrientation m_sliceOrientation;
-
-	ChangeSliceOrientationCommand(PartitionCamera *base, SliceOrientation oldSliceOrientation, SliceOrientation sliceOrientation, const std::string& description)
-	:	Command(description), m_base(base), m_oldSliceOrientation(oldSliceOrientation), m_sliceOrientation(sliceOrientation)
-	{}
-
-	void execute()
-	{
-		m_base->m_sliceOrientation = m_sliceOrientation;
-		m_base->alert_listeners();
-	}
-
-	void undo()
-	{
-		m_base->m_sliceOrientation = m_oldSliceOrientation;
-		m_base->alert_listeners();
-	}
-};
-
 //#################### CONSTRUCTORS ####################
 PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const itk::Size<3>& volumeSize)
 :	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize)
@@ -76,11 +53,6 @@ void PartitionCamera::change_slice_location(const SliceLocation& oldSliceLocatio
 {
 	check_slice_location(sliceLocation);
 	m_commandManager->execute(Command_Ptr(new ChangeSliceLocationCommand(this, oldSliceLocation, sliceLocation, commandDescription)));
-}
-
-void PartitionCamera::change_slice_orientation(SliceOrientation oldSliceOrientation, SliceOrientation sliceOrientation, const std::string& commandDescription)
-{
-	m_commandManager->execute(Command_Ptr(new ChangeSliceOrientationCommand(this, oldSliceOrientation, sliceOrientation, commandDescription)));
 }
 
 SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const

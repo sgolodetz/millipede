@@ -35,7 +35,6 @@ public:
 	//#################### COMMANDS ####################
 private:
 	struct ChangeSliceLocationCommand;
-	struct ChangeSliceOrientationCommand;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -55,7 +54,6 @@ public:
 public:
 	void add_listener(Listener *listener);
 	void change_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription);
-	void change_slice_orientation(SliceOrientation oldSliceOrientation, SliceOrientation sliceOrientation, const std::string& commandDescription);
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void set_command_manager(const ICommandManager_Ptr& commandManager);
