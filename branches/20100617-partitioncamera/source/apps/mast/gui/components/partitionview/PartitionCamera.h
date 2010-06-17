@@ -54,12 +54,14 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void add_listener(Listener *listener);
-	void change_slice_location(const SliceLocation& sliceLocation, const std::string& description);
-	void change_slice_orientation(SliceOrientation sliceOrientation, const std::string& description);
+	void change_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription);
+	void change_slice_orientation(SliceOrientation oldSliceOrientation, SliceOrientation sliceOrientation, const std::string& commandDescription);
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void set_command_manager(const ICommandManager_Ptr& commandManager);
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
+	void set_slice_location(const SliceLocation& sliceLocation);
+	void set_slice_orientation(SliceOrientation sliceOrientation);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;

@@ -50,6 +50,7 @@ private:
 private:
 	PartitionCamera_Ptr m_camera;
 	int m_canvasWidth, m_canvasHeight;
+	ICommandManager_Ptr m_commandManager;
 	wxGLContext *m_context;
 	PartitionModel_Ptr m_model;
 	boost::optional<SliceLocation> m_oldSliceLocation;	// the location which was being viewed before the user started scrolling a slider (empty when not scrolling)
@@ -72,7 +73,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context = NULL);
+	PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, const ICommandManager_Ptr& commandManager, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -92,6 +93,7 @@ private:
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	void recreate_overlays();
 	void refresh_canvases();
+	void set_slice_location(const SliceLocation& loc);
 	void setup_gui(wxGLContext *context);
 
 	//#################### EVENT HANDLERS ####################
@@ -103,10 +105,11 @@ public:
 	void OnButtonViewYZ(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-	void OnSliderX(wxScrollEvent&);
-	void OnSliderY(wxScrollEvent&);
-	void OnSliderZ(wxScrollEvent&);
-	void OnSliderLayer(wxScrollEvent&);
+	void OnReleaseSlider(wxScrollEvent&);
+	void OnTrackSliderX(wxScrollEvent&);
+	void OnTrackSliderY(wxScrollEvent&);
+	void OnTrackSliderZ(wxScrollEvent&);
+	void OnTrackSliderLayer(wxScrollEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateSliderX(wxUpdateUIEvent& e);

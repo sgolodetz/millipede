@@ -7,7 +7,6 @@
 #define H_MILLIPEDE_PARTITIONWINDOW
 
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
@@ -18,12 +17,14 @@ namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
+typedef boost::shared_ptr<class ICommandManager> ICommandManager_Ptr;
 class PartitionView;
 
 class PartitionWindow : public wxFrame
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
+	ICommandManager_Ptr m_commandManager;
 	wxMenuBar *m_menuBar;
 	PartitionView *m_view;
 

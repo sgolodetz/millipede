@@ -69,16 +69,6 @@ public:
 		m_listeners.push_back(listener);
 	}
 
-	const ICommandManager_Ptr& command_manager()
-	{
-		return m_commandManager;
-	}
-
-	ICommandManager_CPtr command_manager() const
-	{
-		return m_commandManager;
-	}
-
 	DICOMVolume_CPtr dicom_volume() const
 	{
 		return m_dicomVolume;
@@ -104,15 +94,22 @@ public:
 		return m_selection;
 	}
 
+	void set_command_manager(const ICommandManager_Ptr& commandManager)
+	{
+		m_commandManager = commandManager;
+		if(m_volumeIPF) m_volumeIPF->set_command_manager(commandManager);
+		if(m_selection) m_selection->set_command_manager(commandManager);
+		if(m_multiFeatureSelection) m_multiFeatureSelection->set_command_manager(commandManager);
+	}
+
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
 	{
 		m_volumeIPF = volumeIPF;
-		volumeIPF->set_command_manager(m_commandManager);
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
-		m_selection->set_command_manager(m_commandManager);
-		volumeIPF->add_listener(m_selection);
 		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
-		m_multiFeatureSelection->set_command_manager(m_commandManager);
+
+		volumeIPF->add_listener(m_selection);
+		set_command_manager(m_commandManager);
 
 #if 0
 		if(m_sliceOrientation == ORIENT_XY)

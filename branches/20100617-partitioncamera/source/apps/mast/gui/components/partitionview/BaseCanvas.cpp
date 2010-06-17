@@ -112,11 +112,6 @@ PartitionCamera_CPtr BaseCanvas::camera() const
 	return m_partitionView ? m_partitionView->camera() : PartitionCamera_CPtr();
 }
 
-BaseCanvas::PartitionModel_CPtr BaseCanvas::model() const
-{
-	return m_partitionView ? m_partitionView->model() : PartitionModel_CPtr();
-}
-
 PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 {
 	return m_partitionView ? m_partitionView->overlay_manager() : PartitionOverlayManager_CPtr();

@@ -50,7 +50,6 @@ public:
 	//#################### PROTECTED METHODS ####################
 protected:
 	PartitionCamera_CPtr camera() const;
-	PartitionModel_CPtr model() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 };
 

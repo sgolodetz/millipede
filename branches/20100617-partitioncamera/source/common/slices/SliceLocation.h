@@ -15,6 +15,16 @@ struct SliceLocation
 	SliceLocation(int x_, int y_, int z_, int layer_)
 	:	x(x_), y(y_), z(z_), layer(layer_)
 	{}
+
+	bool operator==(const SliceLocation& rhs) const
+	{
+		return x == rhs.x && y == rhs.y && z == rhs.z && layer == rhs.layer;
+	}
+
+	bool operator!=(const SliceLocation& rhs) const
+	{
+		return !(*this == rhs);
+	}
 };
 
 }

@@ -16,24 +16,22 @@ namespace mp {
 struct PartitionCamera::ChangeSliceLocationCommand : Command
 {
 	PartitionCamera *m_base;
+	SliceLocation m_oldSliceLocation;
 	SliceLocation m_sliceLocation;
-	boost::optional<SliceLocation> m_oldSliceLocation;
 
-	ChangeSliceLocationCommand(PartitionCamera *base, const SliceLocation& sliceLocation, const std::string& description)
-	:	Command(description), m_base(base), m_sliceLocation(sliceLocation)
+	ChangeSliceLocationCommand(PartitionCamera *base, const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& description)
+	:	Command(description), m_base(base), m_oldSliceLocation(oldSliceLocation), m_sliceLocation(sliceLocation)
 	{}
 
 	void execute()
 	{
-		m_oldSliceLocation = m_base->m_sliceLocation;
 		m_base->m_sliceLocation = m_sliceLocation;
 		m_base->alert_listeners();
 	}
 
 	void undo()
 	{
-		m_base->m_sliceLocation = *m_oldSliceLocation;
-		m_oldSliceLocation.reset();
+		m_base->m_sliceLocation = m_oldSliceLocation;
 		m_base->alert_listeners();
 	}
 };
@@ -41,16 +39,15 @@ struct PartitionCamera::ChangeSliceLocationCommand : Command
 struct PartitionCamera::ChangeSliceOrientationCommand : Command
 {
 	PartitionCamera *m_base;
-	SliceOrientation m_sliceOrientation;
 	SliceOrientation m_oldSliceOrientation;
+	SliceOrientation m_sliceOrientation;
 
-	ChangeSliceOrientationCommand(PartitionCamera *base, SliceOrientation sliceOrientation, const std::string& description)
-	:	Command(description), m_base(base), m_sliceOrientation(sliceOrientation)
+	ChangeSliceOrientationCommand(PartitionCamera *base, SliceOrientation oldSliceOrientation, SliceOrientation sliceOrientation, const std::string& description)
+	:	Command(description), m_base(base), m_oldSliceOrientation(oldSliceOrientation), m_sliceOrientation(sliceOrientation)
 	{}
 
 	void execute()
 	{
-		m_oldSliceOrientation = m_base->m_sliceOrientation;
 		m_base->m_sliceOrientation = m_sliceOrientation;
 		m_base->alert_listeners();
 	}
@@ -75,15 +72,15 @@ void PartitionCamera::add_listener(Listener *listener)
 	m_listeners.push_back(listener);
 }
 
-void PartitionCamera::change_slice_location(const SliceLocation& sliceLocation, const std::string& description)
+void PartitionCamera::change_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription)
 {
 	check_slice_location(sliceLocation);
-	m_commandManager->execute(Command_Ptr(new ChangeSliceLocationCommand(this, sliceLocation, description)));
+	m_commandManager->execute(Command_Ptr(new ChangeSliceLocationCommand(this, oldSliceLocation, sliceLocation, commandDescription)));
 }
 
-void PartitionCamera::change_slice_orientation(SliceOrientation sliceOrientation, const std::string& description)
+void PartitionCamera::change_slice_orientation(SliceOrientation oldSliceOrientation, SliceOrientation sliceOrientation, const std::string& commandDescription)
 {
-	m_commandManager->execute(Command_Ptr(new ChangeSliceOrientationCommand(this, sliceOrientation, description)));
+	m_commandManager->execute(Command_Ptr(new ChangeSliceOrientationCommand(this, oldSliceOrientation, sliceOrientation, commandDescription)));
 }
 
 SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const
@@ -112,6 +109,18 @@ void PartitionCamera::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomText
 void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
 {
 	m_partitionTextureSets = partitionTextureSets;
+	alert_listeners();
+}
+
+void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
+{
+	m_sliceLocation = sliceLocation;
+	alert_listeners();
+}
+
+void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
+{
+	m_sliceOrientation = sliceOrientation;
 	alert_listeners();
 }
 
