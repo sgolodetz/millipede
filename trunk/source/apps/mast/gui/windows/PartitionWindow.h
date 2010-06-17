@@ -43,6 +43,9 @@ private:
 
 	//#################### EVENT HANDLERS ####################
 public:
+	//~~~~~~~~~~~~~~~~~~~~ IDLE ~~~~~~~~~~~~~~~~~~~~
+	void OnInternalIdle();
+
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	void OnMenuActionsClearHistory(wxCommandEvent&);
 	void OnMenuActionsRedo(wxCommandEvent&);

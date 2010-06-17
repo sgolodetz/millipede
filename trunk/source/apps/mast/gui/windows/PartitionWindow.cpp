@@ -73,14 +73,15 @@ void PartitionWindow::setup_menus()
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("E&xit\tAlt+F4"));
 
 	wxMenu *actionsMenu = new wxMenu;
-	actionsMenu->Append(MENUID_ACTIONS_UNDO, wxT("&Undo\tCtrl+Z"));
-	actionsMenu->Append(MENUID_ACTIONS_REDO, wxT("&Redo\tCtrl+Y"));
+	actionsMenu->Append(MENUID_ACTIONS_UNDO, wxT("&Undo"));
+	actionsMenu->Append(MENUID_ACTIONS_REDO, wxT("&Redo"));
 	actionsMenu->AppendSeparator();
 	actionsMenu->Append(MENUID_ACTIONS_CLEARHISTORY, wxT("&Clear History"));
 
 	wxMenu *navigationMenu = new wxMenu;
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTSLICE, wxT("&Next Slice\tDown"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSSLICE, wxT("&Previous Slice\tUp"));
+	navigationMenu->Append(wxID_ANY, wxT("&Goto Slice..."));
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("P&revious Layer\tLeft"));
@@ -152,6 +153,15 @@ void PartitionWindow::setup_menus()
 
 //#################### EVENT HANDLERS ####################
 
+//~~~~~~~~~~~~~~~~~~~~ IDLE ~~~~~~~~~~~~~~~~~~~~
+void PartitionWindow::OnInternalIdle()
+{
+	if(wxUpdateUIEvent::CanUpdate(this))
+	{
+		UpdateWindowUI(wxUPDATE_UI_FROMIDLE);
+	}
+}
+
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)				{ m_commandManager->clear_history(); }
 void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)						{ m_commandManager->redo(); }
@@ -165,8 +175,35 @@ void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)		{ m_vi
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)		{ e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo()); }
-void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)				{ e.Enable(m_commandManager->can_redo()); }
-void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)				{ e.Enable(m_commandManager->can_undo()); }
+
+void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
+{
+	if(m_commandManager->can_redo())
+	{
+		e.Enable(true);
+		e.SetText(string_to_wxString("&Redo " + m_commandManager->redo_description() + "\tCtrl+Y"));
+	}
+	else
+	{
+		e.Enable(false);
+		e.SetText("Cannot Redo\tCtrl+Y");
+	}
+}
+
+void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
+{
+	if(m_commandManager->can_undo())
+	{
+		e.Enable(true);
+		e.SetText(string_to_wxString("&Undo " + m_commandManager->undo_description() + "\tCtrl+Z"));
+	}
+	else
+	{
+		e.Enable(false);
+		e.SetText("Cannot Undo\tCtrl+Z");
+	}
+}
+
 void PartitionWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)		{ e.Enable(m_view->camera()->has_next_layer()); }
 void PartitionWindow::OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e)		{ e.Enable(m_view->camera()->has_next_slice()); }
 void PartitionWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)	{ e.Enable(m_view->camera()->has_previous_layer()); }

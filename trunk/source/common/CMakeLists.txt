@@ -209,6 +209,7 @@ segmentation/watershed/MeijsterRoerdinkWatershed.h
 
 ##
 SET(slices_sources
+slices/SliceLocation.cpp
 slices/SliceTextureSet.cpp
 )
 
