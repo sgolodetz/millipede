@@ -73,8 +73,8 @@ void PartitionWindow::setup_menus()
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("E&xit\tAlt+F4"));
 
 	wxMenu *actionsMenu = new wxMenu;
-	actionsMenu->Append(MENUID_ACTIONS_UNDO, wxT("&Undo"));
-	actionsMenu->Append(MENUID_ACTIONS_REDO, wxT("&Redo"));
+	actionsMenu->Append(MENUID_ACTIONS_UNDO, wxT("&Undo\tCtrl+Z"));
+	actionsMenu->Append(MENUID_ACTIONS_REDO, wxT("&Redo\tCtrl+Y"));
 	actionsMenu->AppendSeparator();
 	actionsMenu->Append(MENUID_ACTIONS_CLEARHISTORY, wxT("&Clear History"));
 
@@ -209,10 +209,12 @@ void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
 {
 	if(m_commandManager->can_redo())
 	{
+		e.Enable(true);
 		e.SetText(string_to_wxString("&Redo " + m_commandManager->redo_description() + "\tCtrl+Y"));
 	}
 	else
 	{
+		e.Enable(false);
 		e.SetText("Cannot Redo\tCtrl+Y");
 	}
 }
@@ -221,10 +223,12 @@ void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
 {
 	if(m_commandManager->can_undo())
 	{
+		e.Enable(true);
 		e.SetText(string_to_wxString("&Undo " + m_commandManager->undo_description() + "\tCtrl+Z"));
 	}
 	else
 	{
+		e.Enable(false);
 		e.SetText("Cannot Undo\tCtrl+Z");
 	}
 }

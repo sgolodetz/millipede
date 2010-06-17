@@ -95,7 +95,7 @@ bool PartitionCamera::has_next_layer() const
 
 bool PartitionCamera::has_next_slice() const
 {
-	return m_sliceLocation[m_sliceOrientation] < m_volumeSize[m_sliceOrientation] - 1;
+	return m_sliceLocation[m_sliceOrientation] < static_cast<long>(m_volumeSize[m_sliceOrientation]) - 1;
 }
 
 bool PartitionCamera::has_previous_layer() const
