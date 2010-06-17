@@ -154,18 +154,56 @@ void PartitionWindow::setup_menus()
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)				{ m_commandManager->clear_history(); }
-void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)						{ m_commandManager->redo(); }
-void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)						{ m_commandManager->undo(); }
-void PartitionWindow::OnMenuFileExit(wxCommandEvent&)							{ Close(); }
-void PartitionWindow::OnMenuNavigationNextLayer(wxCommandEvent&)				{ m_view->camera()->goto_next_layer(); }
-void PartitionWindow::OnMenuNavigationNextSlice(wxCommandEvent&)				{ m_view->camera()->goto_next_slice(); }
-void PartitionWindow::OnMenuNavigationPreviousLayer(wxCommandEvent&)			{ m_view->camera()->goto_previous_layer(); }
-void PartitionWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)			{ m_view->camera()->goto_previous_slice(); }
-void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)		{ m_view->segment_volume(); }
+void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)
+{
+	m_commandManager->clear_history();
+}
+
+void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)
+{
+	m_commandManager->redo();
+}
+
+void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
+{
+	m_commandManager->undo();
+}
+
+void PartitionWindow::OnMenuFileExit(wxCommandEvent&)
+{
+	Close();
+}
+
+void PartitionWindow::OnMenuNavigationNextLayer(wxCommandEvent&)
+{
+	m_view->camera()->goto_next_layer();
+}
+
+void PartitionWindow::OnMenuNavigationNextSlice(wxCommandEvent&)
+{
+	m_view->camera()->goto_next_slice();
+}
+
+void PartitionWindow::OnMenuNavigationPreviousLayer(wxCommandEvent&)
+{
+	m_view->camera()->goto_previous_layer();
+}
+
+void PartitionWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)
+{
+	m_view->camera()->goto_previous_slice();
+}
+
+void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)
+{
+	m_view->segment_volume();
+}
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)		{ e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo()); }
+void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
+{
+	e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo());
+}
 
 void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
 {
@@ -191,10 +229,25 @@ void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
 	}
 }
 
-void PartitionWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)		{ e.Enable(m_view->camera()->has_next_layer()); }
-void PartitionWindow::OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e)		{ e.Enable(m_view->camera()->has_next_slice()); }
-void PartitionWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)	{ e.Enable(m_view->camera()->has_previous_layer()); }
-void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)	{ e.Enable(m_view->camera()->has_previous_slice()); }
+void PartitionWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->camera()->has_next_layer());
+}
+
+void PartitionWindow::OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->camera()->has_next_slice());
+}
+
+void PartitionWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->camera()->has_previous_layer());
+}
+
+void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->camera()->has_previous_slice());
+}
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
