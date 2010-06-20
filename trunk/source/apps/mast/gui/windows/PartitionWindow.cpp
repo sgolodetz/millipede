@@ -91,8 +91,8 @@ void PartitionWindow::setup_menus()
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("P&revious Layer\tLeft"));
 	navigationMenu->AppendSeparator();
-	navigationMenu->Append(MENUID_NAVIGATION_ZOOMIN, wxT("Zoom &In (+5)\t["));
-	navigationMenu->Append(MENUID_NAVIGATION_ZOOMOUT, wxT("Zoom &Out (-5)\t]"));
+	navigationMenu->Append(MENUID_NAVIGATION_ZOOMIN, wxT("Zoom &In\t["));
+	navigationMenu->Append(MENUID_NAVIGATION_ZOOMOUT, wxT("Zoom &Out\t]"));
 	navigationMenu->Append(MENUID_NAVIGATION_CENTREONCANVAS, wxT("&Centre on Canvas"));
 	navigationMenu->Append(MENUID_NAVIGATION_FITTOCANVAS, wxT("&Fit to Canvas"));
 	navigationMenu->Append(MENUID_NAVIGATION_CENTREANDFIT, wxT("Centre &and Fit"));
@@ -207,12 +207,12 @@ void PartitionWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)
 
 void PartitionWindow::OnMenuNavigationZoomIn(wxCommandEvent&)
 {
-	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() + 5);
+	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() + 1);
 }
 
 void PartitionWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
 {
-	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() - 5);
+	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() - 1);
 }
 
 void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)
