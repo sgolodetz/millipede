@@ -71,6 +71,7 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_dicomCanvas->setup(this);
 	m_partitionCanvas->setup(this);
 
+	fit_image_to_view();
 	create_textures(m_camera->slice_orientation());
 }
 
