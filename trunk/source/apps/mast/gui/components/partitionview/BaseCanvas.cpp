@@ -127,37 +127,77 @@ PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 }
 
 //#################### PRIVATE METHODS ####################
-itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,2>& p_Coords) const
+const PartitionCamera_Ptr& BaseCanvas::camera()
 {
-	// Step 1: Calculate the centre in Coords (namely, the projected slice location).
+	return m_partitionView->camera();
+}
+
+itk::Vector<double,2> BaseCanvas::centre_coords() const
+{
 	SliceLocation loc = camera()->slice_location();
 	itk::Vector<double,3> centre3D_Coords;
 	centre3D_Coords[0] = loc.x, centre3D_Coords[1] = loc.y, centre3D_Coords[2] = loc.z;
-	itk::Vector<double,2> centre_Coords = project_to_2d(centre3D_Coords);
+	return project_to_2d(centre3D_Coords);
+}
 
-	// Step 2:	Calculate the offset (in Coords) from this centre.
-	itk::Vector<double,2> offset_Coords = p_Coords - centre_Coords;
-
-	// Step 3:	Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
-	double zoomFactor = camera()->zoom_factor();
-	itk::Vector<double,3> spacing = m_partitionView->model()->dicom_volume()->spacing();
-	itk::Vector<double,2> scaleFactors = project_to_2d(zoomFactor * spacing);
-
-	// Step 4:	Calculate the offset (in Pixels) from the centre in Pixels (namely, the canvas centre).
-	itk::Vector<double,2> offset_Pixels;
-	for(int i=0; i<2; ++i) offset_Pixels[i] = offset_Coords[i] * scaleFactors[i];
-
-	// Step 5:	Return the position in pixels.
+itk::Vector<double,2> BaseCanvas::centre_pixels() const
+{
 	int width, height;
 	GetSize(&width, &height);
 	itk::Vector<double,2> centre_Pixels;
 	centre_Pixels[0] = width * 0.5, centre_Pixels[1] = height * 0.5;
+	return centre_Pixels;
+}
+
+itk::Vector<double,2> BaseCanvas::coord_to_pixel_offset(const itk::Vector<double,2>& offset_Coords) const
+{
+	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
+	double zoomFactor = camera()->zoom_factor();
+	itk::Vector<double,3> spacing = m_partitionView->model()->dicom_volume()->spacing();
+	itk::Vector<double,2> scaleFactors = project_to_2d(zoomFactor * spacing);
+
+	// Scale to get the offset in Pixels.
+	itk::Vector<double,2> offset_Pixels;
+	for(int i=0; i<2; ++i) offset_Pixels[i] = offset_Coords[i] * scaleFactors[i];
+
+	return offset_Pixels;
+}
+
+itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,2>& p_Coords) const
+{
+	itk::Vector<double,2> centre_Coords = centre_coords();
+	itk::Vector<double,2> offset_Coords = p_Coords - centre_Coords;
+	itk::Vector<double,2> offset_Pixels = coord_to_pixel_offset(offset_Coords);
+	itk::Vector<double,2> centre_Pixels = centre_pixels();
 	return centre_Pixels + offset_Pixels;
 }
 
 itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& p_Coords) const
 {
 	return coords_to_pixels(project_to_2d(p_Coords));
+}
+
+itk::Vector<double,2> BaseCanvas::pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const
+{
+	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
+	double zoomFactor = camera()->zoom_factor();
+	itk::Vector<double,3> spacing = m_partitionView->model()->dicom_volume()->spacing();
+	itk::Vector<double,2> scaleFactors = project_to_2d(zoomFactor * spacing);
+
+	// Scale to get the offset in Coords.
+	itk::Vector<double,2> offset_Coords;
+	for(int i=0; i<2; ++i) offset_Coords[i] = offset_Pixels[i] / scaleFactors[i];
+
+	return offset_Coords;
+}
+
+itk::Vector<double,2> BaseCanvas::pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const
+{
+	itk::Vector<double,2> centre_Pixels = centre_pixels();
+	itk::Vector<double,2> offset_Pixels = p_Pixels - centre_Pixels;
+	itk::Vector<double,2> offset_Coords = pixel_to_coord_offset(offset_Pixels);
+	itk::Vector<double,2> centre_Coords = centre_coords();
+	return centre_Coords + offset_Coords;
 }
 
 itk::Vector<double,2> BaseCanvas::project_to_2d(const itk::Vector<double,3>& p) const
@@ -181,6 +221,56 @@ itk::Vector<double,2> BaseCanvas::project_to_2d(const itk::Vector<double,3>& p) 
 	return ret;
 }
 
+void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta)
+{
+	// Calculate the offset of the zoom centre from the centre in Pixels.
+	itk::Vector<double,2> zoomCentreOffset_Pixels = zoomCentre_Pixels - centre_pixels();
+
+	// Calculate the new centre in Pixels.
+	int newZoomLevel = camera()->zoom_level() + zoomLevelDelta;
+	double zoomFactor = static_cast<double>(newZoomLevel) / camera()->zoom_level();
+	itk::Vector<double,2> newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
+
+	// Calculate the new centre in Coords.
+	itk::Vector<double,2> newCentre_Coords = pixels_to_coords(newCentre_Pixels);
+
+	// Clamp it to the volume.
+	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
+	itk::Vector<double,3> maxs3D;
+	for(int i=0; i<3; ++i)
+	{
+		maxs3D[i] = volumeSize[i] - 1;
+	}
+	itk::Vector<double,2> maxs = project_to_2d(maxs3D);
+	for(int i=0; i<2; ++i)
+	{
+		if(newCentre_Coords[i] < 0) newCentre_Coords[i] = 0;
+		if(newCentre_Coords[i] > maxs[i]) newCentre_Coords[i] = maxs[i];
+	}
+
+	// Set the zoom level.
+	if(!camera()->set_zoom_level(newZoomLevel)) return;
+
+	// Set the slice location.
+	SliceLocation loc = camera()->slice_location();
+	switch(camera()->slice_orientation())
+	{
+		case ORIENT_XY:
+			loc.x = static_cast<int>(newCentre_Coords[0]);
+			loc.y = static_cast<int>(newCentre_Coords[1]);
+			break;
+		case ORIENT_XZ:
+			loc.x = static_cast<int>(newCentre_Coords[0]);
+			loc.z = static_cast<int>(newCentre_Coords[1]);
+			break;
+		case ORIENT_YZ:
+			loc.y = static_cast<int>(newCentre_Coords[0]);
+			loc.z = static_cast<int>(newCentre_Coords[1]);
+			break;
+	}
+	camera()->set_slice_location(loc);
+}
+
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
@@ -201,7 +291,7 @@ void BaseCanvas::OnMouseWheel(wxMouseEvent& e)
 		zoomCentre[0] = e.GetX();
 		zoomCentre[1] = e.GetY();
 		int zoomLevelDelta = lines * 5;
-		m_partitionView->camera()->zoom_on(zoomCentre, zoomLevelDelta);
+		zoom_on(zoomCentre, zoomLevelDelta);
 	}
 }
 

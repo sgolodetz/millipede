@@ -16,6 +16,7 @@
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
+typedef boost::shared_ptr<class PartitionCamera> PartitionCamera_Ptr;
 typedef boost::shared_ptr<const class PartitionCamera> PartitionCamera_CPtr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 class PartitionView;
@@ -50,9 +51,16 @@ protected:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	const PartitionCamera_Ptr& camera();
+	itk::Vector<double,2> centre_coords() const;
+	itk::Vector<double,2> centre_pixels() const;
+	itk::Vector<double,2> coord_to_pixel_offset(const itk::Vector<double,2>& offset_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
+	itk::Vector<double,2> pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const;
+	itk::Vector<double,2> pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const;
 	itk::Vector<double,2> project_to_2d(const itk::Vector<double,3>& p) const;
+	void zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta);
 
 	//#################### EVENT HANDLERS ####################
 public:

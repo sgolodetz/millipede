@@ -11,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <itkSize.h>
-#include <itkVector.h>
 
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
@@ -32,10 +31,6 @@ public:
 		virtual ~Listener() {}
 		virtual void camera_changed() = 0;
 	};
-
-	//#################### COMMANDS ####################
-private:
-	struct ChangeSliceLocationCommand;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -60,7 +55,6 @@ public:
 	void goto_next_slice();
 	void goto_previous_layer();
 	void goto_previous_slice();
-	void goto_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription);
 	bool has_next_layer() const;
 	bool has_next_slice() const;
 	bool has_previous_layer() const;
@@ -73,12 +67,11 @@ public:
 	void set_slice_location(const SliceLocation& sliceLocation);
 	void set_slice_orientation(SliceOrientation sliceOrientation);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
-	void set_zoom_level(int zoomLevel);
+	bool set_zoom_level(int zoomLevel);
 	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;
 	double zoom_factor() const;
 	int zoom_level() const;
-	void zoom_on(const itk::Vector<double,2>& zoomCentre, int zoomLevelDelta);
 
 	//#################### PRIVATE METHODS ####################
 private:

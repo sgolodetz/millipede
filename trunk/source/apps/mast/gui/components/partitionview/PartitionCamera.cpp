@@ -14,30 +14,6 @@
 
 namespace mp {
 
-//#################### COMMANDS ####################
-struct PartitionCamera::ChangeSliceLocationCommand : Command
-{
-	PartitionCamera *m_base;
-	SliceLocation m_oldSliceLocation;
-	SliceLocation m_sliceLocation;
-
-	ChangeSliceLocationCommand(PartitionCamera *base, const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& description)
-	:	Command(description), m_base(base), m_oldSliceLocation(oldSliceLocation), m_sliceLocation(sliceLocation)
-	{}
-
-	void execute()
-	{
-		m_base->m_sliceLocation = m_sliceLocation;
-		m_base->alert_listeners();
-	}
-
-	void undo()
-	{
-		m_base->m_sliceLocation = m_oldSliceLocation;
-		m_base->alert_listeners();
-	}
-};
-
 //#################### CONSTRUCTORS ####################
 PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const itk::Size<3>& volumeSize)
 :	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize), m_zoomLevel(10)
@@ -60,34 +36,28 @@ void PartitionCamera::goto_next_layer()
 {
 	SliceLocation loc = m_sliceLocation;
 	++loc.layer;
-	goto_slice_location(m_sliceLocation, loc, "Goto Next Layer");
+	set_slice_location(loc);
 }
 
 void PartitionCamera::goto_next_slice()
 {
 	SliceLocation loc = m_sliceLocation;
 	++loc[m_sliceOrientation];
-	goto_slice_location(m_sliceLocation, loc, "Goto Next Slice");
+	set_slice_location(loc);
 }
 
 void PartitionCamera::goto_previous_layer()
 {
 	SliceLocation loc = m_sliceLocation;
 	--loc.layer;
-	goto_slice_location(m_sliceLocation, loc, "Goto Previous Layer");
+	set_slice_location(loc);
 }
 
 void PartitionCamera::goto_previous_slice()
 {
 	SliceLocation loc = m_sliceLocation;
 	--loc[m_sliceOrientation];
-	goto_slice_location(m_sliceLocation, loc, "Goto Previous Slice");
-}
-
-void PartitionCamera::goto_slice_location(const SliceLocation& oldSliceLocation, const SliceLocation& sliceLocation, const std::string& commandDescription)
-{
-	check_slice_location(sliceLocation);
-	m_commandManager->execute(Command_Ptr(new ChangeSliceLocationCommand(this, oldSliceLocation, sliceLocation, commandDescription)));
+	set_slice_location(loc);
 }
 
 bool PartitionCamera::has_next_layer() const
@@ -118,8 +88,8 @@ int PartitionCamera::max_zoom_level() const
 
 int PartitionCamera::min_zoom_level() const
 {
-	// 0.1x zoom
-	return 1;
+	// 1x zoom
+	return 10;
 }
 
 SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
@@ -148,6 +118,7 @@ void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureS
 
 void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
 {
+	check_slice_location(sliceLocation);
 	m_sliceLocation = sliceLocation;
 	alert_listeners();
 }
@@ -158,11 +129,12 @@ void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
 	alert_listeners();
 }
 
-void PartitionCamera::set_zoom_level(int zoomLevel)
+bool PartitionCamera::set_zoom_level(int zoomLevel)
 {
-	if(zoomLevel < min_zoom_level() || zoomLevel > max_zoom_level()) return;
+	if(zoomLevel < min_zoom_level() || zoomLevel > max_zoom_level()) return false;
 	m_zoomLevel = zoomLevel;
 	alert_listeners();
+	return true;
 }
 
 const SliceLocation& PartitionCamera::slice_location() const
@@ -183,11 +155,6 @@ double PartitionCamera::zoom_factor() const
 int PartitionCamera::zoom_level() const
 {
 	return m_zoomLevel;
-}
-
-void PartitionCamera::zoom_on(const itk::Vector<double,2>& zoomCentre, int zoomLevelDelta)
-{
-	// TODO
 }
 
 //#################### PRIVATE METHODS ####################
