@@ -62,7 +62,7 @@ private:
 
 	// Middle left
 	DICOMCanvas *m_dicomCanvas;
-	wxSlider *m_xSlider, *m_ySlider, *m_zSlider;
+	wxSlider *m_xSlider, *m_ySlider, *m_zSlider, *m_zoomSlider;
 
 	// Middle right
 	PartitionCanvas *m_partitionCanvas;
@@ -106,7 +106,8 @@ public:
 	void OnButtonViewYZ(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-	void OnReleaseSlider(wxScrollEvent&);
+	void OnReleaseLocationSlider(wxScrollEvent&);
+	void OnSliderZoom(wxScrollEvent&);
 	void OnTrackSliderX(wxScrollEvent&);
 	void OnTrackSliderY(wxScrollEvent&);
 	void OnTrackSliderZ(wxScrollEvent&);

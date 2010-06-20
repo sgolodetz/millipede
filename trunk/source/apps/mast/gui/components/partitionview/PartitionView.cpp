@@ -39,6 +39,7 @@ enum
 	SLIDERID_Y,
 	SLIDERID_Z,
 	SLIDERID_LAYER,
+	SLIDERID_ZOOM,
 };
 
 }
@@ -292,6 +293,11 @@ void PartitionView::setup_gui(wxGLContext *context)
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
 			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_camera->slice_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
+
+			wxStaticText *zoomText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Zoom: "));
+			middleLeftBottomSizer->Add(zoomText, 0, wxALIGN_CENTER_VERTICAL);
+			m_zoomSlider = new wxSlider(middleLeftBottom, SLIDERID_ZOOM, m_camera->zoom_level(), 1, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			middleLeftBottomSizer->Add(m_zoomSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);
 
@@ -357,7 +363,7 @@ void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-void PartitionView::OnReleaseSlider(wxScrollEvent&)
+void PartitionView::OnReleaseLocationSlider(wxScrollEvent&)
 {
 	SliceLocation loc = m_camera->slice_location();
 	if(m_oldSliceLocation && *m_oldSliceLocation != loc)
@@ -365,6 +371,11 @@ void PartitionView::OnReleaseSlider(wxScrollEvent&)
 		m_camera->goto_slice_location(*m_oldSliceLocation, loc, "Goto Slice Location");
 		m_oldSliceLocation = boost::none;
 	}
+}
+
+void PartitionView::OnSliderZoom(wxScrollEvent&)
+{
+	m_camera->set_zoom_level(m_zoomSlider->GetValue());
 }
 
 void PartitionView::OnTrackSliderX(wxScrollEvent&)
@@ -406,10 +417,11 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionView::OnButtonViewYZ)
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
-	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_X, PartitionView::OnReleaseSlider)
-	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_Y, PartitionView::OnReleaseSlider)
-	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_Z, PartitionView::OnReleaseSlider)
-	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_LAYER, PartitionView::OnReleaseSlider)
+	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_X, PartitionView::OnReleaseLocationSlider)
+	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_Y, PartitionView::OnReleaseLocationSlider)
+	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_Z, PartitionView::OnReleaseLocationSlider)
+	EVT_COMMAND_SCROLL_THUMBRELEASE(SLIDERID_LAYER, PartitionView::OnReleaseLocationSlider)
+	EVT_COMMAND_SCROLL(SLIDERID_ZOOM, PartitionView::OnSliderZoom)
 	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_X, PartitionView::OnTrackSliderX)
 	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_Y, PartitionView::OnTrackSliderY)
 	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_Z, PartitionView::OnTrackSliderZ)

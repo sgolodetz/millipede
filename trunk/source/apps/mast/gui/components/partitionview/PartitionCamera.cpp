@@ -40,7 +40,7 @@ struct PartitionCamera::ChangeSliceLocationCommand : Command
 
 //#################### CONSTRUCTORS ####################
 PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const itk::Size<3>& volumeSize)
-:	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize)
+:	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize), m_zoomLevel(10)
 {
 	check_slice_location(m_sliceLocation);
 }
@@ -146,6 +146,12 @@ void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
 	alert_listeners();
 }
 
+void PartitionCamera::set_zoom_level(int zoomLevel)
+{
+	m_zoomLevel = zoomLevel;
+	alert_listeners();
+}
+
 const SliceLocation& PartitionCamera::slice_location() const
 {
 	return m_sliceLocation;
@@ -158,8 +164,12 @@ SliceOrientation PartitionCamera::slice_orientation() const
 
 double PartitionCamera::zoom_factor() const
 {
-	// TEMPORARY
-	return 1.0;
+	return m_zoomLevel * 0.1;
+}
+
+int PartitionCamera::zoom_level() const
+{
+	return m_zoomLevel;
 }
 
 //#################### PRIVATE METHODS ####################

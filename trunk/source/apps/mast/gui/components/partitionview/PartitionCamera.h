@@ -45,6 +45,7 @@ private:
 	SliceLocation m_sliceLocation;	// slice location in terms of the volume only (not based on actual slice numbers)
 	SliceOrientation m_sliceOrientation;
 	itk::Size<3> m_volumeSize;
+	int m_zoomLevel;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -69,9 +70,11 @@ public:
 	void set_slice_location(const SliceLocation& sliceLocation);
 	void set_slice_orientation(SliceOrientation sliceOrientation);
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
+	void set_zoom_level(int zoomLevel);
 	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;
 	double zoom_factor() const;
+	int zoom_level() const;
 
 	//#################### PRIVATE METHODS ####################
 private:
