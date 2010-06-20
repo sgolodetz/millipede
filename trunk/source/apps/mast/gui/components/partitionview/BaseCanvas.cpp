@@ -19,6 +19,58 @@ BaseCanvas::BaseCanvas(wxWindow *parent, wxGLContext *context, int *attribList, 
 {}
 
 //#################### PUBLIC METHODS ####################
+void BaseCanvas::fit_image_to_canvas()
+{
+	// Step 1:	Centre the camera.
+	camera()->centre();
+
+	// Step 2:	Calculate the sizes of the image and canvas.
+	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	calculate_image_bounds(tl_Pixels, br_Pixels);
+	double imageWidth = br_Pixels[0] - tl_Pixels[0], imageHeight = br_Pixels[1] - tl_Pixels[1];
+	wxSize canvasSize = GetSize();
+	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
+
+	// Step 3:	Is either image dimension too big? If so, try and zoom out as far as necessary, and then return.
+	if(imageWidth > canvasWidth || imageHeight > canvasHeight)
+	{
+		int newZoomLevel = camera()->zoom_level();
+		while(newZoomLevel != camera()->min_zoom_level())
+		{
+			--newZoomLevel;
+			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
+			double newImageWidth = imageWidth * zoomFactor;
+			double newImageHeight = imageWidth * zoomFactor;
+			if(newImageWidth <= canvasWidth && newImageHeight <= canvasHeight)
+			{
+				break;
+			}
+		}
+		camera()->set_zoom_level(newZoomLevel);
+		return;
+	}
+
+	// Step 4:	Are both image dimensions too small? If so, try and zoom in as much as possible, and then return.
+	if(imageWidth < canvasWidth && imageHeight < canvasHeight)
+	{
+		int newZoomLevel = camera()->zoom_level();
+		while(newZoomLevel != camera()->max_zoom_level())
+		{
+			++newZoomLevel;
+			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
+			double newImageWidth = imageWidth * zoomFactor;
+			double newImageHeight = imageWidth * zoomFactor;
+			if(newImageWidth > canvasWidth || newImageHeight > canvasHeight)
+			{
+				// Gone one level too far.
+				--newZoomLevel;
+				break;
+			}
+		}
+		camera()->set_zoom_level(newZoomLevel);
+	}
+}
+
 void BaseCanvas::render(wxPaintDC& dc) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -44,13 +96,8 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	if(texture)
 	{
-		itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
-		itk::Vector<double,3> tl_Coords;
-		tl_Coords.Fill(0);
-		itk::Vector<double,3> br_Coords;
-		for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i];
-		itk::Vector<double,2> tl_Pixels = coords_to_pixels(tl_Coords);
-		itk::Vector<double,2> br_Pixels = coords_to_pixels(br_Coords);
+		itk::Vector<double,2> tl_Pixels, br_Pixels;
+		calculate_image_bounds(tl_Pixels, br_Pixels);
 
 		// Render the image.
 		glPushAttrib(GL_ENABLE_BIT);
@@ -127,6 +174,17 @@ PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 }
 
 //#################### PRIVATE METHODS ####################
+void BaseCanvas::calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const
+{
+	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
+	itk::Vector<double,3> tl_Coords;
+	tl_Coords.Fill(0);
+	itk::Vector<double,3> br_Coords;
+	for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i];
+	tl_Pixels = coords_to_pixels(tl_Coords);
+	br_Pixels = coords_to_pixels(br_Coords);
+}
+
 const PartitionCamera_Ptr& BaseCanvas::camera()
 {
 	return m_partitionView->camera();

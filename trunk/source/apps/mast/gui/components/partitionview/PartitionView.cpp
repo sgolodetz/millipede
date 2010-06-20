@@ -99,6 +99,11 @@ void PartitionView::camera_changed()
 	refresh_canvases();
 }
 
+void PartitionView::fit_image_to_view()
+{
+	m_dicomCanvas->fit_image_to_canvas();
+}
+
 wxGLContext *PartitionView::get_context() const
 {
 	return m_dicomCanvas->GetContext();

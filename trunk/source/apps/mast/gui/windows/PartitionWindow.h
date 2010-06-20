@@ -49,6 +49,7 @@ public:
 	void OnMenuActionsUndo(wxCommandEvent&);
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
+	void OnMenuNavigationFitToView(wxCommandEvent&);
 	void OnMenuNavigationNextLayer(wxCommandEvent&);
 	void OnMenuNavigationNextSlice(wxCommandEvent&);
 	void OnMenuNavigationPreviousLayer(wxCommandEvent&);

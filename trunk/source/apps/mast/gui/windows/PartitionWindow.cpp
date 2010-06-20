@@ -22,7 +22,6 @@ enum
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
 	MENUID_FILE_EXIT,
-	MENUID_NAVIGATION_CENTREANDFITTOVIEW,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
 	MENUID_NAVIGATION_NEXTLAYER,
@@ -95,7 +94,6 @@ void PartitionWindow::setup_menus()
 	navigationMenu->Append(MENUID_NAVIGATION_ZOOMOUT, wxT("Zoom &Out\t]"));
 	navigationMenu->Append(MENUID_NAVIGATION_CENTRECAMERA, wxT("&Centre Camera"));
 	navigationMenu->Append(MENUID_NAVIGATION_FITTOVIEW, wxT("&Fit to View"));
-	navigationMenu->Append(MENUID_NAVIGATION_CENTREANDFITTOVIEW, wxT("Centre and Fit to &View"));
 
 	wxMenu *selectionMenu = new wxMenu;
 	selectionMenu->Append(wxID_ANY, wxT("&Select Nodes By ID..."));
@@ -188,6 +186,11 @@ void PartitionWindow::OnMenuFileExit(wxCommandEvent&)
 void PartitionWindow::OnMenuNavigationCentreCamera(wxCommandEvent&)
 {
 	m_view->camera()->centre();
+}
+
+void PartitionWindow::OnMenuNavigationFitToView(wxCommandEvent&)
+{
+	m_view->fit_image_to_view();
 }
 
 void PartitionWindow::OnMenuNavigationNextLayer(wxCommandEvent&)
@@ -287,6 +290,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_UNDO, PartitionWindow::OnMenuActionsUndo)
 	EVT_MENU(MENUID_FILE_EXIT, PartitionWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, PartitionWindow::OnMenuNavigationCentreCamera)
+	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, PartitionWindow::OnMenuNavigationFitToView)
 	EVT_MENU(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnMenuNavigationNextLayer)
 	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnMenuNavigationNextSlice)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnMenuNavigationPreviousLayer)

@@ -41,6 +41,7 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	void fit_image_to_canvas();
 	void render(wxPaintDC& dc) const;
 	void setup(PartitionView *partitionView);
 
@@ -51,6 +52,7 @@ protected:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const;
 	const PartitionCamera_Ptr& camera();
 	itk::Vector<double,2> centre_coords() const;
 	itk::Vector<double,2> centre_pixels() const;
