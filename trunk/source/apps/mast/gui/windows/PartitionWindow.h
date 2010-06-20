@@ -52,6 +52,8 @@ public:
 	void OnMenuNavigationNextSlice(wxCommandEvent&);
 	void OnMenuNavigationPreviousLayer(wxCommandEvent&);
 	void OnMenuNavigationPreviousSlice(wxCommandEvent&);
+	void OnMenuNavigationZoomIn(wxCommandEvent&);
+	void OnMenuNavigationZoomOut(wxCommandEvent&);
 	void OnMenuSegmentationSegmentCTVolume(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~

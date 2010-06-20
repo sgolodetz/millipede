@@ -64,6 +64,8 @@ public:
 	bool has_next_slice() const;
 	bool has_previous_layer() const;
 	bool has_previous_slice() const;
+	int max_zoom_level() const;
+	int min_zoom_level() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void set_command_manager(const ICommandManager_Ptr& commandManager);
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);

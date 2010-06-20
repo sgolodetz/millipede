@@ -110,6 +110,18 @@ bool PartitionCamera::has_previous_slice() const
 	return m_sliceLocation[m_sliceOrientation] > 0;
 }
 
+int PartitionCamera::max_zoom_level() const
+{
+	// 10x zoom
+	return 100;
+}
+
+int PartitionCamera::min_zoom_level() const
+{
+	// 0.1x zoom
+	return 1;
+}
+
 SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
 {
 	int n = layer - 1;
@@ -148,6 +160,7 @@ void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
 
 void PartitionCamera::set_zoom_level(int zoomLevel)
 {
+	if(zoomLevel < min_zoom_level() || zoomLevel > max_zoom_level()) return;
 	m_zoomLevel = zoomLevel;
 	alert_listeners();
 }

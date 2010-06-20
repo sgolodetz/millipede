@@ -93,6 +93,7 @@ void PartitionView::camera_changed()
 	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
 	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
 	m_layerSlider->SetValue(loc.layer);
+	m_zoomSlider->SetValue(m_camera->zoom_level());
 
 	recreate_overlays();
 	refresh_canvases();
@@ -296,7 +297,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 
 			wxStaticText *zoomText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Zoom: "));
 			middleLeftBottomSizer->Add(zoomText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zoomSlider = new wxSlider(middleLeftBottom, SLIDERID_ZOOM, m_camera->zoom_level(), 1, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zoomSlider = new wxSlider(middleLeftBottom, SLIDERID_ZOOM, m_camera->zoom_level(), m_camera->min_zoom_level(), m_camera->max_zoom_level(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zoomSlider, 0, wxALIGN_CENTER);
 		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middleLeft);

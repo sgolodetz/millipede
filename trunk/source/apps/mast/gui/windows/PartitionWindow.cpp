@@ -22,10 +22,15 @@ enum
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
 	MENUID_FILE_EXIT,
+	MENUID_NAVIGATION_CENTREANDFIT,
+	MENUID_NAVIGATION_CENTREONCANVAS,
+	MENUID_NAVIGATION_FITTOCANVAS,
 	MENUID_NAVIGATION_NEXTLAYER,
 	MENUID_NAVIGATION_NEXTSLICE,
 	MENUID_NAVIGATION_PREVIOUSLAYER,
 	MENUID_NAVIGATION_PREVIOUSSLICE,
+	MENUID_NAVIGATION_ZOOMIN,
+	MENUID_NAVIGATION_ZOOMOUT,
 	MENUID_SEGMENTATION_SEGMENTCTVOLUME,
 };
 
@@ -85,6 +90,12 @@ void PartitionWindow::setup_menus()
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("P&revious Layer\tLeft"));
+	navigationMenu->AppendSeparator();
+	navigationMenu->Append(MENUID_NAVIGATION_ZOOMIN, wxT("Zoom &In (+10)\t["));
+	navigationMenu->Append(MENUID_NAVIGATION_ZOOMOUT, wxT("Zoom &Out (-10)\t]"));
+	navigationMenu->Append(MENUID_NAVIGATION_CENTREONCANVAS, wxT("&Centre on Canvas"));
+	navigationMenu->Append(MENUID_NAVIGATION_FITTOCANVAS, wxT("&Fit to Canvas"));
+	navigationMenu->Append(MENUID_NAVIGATION_CENTREANDFIT, wxT("Centre &and Fit"));
 
 	wxMenu *selectionMenu = new wxMenu;
 	selectionMenu->Append(wxID_ANY, wxT("&Select Nodes By ID..."));
@@ -194,6 +205,16 @@ void PartitionWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)
 	m_view->camera()->goto_previous_slice();
 }
 
+void PartitionWindow::OnMenuNavigationZoomIn(wxCommandEvent&)
+{
+	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() + 10);
+}
+
+void PartitionWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
+{
+	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() - 10);
+}
+
 void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)
 {
 	m_view->segment_volume();
@@ -264,6 +285,8 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnMenuNavigationNextSlice)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnMenuNavigationPreviousLayer)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnMenuNavigationPreviousSlice)
+	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, PartitionWindow::OnMenuNavigationZoomIn)
+	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, PartitionWindow::OnMenuNavigationZoomOut)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTCTVOLUME, PartitionWindow::OnMenuSegmentationSegmentCTVolume)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
