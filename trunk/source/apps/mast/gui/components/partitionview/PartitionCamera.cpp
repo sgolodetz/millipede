@@ -9,6 +9,8 @@
 
 #include <common/commands/BasicCommandManager.h>
 #include <common/commands/Command.h>
+#include <common/exceptions/Exception.h>
+#include <common/util/ITKImageUtil.h>
 
 namespace mp {
 
@@ -154,6 +156,12 @@ SliceOrientation PartitionCamera::slice_orientation() const
 	return m_sliceOrientation;
 }
 
+double PartitionCamera::zoom_factor() const
+{
+	// TEMPORARY
+	return 1.0;
+}
+
 //#################### PRIVATE METHODS ####################
 void PartitionCamera::alert_listeners()
 {
@@ -163,9 +171,13 @@ void PartitionCamera::alert_listeners()
 	}
 }
 
-void PartitionCamera::check_slice_location(const SliceLocation& sliceLocation) const
+void PartitionCamera::check_slice_location(const SliceLocation& loc) const
 {
-	// TODO
+	itk::Index<3> size = ITKImageUtil::make_index_from_size(m_volumeSize);
+	if(loc.x < 0 || loc.y < 0 || loc.z < 0 || loc.layer < 0 || loc.x >= size[0] || loc.y >= size[1] || loc.z >= size[2] || loc.layer > highest_layer())
+	{
+		throw Exception("Bad slice location");
+	}
 }
 
 int PartitionCamera::highest_layer() const

@@ -142,7 +142,7 @@ void PartitionView::calculate_canvas_size()
 	// of the images. We want to be able to show the images in axial (X-Y), sagittal (Y-Z) and coronal (X-Z)
 	// orientations, which dictates which dimensions we need to take into account for the canvas sizes.
 
-	DICOMVolume::Size volumeSize = m_model->dicom_volume()->size();
+	itk::Size<3> volumeSize = m_model->dicom_volume()->size();
 	m_canvasWidth = std::max<int>(512, std::max(volumeSize[0], volumeSize[1]));
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
 }
@@ -392,10 +392,10 @@ void PartitionView::OnTrackSliderLayer(wxScrollEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-void PartitionView::OnUpdateSliderX(wxUpdateUIEvent& e)		{ e.Enable(m_camera->slice_orientation() == ORIENT_YZ); }
-void PartitionView::OnUpdateSliderY(wxUpdateUIEvent& e)		{ e.Enable(m_camera->slice_orientation() == ORIENT_XZ); }
-void PartitionView::OnUpdateSliderZ(wxUpdateUIEvent& e)		{ e.Enable(m_camera->slice_orientation() == ORIENT_XY); }
-void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)	{ e.Enable(m_camera->partition_texture_set(1).get() != NULL); }
+void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
+{
+	e.Enable(m_camera->partition_texture_set(1).get() != NULL);
+}
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionView, wxPanel)
@@ -416,9 +416,6 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_COMMAND_SCROLL_THUMBTRACK(SLIDERID_LAYER, PartitionView::OnTrackSliderLayer)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-	EVT_UPDATE_UI(SLIDERID_X, PartitionView::OnUpdateSliderX)
-	EVT_UPDATE_UI(SLIDERID_Y, PartitionView::OnUpdateSliderY)
-	EVT_UPDATE_UI(SLIDERID_Z, PartitionView::OnUpdateSliderZ)
 	EVT_UPDATE_UI(SLIDERID_LAYER, PartitionView::OnUpdateSliderLayer)
 END_EVENT_TABLE()
 

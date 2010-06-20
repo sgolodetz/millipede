@@ -22,9 +22,14 @@ DICOMVolume::BaseImagePointer DICOMVolume::base_image() const
 	return m_baseImage;
 }
 
-DICOMVolume::Size DICOMVolume::size() const
+itk::Size<3> DICOMVolume::size() const
 {
 	return m_baseImage->GetLargestPossibleRegion().GetSize();
+}
+
+itk::Vector<double,3> DICOMVolume::spacing() const
+{
+	return m_baseImage->GetSpacing();
 }
 
 DICOMVolume::WindowedImagePointer DICOMVolume::windowed_image(const WindowSettings& windowSettings) const

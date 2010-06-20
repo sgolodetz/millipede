@@ -5,6 +5,7 @@
 
 #include "BaseCanvas.h"
 
+#include <common/dicom/volumes/DICOMVolume.h>
 #include <common/exceptions/Exception.h>
 #include <common/slices/SliceTextureSet.h>
 #include <common/textures/Texture.h>
@@ -45,15 +46,23 @@ void BaseCanvas::render(wxPaintDC& dc) const
 
 	if(texture)
 	{
+		itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
+		itk::Vector<double,3> tl_Coords;
+		tl_Coords.Fill(0);
+		itk::Vector<double,3> br_Coords;
+		for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i];
+		itk::Vector<double,2> tl_Pixels = coords_to_pixels(tl_Coords);
+		itk::Vector<double,2> br_Pixels = coords_to_pixels(br_Coords);
+
 		// Render the image.
 		glEnable(GL_TEXTURE_2D);
 		texture->bind();
 		glColor3d(1,1,1);
 		glBegin(GL_QUADS);
-			glTexCoord2d(0,0);	glVertex2d(0,0);
-			glTexCoord2d(1,0);	glVertex2d(511,0);
-			glTexCoord2d(1,1);	glVertex2d(511,511);
-			glTexCoord2d(0,1);	glVertex2d(0,511);
+			glTexCoord2d(0,0);	glVertex2d(tl_Pixels[0], tl_Pixels[1]);
+			glTexCoord2d(1,0);	glVertex2d(br_Pixels[0], tl_Pixels[1]);
+			glTexCoord2d(1,1);	glVertex2d(br_Pixels[0], br_Pixels[1]);
+			glTexCoord2d(0,1);	glVertex2d(tl_Pixels[0], br_Pixels[1]);
 		glEnd();
 	}
 	else
@@ -115,6 +124,61 @@ PartitionCamera_CPtr BaseCanvas::camera() const
 PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 {
 	return m_partitionView ? m_partitionView->overlay_manager() : PartitionOverlayManager_CPtr();
+}
+
+//#################### PRIVATE METHODS ####################
+itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,2>& p_Coords) const
+{
+	// Step 1: Calculate the centre in Coords (namely, the projected slice location).
+	SliceLocation loc = camera()->slice_location();
+	itk::Vector<double,3> centre3D_Coords;
+	centre3D_Coords[0] = loc.x, centre3D_Coords[1] = loc.y, centre3D_Coords[2] = loc.z;
+	itk::Vector<double,2> centre_Coords = project_to_2d(centre3D_Coords);
+
+	// Step 2:	Calculate the offset (in Coords) from this centre.
+	itk::Vector<double,2> offset_Coords = p_Coords - centre_Coords;
+
+	// Step 3:	Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
+	double zoomFactor = camera()->zoom_factor();
+	itk::Vector<double,3> spacing = m_partitionView->model()->dicom_volume()->spacing();
+	itk::Vector<double,2> scaleFactors = project_to_2d(zoomFactor * spacing);
+
+	// Step 4:	Calculate the offset (in Pixels) from the centre in Pixels (namely, the canvas centre).
+	itk::Vector<double,2> offset_Pixels;
+	for(int i=0; i<2; ++i) offset_Pixels[i] = offset_Coords[i] * scaleFactors[i];
+
+	// Step 5:	Return the position in pixels.
+	int width, height;
+	GetSize(&width, &height);
+	itk::Vector<double,2> centre_Pixels;
+	centre_Pixels[0] = width * 0.5, centre_Pixels[1] = height * 0.5;
+	return centre_Pixels + offset_Pixels;
+}
+
+itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& p_Coords) const
+{
+	return coords_to_pixels(project_to_2d(p_Coords));
+}
+
+itk::Vector<double,2> BaseCanvas::project_to_2d(const itk::Vector<double,3>& p) const
+{
+	itk::Vector<double,2> ret;
+	switch(camera()->slice_orientation())
+	{
+		case ORIENT_XY:
+			ret[0] = p[0];
+			ret[1] = p[1];
+			break;
+		case ORIENT_XZ:
+			ret[0] = p[0];
+			ret[1] = p[2];
+			break;
+		case ORIENT_YZ:
+			ret[0] = p[1];
+			ret[1] = p[2];
+			break;
+	}
+	return ret;
 }
 
 }

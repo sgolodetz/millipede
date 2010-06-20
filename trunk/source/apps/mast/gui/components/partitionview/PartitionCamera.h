@@ -71,11 +71,12 @@ public:
 	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;
+	double zoom_factor() const;
 
 	//#################### PRIVATE METHODS ####################
 private:
 	void alert_listeners();
-	void check_slice_location(const SliceLocation& sliceLocation) const;
+	void check_slice_location(const SliceLocation& loc) const;
 	int highest_layer() const;
 };
 

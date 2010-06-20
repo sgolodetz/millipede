@@ -46,6 +46,12 @@ public:
 protected:
 	PartitionCamera_CPtr camera() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
+	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
+	itk::Vector<double,2> project_to_2d(const itk::Vector<double,3>& p) const;
 };
 
 }
