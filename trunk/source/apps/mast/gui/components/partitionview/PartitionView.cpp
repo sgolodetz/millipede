@@ -350,17 +350,29 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 void PartitionView::OnButtonViewXY(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_XY)) m_camera->set_slice_orientation(ORIENT_XY);
+	if(create_textures(ORIENT_XY))
+	{
+		m_camera->set_slice_orientation(ORIENT_XY);
+		fit_image_to_view();
+	}
 }
 
 void PartitionView::OnButtonViewXZ(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_XZ)) m_camera->set_slice_orientation(ORIENT_XZ);
+	if(create_textures(ORIENT_XZ))
+	{
+		m_camera->set_slice_orientation(ORIENT_XZ);
+		fit_image_to_view();
+	}
 }
 
 void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_YZ)) m_camera->set_slice_orientation(ORIENT_YZ);
+	if(create_textures(ORIENT_YZ))
+	{
+		m_camera->set_slice_orientation(ORIENT_YZ);
+		fit_image_to_view();
+	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~

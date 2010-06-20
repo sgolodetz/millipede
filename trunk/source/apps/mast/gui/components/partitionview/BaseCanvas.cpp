@@ -5,6 +5,8 @@
 
 #include "BaseCanvas.h"
 
+#include <fstream>
+
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/exceptions/Exception.h>
 #include <common/slices/SliceTextureSet.h>
@@ -31,6 +33,10 @@ void BaseCanvas::fit_image_to_canvas()
 	wxSize canvasSize = GetSize();
 	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
 
+	std::ofstream fs("D:/millipede-log.txt", std::ios_base::app);
+	fs << imageWidth << ' ' << imageHeight << ' ' << canvasWidth << ' ' << canvasHeight << '\n';
+	fs.close();
+
 	// Step 3:	Is either image dimension too big? If so, try and zoom out as far as necessary, and then return.
 	if(imageWidth > canvasWidth || imageHeight > canvasHeight)
 	{
@@ -40,7 +46,7 @@ void BaseCanvas::fit_image_to_canvas()
 			--newZoomLevel;
 			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
 			double newImageWidth = imageWidth * zoomFactor;
-			double newImageHeight = imageWidth * zoomFactor;
+			double newImageHeight = imageHeight * zoomFactor;
 			if(newImageWidth <= canvasWidth && newImageHeight <= canvasHeight)
 			{
 				break;
@@ -59,7 +65,7 @@ void BaseCanvas::fit_image_to_canvas()
 			++newZoomLevel;
 			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
 			double newImageWidth = imageWidth * zoomFactor;
-			double newImageHeight = imageWidth * zoomFactor;
+			double newImageHeight = imageHeight * zoomFactor;
 			if(newImageWidth > canvasWidth || newImageHeight > canvasHeight)
 			{
 				// Gone one level too far.
