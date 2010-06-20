@@ -12,13 +12,20 @@
 #include <common/exceptions/Exception.h>
 #include <common/util/ITKImageUtil.h>
 
+namespace {
+
+//#################### LOCAL CONSTANTS ####################
+int PANNING_SPEED = 10;
+
+}
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
 PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const itk::Size<3>& volumeSize)
 :	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize), m_zoomLevel(0)
 {
-	check_slice_location(m_sliceLocation);
+	if(!check_slice_location(m_sliceLocation)) throw Exception("Bad slice location");
 }
 
 //#################### PUBLIC METHODS ####################
@@ -97,6 +104,70 @@ int PartitionCamera::min_zoom_level() const
 	return 0;
 }
 
+void PartitionCamera::pan_down()
+{
+	SliceLocation loc = m_sliceLocation;
+	switch(m_sliceOrientation)
+	{
+		case ORIENT_XY:
+			loc.y += PANNING_SPEED;
+			break;
+		case ORIENT_XZ:
+		case ORIENT_YZ:
+			loc.z += PANNING_SPEED;
+			break;
+	}
+	set_slice_location(loc);
+}
+
+void PartitionCamera::pan_left()
+{
+	SliceLocation loc = m_sliceLocation;
+	switch(m_sliceOrientation)
+	{
+		case ORIENT_XY:
+		case ORIENT_XZ:
+			loc.x -= PANNING_SPEED;
+			break;
+		case ORIENT_YZ:
+			loc.y -= PANNING_SPEED;
+			break;
+	}
+	set_slice_location(loc);
+}
+
+void PartitionCamera::pan_right()
+{
+	SliceLocation loc = m_sliceLocation;
+	switch(m_sliceOrientation)
+	{
+		case ORIENT_XY:
+		case ORIENT_XZ:
+			loc.x += PANNING_SPEED;
+			break;
+		case ORIENT_YZ:
+			loc.y += PANNING_SPEED;
+			break;
+	}
+	set_slice_location(loc);
+}
+
+void PartitionCamera::pan_up()
+{
+	SliceLocation loc = m_sliceLocation;
+	switch(m_sliceOrientation)
+	{
+		case ORIENT_XY:
+			loc.y -= PANNING_SPEED;
+			break;
+		case ORIENT_XZ:
+		case ORIENT_YZ:
+			loc.z -= PANNING_SPEED;
+			break;
+	}
+	set_slice_location(loc);
+}
+
 SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
 {
 	int n = layer - 1;
@@ -123,9 +194,11 @@ void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureS
 
 void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
 {
-	check_slice_location(sliceLocation);
-	m_sliceLocation = sliceLocation;
-	alert_listeners();
+	if(check_slice_location(sliceLocation))
+	{
+		m_sliceLocation = sliceLocation;
+		alert_listeners();
+	}
 }
 
 void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
@@ -176,13 +249,14 @@ void PartitionCamera::alert_listeners()
 	}
 }
 
-void PartitionCamera::check_slice_location(const SliceLocation& loc) const
+bool PartitionCamera::check_slice_location(const SliceLocation& loc) const
 {
 	itk::Index<3> size = ITKImageUtil::make_index_from_size(m_volumeSize);
 	if(loc.x < 0 || loc.y < 0 || loc.z < 0 || loc.layer < 0 || loc.x >= size[0] || loc.y >= size[1] || loc.z >= size[2] || loc.layer > highest_layer())
 	{
-		throw Exception("Bad slice location");
+		return false;
 	}
+	return true;
 }
 
 int PartitionCamera::highest_layer() const

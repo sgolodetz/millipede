@@ -26,6 +26,10 @@ enum
 	MENUID_NAVIGATION_FITTOVIEW,
 	MENUID_NAVIGATION_NEXTLAYER,
 	MENUID_NAVIGATION_NEXTSLICE,
+	MENUID_NAVIGATION_PANDOWN,
+	MENUID_NAVIGATION_PANLEFT,
+	MENUID_NAVIGATION_PANRIGHT,
+	MENUID_NAVIGATION_PANUP,
 	MENUID_NAVIGATION_PREVIOUSLAYER,
 	MENUID_NAVIGATION_PREVIOUSSLICE,
 	MENUID_NAVIGATION_ZOOMIN,
@@ -83,17 +87,22 @@ void PartitionWindow::setup_menus()
 	actionsMenu->Append(MENUID_ACTIONS_CLEARHISTORY, wxT("&Clear History"));
 
 	wxMenu *navigationMenu = new wxMenu;
+	navigationMenu->Append(MENUID_NAVIGATION_PANDOWN, wxT("Pan &Down\tKP_2"));
+	navigationMenu->Append(MENUID_NAVIGATION_PANLEFT, wxT("Pan &Left\tKP_4"));
+	navigationMenu->Append(MENUID_NAVIGATION_PANRIGHT, wxT("Pan &Right\tKP_6"));
+	navigationMenu->Append(MENUID_NAVIGATION_PANUP, wxT("Pan &Up\tKP_8"));
+	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTSLICE, wxT("&Next Slice\tDown"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSSLICE, wxT("&Previous Slice\tUp"));
 	navigationMenu->Append(wxID_ANY, wxT("&Goto Slice..."));
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
-	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("P&revious Layer\tLeft"));
+	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("Previous L&ayer\tLeft"));
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_ZOOMIN, wxT("Zoom &In\t["));
 	navigationMenu->Append(MENUID_NAVIGATION_ZOOMOUT, wxT("Zoom &Out\t]"));
-	navigationMenu->Append(MENUID_NAVIGATION_CENTRECAMERA, wxT("&Centre Camera"));
-	navigationMenu->Append(MENUID_NAVIGATION_FITTOVIEW, wxT("&Fit to View"));
+	navigationMenu->Append(MENUID_NAVIGATION_CENTRECAMERA, wxT("&Centre Camera\tKP_5"));
+	navigationMenu->Append(MENUID_NAVIGATION_FITTOVIEW, wxT("&Fit to View\tCtrl+KP_5"));
 
 	wxMenu *selectionMenu = new wxMenu;
 	selectionMenu->Append(wxID_ANY, wxT("&Select Nodes By ID..."));
@@ -203,6 +212,26 @@ void PartitionWindow::OnMenuNavigationNextSlice(wxCommandEvent&)
 	m_view->camera()->goto_next_slice();
 }
 
+void PartitionWindow::OnMenuNavigationPanDown(wxCommandEvent&)
+{
+	m_view->camera()->pan_down();
+}
+
+void PartitionWindow::OnMenuNavigationPanLeft(wxCommandEvent&)
+{
+	m_view->camera()->pan_left();
+}
+
+void PartitionWindow::OnMenuNavigationPanRight(wxCommandEvent&)
+{
+	m_view->camera()->pan_right();
+}
+
+void PartitionWindow::OnMenuNavigationPanUp(wxCommandEvent&)
+{
+	m_view->camera()->pan_up();
+}
+
 void PartitionWindow::OnMenuNavigationPreviousLayer(wxCommandEvent&)
 {
 	m_view->camera()->goto_previous_layer();
@@ -293,6 +322,10 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, PartitionWindow::OnMenuNavigationFitToView)
 	EVT_MENU(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnMenuNavigationNextLayer)
 	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnMenuNavigationNextSlice)
+	EVT_MENU(MENUID_NAVIGATION_PANDOWN, PartitionWindow::OnMenuNavigationPanDown)
+	EVT_MENU(MENUID_NAVIGATION_PANLEFT, PartitionWindow::OnMenuNavigationPanLeft)
+	EVT_MENU(MENUID_NAVIGATION_PANRIGHT, PartitionWindow::OnMenuNavigationPanRight)
+	EVT_MENU(MENUID_NAVIGATION_PANUP, PartitionWindow::OnMenuNavigationPanUp)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnMenuNavigationPreviousLayer)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnMenuNavigationPreviousSlice)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, PartitionWindow::OnMenuNavigationZoomIn)

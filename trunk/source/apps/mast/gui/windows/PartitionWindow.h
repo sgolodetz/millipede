@@ -52,6 +52,10 @@ public:
 	void OnMenuNavigationFitToView(wxCommandEvent&);
 	void OnMenuNavigationNextLayer(wxCommandEvent&);
 	void OnMenuNavigationNextSlice(wxCommandEvent&);
+	void OnMenuNavigationPanDown(wxCommandEvent&);
+	void OnMenuNavigationPanLeft(wxCommandEvent&);
+	void OnMenuNavigationPanRight(wxCommandEvent&);
+	void OnMenuNavigationPanUp(wxCommandEvent&);
 	void OnMenuNavigationPreviousLayer(wxCommandEvent&);
 	void OnMenuNavigationPreviousSlice(wxCommandEvent&);
 	void OnMenuNavigationZoomIn(wxCommandEvent&);

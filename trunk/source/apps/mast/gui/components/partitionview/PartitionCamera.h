@@ -62,6 +62,10 @@ public:
 	bool has_previous_slice() const;
 	int max_zoom_level() const;
 	int min_zoom_level() const;
+	void pan_down();
+	void pan_left();
+	void pan_right();
+	void pan_up();
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void set_command_manager(const ICommandManager_Ptr& commandManager);
 	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
@@ -78,7 +82,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void alert_listeners();
-	void check_slice_location(const SliceLocation& loc) const;
+	bool check_slice_location(const SliceLocation& loc) const;
 	int highest_layer() const;
 };
 
