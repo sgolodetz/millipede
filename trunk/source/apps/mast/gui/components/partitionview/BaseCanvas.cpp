@@ -15,7 +15,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 BaseCanvas::BaseCanvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-:	Canvas(parent, context, attribList, id, pos, size, style)
+:	Canvas(parent, context, attribList, id, pos, size, style), m_wheelRotation(0)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -26,8 +26,6 @@ void BaseCanvas::render(wxPaintDC& dc) const
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glTranslated(0, 0, -256);
-
-	glPushAttrib(GL_ENABLE_BIT);
 
 	// Choose an image to render (if available).
 	Texture_CPtr texture;
@@ -55,6 +53,7 @@ void BaseCanvas::render(wxPaintDC& dc) const
 		itk::Vector<double,2> br_Pixels = coords_to_pixels(br_Coords);
 
 		// Render the image.
+		glPushAttrib(GL_ENABLE_BIT);
 		glEnable(GL_TEXTURE_2D);
 		texture->bind();
 		glColor3d(1,1,1);
@@ -64,26 +63,27 @@ void BaseCanvas::render(wxPaintDC& dc) const
 			glTexCoord2d(1,1);	glVertex2d(br_Pixels[0], br_Pixels[1]);
 			glTexCoord2d(0,1);	glVertex2d(tl_Pixels[0], br_Pixels[1]);
 		glEnd();
+		glPopAttrib();
+
+		// Render any overlays for this canvas.
+		render_overlays(tl_Pixels[0], tl_Pixels[1], br_Pixels[0], br_Pixels[1]);
 	}
 	else
 	{
 		// Draw a cross to indicate that it's deliberate that no image is being displayed.
+		int width, height;
+		GetSize(&width, &height);
 		glColor3d(1,1,1);
 		glBegin(GL_LINES);
-			glVertex2d(0,0);
-			glVertex2d(511,511);
-			glVertex2d(511,0);
-			glVertex2d(0,511);
+			glVertex2i(0,0);
+			glVertex2i(width,height);
+			glVertex2i(width,0);
+			glVertex2i(0,height);
 		glEnd();
 	}
-
-	glPopAttrib();
-
-	// Render any overlays for this canvas.
-	render_overlays(0, 0, 511, 511);
 }
 
-void BaseCanvas::setup(const PartitionView *partitionView)
+void BaseCanvas::setup(PartitionView *partitionView)
 {
 	m_partitionView = partitionView;
 
@@ -180,5 +180,36 @@ itk::Vector<double,2> BaseCanvas::project_to_2d(const itk::Vector<double,3>& p) 
 	}
 	return ret;
 }
+
+//#################### EVENT HANDLERS ####################
+
+//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+void BaseCanvas::OnEnterWindow(wxMouseEvent& e)
+{
+	SetFocus();
+}
+
+void BaseCanvas::OnMouseWheel(wxMouseEvent& e)
+{
+	m_wheelRotation += e.GetWheelRotation();
+	int lines = m_wheelRotation / e.GetWheelDelta();
+	m_wheelRotation -= lines * e.GetWheelDelta();
+
+	if(lines != 0)
+	{
+		itk::Vector<double,2> zoomCentre;
+		zoomCentre[0] = e.GetX();
+		zoomCentre[1] = e.GetY();
+		int zoomLevelDelta = lines * 5;
+		m_partitionView->camera()->zoom_on(zoomCentre, zoomLevelDelta);
+	}
+}
+
+//#################### EVENT TABLE ####################
+BEGIN_EVENT_TABLE(BaseCanvas, Canvas)
+	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+	EVT_ENTER_WINDOW(BaseCanvas::OnEnterWindow)
+	EVT_MOUSEWHEEL(BaseCanvas::OnMouseWheel)
+END_EVENT_TABLE()
 
 }

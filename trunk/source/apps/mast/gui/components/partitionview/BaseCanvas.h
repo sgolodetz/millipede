@@ -26,7 +26,8 @@ class BaseCanvas : public Canvas
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	const PartitionView *m_partitionView;
+	PartitionView *m_partitionView;
+	int m_wheelRotation;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -40,7 +41,7 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	void render(wxPaintDC& dc) const;
-	void setup(const PartitionView *partitionView);
+	void setup(PartitionView *partitionView);
 
 	//#################### PROTECTED METHODS ####################
 protected:
@@ -52,6 +53,15 @@ private:
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
 	itk::Vector<double,2> project_to_2d(const itk::Vector<double,3>& p) const;
+
+	//#################### EVENT HANDLERS ####################
+public:
+	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+	void OnEnterWindow(wxMouseEvent& e);
+	void OnMouseWheel(wxMouseEvent& e);
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
 
 }

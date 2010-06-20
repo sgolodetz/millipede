@@ -185,6 +185,11 @@ int PartitionCamera::zoom_level() const
 	return m_zoomLevel;
 }
 
+void PartitionCamera::zoom_on(const itk::Vector<double,2>& zoomCentre, int zoomLevelDelta)
+{
+	// TODO
+}
+
 //#################### PRIVATE METHODS ####################
 void PartitionCamera::alert_listeners()
 {

@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <itkSize.h>
+#include <itkVector.h>
 
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
@@ -77,6 +78,7 @@ public:
 	SliceOrientation slice_orientation() const;
 	double zoom_factor() const;
 	int zoom_level() const;
+	void zoom_on(const itk::Vector<double,2>& zoomCentre, int zoomLevelDelta);
 
 	//#################### PRIVATE METHODS ####################
 private:
