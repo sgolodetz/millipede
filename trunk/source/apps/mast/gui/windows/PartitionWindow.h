@@ -50,6 +50,7 @@ public:
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
 	void OnMenuNavigationFitToView(wxCommandEvent&);
+	void OnMenuNavigationGotoSlice(wxCommandEvent&);
 	void OnMenuNavigationNextLayer(wxCommandEvent&);
 	void OnMenuNavigationNextSlice(wxCommandEvent&);
 	void OnMenuNavigationPanDown(wxCommandEvent&);

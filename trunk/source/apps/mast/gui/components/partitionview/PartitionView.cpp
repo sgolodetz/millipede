@@ -6,6 +6,7 @@
 #include "PartitionView.h"
 
 #include <wx/button.h>
+#include <wx/numdlg.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
@@ -108,6 +109,28 @@ void PartitionView::fit_image_to_view()
 wxGLContext *PartitionView::get_context() const
 {
 	return m_dicomCanvas->GetContext();
+}
+
+void PartitionView::goto_slice()
+{
+	wxSlider *slider = NULL;
+	switch(m_camera->slice_orientation())
+	{
+		case ORIENT_XY:	slider = m_zSlider; break;
+		case ORIENT_XZ:	slider = m_ySlider; break;
+		case ORIENT_YZ:	slider = m_xSlider; break;
+	}
+	assert(slider != NULL);
+
+	SliceLocation loc = m_camera->slice_location();
+	long minValue = slider->GetMin(), maxValue = slider->GetMax();
+	long curValue = minValue + loc[m_camera->slice_orientation()];
+	long newValue = wxGetNumberFromUser(wxT(""), wxT("Slice Number:"), wxT("Goto Slice"), curValue, minValue, maxValue, this);
+	if(newValue != -1)
+	{
+		loc[m_camera->slice_orientation()] = newValue - minValue;
+		m_camera->set_slice_location(loc);
+	}
 }
 
 PartitionView::PartitionModel_CPtr PartitionView::model() const

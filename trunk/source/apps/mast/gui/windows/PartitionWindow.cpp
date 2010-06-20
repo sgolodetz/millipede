@@ -24,6 +24,7 @@ enum
 	MENUID_FILE_EXIT,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
+	MENUID_NAVIGATION_GOTOSLICE,
 	MENUID_NAVIGATION_NEXTLAYER,
 	MENUID_NAVIGATION_NEXTSLICE,
 	MENUID_NAVIGATION_PANDOWN,
@@ -94,7 +95,7 @@ void PartitionWindow::setup_menus()
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTSLICE, wxT("&Next Slice\tDown"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSSLICE, wxT("&Previous Slice\tUp"));
-	navigationMenu->Append(wxID_ANY, wxT("&Goto Slice..."));
+	navigationMenu->Append(MENUID_NAVIGATION_GOTOSLICE, wxT("&Goto Slice...\tCtrl+G"));
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
 	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("Previous L&ayer\tLeft"));
@@ -200,6 +201,11 @@ void PartitionWindow::OnMenuNavigationCentreCamera(wxCommandEvent&)
 void PartitionWindow::OnMenuNavigationFitToView(wxCommandEvent&)
 {
 	m_view->fit_image_to_view();
+}
+
+void PartitionWindow::OnMenuNavigationGotoSlice(wxCommandEvent&)
+{
+	m_view->goto_slice();
 }
 
 void PartitionWindow::OnMenuNavigationNextLayer(wxCommandEvent&)
@@ -320,6 +326,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_FILE_EXIT, PartitionWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, PartitionWindow::OnMenuNavigationCentreCamera)
 	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, PartitionWindow::OnMenuNavigationFitToView)
+	EVT_MENU(MENUID_NAVIGATION_GOTOSLICE, PartitionWindow::OnMenuNavigationGotoSlice)
 	EVT_MENU(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnMenuNavigationNextLayer)
 	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnMenuNavigationNextSlice)
 	EVT_MENU(MENUID_NAVIGATION_PANDOWN, PartitionWindow::OnMenuNavigationPanDown)

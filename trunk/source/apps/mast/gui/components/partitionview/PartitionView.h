@@ -81,6 +81,7 @@ public:
 	void camera_changed();
 	void fit_image_to_view();
 	wxGLContext *get_context() const;
+	void goto_slice();
 	PartitionModel_CPtr model() const;
 	void model_changed();
 	void segment_volume();
