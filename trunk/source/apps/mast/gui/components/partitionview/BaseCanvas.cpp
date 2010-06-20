@@ -5,8 +5,6 @@
 
 #include "BaseCanvas.h"
 
-#include <fstream>
-
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/exceptions/Exception.h>
 #include <common/slices/SliceTextureSet.h>
@@ -32,10 +30,6 @@ void BaseCanvas::fit_image_to_canvas()
 	double imageWidth = br_Pixels[0] - tl_Pixels[0], imageHeight = br_Pixels[1] - tl_Pixels[1];
 	wxSize canvasSize = GetSize();
 	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
-
-	std::ofstream fs("D:/millipede-log.txt", std::ios_base::app);
-	fs << imageWidth << ' ' << imageHeight << ' ' << canvasWidth << ' ' << canvasHeight << '\n';
-	fs.close();
 
 	// Step 3:	Is either image dimension too big? If so, try and zoom out as far as necessary, and then return.
 	if(imageWidth > canvasWidth || imageHeight > canvasHeight)
