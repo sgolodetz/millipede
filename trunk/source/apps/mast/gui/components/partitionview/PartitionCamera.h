@@ -71,6 +71,7 @@ public:
 	const SliceLocation& slice_location() const;
 	SliceOrientation slice_orientation() const;
 	double zoom_factor() const;
+	double zoom_factor(int zoomLevel) const;
 	int zoom_level() const;
 
 	//#################### PRIVATE METHODS ####################

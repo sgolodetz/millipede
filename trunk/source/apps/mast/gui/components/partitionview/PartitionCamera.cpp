@@ -16,7 +16,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const itk::Size<3>& volumeSize)
-:	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize), m_zoomLevel(10)
+:	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize), m_zoomLevel(0)
 {
 	check_slice_location(m_sliceLocation);
 }
@@ -82,14 +82,12 @@ bool PartitionCamera::has_previous_slice() const
 
 int PartitionCamera::max_zoom_level() const
 {
-	// 10x zoom
-	return 100;
+	return 10;
 }
 
 int PartitionCamera::min_zoom_level() const
 {
-	// 1x zoom
-	return 10;
+	return 0;
 }
 
 SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
@@ -149,7 +147,12 @@ SliceOrientation PartitionCamera::slice_orientation() const
 
 double PartitionCamera::zoom_factor() const
 {
-	return m_zoomLevel * 0.1;
+	return zoom_factor(zoom_level());
+}
+
+double PartitionCamera::zoom_factor(int zoomLevel) const
+{
+	return pow(1.25, zoomLevel);
 }
 
 int PartitionCamera::zoom_level() const

@@ -228,7 +228,7 @@ void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelD
 
 	// Calculate the new centre in Pixels.
 	int newZoomLevel = camera()->zoom_level() + zoomLevelDelta;
-	double zoomFactor = static_cast<double>(newZoomLevel) / camera()->zoom_level();
+	double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
 	itk::Vector<double,2> newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
 
 	// Calculate the new centre in Coords.
@@ -290,7 +290,7 @@ void BaseCanvas::OnMouseWheel(wxMouseEvent& e)
 		itk::Vector<double,2> zoomCentre;
 		zoomCentre[0] = e.GetX();
 		zoomCentre[1] = e.GetY();
-		int zoomLevelDelta = lines * 5;
+		int zoomLevelDelta = lines * 1;		// I've left it like this to allow the amount to zoom to be easily changed in future
 		zoom_on(zoomCentre, zoomLevelDelta);
 	}
 }
