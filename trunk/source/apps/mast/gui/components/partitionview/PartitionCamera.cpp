@@ -27,6 +27,13 @@ void PartitionCamera::add_listener(Listener *listener)
 	m_listeners.push_back(listener);
 }
 
+void PartitionCamera::centre()
+{
+	SliceLocation loc(m_volumeSize[0] / 2, m_volumeSize[1] / 2, m_volumeSize[2] / 2, m_sliceLocation.layer);
+	loc[m_sliceOrientation] = m_sliceLocation[m_sliceOrientation];
+	set_slice_location(loc);
+}
+
 SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const
 {
 	return m_dicomTextureSet;

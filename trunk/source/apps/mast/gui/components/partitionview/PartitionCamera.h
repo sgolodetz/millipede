@@ -50,6 +50,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	void add_listener(Listener *listener);
+	void centre();
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	void goto_next_layer();
 	void goto_next_slice();

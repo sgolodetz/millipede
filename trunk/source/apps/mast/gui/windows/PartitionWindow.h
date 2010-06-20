@@ -48,6 +48,7 @@ public:
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
 	void OnMenuFileExit(wxCommandEvent&);
+	void OnMenuNavigationCentreCamera(wxCommandEvent&);
 	void OnMenuNavigationNextLayer(wxCommandEvent&);
 	void OnMenuNavigationNextSlice(wxCommandEvent&);
 	void OnMenuNavigationPreviousLayer(wxCommandEvent&);
