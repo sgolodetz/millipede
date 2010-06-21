@@ -5,6 +5,8 @@
 
 #include "Job.h"
 
+#include <boost/bind.hpp>
+
 #include "MainThreadJobQueue.h"
 
 namespace mp {
