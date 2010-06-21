@@ -8,10 +8,12 @@
 
 #include <vector>
 
+#include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <itkSize.h>
 
+#include <common/listeners/CompositeListenerBase.h>
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceOrientation.h>
 
@@ -32,11 +34,16 @@ public:
 		virtual void camera_changed() = 0;
 	};
 
+	struct CompositeListener : CompositeListenerBase<Listener>
+	{
+		void camera_changed()	{ multicast(boost::bind(&Listener::camera_changed, _1)); }
+	};
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	ICommandManager_Ptr m_commandManager;
 	SliceTextureSet_Ptr m_dicomTextureSet;
-	std::vector<Listener*> m_listeners;
+	CompositeListener m_listeners;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	SliceLocation m_sliceLocation;	// slice location in terms of the volume only (not based on actual slice numbers)
 	SliceOrientation m_sliceOrientation;
@@ -49,7 +56,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(Listener *listener);
+	void add_raw_listener(Listener *listener);
 	void centre();
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	void goto_next_layer();
@@ -81,7 +88,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void alert_listeners();
 	bool check_slice_location(const SliceLocation& loc) const;
 	int highest_layer() const;
 };

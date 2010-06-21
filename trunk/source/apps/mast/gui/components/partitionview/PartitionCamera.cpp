@@ -29,9 +29,9 @@ PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrient
 }
 
 //#################### PUBLIC METHODS ####################
-void PartitionCamera::add_listener(Listener *listener)
+void PartitionCamera::add_raw_listener(Listener *listener)
 {
-	m_listeners.push_back(listener);
+	m_listeners.add_raw_listener(listener);
 }
 
 void PartitionCamera::centre()
@@ -183,13 +183,13 @@ void PartitionCamera::set_command_manager(const ICommandManager_Ptr& commandMana
 void PartitionCamera::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;
-	alert_listeners();
+	m_listeners.camera_changed();
 }
 
 void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
 {
 	m_partitionTextureSets = partitionTextureSets;
-	alert_listeners();
+	m_listeners.camera_changed();
 }
 
 void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
@@ -197,21 +197,21 @@ void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
 	if(check_slice_location(sliceLocation))
 	{
 		m_sliceLocation = sliceLocation;
-		alert_listeners();
+		m_listeners.camera_changed();
 	}
 }
 
 void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
 {
 	m_sliceOrientation = sliceOrientation;
-	alert_listeners();
+	m_listeners.camera_changed();
 }
 
 bool PartitionCamera::set_zoom_level(int zoomLevel)
 {
 	if(zoomLevel < min_zoom_level() || zoomLevel > max_zoom_level()) return false;
 	m_zoomLevel = zoomLevel;
-	alert_listeners();
+	m_listeners.camera_changed();
 	return true;
 }
 
@@ -241,14 +241,6 @@ int PartitionCamera::zoom_level() const
 }
 
 //#################### PRIVATE METHODS ####################
-void PartitionCamera::alert_listeners()
-{
-	for(size_t i=0, size=m_listeners.size(); i<size; ++i)
-	{
-		m_listeners[i]->camera_changed();
-	}
-}
-
 bool PartitionCamera::check_slice_location(const SliceLocation& loc) const
 {
 	itk::Index<3> size = ITKImageUtil::make_index_from_size(m_volumeSize);

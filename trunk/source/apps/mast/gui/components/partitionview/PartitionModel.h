@@ -33,6 +33,12 @@ public:
 		virtual void model_changed() = 0;
 	};
 
+private:
+	struct CompositeListener : CompositeListenerBase<Listener>
+	{
+		void model_changed()	{ multicast(boost::bind(&Listener::model_changed, _1)); }
+	};
+
 	//#################### TYPEDEFS ####################
 public:
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
@@ -51,7 +57,7 @@ public:
 private:
 	ICommandManager_Ptr m_commandManager;
 	DICOMVolume_Ptr m_dicomVolume;
-	std::vector<Listener*> m_listeners;
+	CompositeListener m_listeners;
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
 	VolumeIPFSelection_Ptr m_selection;
 	VolumeIPF_Ptr m_volumeIPF;
@@ -64,9 +70,9 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(Listener *listener)
+	void add_raw_listener(Listener *listener)
 	{
-		m_listeners.push_back(listener);
+		m_listeners.add_raw_listener(listener);
 	}
 
 	DICOMVolume_CPtr dicom_volume() const
@@ -125,7 +131,7 @@ public:
 		}
 #endif
 
-		alert_listeners();
+		m_listeners.model_changed();
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()
@@ -136,16 +142,6 @@ public:
 	VolumeIPF_CPtr volume_ipf() const
 	{
 		return m_volumeIPF;
-	}
-
-	//#################### PRIVATE METHODS ####################
-private:
-	void alert_listeners()
-	{
-		for(size_t i=0, size=m_listeners.size(); i<size; ++i)
-		{
-			m_listeners[i]->model_changed();
-		}
 	}
 };
 

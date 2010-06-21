@@ -61,9 +61,9 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_overlayManager(new PartitionOverlayManager),
 	m_volumeChoice(volumeChoice)
 {
-	m_camera->add_listener(this);
+	m_camera->add_raw_listener(this);
 	m_camera->set_command_manager(commandManager);
-	m_model->add_listener(this);
+	m_model->add_raw_listener(this);
 	m_model->set_command_manager(commandManager);
 
 	calculate_canvas_size();

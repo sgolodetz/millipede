@@ -18,17 +18,15 @@ class WaterfallPass
 {
 	//#################### NESTED CLASSES ####################
 public:
-	class Listener
+	struct Listener
 	{
-	public:
 		virtual ~Listener() {}
 		virtual void merge_nodes(int u, int v) = 0;
 	};
 
 protected:
-	class CompositeListener : public CompositeListenerBase<Listener>
+	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-	public:
 		void merge_nodes(int u, int v)	{ multicast(boost::bind(&Listener::merge_nodes, _1, u, v)); }
 	};
 

@@ -104,11 +104,9 @@ public:
 
 	//#################### NESTED CLASSES (EXCLUDING COMMANDS) ####################
 public:
-	class Listener
+	struct Listener
 	{
-	public:
 		virtual ~Listener() {}
-
 		virtual void forest_changed()																{}
 		virtual void layer_was_cloned(int index)													{ forest_changed(); }
 		virtual void layer_was_deleted(int index)													{ forest_changed(); }
@@ -120,9 +118,8 @@ public:
 	};
 
 private:
-	class CompositeListener : public CompositeListenerBase<Listener>
+	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-	public:
 		void forest_changed()															{ multicast(bind(&Listener::forest_changed, _1)); }
 		void layer_was_cloned(int index)												{ multicast(bind(&Listener::layer_was_cloned, _1, index)); }
 		void layer_was_deleted(int index)												{ multicast(bind(&Listener::layer_was_deleted, _1, index)); }
