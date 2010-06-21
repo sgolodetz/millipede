@@ -217,15 +217,11 @@ private:
 			VolumeIPF_Ptr volumeIPF = base->m_volumeIPF;
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 
-			// Note: We must maintain explicit handles to these listeners while the waterfall passes are running (otherwise it's assumed they've been destroyed).
-			typedef WaterfallPass<int>::Listener WaterfallPassListener;
-			std::vector<boost::shared_ptr<WaterfallPassListener> > listeners(subvolumeCount);
 			std::vector<NichollsWaterfallPass<int> > waterfallPasses(subvolumeCount);
 			for(int i=0; i<subvolumeCount; ++i)
 			{
 				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
-				listeners[i] = make_forest_building_waterfall_pass_listener(volumeIPF, indexMapper);
-				waterfallPasses[i].add_listener(listeners[i]);
+				waterfallPasses[i].add_shared_listener(make_forest_building_waterfall_pass_listener(volumeIPF, indexMapper));
 			}
 
 			while(volumeIPF->highest_layer() < base->m_segmentationOptions.waterfallLayerLimit)

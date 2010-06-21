@@ -270,17 +270,21 @@ public:
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	/**
-	@brief	Adds a listener to be notified of changes to the partition forest.
+	@brief	Adds a weak listener to be notified of changes to the partition forest.
 
-	@param[in]	listener	A shared_ptr (non-null) to the listener
+	A weak listener is one to which a handle (in particular, a shared_ptr) must be externally maintained.
+	If there are no remaining external references to the listener, it ceases to exist (and is therefore
+	no longer notified of any changes).
+
+	@param[in]	listener	A weak_ptr (non-null) to the listener
 	@pre
 		-	listener.get() != NULL
 	@post
 		-	The argument is registered as listening to this partition forest (and will be alerted to any changes)
 	*/
-	void add_listener(const shared_ptr<Listener>& listener)
+	void add_weak_listener(const weak_ptr<Listener>& listener)
 	{
-		m_listeners.add_listener(listener);
+		m_listeners.add_weak_listener(listener);
 	}
 
 	/**

@@ -46,9 +46,9 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_listener(const boost::shared_ptr<Listener>& listener)
+	void add_shared_listener(const boost::shared_ptr<Listener>& listener)
 	{
-		m_listeners.add_listener(listener);
+		m_listeners.add_shared_listener(listener);
 	}
 };
 

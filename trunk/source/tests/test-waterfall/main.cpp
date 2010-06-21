@@ -166,7 +166,7 @@ void basic_test()
 	// Run a Nicholls waterfall pass on the MST.
 	NichollsWaterfallPass<int> pass;
 	boost::shared_ptr<BasicListener> listener(new BasicListener);
-	pass.add_listener(listener);
+	pass.add_shared_listener(listener);
 	pass.run(mst);
 
 	// Output the remaining MST edges.
@@ -258,7 +258,7 @@ void real_image_test()
 	// Iteratively run a Nicholls waterfall pass on the MST until the forest is built.
 	NichollsWaterfallPass<int> pass;
 	boost::shared_ptr<IPFConstructionListener> listener(new IPFConstructionListener(ipf));
-	pass.add_listener(listener);
+	pass.add_shared_listener(listener);
 	while(mst.node_count() != 1)
 	{
 		std::cout << "Cloning highest IPF layer...\n";

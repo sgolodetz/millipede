@@ -110,7 +110,7 @@ public:
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
 		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
 
-		volumeIPF->add_listener(m_selection);
+		volumeIPF->add_weak_listener(m_selection);
 		set_command_manager(m_commandManager);
 
 #if 0

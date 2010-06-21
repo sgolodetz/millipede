@@ -128,7 +128,7 @@ void listener_test()
 	ipf.set_command_manager(manager);
 
 	shared_ptr<ForestListener> listener(new ForestListener);
-	ipf.add_listener(listener);
+	ipf.add_weak_listener(listener);
 
 	ipf.clone_layer(0);
 	ipf.delete_layer(1);
@@ -241,7 +241,7 @@ void selection_test()
 	// Test forest selection.
 	Selection_Ptr selection(new Selection(ipf));
 	selection->set_command_manager(manager);
-	ipf->add_listener(selection);
+	ipf->add_weak_listener(selection);
 
 	selection->select_node(PFNodeID(4,0));
 	manager->undo();

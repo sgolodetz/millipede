@@ -101,7 +101,7 @@ public:
 		{
 			PartitionForestSelection_Ptr selection(new PartitionForestSelectionT(m_forest));
 			selection->set_command_manager(m_commandManager);
-			m_forest->add_listener(selection);
+			m_forest->add_weak_listener(selection);
 			it = m_selections.insert(std::make_pair(feature, selection)).first;
 		}
 		return it->second;
