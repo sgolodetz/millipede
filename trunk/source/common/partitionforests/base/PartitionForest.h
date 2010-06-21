@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_PARTITIONFOREST
 #define H_MILLIPEDE_PARTITIONFOREST
 
+#include <climits>
 #include <deque>
 #include <queue>
 #include <set>
