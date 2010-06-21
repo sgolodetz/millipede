@@ -5,6 +5,7 @@
 
 #include "PartitionCanvas.h"
 
+#include <common/util/NumericUtil.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include "PartitionCamera.h"
 
@@ -30,5 +31,43 @@ SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
 	}
 	else return SliceTextureSet_CPtr();
 }
+
+//#################### EVENT HANDLERS ####################
+
+//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf()) return;
+
+	itk::Vector<double,2> p_Pixels;
+	p_Pixels[0] = e.GetX(), p_Pixels[1] = e.GetY();
+	itk::Vector<double,3> p_Coords = pixels_to_3d_coords(p_Pixels);
+
+	// TODO: Exit if the click is not within the volume.
+	if(true) return;
+
+	// Determine the node being clicked.
+	int layerIndex = camera()->slice_location().layer;
+	itk::Index<3> position;
+	for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
+	PFNodeID id = model()->volume_ipf()->node_of(layerIndex, position);
+
+	if(e.ShiftDown())
+	{
+		// Augment the existing forest selection.
+		// TODO
+	}
+	else
+	{
+		// Clear the existing forest selection and select the node clicked.
+		// TODO
+	}
+}
+
+//#################### EVENT TABLE ####################
+BEGIN_EVENT_TABLE(PartitionCanvas, BaseCanvas)
+	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+	EVT_LEFT_DOWN(PartitionCanvas::OnLeftDown)
+END_EVENT_TABLE()
 
 }

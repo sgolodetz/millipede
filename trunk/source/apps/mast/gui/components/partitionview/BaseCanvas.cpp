@@ -163,33 +163,16 @@ void BaseCanvas::setup(PartitionView *partitionView)
 }
 
 //#################### PROTECTED METHODS ####################
+PartitionCamera_Ptr BaseCanvas::camera()
+{
+	if(m_partitionView) return m_partitionView->camera();
+	else return PartitionCamera_Ptr();
+}
+
 PartitionCamera_CPtr BaseCanvas::camera() const
 {
 	if(m_partitionView) return m_partitionView->camera();
 	else return PartitionCamera_CPtr();
-}
-
-PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
-{
-	if(m_partitionView) return m_partitionView->overlay_manager();
-	else return PartitionOverlayManager_CPtr();
-}
-
-//#################### PRIVATE METHODS ####################
-void BaseCanvas::calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const
-{
-	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
-	itk::Vector<double,3> tl_Coords;
-	tl_Coords.Fill(0);
-	itk::Vector<double,3> br_Coords;
-	for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i];
-	tl_Pixels = coords_to_pixels(tl_Coords);
-	br_Pixels = coords_to_pixels(br_Coords);
-}
-
-const PartitionCamera_Ptr& BaseCanvas::camera()
-{
-	return m_partitionView->camera();
 }
 
 itk::Vector<double,2> BaseCanvas::centre_coords() const
@@ -237,6 +220,18 @@ itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& 
 	return coords_to_pixels(project_to_2d(p_Coords));
 }
 
+BaseCanvas::PartitionModel_Ptr BaseCanvas::model()
+{
+	if(m_partitionView) return m_partitionView->model();
+	else return PartitionModel_Ptr();
+}
+
+PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
+{
+	if(m_partitionView) return m_partitionView->overlay_manager();
+	else return PartitionOverlayManager_CPtr();
+}
+
 itk::Vector<double,2> BaseCanvas::pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const
 {
 	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
@@ -249,6 +244,11 @@ itk::Vector<double,2> BaseCanvas::pixel_to_coord_offset(const itk::Vector<double
 	for(int i=0; i<2; ++i) offset_Coords[i] = offset_Pixels[i] / scaleFactors[i];
 
 	return offset_Coords;
+}
+
+itk::Vector<double,3> BaseCanvas::pixels_to_3d_coords(const itk::Vector<double,2>& p_Pixels) const
+{
+	return project_to_3d(pixels_to_coords(p_Pixels));
 }
 
 itk::Vector<double,2> BaseCanvas::pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const
@@ -279,6 +279,42 @@ itk::Vector<double,2> BaseCanvas::project_to_2d(const itk::Vector<double,3>& p) 
 			break;
 	}
 	return ret;
+}
+
+itk::Vector<double,3> BaseCanvas::project_to_3d(const itk::Vector<double,2>& p) const
+{
+	itk::Vector<double,3> ret;
+	switch(camera()->slice_orientation())
+	{
+		case ORIENT_XY:
+			ret[0] = p[0];
+			ret[1] = p[1];
+			ret[2] = camera()->slice_location().z;
+			break;
+		case ORIENT_XZ:
+			ret[0] = p[0];
+			ret[1] = camera()->slice_location().y;
+			ret[2] = p[1];
+			break;
+		case ORIENT_YZ:
+			ret[0] = camera()->slice_location().x;
+			ret[1] = p[0];
+			ret[2] = p[1];
+			break;
+	}
+	return ret;
+}
+
+//#################### PRIVATE METHODS ####################
+void BaseCanvas::calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const
+{
+	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
+	itk::Vector<double,3> tl_Coords;
+	tl_Coords.Fill(0);
+	itk::Vector<double,3> br_Coords;
+	for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i];
+	tl_Pixels = coords_to_pixels(tl_Coords);
+	br_Pixels = coords_to_pixels(br_Coords);
 }
 
 void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta)

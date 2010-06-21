@@ -20,6 +20,14 @@ public:
 private:
 	void render_overlays(double left, double top, double right, double bottom) const;
 	SliceTextureSet_CPtr texture_set_to_display() const;
+
+	//#################### EVENT HANDLERS ####################
+public:
+	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+	void OnLeftDown(wxMouseEvent& e);
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
 
 }

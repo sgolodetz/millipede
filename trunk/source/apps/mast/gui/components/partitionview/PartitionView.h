@@ -82,6 +82,7 @@ public:
 	void fit_image_to_view();
 	wxGLContext *get_context() const;
 	void goto_slice();
+	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
 	void model_changed();
 	void segment_volume();

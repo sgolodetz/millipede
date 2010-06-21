@@ -248,6 +248,7 @@ SET(util_headers
 util/GridUtil.h
 util/ITKImageUtil.h
 util/NullType.h
+util/NumericUtil.h
 )
 
 #################################################################

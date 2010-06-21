@@ -12,6 +12,7 @@
 #include <common/partitionforests/images/CTImageBranchLayer.h>
 #include <common/partitionforests/images/CTImageLeafLayer.h>
 #include <mast/gui/components/canvas/Canvas.h>
+#include "PartitionModel.h"
 
 namespace mp {
 
@@ -25,6 +26,11 @@ typedef boost::shared_ptr<const class Texture> Texture_CPtr;
 
 class BaseCanvas : public Canvas
 {
+	//#################### TYPEDEFS ####################
+protected:
+	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> PartitionModelT;
+	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	PartitionView *m_partitionView;
@@ -47,21 +53,24 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	PartitionCamera_Ptr camera();
 	PartitionCamera_CPtr camera() const;
-	PartitionOverlayManager_CPtr overlay_manager() const;
-
-	//#################### PRIVATE METHODS ####################
-private:
-	void calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const;
-	const PartitionCamera_Ptr& camera();
 	itk::Vector<double,2> centre_coords() const;
 	itk::Vector<double,2> centre_pixels() const;
 	itk::Vector<double,2> coord_to_pixel_offset(const itk::Vector<double,2>& offset_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
+	PartitionModel_Ptr model();
+	PartitionOverlayManager_CPtr overlay_manager() const;
 	itk::Vector<double,2> pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const;
+	itk::Vector<double,3> pixels_to_3d_coords(const itk::Vector<double,2>& p_Pixels) const;
 	itk::Vector<double,2> pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const;
 	itk::Vector<double,2> project_to_2d(const itk::Vector<double,3>& p) const;
+	itk::Vector<double,3> project_to_3d(const itk::Vector<double,2>& p) const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const;
 	void zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta);
 
 	//#################### EVENT HANDLERS ####################

@@ -133,6 +133,11 @@ void PartitionView::goto_slice()
 	}
 }
 
+const PartitionView::PartitionModel_Ptr& PartitionView::model()
+{
+	return m_model;
+}
+
 PartitionView::PartitionModel_CPtr PartitionView::model() const
 {
 	return m_model;
