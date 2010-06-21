@@ -165,12 +165,14 @@ void BaseCanvas::setup(PartitionView *partitionView)
 //#################### PROTECTED METHODS ####################
 PartitionCamera_CPtr BaseCanvas::camera() const
 {
-	return m_partitionView ? m_partitionView->camera() : PartitionCamera_CPtr();
+	if(m_partitionView) return m_partitionView->camera();
+	else return PartitionCamera_CPtr();
 }
 
 PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 {
-	return m_partitionView ? m_partitionView->overlay_manager() : PartitionOverlayManager_CPtr();
+	if(m_partitionView) return m_partitionView->overlay_manager();
+	else return PartitionOverlayManager_CPtr();
 }
 
 //#################### PRIVATE METHODS ####################
