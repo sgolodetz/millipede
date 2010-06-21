@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_ROOTEDMST
 
 #include <cassert>
+#include <climits>
 #include <set>
 
 #include <boost/shared_ptr.hpp>
