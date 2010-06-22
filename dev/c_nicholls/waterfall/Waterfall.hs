@@ -1,10 +1,13 @@
 {-# LANGUAGE  FlexibleInstances #-}
 module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight,size) where
 
-import List (sortBy)
+import Data.List (sortBy,foldl')
 import Data.Set (Set)
-data Node a = Node !a ![Edge a] 
+import Debug.Trace
+
+data Node a = Node a [Edge a] 
 data Edge a = Edge Int (Node a) 
+
 
 -- mergeChildren applied to an edge returns the edge after merging;
 -- the boolean value indicates whether or not the edge contained 
@@ -15,6 +18,8 @@ class Mergeable a where
 
 -- waterfall creates a (hypothetical) edge into the root of the MST
 -- and then proceeds to call the main mergeChildren function.
+{-# SECIALIZE waterfall :: Node (Set a) -> Node (Set a)#-}
+{-# SECIALIZE waterfall :: Node (Heap a) -> Node (Heap a)#-}
 
 waterfall :: Mergeable a => Node a -> Node a
 waterfall (Node r []) = Node r []
@@ -39,15 +44,23 @@ waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (maximum [i| Edge i t
 -- it also calls the join function when regions need merging. 
 {-# SECIALIZE mergeChildren :: Edge (Set a) -> (Edge (Set a),Bool)#-}
 {-# SECIALIZE mergeChildren :: Edge (Heap a) -> (Edge (Heap a),Bool)#-}
-mergeChildren :: Mergeable a => Edge a -> (Edge a,Bool)
+mergeChildren :: (Mergeable a )=> Edge a -> (Edge a,Bool)
 mergeChildren n@(Edge w (Node r [])) = (n,False)
 mergeChildren (Edge w (Node r es) ) 
   | (b && w'<=w) = (join r ((e,False): es') w, True)
   | otherwise    = (join r ((e,b): es')  w, (w'<w)) 
   where 
-    ((e,b):es') = sortBy cmpEdge (map mergeChildren es)
+    ((e,b),es') = minEdge es
     w' = getWeight e 
 
+minEdge :: (Mergeable a)  => [Edge a] -> ((Edge a,Bool),[(Edge a,Bool)])
+minEdge [] = error "the impossible happened"
+minEdge es = let x:xs = map mergeChildren es in minEdge' (x,[]) xs
+
+minEdge' ::  ((Edge a,Bool),[(Edge a,Bool)]) -> [(Edge a,Bool)] -> ((Edge a,Bool),[(Edge a,Bool)] )
+minEdge' = foldr (\x (e,es)-> case (cmpEdge x e) of
+  LT -> (x,e:es)
+  _ -> (e,x:es))
 
 -- Initial join function 
 -- (should recurse only once because the tree is built bottom-up)
@@ -82,25 +95,27 @@ mergeChildren (Edge w (Node r es) )
 -- of the children who have merged into r.
 
 
+
+     
 join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 join r ebs w =
-   (Edge w (Node newr newes))
+   (Edge w (Node newr es))
    where 
-     (rs, es) = extractEdgeRegions (filterFalse ebs) 
-     newr = foldl union r rs  
-     oldes = filterTrue ebs   
-     newes = oldes ++ es       
+     (rs, es,rs) = extractEdgeRegions ebs 
+     newr = foldl' union r rs  
+ 
 
 
 -- Prepare for absorbing the regions in the children of a node
 -- by putting the region of the current node(s) in a list (as),
 -- and the regions of the children in a list (bs).
 
-extractEdgeRegions :: [Edge a] -> ([a],[Edge a])
-extractEdgeRegions [] = ([],[])
-extractEdgeRegions ((Edge v n):es) =
+extractEdgeRegions :: [(Edge a,Bool)] -> [Edge a] -> ([a],[Edge a])
+extractEdgeRegions [] rs = ([],rs)
+extractEdgeRegions ((e,True):es) rs = extractEdgeRegions es (e:rs)
+extractEdgeRegions ((Edge v n,False):es) rs =
   ( (getRegion n):as, (getEdges n)++bs )
-  where (as,bs) = extractEdgeRegions es
+  where (as,bs) = extractEdgeRegions es rs
 
 
 -- Split a list with Boolean tags into two sublists,
@@ -127,7 +142,7 @@ filterFalse = map fst . filter ((==False).snd)
 -- Compare the weights of two edges.
 -- Returns a comparison operator that can then be used in sort.
 
-cmpEdge :: Mergeable a =>(Edge a,Bool) -> (Edge a,Bool) -> Ordering
+cmpEdge :: (Edge a,Bool) -> (Edge a,Bool) -> Ordering
 cmpEdge ((Edge w1 x),b1) ((Edge w2 y),b2) 
   | w1 == w2 = compare b2 b1
   | otherwise = compare w1 w2

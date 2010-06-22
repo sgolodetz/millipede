@@ -1,12 +1,12 @@
 module SkewHeap 
   (Heap
-  ,fromList
+  ,fromList,toList
   ,merge
   ,insert
   ,getMin
   ) where
   
-data Heap a = Node !a !(Heap a) !(Heap a) | Leaf
+data Heap a = Node a (Heap a) (Heap a) | Leaf
 
 findMin :: Heap a -> a
 findMin (Node a l r) = a

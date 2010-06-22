@@ -25,7 +25,7 @@ main = do
   t3 <- timeSince t2
   putStrLn "Doing Waterfall"
   let bs = bounds ar
-  let trees = (take 6 $!drop 1 $! iterate (waterfall$!)$!getNode edge)
+  let trees = (take 6  $! iterate (waterfall$!)$!getNode edge)
   
   t4 <- seq (head trees) (timeSince t3)
   putStrLn "Converting output"

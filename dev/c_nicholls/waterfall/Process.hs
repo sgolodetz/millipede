@@ -51,14 +51,14 @@ fillIn node ar = do
   ;return $!  ar'
   }
 
-arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Heap Voxel))
+arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (S.Set Voxel))
 arrayToNode arr miss (n,(v,p))  = do
   { --print p
   ;ls <-readArray arr p
   ;let ls' = remove miss ls
   ;let ls'' = remove p ls'
   ;es <- mapM  (arrayToNode arr p) ls''
-  ;return $! mkEdge (mkNode(fromList [(v,p)]) es) n
+  ;return $! mkEdge (mkNode(S.fromList [(v,p)]) es) n
   }
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
@@ -137,10 +137,11 @@ output bound tree = do
 
 
 --- Other Functions ---------
-
-
 instance Ord a => Mergeable (Heap a) where
   union = merge
+
+instance Ord a => Mergeable (S.Set a) where
+  union = S.union
 
 freeze' :: ( MArray a Int IO, IArray UArray Int) => a Point Int -> IO (UArray Point Int)
 freeze' = freeze
@@ -154,5 +155,4 @@ foldR _ a []     = return $!  a
 foldR f a (x:xs) = foldR f a xs >>= \y -> f x y
 
 avg :: [Voxel] -> Int
-avg [] = 109
-avg ((_,(a,b)):xs) = mod ((a+b)*13 + 17*(avg xs) ) 255
+avg xs = (sum$map fst xs) `div` length xs
