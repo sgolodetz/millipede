@@ -8,6 +8,7 @@
 
 #include <map>
 
+#include <common/commands/CommandSequenceGuard.h>
 #include "PartitionForestSelection.h"
 
 namespace mp {

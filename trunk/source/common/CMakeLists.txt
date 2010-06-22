@@ -19,6 +19,7 @@ SET(commands_sources
 commands/BasicCommandManager.cpp
 commands/Command.cpp
 commands/CommandSequenceGuard.cpp
+commands/ICommandManager.cpp
 commands/SequenceCommand.cpp
 commands/UndoableCommandManager.cpp
 )
@@ -28,6 +29,7 @@ commands/BasicCommandManager.h
 commands/Command.h
 commands/CommandSequenceGuard.h
 commands/ICommandManager.h
+commands/ListenerAlertingCommandSequenceGuard.h
 commands/SequenceCommand.h
 commands/UndoableCommandManager.h
 )

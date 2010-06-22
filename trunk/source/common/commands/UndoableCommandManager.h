@@ -31,16 +31,19 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void begin_command_sequence();
 	bool can_redo() const;
 	bool can_undo() const;
 	void clear_history();
-	void end_command_sequence(const std::string& description);
-	void execute(const Command_Ptr& command);
 	void redo();
 	std::string redo_description() const;
 	void undo();
 	std::string undo_description() const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void begin_command_sequence_hook();
+	void end_command_sequence_hook(const std::string& description);
+	void execute_hook(const Command_Ptr& command);
 };
 
 }

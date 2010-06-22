@@ -14,12 +14,9 @@ class BasicCommandManager : public ICommandManager
 {
 	//#################### PUBLIC METHODS ####################
 public:
-	void begin_command_sequence();
 	bool can_redo() const;
 	bool can_undo() const;
 	void clear_history();
-	void end_command_sequence(const std::string&);
-	void execute(const Command_Ptr& command);
 	void redo();
 	std::string redo_description() const;
 	void undo();

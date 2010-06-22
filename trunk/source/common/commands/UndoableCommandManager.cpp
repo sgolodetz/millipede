@@ -27,11 +27,6 @@ UndoableCommandManager::UndoableCommandManager()
 {}
 
 //#################### PUBLIC METHODS ####################
-void UndoableCommandManager::begin_command_sequence()
-{
-	execute(m_markerCommand);
-}
-
 bool UndoableCommandManager::can_redo() const
 {
 	return !m_undone.empty();
@@ -45,30 +40,6 @@ bool UndoableCommandManager::can_undo() const
 void UndoableCommandManager::clear_history()
 {
 	m_done.clear();
-	m_undone.clear();
-}
-
-// Precondition: begin_command_sequence() has been called since end_command_sequence() was last called
-void UndoableCommandManager::end_command_sequence(const std::string& description)
-{
-	std::deque<Command_Ptr> sequence;
-	for(;;)
-	{
-		if(m_done.empty()) throw Exception("No command sequence had been started");
-
-		Command_Ptr latest = m_done.back();
-		m_done.pop_back();
-
-		if(latest != m_markerCommand) sequence.push_front(latest);
-		else break;
-	}
-	m_done.push_back(Command_Ptr(new SequenceCommand(description, sequence)));
-}
-
-void UndoableCommandManager::execute(const Command_Ptr& command)
-{
-	command->execute();
-	m_done.push_back(command);
 	m_undone.clear();
 }
 
@@ -104,6 +75,37 @@ std::string UndoableCommandManager::undo_description() const
 {
 	if(can_undo()) return m_done.back()->description();
 	else return "";
+}
+
+//#################### PRIVATE METHODS ####################
+void UndoableCommandManager::begin_command_sequence_hook()
+{
+	execute(m_markerCommand);
+}
+
+// Precondition: begin_command_sequence() has been called since end_command_sequence() was last called
+void UndoableCommandManager::end_command_sequence_hook(const std::string& description)
+{
+	std::deque<Command_Ptr> sequence;
+	for(;;)
+	{
+		if(m_done.empty()) throw Exception("No command sequence had been started");
+
+		Command_Ptr latest = m_done.back();
+		m_done.pop_back();
+
+		if(latest != m_markerCommand) sequence.push_front(latest);
+		else break;
+	}
+	Command_Ptr command(new SequenceCommand(description, sequence));
+	set_depth_of_command(command);
+	m_done.push_back(command);
+}
+
+void UndoableCommandManager::execute_hook(const Command_Ptr& command)
+{
+	m_done.push_back(command);
+	m_undone.clear();
 }
 
 }

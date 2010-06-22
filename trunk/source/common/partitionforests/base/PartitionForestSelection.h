@@ -291,14 +291,14 @@ public:
 		return usedLayers > 1;
 	}
 
-	void layer_was_cloned(int index)
+	void layer_was_cloned(int index, int commandDepth)
 	{
 		// The desired effect is to insert a layer above the one specified and migrate any selected nodes upwards to the new layer.
 		// This can be achieved more easily by simply inserting an empty layer below the one being cloned, as here.
 		m_nodes.insert(m_nodes.begin() + index, Layer());
 	}
 
-	void layer_was_undeleted(int index)
+	void layer_was_undeleted(int index, int commandDepth)
 	{
 		// Re-add the layer itself.
 		m_nodes.insert(m_nodes.begin() + index, Layer());
@@ -318,7 +318,7 @@ public:
 		}
 	}
 
-	void layer_will_be_deleted(int index)
+	void layer_will_be_deleted(int index, int commandDepth)
 	{
 		// Replace any nodes in the specified layer with their children in the layer below.
 		Layer copy = m_nodes[index];
@@ -331,7 +331,7 @@ public:
 		m_nodes.erase(m_nodes.begin() + index);
 	}
 
-	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results)
+	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
 	{
 		if(in_representation(node))
 		{
@@ -353,7 +353,7 @@ public:
 		return NodeConstIterator(this, true);
 	}
 
-	void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result)
+	void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)
 	{
 		// Consolidate the node resulting from the merge. Note that the selection of
 		// this node's ancestors in the forest will be unchanged by the merge, so we
@@ -361,7 +361,7 @@ public:
 		consolidate_node(result, boost::none);
 	}
 
-	void nodes_will_be_merged(const std::set<PFNodeID>& nodes)
+	void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)
 	{
 		// Replace any selected nodes with their children in the layer below.
 		for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
