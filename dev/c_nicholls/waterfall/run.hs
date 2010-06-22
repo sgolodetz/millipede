@@ -40,7 +40,10 @@ main = do
 
 path="./output/output"
 
-save n [a] =do {arrayToFile (path++show n++".pgm") a}
+
+
+save n [a] =do {arrayToFile ("./output/output"++show n++".pgm") a}
+
 save n (a:as) = do 
   {putStrLn ("Saving file "++show n)
   ;arrayToFile (path++show n++".pgm") a

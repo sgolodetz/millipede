@@ -16,7 +16,8 @@ main  = do
   window <- xmlGetWidget xml castToWindow "window1"
   onDestroy window mainQuit
  
-  images <- mapM (\n -> pixbufNewFromFile  (path ++ show n ++ ".pgm")) [1..6]
+  images <- mapM (\n -> pixbufNewFromFile  ("./output/output" ++ show n ++ ".pgm")) [1..5]
+
   image <- xmlGetWidget xml castToImage "image1"
 
   

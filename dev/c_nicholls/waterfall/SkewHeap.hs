@@ -4,7 +4,6 @@ module SkewHeap
   ,merge
   ,insert
   ,getMin
-  ,toList
   ) where
   
 data Heap a = Node !a !(Heap a) !(Heap a) | Leaf

@@ -2,6 +2,7 @@
 module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight,size) where
 
 import List (sortBy)
+import Data.Set (Set)
 data Node a = Node !a ![Edge a] 
 data Edge a = Edge Int (Node a) 
 
@@ -36,7 +37,8 @@ waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (maximum [i| Edge i t
 -- with a regional minimum below it (see also long explanation below)
 --
 -- it also calls the join function when regions need merging. 
-
+{-# SECIALIZE mergeChildren :: Edge (Set a) -> (Edge (Set a),Bool)#-}
+{-# SECIALIZE mergeChildren :: Edge (Heap a) -> (Edge (Heap a),Bool)#-}
 mergeChildren :: Mergeable a => Edge a -> (Edge a,Bool)
 mergeChildren n@(Edge w (Node r [])) = (n,False)
 mergeChildren (Edge w (Node r es) ) 

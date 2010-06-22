@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall#-}
 {-# LANGUAGE FlexibleContexts #-}
 module Process(
   bounds,
@@ -8,24 +9,14 @@ module Process(
     ) where
 
 
-import SkewHeap (Heap,fromList,merge,insert,getMin,toList  )
+import SkewHeap (Heap,fromList,merge,getMin )
+import qualified Data.Set  as S
 import Data.Array.IO
-import Data.Array.Unboxed       (IArray, Ix, UArray, amap, bounds, elems, listArray, (!)  )
-import List(sort,sortBy)
-import Data.Word                (Word8, Word16)
-import Waterfall(waterfall,Node,mkNode,Edge,mkEdge,Mergeable(union),getRegion,getEdges,getNode,getWeight)
-import PGM
-  ( pgmToArray,
-    pgmsToArrays,
-    pgmToArrayWithComments, pgmsToArraysWithComments,
-    arrayToPgmWithComment,
-    pgmsFromFile, pgmsFromHandle,
-    arrayToPgm, arrayToFile, arrayToHandle, arraysToHandle,
-    arraysToFile
-  )
+import Data.Array.Unboxed       (IArray,  UArray, amap, bounds,  (!)  )
+import Data.Word                ( Word16)
+import Waterfall(Node,mkNode,Edge,mkEdge,Mergeable(union),getRegion,getEdges,getNode)
 
 type Adjacency  = (Int,Voxel,Voxel)
-type Region = [Point]
 type Point = (Int,Int)
 type Voxel = (Int,Point)
 
@@ -42,7 +33,7 @@ neighbours   arr  (a,b) (x,y) = neighbours' arr  (a,b) (x,y) ls'
 -- do the actual array lookup and calculate weights (diffs in greyscale)
 
 neighbours' :: UArray Point Int -> Point -> Point -> [Point] -> [Adjacency]
-neighbours' arr  (a,b) (x,y) [] =  []
+neighbours' _  _ _ [] =  []
 neighbours' arr  (a,b) (x,y) (p:ps) = 
       let v1 = arr!(a,b) in
       let v2 = arr! p in
@@ -51,13 +42,13 @@ neighbours' arr  (a,b) (x,y) (p:ps) =
 
                
 ---- IO Array Functions ----            
-fillIn :: Node (Heap Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
+fillIn :: Node (S.Set Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
 fillIn node ar = do
-  {let rs' = toList (getRegion node)
+  {let rs' = S.toList (getRegion node)
   ;let x = avg rs'
   ;mapM (\v -> writeArray ar (snd v) x) rs'
   ;ar' <- foldR (fillIn.getNode) ar (getEdges node)
-  ;return $!  ar
+  ;return $!  ar'
   }
 
 arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (Heap Voxel))
@@ -71,7 +62,7 @@ arrayToNode arr miss (n,(v,p))  = do
   }
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
-remove p [] = []
+remove _ [] = []
 remove p ((w,(v,a)):ps) 
   | a ==p = remove p ps
   | otherwise = ((w,(v,a)):remove p ps)
@@ -107,7 +98,7 @@ getAdjacencyList arr = do
 -- calculating the weight on the fly each time.
 
 pickNAdjacencys ::  Int-> Point ->Heap Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> IO (IOArray Point [(Int,Voxel)])
-pickNAdjacencys 0 is es ar ls  = do {return $!  ls}
+pickNAdjacencys 0 _ _ _  ls  = do {return $!  ls}
 pickNAdjacencys n is h ar ls   = do
   {
   ;let ((w,a,b),h') = getMin h
@@ -126,7 +117,7 @@ pickNAdjacencys n is h ar ls   = do
   }
 
 filter' :: IOArray Point [(Int,Voxel)]-> [Adjacency]-> [Adjacency]-> IO ([Adjacency])
-filter' br ls [] = do{ return $!  ls}
+filter' _ ls [] = do{ return $!  ls}
 filter' br ls ((a,b,(c,d)):xs) = do
   {l <- readArray br d
   ;if l == [] 
@@ -135,9 +126,9 @@ filter' br ls ((a,b,(c,d)):xs) = do
   }
 
 ---  Main  -------------  
-output :: (Point, Point) -> Node (Heap Voxel) -> IO (UArray Point Word16)
-output bounds tree = do
-  {arr <- newArray bounds 0 :: IO (IOUArray Point Int)
+output :: (Point, Point) -> Node (S.Set Voxel) -> IO (UArray Point Word16)
+output bound tree = do
+  {arr <- newArray bound 0 :: IO (IOUArray Point Int)
   ;arrr <- fillIn tree arr
   ;arrrr <- freeze' arrr
   ;let arrrrr = amap (fromIntegral :: Int -> Word16) arrrr
@@ -146,6 +137,8 @@ output bounds tree = do
 
 
 --- Other Functions ---------
+
+
 instance Ord a => Mergeable (Heap a) where
   union = merge
 
@@ -157,9 +150,9 @@ freeze'' = freeze
 
     
 foldR            :: (Monad m) => (a -> b -> m b) -> b -> [a] -> m b
-foldR f a []     = return $!  a
+foldR _ a []     = return $!  a
 foldR f a (x:xs) = foldR f a xs >>= \y -> f x y
 
 avg :: [Voxel] -> Int
 avg [] = 109
-avg ((x,(a,b)):xs) = mod ((a+b)*13 + 17*(avg xs) ) 255
+avg ((_,(a,b)):xs) = mod ((a+b)*13 + 17*(avg xs) ) 255

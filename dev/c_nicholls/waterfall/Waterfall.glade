@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Thu Sep 17 14:53:11 2009 -->
+<!--Generated with glade3 3.4.5 on Thu Oct 15 11:08:27 2009 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <property name="title" translatable="yes">Hello Gtk2hs</property>
@@ -36,7 +36,8 @@
             <child>
               <widget class="GtkHScrollbar" id="hscrollbar1">
                 <property name="visible">True</property>
-                <property name="adjustment">0 0 99 1 1 1</property>
+                <property name="adjustment">1.514792899408284 0 5 1 1 1</property>
+                <property name="show_fill_level">True</property>
               </widget>
             </child>
             <child>
