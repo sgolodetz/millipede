@@ -5,7 +5,7 @@
 //#################### CONSTRUCTORS ####################
 MyGLCanvas::MyGLCanvas(wxWindow *parent, int width, int height, int *attribList)
 :	wxGLCanvas(parent, (wxGLCanvas*)NULL, wxID_ANY, wxDefaultPosition, wxSize(width, height), wxFULL_REPAINT_ON_RESIZE, wxGLCanvasName, attribList),
-	m_width(width), m_height(height)
+	m_height(height), m_width(width)
 {}
 
 //#################### EVENT HANDLERS ####################

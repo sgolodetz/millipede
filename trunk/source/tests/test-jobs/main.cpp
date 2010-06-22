@@ -106,7 +106,8 @@ struct OtherThreadJob : SimpleJob
 		{
 			for(int j=0; j<10000; ++j)
 			{
-				int k = i*j;
+				int k;
+				k = i*j;
 			}
 
 			if(i % 1000 == 0)
