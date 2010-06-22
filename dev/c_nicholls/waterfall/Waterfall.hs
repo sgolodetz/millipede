@@ -101,7 +101,7 @@ join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 join r ebs w =
    (Edge w (Node newr es))
    where 
-     (rs, es,rs) = extractEdgeRegions ebs 
+     (rs, es,ls) = extractEdgeRegions ebs ls
      newr = foldl' union r rs  
  
 
@@ -110,7 +110,7 @@ join r ebs w =
 -- by putting the region of the current node(s) in a list (as),
 -- and the regions of the children in a list (bs).
 
-extractEdgeRegions :: [(Edge a,Bool)] -> [Edge a] -> ([a],[Edge a])
+extractEdgeRegions :: [(Edge a,Bool)] -> [Edge a] -> ([a],[Edge a],[Edge a])
 extractEdgeRegions [] rs = ([],rs)
 extractEdgeRegions ((e,True):es) rs = extractEdgeRegions es (e:rs)
 extractEdgeRegions ((Edge v n,False):es) rs =
