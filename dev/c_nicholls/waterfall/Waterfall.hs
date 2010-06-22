@@ -3,7 +3,7 @@ module Waterfall(waterfall,mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union),
 
 import Data.List (sortBy,foldl')
 import Data.Set (Set)
-import Debug.Trace
+
 
 data Node a = Node a [Edge a] 
 data Edge a = Edge Int (Node a) 
@@ -101,7 +101,7 @@ join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 join r ebs w =
    (Edge w (Node newr es))
    where 
-     (rs, es,ls) = extractEdgeRegions ebs ls
+     (rs, es) = extractEdgeRegions ebs []
      newr = foldl' union r rs  
  
 
@@ -110,7 +110,7 @@ join r ebs w =
 -- by putting the region of the current node(s) in a list (as),
 -- and the regions of the children in a list (bs).
 
-extractEdgeRegions :: [(Edge a,Bool)] -> [Edge a] -> ([a],[Edge a],[Edge a])
+extractEdgeRegions :: [(Edge a,Bool)] -> [Edge a] -> ([a],[Edge a])
 extractEdgeRegions [] rs = ([],rs)
 extractEdgeRegions ((e,True):es) rs = extractEdgeRegions es (e:rs)
 extractEdgeRegions ((Edge v n,False):es) rs =
