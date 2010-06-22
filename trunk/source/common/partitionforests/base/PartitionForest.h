@@ -1001,8 +1001,7 @@ public:
 	what remains of the split node.
 
 	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
-			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
-			changes involved, rather than the execution of the sequence as a whole.
+			has been previously installed using set_command_manager()).
 
 	@param[in]	node				The node to be unzipped
 	@param[in]	toLayer				The layer to which to unzip it
@@ -1092,8 +1091,7 @@ public:
 	then the sequence of sibling merges would be {(3,0),(3,3),(3,2)}, {(2,0),(2,4),(2,2)} and (trivially) {(1,5)}.
 
 	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
-			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
-			changes involved, rather than the execution of the sequence as a whole.
+			has been previously installed using set_command_manager()).
 
 	@param[in]	chains				The chains of nodes
 	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
@@ -1199,8 +1197,7 @@ public:
 	and then merges the nodes in each component using zipping operations.
 
 	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
-			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
-			changes involved, rather than the execution of the sequence as a whole.
+			has been previously installed using set_command_manager()).
 
 	@param[in]	nodes				The nodes to be merged
 	@param[in]	checkPreconditions	Whether or not the preconditions need to be explicitly checked (default: yes)
@@ -1283,8 +1280,7 @@ public:
 	operation is implemented in terms of zipping operations.)
 
 	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
-			has been previously installed using set_command_manager()). Listeners will be alerted to the individual
-			changes involved, rather than the execution of the sequence as a whole.
+			has been previously installed using set_command_manager()).
 
 	@param[in]	node				The node whose parent is to be switched
 	@param[in]	newParent			The index of the new parent to which to switch it (in the layer above)
