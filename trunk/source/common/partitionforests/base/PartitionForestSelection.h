@@ -221,27 +221,37 @@ public:
 	struct Listener
 	{
 		virtual ~Listener() {}
-		virtual void modification_redone(const Modification& modification, int commandDepth)	{ selection_changed(commandDepth); }
-		virtual void modification_undone(const Modification& modification, int commandDepth)	{ selection_changed(commandDepth); }
-		virtual void node_was_consolidated(const PFNodeID& node)								{}
-		virtual void node_was_deconsolidated(const PFNodeID& node)								{}
-		virtual void node_was_deselected(const PFNodeID& node, int commandDepth)				{ selection_changed(commandDepth); }
-		virtual void node_was_selected(const PFNodeID& node, int commandDepth)					{ selection_changed(commandDepth); }
-		virtual void selection_changed(int commandDepth)										{}
-		virtual void selection_was_cleared(int commandDepth)									{ selection_changed(commandDepth); }
+		virtual void command_sequence_execution_began(const std::string& description, int commandDepth)		{}
+		virtual void command_sequence_execution_ended(const std::string& description, int commandDepth)		{ selection_changed(commandDepth); }
+		virtual void command_sequence_undo_began(const std::string& description, int commandDepth)			{}
+		virtual void command_sequence_undo_ended(const std::string& description, int commandDepth)			{ selection_changed(commandDepth); }
+		virtual void modification_redone(const Modification& modification, int commandDepth)				{ selection_changed(commandDepth); }
+		virtual void modification_undone(const Modification& modification, int commandDepth)				{ selection_changed(commandDepth); }
+		virtual void node_was_consolidated(const PFNodeID& node)											{}
+		virtual void node_was_deconsolidated(const PFNodeID& node)											{}
+		virtual void node_was_deselected(const PFNodeID& node, int commandDepth)							{ selection_changed(commandDepth); }
+		virtual void node_was_selected(const PFNodeID& node, int commandDepth)								{ selection_changed(commandDepth); }
+		virtual void selection_changed(int commandDepth)													{}
+		virtual void selection_was_cleared(int commandDepth)												{ selection_changed(commandDepth); }
 	};
+
+	typedef ListenerAlertingCommandSequenceGuard<Listener> SequenceGuard;
 
 private:
 	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-		void modification_redone(const Modification& modification, int commandDepth)	{ multicast(bind(&Listener::modification_redone, _1, modification, commandDepth)); }
-		void modification_undone(const Modification& modification, int commandDepth)	{ multicast(bind(&Listener::modification_undone, _1, modification, commandDepth)); }
-		void node_was_consolidated(const PFNodeID& node)								{ multicast(bind(&Listener::node_was_consolidated, _1, node)); }
-		void node_was_deconsolidated(const PFNodeID& node)								{ multicast(bind(&Listener::node_was_deconsolidated, _1, node)); }
-		void node_was_deselected(const PFNodeID& node, int commandDepth)				{ multicast(bind(&Listener::node_was_deselected, _1, node, commandDepth)); }
-		void node_was_selected(const PFNodeID& node, int commandDepth)					{ multicast(bind(&Listener::node_was_selected, _1, node, commandDepth)); }
-		void selection_changed(int commandDepth)										{ multicast(bind(&Listener::selection_changed, _1, commandDepth)); }
-		void selection_was_cleared(int commandDepth)									{ multicast(bind(&Listener::selection_was_cleared, _1, commandDepth)); }
+		void command_sequence_execution_began(const std::string& description, int commandDepth)		{ multicast(bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
+		void command_sequence_execution_ended(const std::string& description, int commandDepth)		{ multicast(bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
+		void command_sequence_undo_began(const std::string& description, int commandDepth)			{ multicast(bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
+		void command_sequence_undo_ended(const std::string& description, int commandDepth)			{ multicast(bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
+		void modification_redone(const Modification& modification, int commandDepth)				{ multicast(bind(&Listener::modification_redone, _1, modification, commandDepth)); }
+		void modification_undone(const Modification& modification, int commandDepth)				{ multicast(bind(&Listener::modification_undone, _1, modification, commandDepth)); }
+		void node_was_consolidated(const PFNodeID& node)											{ multicast(bind(&Listener::node_was_consolidated, _1, node)); }
+		void node_was_deconsolidated(const PFNodeID& node)											{ multicast(bind(&Listener::node_was_deconsolidated, _1, node)); }
+		void node_was_deselected(const PFNodeID& node, int commandDepth)							{ multicast(bind(&Listener::node_was_deselected, _1, node, commandDepth)); }
+		void node_was_selected(const PFNodeID& node, int commandDepth)								{ multicast(bind(&Listener::node_was_selected, _1, node, commandDepth)); }
+		void selection_changed(int commandDepth)													{ multicast(bind(&Listener::selection_changed, _1, commandDepth)); }
+		void selection_was_cleared(int commandDepth)												{ multicast(bind(&Listener::selection_was_cleared, _1, commandDepth)); }
 	};
 
 	//#################### PRIVATE VARIABLES ####################
@@ -402,6 +412,13 @@ public:
 		{
 			if(in_representation(*it)) deconsolidate_node(*it, boost::none);
 		}
+	}
+
+	void replace_with_node(const PFNodeID& node)
+	{
+		SequenceGuard guard(m_commandManager, m_listeners, "Replace Selection");
+		clear();
+		select_node(node);
 	}
 
 	void select_node(const PFNodeID& node)

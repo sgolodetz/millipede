@@ -27,25 +27,25 @@ struct ForestListener : IPF::Listener
 	void command_sequence_execution_began(const std::string& description, int commandDepth)
 	{
 		output_command_depth(commandDepth);
-		std::cout << "Command sequence execution began: " << description << '\n';
+		std::cout << "Forest command sequence execution began: " << description << '\n';
 	}
 
 	void command_sequence_execution_ended(const std::string& description, int commandDepth)
 	{
 		output_command_depth(commandDepth);
-		std::cout << "Command sequence execution ended: " << description << '\n';
+		std::cout << "Forest command sequence execution ended: " << description << '\n';
 	}
 
 	void command_sequence_undo_began(const std::string& description, int commandDepth)
 	{
 		output_command_depth(commandDepth);
-		std::cout << "Command sequence undo began: " << description << '\n';
+		std::cout << "Forest command sequence undo began: " << description << '\n';
 	}
 
 	void command_sequence_undo_ended(const std::string& description, int commandDepth)
 	{
 		output_command_depth(commandDepth);
-		std::cout << "Command sequence undo ended: " << description << '\n';
+		std::cout << "Forest command sequence undo ended: " << description << '\n';
 	}
 
 	void layer_was_cloned(int index, int commandDepth)
@@ -104,6 +104,30 @@ struct ForestListener : IPF::Listener
 
 struct SelectionListener : Selection::Listener
 {
+	void command_sequence_execution_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence execution began: " << description << '\n';
+	}
+
+	void command_sequence_execution_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence execution ended: " << description << '\n';
+	}
+
+	void command_sequence_undo_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence undo began: " << description << '\n';
+	}
+
+	void command_sequence_undo_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence undo ended: " << description << '\n';
+	}
+
 	void modification_redone(const Selection::Modification& modification, int commandDepth)
 	{
 		output_command_depth(commandDepth);
@@ -362,6 +386,8 @@ void selection_test()
 	ipf->delete_layer(3);
 	ipf->delete_layer(2);
 	manager->undo();
+	manager->undo();
+	selection->replace_with_node(PFNodeID(4,0));
 	manager->undo();
 }
 
