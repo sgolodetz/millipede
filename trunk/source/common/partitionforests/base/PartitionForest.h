@@ -108,17 +108,17 @@ public:
 	{
 		virtual ~Listener() {}
 		virtual void command_sequence_execution_began(const std::string& description, int commandDepth)				{}
-		virtual void command_sequence_execution_ended(const std::string& description, int commandDepth)				{}
+		virtual void command_sequence_execution_ended(const std::string& description, int commandDepth)				{ forest_changed(commandDepth); }
 		virtual void command_sequence_undo_began(const std::string& description, int commandDepth)					{}
-		virtual void command_sequence_undo_ended(const std::string& description, int commandDepth)					{}
+		virtual void command_sequence_undo_ended(const std::string& description, int commandDepth)					{ forest_changed(commandDepth); }
 		virtual void forest_changed(int commandDepth)																{}
 		virtual void layer_was_cloned(int index, int commandDepth)													{ forest_changed(commandDepth); }
 		virtual void layer_was_deleted(int index, int commandDepth)													{ forest_changed(commandDepth); }
 		virtual void layer_was_undeleted(int index, int commandDepth)												{ forest_changed(commandDepth); }
-		virtual void layer_will_be_deleted(int index, int commandDepth)												{ forest_changed(commandDepth); }
+		virtual void layer_will_be_deleted(int index, int commandDepth)												{}
 		virtual void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)		{ forest_changed(commandDepth); }
 		virtual void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)	{ forest_changed(commandDepth); }
-		virtual void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)						{ forest_changed(commandDepth); }
+		virtual void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)						{}
 	};
 
 protected:
