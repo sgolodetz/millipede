@@ -63,7 +63,6 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 {
 	m_camera->add_raw_listener(this);
 	m_camera->set_command_manager(commandManager);
-	m_model->add_raw_listener(this);
 	m_model->set_command_manager(commandManager);
 
 	calculate_canvas_size();
@@ -143,12 +142,6 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 	return m_model;
 }
 
-void PartitionView::model_changed()
-{
-	recreate_overlays();
-	refresh_canvases();
-}
-
 void PartitionView::segment_volume()
 {
 	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
@@ -167,6 +160,8 @@ void PartitionView::segment_volume()
 		{
 			m_model->set_volume_ipf(volumeIPF);
 			create_partition_textures(m_camera->slice_orientation());
+			recreate_overlays();
+			refresh_canvases();
 		}
 	}
 }

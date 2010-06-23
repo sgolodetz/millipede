@@ -34,8 +34,7 @@ typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayM
 
 class PartitionView
 :	public wxPanel,
-	public PartitionCamera::Listener,
-	public PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
+	public PartitionCamera::Listener
 {
 	//#################### FRIENDS ####################
 	friend class BaseCanvas;
@@ -84,7 +83,6 @@ public:
 	void goto_slice();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
-	void model_changed();
 	void segment_volume();
 
 	//#################### PRIVATE METHODS ####################

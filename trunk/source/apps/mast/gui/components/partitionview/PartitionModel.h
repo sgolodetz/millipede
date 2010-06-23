@@ -25,20 +25,6 @@ typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
 {
-	//#################### NESTED CLASSES ####################
-public:
-	struct Listener
-	{
-		virtual ~Listener() {}
-		virtual void model_changed() = 0;
-	};
-
-private:
-	struct CompositeListener : CompositeListenerBase<Listener>
-	{
-		void model_changed()	{ multicast(boost::bind(&Listener::model_changed, _1)); }
-	};
-
 	//#################### TYPEDEFS ####################
 public:
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
@@ -57,7 +43,6 @@ public:
 private:
 	ICommandManager_Ptr m_commandManager;
 	DICOMVolume_Ptr m_dicomVolume;
-	CompositeListener m_listeners;
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
 	VolumeIPFSelection_Ptr m_selection;
 	VolumeIPF_Ptr m_volumeIPF;
@@ -70,11 +55,6 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_raw_listener(Listener *listener)
-	{
-		m_listeners.add_raw_listener(listener);
-	}
-
 	DICOMVolume_CPtr dicom_volume() const
 	{
 		return m_dicomVolume;
@@ -130,8 +110,6 @@ public:
 			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(60,0,50)));
 		}
 #endif
-
-		m_listeners.model_changed();
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()

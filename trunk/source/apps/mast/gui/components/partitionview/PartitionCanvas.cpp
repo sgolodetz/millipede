@@ -54,13 +54,13 @@ void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
 
 	if(e.ShiftDown())
 	{
-		// Augment the existing forest selection.
-		// TODO
+		// Toggle the node in the selection.
+		model()->selection()->toggle_node(id);
 	}
 	else
 	{
-		// Clear the existing forest selection and select the node clicked.
-		// TODO
+		// Replace the current selection with the clicked node.
+		model()->selection()->replace_with_node(id);
 	}
 }
 
