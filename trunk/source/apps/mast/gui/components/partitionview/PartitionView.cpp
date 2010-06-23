@@ -47,6 +47,25 @@ enum
 
 namespace mp {
 
+//#################### NESTED CLASSES ####################
+struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer>::Listener
+{
+	PartitionView *base;
+
+	explicit SelectionListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void selection_changed(int commandDepth)
+	{
+		if(commandDepth == 0)
+		{
+			base->recreate_overlays();
+			base->refresh_canvases();
+		}
+	}
+};
+
 //#################### CONSTRUCTORS ####################
 PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
 							 const ICommandManager_Ptr& commandManager, wxGLContext *context)
@@ -162,6 +181,8 @@ void PartitionView::segment_volume()
 			create_partition_textures(m_camera->slice_orientation());
 			recreate_overlays();
 			refresh_canvases();
+
+			m_model->selection()->add_shared_listener(boost::shared_ptr<VolumeIPFSelectionT::Listener>(new SelectionListener(this)));
 		}
 	}
 }

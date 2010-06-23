@@ -27,7 +27,7 @@ void BaseCanvas::fit_image_to_canvas()
 	// Step 2:	Calculate the sizes of the image and canvas.
 	itk::Vector<double,2> tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
-	double imageWidth = br_Pixels[0] - tl_Pixels[0], imageHeight = br_Pixels[1] - tl_Pixels[1];
+	double imageWidth = br_Pixels[0] + 1 - tl_Pixels[0], imageHeight = br_Pixels[1] + 1 - tl_Pixels[1];
 	wxSize canvasSize = GetSize();
 	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
 
@@ -163,6 +163,17 @@ void BaseCanvas::setup(PartitionView *partitionView)
 }
 
 //#################### PROTECTED METHODS ####################
+void BaseCanvas::calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const
+{
+	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
+	itk::Vector<double,3> tl_Coords;
+	tl_Coords.Fill(0);
+	itk::Vector<double,3> br_Coords;
+	for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i] - 1;
+	tl_Pixels = coords_to_pixels(tl_Coords);
+	br_Pixels = coords_to_pixels(br_Coords);
+}
+
 PartitionCamera_Ptr BaseCanvas::camera()
 {
 	if(m_partitionView) return m_partitionView->camera();
@@ -306,17 +317,6 @@ itk::Vector<double,3> BaseCanvas::project_to_3d(const itk::Vector<double,2>& p) 
 }
 
 //#################### PRIVATE METHODS ####################
-void BaseCanvas::calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const
-{
-	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
-	itk::Vector<double,3> tl_Coords;
-	tl_Coords.Fill(0);
-	itk::Vector<double,3> br_Coords;
-	for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i];
-	tl_Pixels = coords_to_pixels(tl_Coords);
-	br_Pixels = coords_to_pixels(br_Coords);
-}
-
 void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta)
 {
 	// Calculate the offset of the zoom centre from the centre in Pixels.
@@ -327,22 +327,17 @@ void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelD
 	double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
 	itk::Vector<double,2> newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
 
-	// Calculate the new centre in Coords.
-	itk::Vector<double,2> newCentre_Coords = pixels_to_coords(newCentre_Pixels);
-
-	// Clamp it to the volume.
-	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
-	itk::Vector<double,3> maxs3D;
-	for(int i=0; i<3; ++i)
-	{
-		maxs3D[i] = volumeSize[i] - 1;
-	}
-	itk::Vector<double,2> maxs = project_to_2d(maxs3D);
+	// Clamp it to the image bounds.
+	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	calculate_image_bounds(tl_Pixels, br_Pixels);
 	for(int i=0; i<2; ++i)
 	{
-		if(newCentre_Coords[i] < 0) newCentre_Coords[i] = 0;
-		if(newCentre_Coords[i] > maxs[i]) newCentre_Coords[i] = maxs[i];
+		if(newCentre_Pixels[i] < tl_Pixels[i]) newCentre_Pixels[i] = tl_Pixels[i];
+		if(newCentre_Pixels[i] > br_Pixels[i]) newCentre_Pixels[i] = br_Pixels[i];
 	}
+
+	// Calculate the new centre in Coords.
+	itk::Vector<double,2> newCentre_Coords = pixels_to_coords(newCentre_Pixels);
 
 	// Set the zoom level.
 	if(!camera()->set_zoom_level(newZoomLevel)) return;

@@ -44,6 +44,11 @@ private:
 	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
+	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
+
+	//#################### NESTED CLASSES ####################
+private:
+	struct SelectionListener;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
