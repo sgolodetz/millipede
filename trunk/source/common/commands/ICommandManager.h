@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_ICOMMANDMANAGER
 #define H_MILLIPEDE_ICOMMANDMANAGER
 
+#include <string>
+
 #include <boost/shared_ptr.hpp>
 
 namespace mp {
