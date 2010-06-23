@@ -29,9 +29,9 @@ PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrient
 }
 
 //#################### PUBLIC METHODS ####################
-void PartitionCamera::add_raw_listener(Listener *listener)
+void PartitionCamera::add_shared_listener(const boost::shared_ptr<Listener>& listener)
 {
-	m_listeners.add_raw_listener(listener);
+	m_listeners.add_shared_listener(listener);
 }
 
 void PartitionCamera::centre()
@@ -183,35 +183,36 @@ void PartitionCamera::set_command_manager(const ICommandManager_Ptr& commandMana
 void PartitionCamera::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
 {
 	m_dicomTextureSet = dicomTextureSet;
-	m_listeners.camera_changed();
+	m_listeners.texture_set_changed();
 }
 
 void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
 {
 	m_partitionTextureSets = partitionTextureSets;
-	m_listeners.camera_changed();
+	m_listeners.texture_set_changed();
 }
 
 void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
 {
 	if(check_slice_location(sliceLocation))
 	{
+		bool sliceChanged = sliceLocation[m_sliceOrientation] != m_sliceLocation[m_sliceOrientation];
 		m_sliceLocation = sliceLocation;
-		m_listeners.camera_changed();
+		m_listeners.slice_location_changed(sliceChanged);
 	}
 }
 
 void PartitionCamera::set_slice_orientation(SliceOrientation sliceOrientation)
 {
 	m_sliceOrientation = sliceOrientation;
-	m_listeners.camera_changed();
+	m_listeners.slice_orientation_changed();
 }
 
 bool PartitionCamera::set_zoom_level(int zoomLevel)
 {
 	if(zoomLevel < min_zoom_level() || zoomLevel > max_zoom_level()) return false;
 	m_zoomLevel = zoomLevel;
-	m_listeners.camera_changed();
+	m_listeners.zoom_level_changed();
 	return true;
 }
 

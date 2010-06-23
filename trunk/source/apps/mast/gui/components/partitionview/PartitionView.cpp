@@ -47,7 +47,41 @@ enum
 
 namespace mp {
 
-//#################### NESTED CLASSES ####################
+//#################### LISTENERS ####################
+struct PartitionView::CameraListener : PartitionCamera::Listener
+{
+	PartitionView *base;
+
+	explicit CameraListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void slice_location_changed(bool sliceChanged)
+	{
+		base->update_sliders();
+		if(sliceChanged) base->recreate_overlays();
+		base->refresh_canvases();
+	}
+
+	void slice_orientation_changed()
+	{
+		base->recreate_overlays();
+		base->refresh_canvases();
+	}
+
+	void texture_set_changed()
+	{
+		base->recreate_overlays();
+		base->refresh_canvases();
+	}
+
+	void zoom_level_changed()
+	{
+		base->update_sliders();
+		base->refresh_canvases();
+	}
+};
+
 struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer>::Listener
 {
 	PartitionView *base;
@@ -80,7 +114,7 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_overlayManager(new PartitionOverlayManager),
 	m_volumeChoice(volumeChoice)
 {
-	m_camera->add_raw_listener(this);
+	m_camera->add_shared_listener(boost::shared_ptr<PartitionCamera::Listener>(new CameraListener(this)));
 	m_camera->set_command_manager(commandManager);
 	m_model->set_command_manager(commandManager);
 
@@ -103,20 +137,6 @@ const PartitionCamera_Ptr& PartitionView::camera()
 PartitionCamera_CPtr PartitionView::camera() const
 {
 	return m_camera;
-}
-
-void PartitionView::camera_changed()
-{
-	// Update sliders.
-	SliceLocation loc = m_camera->slice_location();
-	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
-	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
-	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
-	m_layerSlider->SetValue(loc.layer);
-	m_zoomSlider->SetValue(m_camera->zoom_level());
-
-	recreate_overlays();
-	refresh_canvases();
 }
 
 void PartitionView::fit_image_to_view()
@@ -383,6 +403,16 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(middleRight);
 
 	sizer->Fit(this);
+}
+
+void PartitionView::update_sliders()
+{
+	SliceLocation loc = m_camera->slice_location();
+	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
+	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
+	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
+	m_layerSlider->SetValue(loc.layer);
+	m_zoomSlider->SetValue(m_camera->zoom_level());
 }
 
 //#################### EVENT HANDLERS ####################
