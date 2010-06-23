@@ -220,10 +220,10 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	LeafLayer_Ptr m_leafLayer;						// the partitioning graph for the leaf layer
-	std::vector<BranchLayer_Ptr> m_branchLayers;	// the partitioning graphs for the branch layers
 	ICommandManager_Ptr m_commandManager;
-	CompositeListener m_listeners;
+	std::vector<BranchLayer_Ptr> m_branchLayers;	// the partitioning graphs for the branch layers
+	LeafLayer_Ptr m_leafLayer;						// the partitioning graph for the leaf layer
+	boost::shared_ptr<CompositeListener> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -243,7 +243,7 @@ public:
 			(in the obvious manner)
 	*/
 	explicit PartitionForest(const LeafLayer_Ptr& leafLayer, const BranchLayer_Ptr& lowestBranchLayer = BranchLayer_Ptr())
-	:	m_leafLayer(leafLayer), m_commandManager(new BasicCommandManager)
+	:	m_commandManager(new BasicCommandManager), m_leafLayer(leafLayer), m_listeners(new CompositeListener)
 	{
 		if(lowestBranchLayer) m_branchLayers.push_back(lowestBranchLayer);
 	}
@@ -292,7 +292,7 @@ public:
 	*/
 	void add_weak_listener(const weak_ptr<Listener>& listener)
 	{
-		m_listeners.add_weak_listener(listener);
+		m_listeners->add_weak_listener(listener);
 	}
 
 	/**
@@ -1407,7 +1407,7 @@ private:
 			++bt, ++ct;
 		}
 
-		m_listeners.layer_was_cloned(indexB, commandDepth);
+		m_listeners->layer_was_cloned(indexB, commandDepth);
 	}
 
 	static BranchLayer_Ptr clone_graph(const IForestLayer<BranchProperties,int>& sourceLayer)
@@ -1432,7 +1432,7 @@ private:
 
 	BranchLayer_Ptr delete_layer_impl(int indexD, int commandDepth)
 	{
-		m_listeners.layer_will_be_deleted(indexD, commandDepth);
+		m_listeners->layer_will_be_deleted(indexD, commandDepth);
 
 		// Note: We denote the layer to be deleted as D, the layer below as B, and the layer above (if any) as A.
 		// We know that the layer we're deleting is a branch layer, since deleting the leaf layer is explicitly prohibited.
@@ -1464,7 +1464,7 @@ private:
 		// Now layer D itself can be deleted.
 		m_branchLayers.erase(m_branchLayers.begin() + indexD - 1);
 
-		m_listeners.layer_was_deleted(indexD, commandDepth);
+		m_listeners->layer_was_deleted(indexD, commandDepth);
 		return layerD;
 	}
 
@@ -1555,7 +1555,7 @@ private:
 
 	PFNodeID merge_sibling_nodes_impl(const std::set<PFNodeID>& nodes, int commandDepth)
 	{
-		m_listeners.nodes_will_be_merged(nodes, commandDepth);
+		m_listeners->nodes_will_be_merged(nodes, commandDepth);
 
 		PFNodeID canonical = *nodes.begin();
 		std::set<PFNodeID>::const_iterator othersBegin = nodes.begin(), othersEnd = nodes.end();
@@ -1629,7 +1629,7 @@ private:
 			layerM->remove_node(it->index());
 		}
 
-		m_listeners.nodes_were_merged(nodes, canonical, commandDepth);
+		m_listeners->nodes_were_merged(nodes, canonical, commandDepth);
 		return canonical;
 	}
 
@@ -1690,7 +1690,7 @@ private:
 			}
 		}
 
-		m_listeners.node_was_split(node, newNodes, commandDepth);
+		m_listeners->node_was_split(node, newNodes, commandDepth);
 		return newNodes;
 	}
 
@@ -1724,7 +1724,7 @@ private:
 		}
 
 		// Alert any forest listeners as necessary.
-		m_listeners.layer_was_undeleted(indexD, commandDepth);
+		m_listeners->layer_was_undeleted(indexD, commandDepth);
 	}
 };
 

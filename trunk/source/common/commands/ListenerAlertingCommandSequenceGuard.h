@@ -22,41 +22,41 @@ class ListenerAlertingCommandSequenceGuard
 private:
 	struct PreCommand : Command
 	{
-		Listener& listener;
+		boost::shared_ptr<Listener> listener;
 		std::string description;
 		int commandDepth;
 
-		explicit PreCommand(Listener& listener_, const std::string& description_, int commandDepth_)
+		explicit PreCommand(const boost::shared_ptr<Listener>& listener_, const std::string& description_, int commandDepth_)
 		:	Command("Listener Alerting Pre-Command"), listener(listener_), description(description_), commandDepth(commandDepth_)
 		{}
 
-		void execute()	{ listener.command_sequence_execution_began(description, commandDepth); }
-		void undo()		{ listener.command_sequence_undo_ended(description, commandDepth); }
+		void execute()	{ listener->command_sequence_execution_began(description, commandDepth); }
+		void undo()		{ listener->command_sequence_undo_ended(description, commandDepth); }
 	};
 
 	struct PostCommand : Command
 	{
-		Listener& listener;
+		boost::shared_ptr<Listener> listener;
 		std::string description;
 		int commandDepth;
 
-		explicit PostCommand(Listener& listener_, const std::string& description_, int commandDepth_)
+		explicit PostCommand(const boost::shared_ptr<Listener>& listener_, const std::string& description_, int commandDepth_)
 		:	Command("Listener Alerting Post-Command"), listener(listener_), description(description_), commandDepth(commandDepth_)
 		{}
 
-		void execute()	{ listener.command_sequence_execution_ended(description, commandDepth); }
-		void undo()		{ listener.command_sequence_undo_began(description, commandDepth); }
+		void execute()	{ listener->command_sequence_execution_ended(description, commandDepth); }
+		void undo()		{ listener->command_sequence_undo_began(description, commandDepth); }
 	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::string m_description;
-	Listener& m_listener;
+	boost::shared_ptr<Listener> m_listener;
 	ICommandManager_Ptr m_manager;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ListenerAlertingCommandSequenceGuard(const ICommandManager_Ptr& manager, Listener& listener, const std::string& description)
+	ListenerAlertingCommandSequenceGuard(const ICommandManager_Ptr& manager, const boost::shared_ptr<Listener>& listener, const std::string& description)
 	:	m_description(description), m_listener(listener), m_manager(manager)
 	{
 		m_manager->begin_command_sequence();
