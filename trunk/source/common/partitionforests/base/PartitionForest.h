@@ -914,9 +914,14 @@ public:
 			if(!are_connected(nodeIndices, nodes.begin()->layer())) throw Exception("The merged node would not be connected");
 		}
 
-		shared_ptr<MergeSiblingNodesCommand> command(new MergeSiblingNodesCommand(this, nodes));
-		m_commandManager->execute(command);
-		return command->result();
+		// We only need to merge the nodes if there's more than one of them.
+		if(nodes.size() > 1)
+		{
+			shared_ptr<MergeSiblingNodesCommand> command(new MergeSiblingNodesCommand(this, nodes));
+			m_commandManager->execute(command);
+			return command->result();
+		}
+		else return *nodes.begin();
 	}
 
 	/**
@@ -977,9 +982,19 @@ public:
 			}
 		}
 
-		shared_ptr<SplitNodeCommand> command(new SplitNodeCommand(this, node, groups));
-		m_commandManager->execute(command);
-		return command->result();
+		// We only need to split the node if there's more than one group.
+		if(groups.size() != 1)
+		{
+			shared_ptr<SplitNodeCommand> command(new SplitNodeCommand(this, node, groups));
+			m_commandManager->execute(command);
+			return command->result();
+		}
+		else
+		{
+			std::set<PFNodeID> result;
+			result.insert(node);
+			return result;
+		}
 	}
 
 	//@}
