@@ -5,6 +5,7 @@
 
 #include "CTLowestLayersBuilder.h"
 
+#include <itkBilateralImageFilter.h>
 #include <itkCastImageFilter.h>
 #include <itkGradientAnisotropicDiffusionImageFilter.h>
 #include <itkGradientMagnitudeImageFilter.h>
@@ -76,17 +77,36 @@ void CTLowestLayersBuilder::execute()
 	}
 	if(is_aborted()) return;
 
-	// Smooth this real image using anisotropic diffusion filtering.
-	typedef itk::GradientAnisotropicDiffusionImageFilter<RealImage,RealImage> ADFilter;
-	for(int i=0; i<m_segmentationOptions.adfIterations; ++i)
+	if(false)
 	{
-		ADFilter::Pointer adFilter = ADFilter::New();
-		adFilter->SetInput(realImage);
-		adFilter->SetConductanceParameter(1.0);
-		adFilter->SetNumberOfIterations(1);
-		adFilter->SetTimeStep(0.0625);
-		adFilter->Update();
-		realImage = adFilter->GetOutput();
+		// Smooth this real image using anisotropic diffusion filtering.
+		typedef itk::GradientAnisotropicDiffusionImageFilter<RealImage,RealImage> ADFilter;
+		for(int i=0; i<m_segmentationOptions.adfIterations; ++i)
+		{
+			ADFilter::Pointer adFilter = ADFilter::New();
+			adFilter->SetInput(realImage);
+			adFilter->SetConductanceParameter(1.0);
+			adFilter->SetNumberOfIterations(1);
+			adFilter->SetTimeStep(0.0625);
+			adFilter->Update();
+			realImage = adFilter->GetOutput();
+
+			if(is_aborted()) return;
+			increment_progress();
+		}
+	}
+	else
+	{
+		// Smooth this real image using bilateral filtering.
+		typedef itk::BilateralImageFilter<RealImage,RealImage> BilateralFilter;
+		BilateralFilter::Pointer bilateralFilter = BilateralFilter::New();
+		bilateralFilter->SetInput(realImage);
+		double domainSigmas[] = {6.0,6.0,6.0};
+		double rangeSigma = 5.0;
+		bilateralFilter->SetDomainSigma(domainSigmas);
+		bilateralFilter->SetRangeSigma(rangeSigma);
+		bilateralFilter->Update();
+		realImage = bilateralFilter->GetOutput();
 
 		if(is_aborted()) return;
 		increment_progress();
@@ -132,7 +152,12 @@ void CTLowestLayersBuilder::execute()
 
 int CTLowestLayersBuilder::length() const
 {
-	return m_segmentationOptions.adfIterations + 3;
+	if(false)
+	{
+		// FIXME: Modify progress to be aware of both filters
+		return m_segmentationOptions.adfIterations + 3;
+	}
+	else return 4;
 }
 
 }
