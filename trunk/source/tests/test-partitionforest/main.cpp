@@ -21,72 +21,7 @@ typedef boost::shared_ptr<IPF> IPF_Ptr;
 typedef PartitionForestSelection<SimpleImageLeafLayer, SimpleImageBranchLayer> Selection;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
 
-//#################### HELPERS ####################
-IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
-{
-	// Construct the forest.
-	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
-	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
-	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
-
-	IPF_Ptr ipf(new IPF(leafLayer));
-
-	std::set<PFNodeID> mergees;
-
-	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,3));	mergees.insert(PFNodeID(1,4));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-		mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,5));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-		mergees.insert(PFNodeID(1,6));	mergees.insert(PFNodeID(1,7));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(1);
-		mergees.insert(PFNodeID(2,2));	mergees.insert(PFNodeID(2,8));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(2);
-		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,6));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(3);
-		mergees.insert(PFNodeID(4,0));	mergees.insert(PFNodeID(4,2));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	// Make future forest operations undoable.
-	ipf->set_command_manager(manager);
-
-	return ipf;
-}
-
-//#################### TESTS ####################
-enum SimpleFeature
-{
-	KIDNEY,
-	LIVER,
-};
-
-void feature_selection_test()
-{
-	ICommandManager_Ptr manager(new UndoableCommandManager);
-	IPF_Ptr ipf = default_ipf(manager);
-
-	typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeature> MFS;
-	typedef boost::shared_ptr<MFS> MFS_Ptr;
-	MFS_Ptr mfs(new MFS(ipf));
-	mfs->set_command_manager(manager);
-
-	mfs->identify_feature(PFNodeID(1,6), LIVER);
-	mfs->unidentify_feature(PFNodeID(1,6), LIVER);
-	manager->undo();
-	mfs->clear_feature(LIVER);
-	manager->undo();
-	mfs->identify_feature(PFNodeID(3,0), KIDNEY);
-	std::vector<SimpleFeature> features = mfs->features_of(PFNodeID(0,7));
-	mfs->clear_all();
-	manager->undo();
-}
-
+//#################### LISTENERS ####################
 struct ForestListener : IPF::Listener
 {
 	void command_sequence_execution_began(const std::string& description, int commandDepth)
@@ -167,6 +102,120 @@ struct ForestListener : IPF::Listener
 	}
 };
 
+struct SelectionListener : Selection::Listener
+{
+	void modification_redone(const Selection::Modification& modification, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection modification redone\n";
+	}
+
+	void modification_undone(const Selection::Modification& modification, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection modification undone\n";
+	}
+
+	void node_was_consolidated(const PFNodeID& node)
+	{
+		std::cout << "Node was consolidated: " << node << '\n';
+	}
+
+	void node_was_deconsolidated(const PFNodeID& node)
+	{
+		std::cout << "Node was deconsolidated: " << node << '\n';
+	}
+
+	void node_was_deselected(const PFNodeID& node, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node was deselected: " << node << '\n';
+	}
+
+	void node_was_selected(const PFNodeID& node, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node was selected: " << node << '\n';
+	}
+
+	void output_command_depth(int commandDepth)
+	{
+		std::cout << '(' << commandDepth << ") ";
+	}
+
+	void selection_was_cleared(int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection was cleared\n";
+	}
+};
+
+//#################### HELPERS ####################
+IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
+{
+	// Construct the forest.
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
+
+	IPF_Ptr ipf(new IPF(leafLayer));
+
+	std::set<PFNodeID> mergees;
+
+	ipf->clone_layer(0);
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,3));	mergees.insert(PFNodeID(1,4));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+		mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,5));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+		mergees.insert(PFNodeID(1,6));	mergees.insert(PFNodeID(1,7));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(1);
+		mergees.insert(PFNodeID(2,2));	mergees.insert(PFNodeID(2,8));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(2);
+		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,6));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(3);
+		mergees.insert(PFNodeID(4,0));	mergees.insert(PFNodeID(4,2));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	// Make future forest operations undoable.
+	ipf->set_command_manager(manager);
+
+	return ipf;
+}
+
+//#################### TESTS ####################
+enum SimpleFeature
+{
+	KIDNEY,
+	LIVER,
+};
+
+void feature_selection_test()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+
+	typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeature> MFS;
+	typedef boost::shared_ptr<MFS> MFS_Ptr;
+	MFS_Ptr mfs(new MFS(ipf));
+	mfs->set_command_manager(manager);
+
+	mfs->identify_feature(PFNodeID(1,6), LIVER);
+	mfs->unidentify_feature(PFNodeID(1,6), LIVER);
+	manager->undo();
+	mfs->clear_feature(LIVER);
+	manager->undo();
+	mfs->identify_feature(PFNodeID(3,0), KIDNEY);
+	std::vector<SimpleFeature> features = mfs->features_of(PFNodeID(0,7));
+	mfs->clear_all();
+	manager->undo();
+}
+
 void listener_test()
 {
 	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
@@ -174,12 +223,10 @@ void listener_test()
 	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
+	ipf.add_shared_listener(shared_ptr<ForestListener>(new ForestListener));
 
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	ipf.set_command_manager(manager);
-
-	shared_ptr<ForestListener> listener(new ForestListener);
-	ipf.add_weak_listener(listener);
 
 	ipf.clone_layer(0);
 	ipf.delete_layer(1);
@@ -296,6 +343,8 @@ void selection_test()
 	Selection_Ptr selection(new Selection(ipf));
 	selection->set_command_manager(manager);
 	ipf->add_weak_listener(selection);
+	ipf->add_shared_listener(shared_ptr<ForestListener>(new ForestListener));
+	selection->add_shared_listener(shared_ptr<SelectionListener>(new SelectionListener));
 
 	selection->select_node(PFNodeID(4,0));
 	manager->undo();
@@ -357,10 +406,10 @@ void unzip_zip_test()
 int main()
 {
 	//feature_selection_test();
-	listener_test();
+	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
-	//selection_test();
+	selection_test();
 	//switch_parent_test();
 	//unzip_zip_test();
 	return 0;

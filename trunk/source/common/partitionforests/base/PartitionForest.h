@@ -223,7 +223,7 @@ private:
 	ICommandManager_Ptr m_commandManager;
 	std::vector<BranchLayer_Ptr> m_branchLayers;	// the partitioning graphs for the branch layers
 	LeafLayer_Ptr m_leafLayer;						// the partitioning graph for the leaf layer
-	boost::shared_ptr<CompositeListener> m_listeners;
+	shared_ptr<CompositeListener> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -276,6 +276,23 @@ public:
 	*/
 	//@{
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Adds a shared listener to be notified of changes to the partition forest.
+
+	A shared listener is one of which the partition forest shares ownership (in other words, no external
+	handle must be maintained, as would be the case with a weak listener).
+
+	@param[in]	listener	A shared_ptr (non-null) to the listener
+	@pre
+		-	listener.get() != NULL
+	@post
+		-	The argument is registered as listening to this partition forest (and will be alerted to any changes)
+	*/
+	void add_shared_listener(const shared_ptr<Listener>& listener)
+	{
+		m_listeners->add_shared_listener(listener);
+	}
 
 	/**
 	@brief	Adds a weak listener to be notified of changes to the partition forest.
