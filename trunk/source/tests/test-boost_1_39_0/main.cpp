@@ -26,7 +26,6 @@ bool ready = false;
 void thread_a()
 {
 	for(int i=0; i<5; ++i) std::cout << "In Thread A\n";
-
 	boost::mutex::scoped_lock lock(mut);
 	ready = true;
 	cond.notify_one();
@@ -36,7 +35,6 @@ void thread_b()
 {
 	boost::mutex::scoped_lock lock(mut);
 	if(!ready) cond.wait(lock);
-
 	for(int i=0; i<5; ++i) std::cout << "In Thread B\n";
 }
 
