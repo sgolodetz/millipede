@@ -109,7 +109,7 @@ wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
 	waterfallPanel->SetSizer(waterfallSizer);
 
 	waterfallSizer->Add(new wxStaticText(waterfallPanel, wxID_ANY, wxT("Waterfall Layer Limit:")));
-	m_waterfallLayerLimit = new wxSpinCtrl(waterfallPanel, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 4);
+	m_waterfallLayerLimit = new wxSpinCtrl(waterfallPanel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 5);
 	waterfallSizer->Add(m_waterfallLayerLimit);
 
 	sizer->Fit(panel);

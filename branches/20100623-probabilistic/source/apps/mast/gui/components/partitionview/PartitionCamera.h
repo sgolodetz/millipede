@@ -31,12 +31,19 @@ public:
 	struct Listener
 	{
 		virtual ~Listener() {}
-		virtual void camera_changed() = 0;
+		virtual void slice_location_changed(bool sliceChanged, bool layerChanged) = 0;
+		virtual void slice_orientation_changed() = 0;
+		virtual void texture_set_changed() = 0;
+		virtual void zoom_level_changed() = 0;
 	};
 
+private:
 	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-		void camera_changed()	{ multicast(boost::bind(&Listener::camera_changed, _1)); }
+		void slice_location_changed(bool sliceChanged, bool layerChanged)	{ multicast(boost::bind(&Listener::slice_location_changed, _1, sliceChanged, layerChanged)); }
+		void slice_orientation_changed()									{ multicast(boost::bind(&Listener::slice_orientation_changed, _1)); }
+		void texture_set_changed()											{ multicast(boost::bind(&Listener::texture_set_changed, _1)); }
+		void zoom_level_changed()											{ multicast(boost::bind(&Listener::zoom_level_changed, _1)); }
 	};
 
 	//#################### PRIVATE VARIABLES ####################
@@ -56,7 +63,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void add_raw_listener(Listener *listener);
+	void add_shared_listener(const boost::shared_ptr<Listener>& listener);
 	void centre();
 	SliceTextureSet_CPtr dicom_texture_set() const;
 	void goto_next_layer();

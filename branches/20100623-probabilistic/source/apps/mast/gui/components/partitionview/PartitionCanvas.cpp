@@ -41,12 +41,20 @@ void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
 
 	itk::Vector<double,2> p_Pixels;
 	p_Pixels[0] = e.GetX(), p_Pixels[1] = e.GetY();
-	itk::Vector<double,3> p_Coords = pixels_to_3d_coords(p_Pixels);
 
-	// TODO: Exit if the click is not within the volume.
-	if(true) return;
+	// Exit if the click is not within the image bounds.
+	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	calculate_image_bounds(tl_Pixels, br_Pixels);
+	for(int i=0; i<2; ++i)
+	{
+		if(p_Pixels[i] < tl_Pixels[i] || p_Pixels[i] > br_Pixels[i])
+		{
+			return;
+		}
+	}
 
 	// Determine the node being clicked.
+	itk::Vector<double,3> p_Coords = pixels_to_3d_coords(p_Pixels);
 	int layerIndex = camera()->slice_location().layer;
 	itk::Index<3> position;
 	for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
@@ -54,13 +62,13 @@ void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
 
 	if(e.ShiftDown())
 	{
-		// Augment the existing forest selection.
-		// TODO
+		// Toggle the node in the selection.
+		model()->selection()->toggle_node(id);
 	}
 	else
 	{
-		// Clear the existing forest selection and select the node clicked.
-		// TODO
+		// Replace the current selection with the clicked node.
+		model()->selection()->replace_with_node(id);
 	}
 }
 

@@ -21,6 +21,159 @@ typedef boost::shared_ptr<IPF> IPF_Ptr;
 typedef PartitionForestSelection<SimpleImageLeafLayer, SimpleImageBranchLayer> Selection;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
 
+//#################### LISTENERS ####################
+struct ForestListener : IPF::Listener
+{
+	void command_sequence_execution_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Forest command sequence execution began: " << description << '\n';
+	}
+
+	void command_sequence_execution_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Forest command sequence execution ended: " << description << '\n';
+	}
+
+	void command_sequence_undo_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Forest command sequence undo began: " << description << '\n';
+	}
+
+	void command_sequence_undo_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Forest command sequence undo ended: " << description << '\n';
+	}
+
+	void layer_was_cloned(int index, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Layer cloned: " << index << '\n';
+	}
+
+	void layer_was_deleted(int index, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Layer deleted: " << index << '\n';
+	}
+
+	void layer_was_undeleted(int index, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Layer undeleted: " << index << '\n';
+	}
+
+	void layer_will_be_deleted(int index, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Layer will be deleted: " << index << '\n';
+	}
+
+	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node split: " << node << " -> { ";
+		std::copy(results.begin(), results.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
+		std::cout << "}\n";
+	}
+
+	void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Nodes merged: { ";
+		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
+		std::cout << "} -> " << result << '\n';
+	}
+
+	void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Nodes will be merged: { ";
+		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
+		std::cout << "}\n";
+	}
+
+	void output_command_depth(int commandDepth)
+	{
+		std::cout << '(' << commandDepth << ") ";
+	}
+};
+
+struct SelectionListener : Selection::Listener
+{
+	void command_sequence_execution_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence execution began: " << description << '\n';
+	}
+
+	void command_sequence_execution_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence execution ended: " << description << '\n';
+	}
+
+	void command_sequence_undo_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence undo began: " << description << '\n';
+	}
+
+	void command_sequence_undo_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection command sequence undo ended: " << description << '\n';
+	}
+
+	void modification_redone(const Selection::Modification& modification, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection modification redone\n";
+	}
+
+	void modification_undone(const Selection::Modification& modification, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection modification undone\n";
+	}
+
+	void node_was_consolidated(const PFNodeID& node)
+	{
+		std::cout << "Node was consolidated: " << node << '\n';
+	}
+
+	void node_was_deconsolidated(const PFNodeID& node)
+	{
+		std::cout << "Node was deconsolidated: " << node << '\n';
+	}
+
+	void node_was_deselected(const PFNodeID& node, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node was deselected: " << node << '\n';
+	}
+
+	void node_was_selected(const PFNodeID& node, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node was selected: " << node << '\n';
+	}
+
+	void output_command_depth(int commandDepth)
+	{
+		std::cout << '(' << commandDepth << ") ";
+	}
+
+	void selection_was_cleared(int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection was cleared\n";
+	}
+};
+
 //#################### HELPERS ####################
 IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 {
@@ -87,86 +240,6 @@ void feature_selection_test()
 	manager->undo();
 }
 
-struct ForestListener : IPF::Listener
-{
-	void command_sequence_execution_began(const std::string& description, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Command sequence execution began: " << description << '\n';
-	}
-
-	void command_sequence_execution_ended(const std::string& description, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Command sequence execution ended: " << description << '\n';
-	}
-
-	void command_sequence_undo_began(const std::string& description, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Command sequence undo began: " << description << '\n';
-	}
-
-	void command_sequence_undo_ended(const std::string& description, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Command sequence undo ended: " << description << '\n';
-	}
-
-	void layer_was_cloned(int index, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Layer cloned: " << index << '\n';
-	}
-
-	void layer_was_deleted(int index, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Layer deleted: " << index << '\n';
-	}
-
-	void layer_was_undeleted(int index, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Layer undeleted: " << index << '\n';
-	}
-
-	void layer_will_be_deleted(int index, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Layer will be deleted: " << index << '\n';
-	}
-
-	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Node split: " << node << " -> { ";
-		std::copy(results.begin(), results.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
-		std::cout << "}\n";
-	}
-
-	void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Nodes merged: { ";
-		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
-		std::cout << "} -> " << result << '\n';
-	}
-
-	void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)
-	{
-		output_command_depth(commandDepth);
-		std::cout << "Nodes will be merged: { ";
-		std::copy(nodes.begin(), nodes.end(), std::ostream_iterator<PFNodeID>(std::cout, " "));
-		std::cout << "}\n";
-	}
-
-	void output_command_depth(int commandDepth)
-	{
-		std::cout << '(' << commandDepth << ") ";
-	}
-};
-
 void listener_test()
 {
 	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
@@ -174,12 +247,10 @@ void listener_test()
 	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
 
 	IPF ipf(leafLayer);
+	ipf.add_shared_listener(shared_ptr<ForestListener>(new ForestListener));
 
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	ipf.set_command_manager(manager);
-
-	shared_ptr<ForestListener> listener(new ForestListener);
-	ipf.add_weak_listener(listener);
 
 	ipf.clone_layer(0);
 	ipf.delete_layer(1);
@@ -296,6 +367,8 @@ void selection_test()
 	Selection_Ptr selection(new Selection(ipf));
 	selection->set_command_manager(manager);
 	ipf->add_weak_listener(selection);
+	ipf->add_shared_listener(shared_ptr<ForestListener>(new ForestListener));
+	selection->add_shared_listener(shared_ptr<SelectionListener>(new SelectionListener));
 
 	selection->select_node(PFNodeID(4,0));
 	manager->undo();
@@ -313,6 +386,8 @@ void selection_test()
 	ipf->delete_layer(3);
 	ipf->delete_layer(2);
 	manager->undo();
+	manager->undo();
+	selection->replace_with_node(PFNodeID(4,0));
 	manager->undo();
 }
 
@@ -357,10 +432,10 @@ void unzip_zip_test()
 int main()
 {
 	//feature_selection_test();
-	listener_test();
+	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
-	//selection_test();
+	selection_test();
 	//switch_parent_test();
 	//unzip_zip_test();
 	return 0;

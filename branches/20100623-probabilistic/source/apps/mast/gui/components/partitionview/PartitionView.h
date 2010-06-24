@@ -32,10 +32,7 @@ class PartitionCanvas;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 
-class PartitionView
-:	public wxPanel,
-	public PartitionCamera::Listener,
-	public PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
+class PartitionView : public wxPanel
 {
 	//#################### FRIENDS ####################
 	friend class BaseCanvas;
@@ -45,6 +42,12 @@ private:
 	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
+	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
+
+	//#################### LISTENERS ####################
+private:
+	struct CameraListener;
+	struct SelectionListener;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -78,13 +81,11 @@ public:
 public:
 	const PartitionCamera_Ptr& camera();
 	PartitionCamera_CPtr camera() const;
-	void camera_changed();
 	void fit_image_to_view();
 	wxGLContext *get_context() const;
 	void goto_slice();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
-	void model_changed();
 	void segment_volume();
 
 	//#################### PRIVATE METHODS ####################
@@ -97,6 +98,7 @@ private:
 	void recreate_overlays();
 	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
+	void update_sliders();
 
 	//#################### EVENT HANDLERS ####################
 public:

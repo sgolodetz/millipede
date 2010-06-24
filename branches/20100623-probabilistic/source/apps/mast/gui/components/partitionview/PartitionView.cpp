@@ -47,6 +47,59 @@ enum
 
 namespace mp {
 
+//#################### LISTENERS ####################
+struct PartitionView::CameraListener : PartitionCamera::Listener
+{
+	PartitionView *base;
+
+	explicit CameraListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void slice_location_changed(bool sliceChanged, bool layerChanged)
+	{
+		base->update_sliders();
+		if(sliceChanged || layerChanged) base->recreate_overlays();
+		base->refresh_canvases();
+	}
+
+	void slice_orientation_changed()
+	{
+		base->recreate_overlays();
+		base->refresh_canvases();
+	}
+
+	void texture_set_changed()
+	{
+		base->recreate_overlays();
+		base->refresh_canvases();
+	}
+
+	void zoom_level_changed()
+	{
+		base->update_sliders();
+		base->refresh_canvases();
+	}
+};
+
+struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer>::Listener
+{
+	PartitionView *base;
+
+	explicit SelectionListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void selection_changed(int commandDepth)
+	{
+		if(commandDepth == 0)
+		{
+			base->recreate_overlays();
+			base->refresh_canvases();
+		}
+	}
+};
+
 //#################### CONSTRUCTORS ####################
 PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
 							 const ICommandManager_Ptr& commandManager, wxGLContext *context)
@@ -61,9 +114,8 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_overlayManager(new PartitionOverlayManager),
 	m_volumeChoice(volumeChoice)
 {
-	m_camera->add_raw_listener(this);
+	m_camera->add_shared_listener(boost::shared_ptr<PartitionCamera::Listener>(new CameraListener(this)));
 	m_camera->set_command_manager(commandManager);
-	m_model->add_raw_listener(this);
 	m_model->set_command_manager(commandManager);
 
 	calculate_canvas_size();
@@ -85,20 +137,6 @@ const PartitionCamera_Ptr& PartitionView::camera()
 PartitionCamera_CPtr PartitionView::camera() const
 {
 	return m_camera;
-}
-
-void PartitionView::camera_changed()
-{
-	// Update sliders.
-	SliceLocation loc = m_camera->slice_location();
-	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
-	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
-	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
-	m_layerSlider->SetValue(loc.layer);
-	m_zoomSlider->SetValue(m_camera->zoom_level());
-
-	recreate_overlays();
-	refresh_canvases();
 }
 
 void PartitionView::fit_image_to_view()
@@ -143,12 +181,6 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 	return m_model;
 }
 
-void PartitionView::model_changed()
-{
-	recreate_overlays();
-	refresh_canvases();
-}
-
 void PartitionView::segment_volume()
 {
 	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
@@ -167,6 +199,10 @@ void PartitionView::segment_volume()
 		{
 			m_model->set_volume_ipf(volumeIPF);
 			create_partition_textures(m_camera->slice_orientation());
+			recreate_overlays();
+			refresh_canvases();
+
+			m_model->selection()->add_shared_listener(boost::shared_ptr<VolumeIPFSelectionT::Listener>(new SelectionListener(this)));
 		}
 	}
 }
@@ -367,6 +403,16 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(middleRight);
 
 	sizer->Fit(this);
+}
+
+void PartitionView::update_sliders()
+{
+	SliceLocation loc = m_camera->slice_location();
+	m_xSlider->SetValue(m_xSlider->GetMin() + loc.x);
+	m_ySlider->SetValue(m_ySlider->GetMin() + loc.y);
+	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
+	m_layerSlider->SetValue(loc.layer);
+	m_zoomSlider->SetValue(m_camera->zoom_level());
 }
 
 //#################### EVENT HANDLERS ####################

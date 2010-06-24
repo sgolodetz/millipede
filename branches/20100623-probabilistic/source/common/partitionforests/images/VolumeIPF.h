@@ -62,10 +62,17 @@ public:
 	@brief	Calculates the index of the leaf node with the specified position in the volume.
 
 	@param[in]	position	A position in the volume
-	@return The index of the corresponding leaf node
+	@return The index of the corresponding leaf node, if the position lies within the bounds of the volume, or -1 otherwise
 	*/
 	int leaf_of_position(const itk::Index<3>& position) const
 	{
+		for(int i=0; i<3; ++i)
+		{
+			if(position[i] < 0 || position[i] >= static_cast<long>(m_volumeSize[i]))
+			{
+				return -1;
+			}
+		}
 		return (position[2] * m_volumeSize[1] + position[1]) * m_volumeSize[0] + position[0];
 	}
 
@@ -74,12 +81,13 @@ public:
 
 	@param[in]	layerIndex	The layer of the forest in which the node resides
 	@param[in]	position	The position in the volume which it must contain
-	@return As described
+	@return The ID of the node, if the position lies within the bounds of the volume, or PFNodeID::invalid() otherwise
 	*/
 	PFNodeID node_of(int layerIndex, const itk::Index<3>& position) const
 	{
 		int n = leaf_of_position(position);
-		return this->ancestor_of(PFNodeID(0,n), layerIndex);
+		if(n != -1) return this->ancestor_of(PFNodeID(0,n), layerIndex);
+		else return PFNodeID::invalid();
 	}
 
 	/**

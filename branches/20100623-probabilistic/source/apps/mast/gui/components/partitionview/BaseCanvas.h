@@ -53,6 +53,7 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	void calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const;
 	PartitionCamera_Ptr camera();
 	PartitionCamera_CPtr camera() const;
 	itk::Vector<double,2> centre_coords() const;
@@ -70,7 +71,6 @@ protected:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const;
 	void zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta);
 
 	//#################### EVENT HANDLERS ####################

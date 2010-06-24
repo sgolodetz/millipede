@@ -30,8 +30,8 @@ private:
 	typedef shared_ptr<PartitionForestT> PartitionForest_Ptr;
 	typedef shared_ptr<const PartitionForestT> PartitionForest_CPtr;
 
-	//#################### NESTED CLASSES (EXCLUDING COMMANDS AND ITERATORS) ####################
-private:
+	//#################### NESTED CLASSES (EXCLUDING COMMANDS, ITERATORS AND LISTENERS) ####################
+public:
 	class Modification
 	{
 	private:
@@ -68,7 +68,7 @@ private:
 private:
 	struct ModifyingCommand : Command
 	{
-		typedef boost::function<Modification (PartitionForestSelection*)> ModifyingFunction;
+		typedef boost::function<Modification (PartitionForestSelection*,int)> ModifyingFunction;
 
 		PartitionForestSelection *m_base;
 		ModifyingFunction m_function;
@@ -78,9 +78,9 @@ private:
 		:	Command(description), m_base(base), m_function(function)
 		{}
 
-		void execute()	{ m_modification = m_function(m_base); }
-		void redo()		{ m_base->redo_modification(m_modification); }
-		void undo()		{ m_base->undo_modification(m_modification); }
+		void execute()	{ m_modification = m_function(m_base, depth()); }
+		void redo()		{ m_base->redo_modification(m_modification, depth()); }
+		void undo()		{ m_base->undo_modification(m_modification, depth()); }
 	};
 
 	//#################### ITERATORS ####################
@@ -216,18 +216,57 @@ public:
 		}
 	};
 
+	//#################### LISTENERS ####################
+public:
+	struct Listener
+	{
+		virtual ~Listener() {}
+		virtual void command_sequence_execution_began(const std::string& description, int commandDepth)		{}
+		virtual void command_sequence_execution_ended(const std::string& description, int commandDepth)		{ selection_changed(commandDepth); }
+		virtual void command_sequence_undo_began(const std::string& description, int commandDepth)			{}
+		virtual void command_sequence_undo_ended(const std::string& description, int commandDepth)			{ selection_changed(commandDepth); }
+		virtual void modification_redone(const Modification& modification, int commandDepth)				{ selection_changed(commandDepth); }
+		virtual void modification_undone(const Modification& modification, int commandDepth)				{ selection_changed(commandDepth); }
+		virtual void node_was_consolidated(const PFNodeID& node)											{}
+		virtual void node_was_deconsolidated(const PFNodeID& node)											{}
+		virtual void node_was_deselected(const PFNodeID& node, int commandDepth)							{ selection_changed(commandDepth); }
+		virtual void node_was_selected(const PFNodeID& node, int commandDepth)								{ selection_changed(commandDepth); }
+		virtual void selection_changed(int commandDepth)													{}
+		virtual void selection_was_cleared(int commandDepth)												{ selection_changed(commandDepth); }
+	};
+
+	typedef ListenerAlertingCommandSequenceGuard<Listener> SequenceGuard;
+
+private:
+	struct CompositeListener : CompositeListenerBase<Listener>
+	{
+		void command_sequence_execution_began(const std::string& description, int commandDepth)		{ multicast(bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
+		void command_sequence_execution_ended(const std::string& description, int commandDepth)		{ multicast(bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
+		void command_sequence_undo_began(const std::string& description, int commandDepth)			{ multicast(bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
+		void command_sequence_undo_ended(const std::string& description, int commandDepth)			{ multicast(bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
+		void modification_redone(const Modification& modification, int commandDepth)				{ multicast(bind(&Listener::modification_redone, _1, modification, commandDepth)); }
+		void modification_undone(const Modification& modification, int commandDepth)				{ multicast(bind(&Listener::modification_undone, _1, modification, commandDepth)); }
+		void node_was_consolidated(const PFNodeID& node)											{ multicast(bind(&Listener::node_was_consolidated, _1, node)); }
+		void node_was_deconsolidated(const PFNodeID& node)											{ multicast(bind(&Listener::node_was_deconsolidated, _1, node)); }
+		void node_was_deselected(const PFNodeID& node, int commandDepth)							{ multicast(bind(&Listener::node_was_deselected, _1, node, commandDepth)); }
+		void node_was_selected(const PFNodeID& node, int commandDepth)								{ multicast(bind(&Listener::node_was_selected, _1, node, commandDepth)); }
+		void selection_changed(int commandDepth)													{ multicast(bind(&Listener::selection_changed, _1, commandDepth)); }
+		void selection_was_cleared(int commandDepth)												{ multicast(bind(&Listener::selection_was_cleared, _1, commandDepth)); }
+	};
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	// Datatype Invariant: If a node is part of the selection, then no ancestor or descendant of it is also part of the selection.
 	std::vector<Layer> m_nodes;
 
-	PartitionForest_Ptr m_forest;
 	ICommandManager_Ptr m_commandManager;
+	PartitionForest_Ptr m_forest;
+	shared_ptr<CompositeListener> m_listeners;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit PartitionForestSelection(const PartitionForest_Ptr& forest)
-	:	m_forest(forest), m_commandManager(new BasicCommandManager)
+	:	m_commandManager(new BasicCommandManager), m_forest(forest), m_listeners(new CompositeListener)
 	{
 		m_nodes.resize(m_forest->highest_layer() + 1);
 	}
@@ -239,9 +278,14 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	void add_shared_listener(const shared_ptr<Listener>& listener)
+	{
+		m_listeners->add_shared_listener(listener);
+	}
+
 	void clear()
 	{
-		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(boost::mem_fn(&PartitionForestSelection<LeafLayer,BranchLayer>::clear_impl), _1), "Clear Selection")));
+		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(boost::mem_fn(&PartitionForestSelection<LeafLayer,BranchLayer>::clear_impl), _1, _2), "Clear Selection")));
 	}
 
 	bool contains(const PFNodeID& node) const
@@ -254,7 +298,7 @@ public:
 
 	void deselect_node(const PFNodeID& node)
 	{
-		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(&PartitionForestSelection<LeafLayer,BranchLayer>::deselect_node_impl, _1, node), "Deselect Node")));
+		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(&PartitionForestSelection<LeafLayer,BranchLayer>::deselect_node_impl, _1, node, _2), "Deselect Node")));
 	}
 
 	bool empty() const
@@ -370,9 +414,16 @@ public:
 		}
 	}
 
+	void replace_with_node(const PFNodeID& node)
+	{
+		SequenceGuard guard(m_commandManager, m_listeners, "Replace Selection");
+		clear();
+		select_node(node);
+	}
+
 	void select_node(const PFNodeID& node)
 	{
-		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(&PartitionForestSelection<LeafLayer,BranchLayer>::select_node_impl, _1, node), "Select Node")));
+		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(&PartitionForestSelection<LeafLayer,BranchLayer>::select_node_impl, _1, node, _2), "Select Node")));
 	}
 
 	void set_command_manager(const ICommandManager_Ptr& commandManager)
@@ -398,7 +449,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	Modification clear_impl()
+	Modification clear_impl(int commandDepth)
 	{
 		Modification modification;
 		for(int i=0, size=static_cast<int>(m_nodes.size()); i<size; ++i)
@@ -409,6 +460,7 @@ private:
 			}
 			m_nodes[i].clear();
 		}
+		m_listeners->selection_was_cleared(commandDepth);
 		return modification;
 	}
 
@@ -427,6 +479,8 @@ private:
 			erase_node(*it, modification);
 		}
 		insert_node(node, modification);
+
+		m_listeners->node_was_consolidated(node);
 
 		return true;
 	}
@@ -450,6 +504,8 @@ private:
 		{
 			insert_node(*it, modification);
 		}
+
+		m_listeners->node_was_deconsolidated(node);
 	}
 
 	std::list<PFNodeID> descendants_in_layer(const PFNodeID& node, int layerIndex) const
@@ -491,7 +547,7 @@ private:
 		return descendants;
 	}
 
-	Modification deselect_node_impl(const PFNodeID& node)
+	Modification deselect_node_impl(const PFNodeID& node, int commandDepth)
 	{
 		Modification modification;
 
@@ -499,6 +555,7 @@ private:
 		if(in_representation(node))
 		{
 			erase_node(node, modification);
+			m_listeners->node_was_deselected(node, commandDepth);
 			return modification;
 		}
 
@@ -509,6 +566,7 @@ private:
 		{
 			split_selection(trail, modification);
 			erase_node(node, modification);
+			m_listeners->node_was_deselected(node, commandDepth);
 			return modification;
 		}
 
@@ -518,6 +576,7 @@ private:
 		{
 			erase_node(*it, modification);
 		}
+		m_listeners->node_was_deselected(node, commandDepth);
 		return modification;
 	}
 
@@ -548,15 +607,16 @@ private:
 		if(modification) modification->insert_node(node);
 	}
 
-	void redo_modification(const Modification& modification)
+	void redo_modification(const Modification& modification, int commandDepth)
 	{
 		const std::set<PFNodeID>& erased = modification.erased_nodes();
 		const std::set<PFNodeID>& inserted = modification.inserted_nodes();
 		for(std::set<PFNodeID>::const_iterator it=erased.begin(), iend=erased.end(); it!=iend; ++it) erase_node(*it, boost::none);
 		for(std::set<PFNodeID>::const_iterator it=inserted.begin(), iend=inserted.end(); it!=iend; ++it) insert_node(*it, boost::none);
+		m_listeners->modification_redone(modification, commandDepth);
 	}
 
-	Modification select_node_impl(const PFNodeID& node)
+	Modification select_node_impl(const PFNodeID& node, int commandDepth)
 	{
 		/*
 		Cases:
@@ -584,6 +644,7 @@ private:
 		// Note: This is designed to work even if the node actually has no parent.
 		consolidate_upwards_from_node(m_forest->parent_of(node), modification);
 
+		m_listeners->node_was_selected(node, commandDepth);
 		return modification;
 	}
 
@@ -597,12 +658,13 @@ private:
 		}
 	}
 
-	void undo_modification(const Modification& modification)
+	void undo_modification(const Modification& modification, int commandDepth)
 	{
 		const std::set<PFNodeID>& erased = modification.erased_nodes();
 		const std::set<PFNodeID>& inserted = modification.inserted_nodes();
 		for(std::set<PFNodeID>::const_iterator it=erased.begin(), iend=erased.end(); it!=iend; ++it) insert_node(*it, boost::none);
 		for(std::set<PFNodeID>::const_iterator it=inserted.begin(), iend=inserted.end(); it!=iend; ++it) erase_node(*it, boost::none);
+		m_listeners->modification_undone(modification, commandDepth);
 	}
 };
 

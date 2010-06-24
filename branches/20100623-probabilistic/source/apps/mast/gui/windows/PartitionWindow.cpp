@@ -93,12 +93,12 @@ void PartitionWindow::setup_menus()
 	navigationMenu->Append(MENUID_NAVIGATION_PANRIGHT, wxT("Pan &Right\tKP_6"));
 	navigationMenu->Append(MENUID_NAVIGATION_PANUP, wxT("Pan &Up\tKP_8"));
 	navigationMenu->AppendSeparator();
-	navigationMenu->Append(MENUID_NAVIGATION_NEXTSLICE, wxT("&Next Slice\tDown"));
-	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSSLICE, wxT("&Previous Slice\tUp"));
+	navigationMenu->Append(MENUID_NAVIGATION_NEXTSLICE, wxT("&Next Slice\tKP_9"));
+	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSSLICE, wxT("&Previous Slice\tKP_7"));
 	navigationMenu->Append(MENUID_NAVIGATION_GOTOSLICE, wxT("&Goto Slice...\tCtrl+G"));
 	navigationMenu->AppendSeparator();
-	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tRight"));
-	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("Previous L&ayer\tLeft"));
+	navigationMenu->Append(MENUID_NAVIGATION_NEXTLAYER, wxT("N&ext Layer\tKP_3"));
+	navigationMenu->Append(MENUID_NAVIGATION_PREVIOUSLAYER, wxT("Previous L&ayer\tKP_1"));
 	navigationMenu->AppendSeparator();
 	navigationMenu->Append(MENUID_NAVIGATION_ZOOMIN, wxT("Zoom &In\t["));
 	navigationMenu->Append(MENUID_NAVIGATION_ZOOMOUT, wxT("Zoom &Out\t]"));
