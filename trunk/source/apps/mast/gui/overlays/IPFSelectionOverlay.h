@@ -31,13 +31,17 @@ public:
 		{
 			// Fill and boundary colours.
 			RGBA32 fc = ITKImageUtil::make_rgba32(255,0,0,50);
+#if 0
 			RGBA32 bc = ITKImageUtil::make_rgba32(255,0,0,255);
+#endif
 
 			typedef typename VolumeIPFSelection<LeafLayer,BranchLayer>::ViewNodeConstIterator Iter;
 			for(Iter it=selection->view_at_layer_cbegin(sliceLocation.layer), iend=selection->view_at_layer_cend(sliceLocation.layer); it!=iend; ++it)
 			{
 				IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fc, false);
+#if 0
 				IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, bc, true);
+#endif
 			}
 		}
 
