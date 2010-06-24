@@ -68,7 +68,7 @@ public:
 	{
 		for(int i=0; i<3; ++i)
 		{
-			if(position[i] < 0 || position[i] >= m_volumeSize[i])
+			if(position[i] < 0 || position[i] >= static_cast<long>(m_volumeSize[i]))
 			{
 				return -1;
 			}
