@@ -98,18 +98,6 @@ public:
 
 		volumeIPF->add_weak_listener(m_selection);
 		set_command_manager(m_commandManager);
-
-#if 0
-		if(m_sliceOrientation == ORIENT_XY)
-		{
-			m_multiFeatureSelection->identify_feature(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(60,280,0)), AF_KIDNEY);
-			m_multiFeatureSelection->identify_feature(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(300,150,0)), AF_LIVER);
-		}
-		else if(m_sliceOrientation == ORIENT_XZ)
-		{
-			m_selection->select_node(m_volumeIPF->node_of(m_volumeIPF->highest_layer(), ITKImageUtil::make_index(60,0,50)));
-		}
-#endif
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()
