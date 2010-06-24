@@ -106,14 +106,14 @@ void BaseCanvas::render(wxPaintDC& dc) const
 		glColor3d(1,1,1);
 		glBegin(GL_QUADS);
 			glTexCoord2d(0,0);	glVertex2d(tl_Pixels[0], tl_Pixels[1]);
-			glTexCoord2d(1,0);	glVertex2d(br_Pixels[0], tl_Pixels[1]);
-			glTexCoord2d(1,1);	glVertex2d(br_Pixels[0], br_Pixels[1]);
-			glTexCoord2d(0,1);	glVertex2d(tl_Pixels[0], br_Pixels[1]);
+			glTexCoord2d(1,0);	glVertex2d(br_Pixels[0] + 1, tl_Pixels[1]);
+			glTexCoord2d(1,1);	glVertex2d(br_Pixels[0] + 1, br_Pixels[1] + 1);
+			glTexCoord2d(0,1);	glVertex2d(tl_Pixels[0], br_Pixels[1] + 1);
 		glEnd();
 		glPopAttrib();
 
 		// Render any overlays for this canvas.
-		render_overlays(tl_Pixels[0], tl_Pixels[1], br_Pixels[0], br_Pixels[1]);
+		render_overlays(tl_Pixels[0], tl_Pixels[1], br_Pixels[0] + 1, br_Pixels[1] + 1);
 	}
 	else
 	{
