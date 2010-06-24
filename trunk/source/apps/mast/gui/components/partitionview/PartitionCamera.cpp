@@ -197,8 +197,9 @@ void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
 	if(check_slice_location(sliceLocation))
 	{
 		bool sliceChanged = sliceLocation[m_sliceOrientation] != m_sliceLocation[m_sliceOrientation];
+		bool layerChanged = sliceLocation.layer != m_sliceLocation.layer;
 		m_sliceLocation = sliceLocation;
-		m_listeners.slice_location_changed(sliceChanged);
+		m_listeners.slice_location_changed(sliceChanged, layerChanged);
 	}
 }
 

@@ -56,10 +56,10 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	:	base(base_)
 	{}
 
-	void slice_location_changed(bool sliceChanged)
+	void slice_location_changed(bool sliceChanged, bool layerChanged)
 	{
 		base->update_sliders();
-		if(sliceChanged) base->recreate_overlays();
+		if(sliceChanged || layerChanged) base->recreate_overlays();
 		base->refresh_canvases();
 	}
 
