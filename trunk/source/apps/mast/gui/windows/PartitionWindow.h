@@ -62,6 +62,7 @@ public:
 	void OnMenuNavigationZoomIn(wxCommandEvent&);
 	void OnMenuNavigationZoomOut(wxCommandEvent&);
 	void OnMenuSegmentationSegmentCTVolume(wxCommandEvent&);
+	void OnMenuSelectionClearSelection(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e);
@@ -71,6 +72,7 @@ public:
 	void OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e);
+	void OnUpdateMenuSelectionClearSelection(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

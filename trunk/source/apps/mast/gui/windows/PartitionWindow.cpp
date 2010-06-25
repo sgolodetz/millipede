@@ -36,6 +36,7 @@ enum
 	MENUID_NAVIGATION_ZOOMIN,
 	MENUID_NAVIGATION_ZOOMOUT,
 	MENUID_SEGMENTATION_SEGMENTCTVOLUME,
+	MENUID_SELECTION_CLEARSELECTION,
 };
 
 }
@@ -108,7 +109,7 @@ void PartitionWindow::setup_menus()
 	wxMenu *selectionMenu = new wxMenu;
 	selectionMenu->Append(wxID_ANY, wxT("&Select Nodes By ID..."));
 	selectionMenu->AppendSeparator();
-	selectionMenu->Append(wxID_ANY, wxT("&Clear Selection"));
+	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
 
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTCTVOLUME, wxT("Segment CT &Volume..."));
@@ -263,6 +264,11 @@ void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)
 	m_view->segment_volume();
 }
 
+void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
+{
+	m_view->model()->selection()->clear();
+}
+
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
 {
@@ -317,6 +323,11 @@ void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 	e.Enable(m_view->camera()->has_previous_slice());
 }
 
+void PartitionWindow::OnUpdateMenuSelectionClearSelection(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->model()->selection() && !m_view->model()->selection()->empty());
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
@@ -338,6 +349,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, PartitionWindow::OnMenuNavigationZoomIn)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, PartitionWindow::OnMenuNavigationZoomOut)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTCTVOLUME, PartitionWindow::OnMenuSegmentationSegmentCTVolume)
+	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnMenuSelectionClearSelection)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnUpdateMenuActionsClearHistory)
@@ -347,6 +359,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnUpdateMenuNavigationNextSlice)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnUpdateMenuNavigationPreviousLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnUpdateMenuNavigationPreviousSlice)
+	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnUpdateMenuSelectionClearSelection)
 END_EVENT_TABLE()
 
 }
