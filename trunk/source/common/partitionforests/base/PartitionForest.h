@@ -595,34 +595,32 @@ public:
 	@note	The receptive region of a node is the set of its leaf node descendants in the partition forest.
 
 	@param[in]	node	The ID of the node
-	@throw Exception
-		-	If the specified ID does not refer to a valid node
-	@return A list of the indices of the leaf nodes in the receptive region of the node
+	@return A deque of the indices of the leaf nodes in the receptive region of the node
 	*/
-	std::list<int> receptive_region_of(const PFNodeID& node) const
+	std::deque<int> receptive_region_of(const PFNodeID& node) const
 	{
-		// Note: This is not currently optimized -- it's mostly for debugging/output purposes right now.
-		IForestLayer_Ptr layer = checked_forest_layer(node.layer());
-		if(!layer || !layer->has_node(node.index())) throw Exception(OSSWrapper() << "Invalid node: " << node);
-
-		std::list<int> result;
-
-		std::list<PFNodeID> q;
-		q.push_back(node);
-		while(!q.empty())
+		const int MARKER = -1;
+		int layerIndex = node.layer();
+		std::deque<int> nodeIndices;
+		nodeIndices.push_back(node.index());
+		nodeIndices.push_back(MARKER);
+		while(layerIndex > 0)
 		{
-			PFNodeID n = q.front();
-			q.pop_front();
-
-			if(n.layer() != 0)
+			const BranchLayer& layer = *branch_layer(layerIndex);
+			for(;;)
 			{
-				std::set<PFNodeID> children = children_of(n);
-				std::copy(children.begin(), children.end(), std::back_inserter(q));
-			}
-			else result.push_back(n.index());
-		}
+				int n = nodeIndices.front();
+				nodeIndices.pop_front();
+				if(n == MARKER) break;
 
-		return result;
+				const std::set<int>& children = layer.node_children(n);
+				std::copy(children.begin(), children.end(), std::back_inserter(nodeIndices));
+			}
+			nodeIndices.push_back(MARKER);
+			--layerIndex;
+		}
+		nodeIndices.pop_back();
+		return nodeIndices;
 	}
 
 	//@}

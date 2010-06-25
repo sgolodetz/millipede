@@ -51,8 +51,8 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 			   const itk::Index<3>& sliceBegin, const itk::Index<3>& sliceEnd, SliceOrientation sliceOrientation,
 			   const RGBA32& colour, bool boundariesOnly)
 {
-	std::list<int> receptiveRegion = volumeIPF->receptive_region_of(node);
-	for(std::list<int>::const_iterator it=receptiveRegion.begin(), iend=receptiveRegion.end(); it!=iend; ++it)
+	std::deque<int> receptiveRegion = volumeIPF->receptive_region_of(node);
+	for(std::deque<int>::const_iterator it=receptiveRegion.begin(), iend=receptiveRegion.end(); it!=iend; ++it)
 	{
 		// Calculate the position of the leaf.
 		itk::Index<3> volumePos = volumeIPF->position_of_leaf(*it);
