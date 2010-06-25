@@ -21,7 +21,7 @@ Last Updated by Stuart Golodetz on 16/05/10
 
 	On Windows:
 
-	a) Use the CMake GUI. Set the source and build directories to those in the gdcm-1.2.5 directory. The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and build called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building GDCM, I recommend:
+	a) Use the CMake GUI. Set the source directory to that in the gdcm-1.2.5 directory, and the build directory to a sibling of source called 'build' (this doesn't need to exist yet). The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and build called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building GDCM, I recommend:
 
 BUILD_TESTING		OFF
 GDCM_BUILD_EXAMPLES	OFF
