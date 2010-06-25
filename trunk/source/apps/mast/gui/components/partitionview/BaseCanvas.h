@@ -50,6 +50,7 @@ public:
 	void fit_image_to_canvas();
 	void render(wxPaintDC& dc) const;
 	void setup(PartitionView *partitionView);
+	void zoom_to_fit();
 
 	//#################### PROTECTED METHODS ####################
 protected:

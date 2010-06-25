@@ -125,7 +125,7 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_partitionCanvas->setup(this);
 
 	fit_image_to_view();
-	create_textures(m_camera->slice_orientation());
+	create_dicom_textures();
 }
 
 //#################### PUBLIC METHODS ####################
@@ -198,13 +198,18 @@ void PartitionView::segment_volume()
 		if(show_progress_dialog(this, "Segmenting CT Volume", job))
 		{
 			m_model->set_volume_ipf(volumeIPF);
-			create_partition_textures(m_camera->slice_orientation());
+			create_partition_textures();
 			recreate_overlays();
 			refresh_canvases();
 
 			m_model->selection()->add_shared_listener(boost::shared_ptr<VolumeIPFSelectionT::Listener>(new SelectionListener(this)));
 		}
 	}
+}
+
+void PartitionView::zoom_to_fit()
+{
+	m_dicomCanvas->zoom_to_fit();
 }
 
 //#################### PRIVATE METHODS ####################
@@ -219,21 +224,25 @@ void PartitionView::calculate_canvas_size()
 	m_canvasHeight = std::max<int>(512, std::max(volumeSize[1], volumeSize[2]));
 }
 
-bool PartitionView::create_dicom_textures(SliceOrientation ori)
+void PartitionView::create_dicom_textures()
 {
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 
 	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
-	shared_ptr<SliceTextureSetFiller<unsigned char> > filler(new SliceTextureSetFiller<unsigned char>(ori, m_model->dicom_volume()->size(), textureSet));
-	filler->set_volume_image(windowedImage);
-	Job::execute_in_thread(filler);
-	if(!show_progress_dialog(this, "Creating Slice Textures", filler)) return false;
+	CompositeJob_Ptr job(new CompositeJob);
+	for(int i=0; i<3; ++i)
+	{
+		SliceTextureSetFiller<unsigned char> *filler = new SliceTextureSetFiller<unsigned char>(SliceOrientation(i), m_model->dicom_volume()->size(), textureSet);
+		filler->set_volume_image(windowedImage);
+		job->add_subjob(filler);
+	}
+	Job::execute_in_thread(job);
+	show_progress_dialog(this, "Creating Slice Textures", job, false);
 
 	m_camera->set_dicom_texture_set(textureSet);
-	return true;
 }
 
-void PartitionView::create_partition_textures(SliceOrientation ori)
+void PartitionView::create_partition_textures()
 {
 	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> CTVolumeIPF;
 	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
@@ -251,12 +260,16 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 
 		typedef MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer> MIC;
 		typedef SliceTextureSetFiller<unsigned char> TSF;
-		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
-		TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), partitionTextureSets[layer-1]);
-		textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
 
-		job->add_subjob(mosaicImageCreator);
-		job->add_subjob(textureSetFiller);
+		for(int i=0; i<3; ++i)
+		{
+			MIC *mosaicImageCreator = new MIC(volumeIPF, layer, SliceOrientation(i), true);
+			TSF *textureSetFiller = new TSF(SliceOrientation(i), volumeIPF->volume_size(), partitionTextureSets[layer-1]);
+			textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
+
+			job->add_subjob(mosaicImageCreator);
+			job->add_subjob(textureSetFiller);
+		}
 	}
 	Job::execute_in_thread(job);
 	show_progress_dialog(this, "Creating Partition Texture Sets", job, false);
@@ -265,13 +278,6 @@ void PartitionView::create_partition_textures(SliceOrientation ori)
 	m_layerSlider->SetRange(1, highestLayer);
 	SliceLocation loc = m_camera->slice_location();
 	m_camera->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
-}
-
-bool PartitionView::create_textures(SliceOrientation ori)
-{
-	if(!create_dicom_textures(ori)) return false;
-	create_partition_textures(ori);
-	return true;
 }
 
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
@@ -424,29 +430,20 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 void PartitionView::OnButtonViewXY(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_XY))
-	{
-		m_camera->set_slice_orientation(ORIENT_XY);
-		fit_image_to_view();
-	}
+	m_camera->set_slice_orientation(ORIENT_XY);
+	zoom_to_fit();
 }
 
 void PartitionView::OnButtonViewXZ(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_XZ))
-	{
-		m_camera->set_slice_orientation(ORIENT_XZ);
-		fit_image_to_view();
-	}
+	m_camera->set_slice_orientation(ORIENT_XZ);
+	zoom_to_fit();
 }
 
 void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 {
-	if(create_textures(ORIENT_YZ))
-	{
-		m_camera->set_slice_orientation(ORIENT_YZ);
-		fit_image_to_view();
-	}
+	m_camera->set_slice_orientation(ORIENT_YZ);
+	zoom_to_fit();
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~

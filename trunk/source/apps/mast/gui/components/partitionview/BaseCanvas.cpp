@@ -21,54 +21,8 @@ BaseCanvas::BaseCanvas(wxWindow *parent, wxGLContext *context, int *attribList, 
 //#################### PUBLIC METHODS ####################
 void BaseCanvas::fit_image_to_canvas()
 {
-	// Step 1:	Centre the camera.
 	camera()->centre();
-
-	// Step 2:	Calculate the sizes of the image and canvas.
-	itk::Vector<double,2> tl_Pixels, br_Pixels;
-	calculate_image_bounds(tl_Pixels, br_Pixels);
-	double imageWidth = br_Pixels[0] + 1 - tl_Pixels[0], imageHeight = br_Pixels[1] + 1 - tl_Pixels[1];
-	wxSize canvasSize = GetSize();
-	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
-
-	// Step 3:	Is either image dimension too big? If so, try and zoom out as far as necessary, and then return.
-	if(imageWidth > canvasWidth || imageHeight > canvasHeight)
-	{
-		int newZoomLevel = camera()->zoom_level();
-		while(newZoomLevel != camera()->min_zoom_level())
-		{
-			--newZoomLevel;
-			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
-			double newImageWidth = imageWidth * zoomFactor;
-			double newImageHeight = imageHeight * zoomFactor;
-			if(newImageWidth <= canvasWidth && newImageHeight <= canvasHeight)
-			{
-				break;
-			}
-		}
-		camera()->set_zoom_level(newZoomLevel);
-		return;
-	}
-
-	// Step 4:	Are both image dimensions too small? If so, try and zoom in as much as possible, and then return.
-	if(imageWidth < canvasWidth && imageHeight < canvasHeight)
-	{
-		int newZoomLevel = camera()->zoom_level();
-		while(newZoomLevel != camera()->max_zoom_level())
-		{
-			++newZoomLevel;
-			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
-			double newImageWidth = imageWidth * zoomFactor;
-			double newImageHeight = imageHeight * zoomFactor;
-			if(newImageWidth > canvasWidth || newImageHeight > canvasHeight)
-			{
-				// Gone one level too far.
-				--newZoomLevel;
-				break;
-			}
-		}
-		camera()->set_zoom_level(newZoomLevel);
-	}
+	zoom_to_fit();
 }
 
 void BaseCanvas::render(wxPaintDC& dc) const
@@ -160,6 +114,55 @@ void BaseCanvas::setup(PartitionView *partitionView)
 	glLoadIdentity();
 
 	glOrtho(0, width, height, 0, 0.0, 2048.0);
+}
+
+void BaseCanvas::zoom_to_fit()
+{
+	// Step 1:	Calculate the sizes of the image and canvas.
+	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	calculate_image_bounds(tl_Pixels, br_Pixels);
+	double imageWidth = br_Pixels[0] + 1 - tl_Pixels[0], imageHeight = br_Pixels[1] + 1 - tl_Pixels[1];
+	wxSize canvasSize = GetSize();
+	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
+
+	// Step 2:	Is either image dimension too big? If so, try and zoom out as far as necessary, and then return.
+	if(imageWidth > canvasWidth || imageHeight > canvasHeight)
+	{
+		int newZoomLevel = camera()->zoom_level();
+		while(newZoomLevel != camera()->min_zoom_level())
+		{
+			--newZoomLevel;
+			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
+			double newImageWidth = imageWidth * zoomFactor;
+			double newImageHeight = imageHeight * zoomFactor;
+			if(newImageWidth <= canvasWidth && newImageHeight <= canvasHeight)
+			{
+				break;
+			}
+		}
+		camera()->set_zoom_level(newZoomLevel);
+		return;
+	}
+
+	// Step 3:	Are both image dimensions too small? If so, try and zoom in as much as possible, and then return.
+	if(imageWidth < canvasWidth && imageHeight < canvasHeight)
+	{
+		int newZoomLevel = camera()->zoom_level();
+		while(newZoomLevel != camera()->max_zoom_level())
+		{
+			++newZoomLevel;
+			double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
+			double newImageWidth = imageWidth * zoomFactor;
+			double newImageHeight = imageHeight * zoomFactor;
+			if(newImageWidth > canvasWidth || newImageHeight > canvasHeight)
+			{
+				// Gone one level too far.
+				--newZoomLevel;
+				break;
+			}
+		}
+		camera()->set_zoom_level(newZoomLevel);
+	}
 }
 
 //#################### PROTECTED METHODS ####################

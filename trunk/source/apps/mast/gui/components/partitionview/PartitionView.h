@@ -91,14 +91,14 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void calculate_canvas_size();
-	bool create_dicom_textures(SliceOrientation ori);
-	void create_partition_textures(SliceOrientation ori);
-	bool create_textures(SliceOrientation ori);
+	void create_dicom_textures();
+	void create_partition_textures();
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	void recreate_overlays();
 	void refresh_canvases();
 	void setup_gui(wxGLContext *context);
 	void update_sliders();
+	void zoom_to_fit();
 
 	//#################### EVENT HANDLERS ####################
 public:
