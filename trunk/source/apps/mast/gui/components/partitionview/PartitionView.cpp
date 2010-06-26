@@ -230,7 +230,9 @@ void PartitionView::create_dicom_textures()
 	}
 	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
 
-	set_dicom_texture_set(textureSet);
+	m_dicomTextureSet = textureSet;
+	recreate_overlays();
+	refresh_canvases();
 }
 
 void PartitionView::create_partition_textures()
@@ -264,7 +266,10 @@ void PartitionView::create_partition_textures()
 	}
 	execute_with_progress_dialog(job, this, "Creating Partition Texture Sets", false);
 
-	set_partition_texture_sets(partitionTextureSets);
+	m_partitionTextureSets = partitionTextureSets;
+	recreate_overlays();
+	refresh_canvases();
+
 	m_layerSlider->SetRange(1, highestLayer);
 	m_camera->set_highest_layer(highestLayer);
 	SliceLocation loc = m_camera->slice_location();
@@ -315,20 +320,6 @@ void PartitionView::refresh_canvases()
 {
 	m_dicomCanvas->Refresh();
 	m_partitionCanvas->Refresh();
-}
-
-void PartitionView::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
-{
-	m_dicomTextureSet = dicomTextureSet;
-	recreate_overlays();
-	refresh_canvases();
-}
-
-void PartitionView::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
-{
-	m_partitionTextureSets = partitionTextureSets;
-	recreate_overlays();
-	refresh_canvases();
 }
 
 void PartitionView::setup_gui(wxGLContext *context)

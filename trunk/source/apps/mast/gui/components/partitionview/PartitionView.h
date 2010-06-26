@@ -102,8 +102,6 @@ private:
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_overlays();
 	void refresh_canvases();
-	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
-	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	void setup_gui(wxGLContext *context);
 	void update_sliders();
 	void zoom_to_fit();
