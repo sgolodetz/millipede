@@ -221,7 +221,7 @@ void PartitionView::create_dicom_textures()
 	m_dicomTextureSet.reset(new SliceTextureSet);
 
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
-	Job_Ptr job fill_dicom_textures_job(m_camera->slice_orientation(), windowedImage);
+	Job_Ptr job = fill_dicom_textures_job(m_camera->slice_orientation(), windowedImage);
 	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
 
 	recreate_overlays();
