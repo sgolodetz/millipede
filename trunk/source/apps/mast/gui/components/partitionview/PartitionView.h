@@ -31,6 +31,8 @@ class DICOMCanvas;
 class PartitionCanvas;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
+typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
+typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
 class PartitionView : public wxPanel
 {
@@ -55,8 +57,10 @@ private:
 	int m_canvasWidth, m_canvasHeight;
 	ICommandManager_Ptr m_commandManager;
 	wxGLContext *m_context;
+	SliceTextureSet_Ptr m_dicomTextureSet;
 	PartitionModel_Ptr m_model;
 	PartitionOverlayManager_Ptr m_overlayManager;
+	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	DICOMVolumeChoice m_volumeChoice;
 
 	// Top right
@@ -93,9 +97,13 @@ private:
 	void calculate_canvas_size();
 	void create_dicom_textures();
 	void create_partition_textures();
+	SliceTextureSet_CPtr dicom_texture_set() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
+	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_overlays();
 	void refresh_canvases();
+	void set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet);
+	void set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets);
 	void setup_gui(wxGLContext *context);
 	void update_sliders();
 	void zoom_to_fit();

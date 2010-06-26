@@ -69,12 +69,6 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 		base->refresh_canvases();
 	}
 
-	void texture_set_changed()
-	{
-		base->recreate_overlays();
-		base->refresh_canvases();
-	}
-
 	void zoom_level_changed()
 	{
 		base->update_sliders();
@@ -115,7 +109,6 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 	m_volumeChoice(volumeChoice)
 {
 	m_camera->add_shared_listener(boost::shared_ptr<PartitionCamera::Listener>(new CameraListener(this)));
-	m_camera->set_command_manager(commandManager);
 	m_model->set_command_manager(commandManager);
 
 	calculate_canvas_size();
@@ -237,7 +230,7 @@ void PartitionView::create_dicom_textures()
 	}
 	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
 
-	m_camera->set_dicom_texture_set(textureSet);
+	set_dicom_texture_set(textureSet);
 }
 
 void PartitionView::create_partition_textures()
@@ -271,15 +264,28 @@ void PartitionView::create_partition_textures()
 	}
 	execute_with_progress_dialog(job, this, "Creating Partition Texture Sets", false);
 
-	m_camera->set_partition_texture_sets(partitionTextureSets);
+	set_partition_texture_sets(partitionTextureSets);
 	m_layerSlider->SetRange(1, highestLayer);
+	m_camera->set_highest_layer(highestLayer);
 	SliceLocation loc = m_camera->slice_location();
 	m_camera->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
+}
+
+SliceTextureSet_CPtr PartitionView::dicom_texture_set() const
+{
+	return m_dicomTextureSet;
 }
 
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
 {
 	return m_overlayManager;
+}
+
+SliceTextureSet_CPtr PartitionView::partition_texture_set(int layer) const
+{
+	int n = layer - 1;
+	if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
+	else return SliceTextureSet_CPtr();
 }
 
 void PartitionView::recreate_overlays()
@@ -309,6 +315,20 @@ void PartitionView::refresh_canvases()
 {
 	m_dicomCanvas->Refresh();
 	m_partitionCanvas->Refresh();
+}
+
+void PartitionView::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
+{
+	m_dicomTextureSet = dicomTextureSet;
+	recreate_overlays();
+	refresh_canvases();
+}
+
+void PartitionView::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
+{
+	m_partitionTextureSets = partitionTextureSets;
+	recreate_overlays();
+	refresh_canvases();
 }
 
 void PartitionView::setup_gui(wxGLContext *context)
@@ -476,7 +496,7 @@ void PartitionView::OnSliderZoom(wxScrollEvent&)
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
 {
-	e.Enable(m_camera->partition_texture_set(1).get() != NULL);
+	e.Enable(partition_texture_set(1).get() != NULL);
 }
 
 //#################### EVENT TABLE ####################

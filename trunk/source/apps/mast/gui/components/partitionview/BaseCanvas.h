@@ -62,8 +62,10 @@ protected:
 	itk::Vector<double,2> coord_to_pixel_offset(const itk::Vector<double,2>& offset_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
+	SliceTextureSet_CPtr dicom_texture_set() const;
 	PartitionModel_Ptr model();
 	PartitionOverlayManager_CPtr overlay_manager() const;
+	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	itk::Vector<double,2> pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const;
 	itk::Vector<double,3> pixels_to_3d_coords(const itk::Vector<double,2>& p_Pixels) const;
 	itk::Vector<double,2> pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const;

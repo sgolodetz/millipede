@@ -19,7 +19,10 @@ PartitionCanvas::PartitionCanvas(wxWindow *parent, wxGLContext *context, int *at
 //#################### PRIVATE METHODS ####################
 void PartitionCanvas::render_overlays(double left, double top, double right, double bottom) const
 {
-	if(overlay_manager()) overlay_manager()->render_partition_overlays(left, top, right, bottom);
+	if(overlay_manager())
+	{
+		overlay_manager()->render_partition_overlays(left, top, right, bottom);
+	}
 }
 
 SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
@@ -27,7 +30,7 @@ SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
 	if(camera())
 	{
 		int layer = camera()->slice_location().layer;
-		return camera()->partition_texture_set(layer);
+		return partition_texture_set(layer);
 	}
 	else return SliceTextureSet_CPtr();
 }

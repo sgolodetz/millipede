@@ -15,7 +15,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 BaseCanvas::BaseCanvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-:	Canvas(parent, context, attribList, id, pos, size, style), m_wheelRotation(0)
+:	Canvas(parent, context, attribList, id, pos, size, style), m_partitionView(NULL), m_wheelRotation(0)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -234,6 +234,12 @@ itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& 
 	return coords_to_pixels(project_to_2d(p_Coords));
 }
 
+SliceTextureSet_CPtr BaseCanvas::dicom_texture_set() const
+{
+	if(m_partitionView) return m_partitionView->dicom_texture_set();
+	else return SliceTextureSet_CPtr();
+}
+
 BaseCanvas::PartitionModel_Ptr BaseCanvas::model()
 {
 	if(m_partitionView) return m_partitionView->model();
@@ -244,6 +250,12 @@ PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 {
 	if(m_partitionView) return m_partitionView->overlay_manager();
 	else return PartitionOverlayManager_CPtr();
+}
+
+SliceTextureSet_CPtr BaseCanvas::partition_texture_set(int layer) const
+{
+	if(m_partitionView) return m_partitionView->partition_texture_set(layer);
+	else return SliceTextureSet_CPtr();
 }
 
 itk::Vector<double,2> BaseCanvas::pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const

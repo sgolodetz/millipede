@@ -7,8 +7,6 @@
 
 #include <boost/optional.hpp>
 
-#include <common/commands/BasicCommandManager.h>
-#include <common/commands/Command.h>
 #include <common/exceptions/Exception.h>
 #include <common/util/ITKImageUtil.h>
 
@@ -23,7 +21,11 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 PartitionCamera::PartitionCamera(const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const itk::Size<3>& volumeSize)
-:	m_commandManager(new BasicCommandManager), m_sliceLocation(sliceLocation), m_sliceOrientation(sliceOrientation), m_volumeSize(volumeSize), m_zoomLevel(0)
+:	m_highestLayer(0),
+	m_sliceLocation(sliceLocation),
+	m_sliceOrientation(sliceOrientation),
+	m_volumeSize(volumeSize),
+	m_zoomLevel(0)
 {
 	if(!check_slice_location(m_sliceLocation)) throw Exception("Bad slice location");
 }
@@ -39,11 +41,6 @@ void PartitionCamera::centre()
 	SliceLocation loc(m_volumeSize[0] / 2, m_volumeSize[1] / 2, m_volumeSize[2] / 2, m_sliceLocation.layer);
 	loc[m_sliceOrientation] = m_sliceLocation[m_sliceOrientation];
 	set_slice_location(loc);
-}
-
-SliceTextureSet_CPtr PartitionCamera::dicom_texture_set() const
-{
-	return m_dicomTextureSet;
 }
 
 void PartitionCamera::goto_next_layer()
@@ -76,7 +73,7 @@ void PartitionCamera::goto_previous_slice()
 
 bool PartitionCamera::has_next_layer() const
 {
-	return m_sliceLocation.layer < highest_layer();
+	return m_sliceLocation.layer < m_highestLayer;
 }
 
 bool PartitionCamera::has_next_slice() const
@@ -168,28 +165,9 @@ void PartitionCamera::pan_up()
 	set_slice_location(loc);
 }
 
-SliceTextureSet_CPtr PartitionCamera::partition_texture_set(int layer) const
+void PartitionCamera::set_highest_layer(int highestLayer)
 {
-	int n = layer - 1;
-	if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
-	else return SliceTextureSet_CPtr();
-}
-
-void PartitionCamera::set_command_manager(const ICommandManager_Ptr& commandManager)
-{
-	m_commandManager = commandManager;
-}
-
-void PartitionCamera::set_dicom_texture_set(const SliceTextureSet_Ptr& dicomTextureSet)
-{
-	m_dicomTextureSet = dicomTextureSet;
-	m_listeners.texture_set_changed();
-}
-
-void PartitionCamera::set_partition_texture_sets(const std::vector<SliceTextureSet_Ptr>& partitionTextureSets)
-{
-	m_partitionTextureSets = partitionTextureSets;
-	m_listeners.texture_set_changed();
+	m_highestLayer = highestLayer;
 }
 
 void PartitionCamera::set_slice_location(const SliceLocation& sliceLocation)
@@ -246,16 +224,11 @@ int PartitionCamera::zoom_level() const
 bool PartitionCamera::check_slice_location(const SliceLocation& loc) const
 {
 	itk::Index<3> size = ITKImageUtil::make_index_from_size(m_volumeSize);
-	if(loc.x < 0 || loc.y < 0 || loc.z < 0 || loc.layer < 0 || loc.x >= size[0] || loc.y >= size[1] || loc.z >= size[2] || loc.layer > highest_layer())
+	if(loc.x < 0 || loc.y < 0 || loc.z < 0 || loc.layer < 0 || loc.x >= size[0] || loc.y >= size[1] || loc.z >= size[2] || loc.layer > m_highestLayer)
 	{
 		return false;
 	}
 	return true;
-}
-
-int PartitionCamera::highest_layer() const
-{
-	return static_cast<int>(m_partitionTextureSets.size());
 }
 
 }
