@@ -99,7 +99,7 @@ wxPanel *SegmentCTVolumeDialog::create_advanced_page(wxWindow *parent)
 	filteringPanel->SetSizer(filteringSizer);
 
 	filteringSizer->Add(new wxStaticText(filteringPanel, wxID_ANY, wxT("ADF Iterations:")));
-	m_adfIterations = new wxSpinCtrl(filteringPanel, wxID_ANY, wxT("30"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 30);
+	m_adfIterations = new wxSpinCtrl(filteringPanel, wxID_ANY, wxT("20"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 20);
 	filteringSizer->Add(m_adfIterations);
 
 	// Set up the spin control to select a waterfall layer limit.

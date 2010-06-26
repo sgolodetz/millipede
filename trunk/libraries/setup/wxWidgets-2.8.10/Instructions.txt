@@ -1,5 +1,5 @@
 wxWidgets 2.8.10 Setup Instructions
-Last Updated by Stuart Golodetz on 10/05/10
+Last Updated by Stuart Golodetz on 26/06/10
 -------------------------------------------
 
 1. Extract wxWidgets-2.8.10.tar.gz into the libraries directory.
@@ -25,10 +25,13 @@ Last Updated by Stuart Golodetz on 10/05/10
 
 	On Linux:
 
-	a) Make a subdirectory of libraries/wxWidgets-2.8.10 called e.g. build28d.
-	b) From within that directory, run:
+	a) Make subdirectories of libraries/wxWidgets-2.8.10 called e.g. build28d and build28 (for the debug and release builds, respectively).
+	b) From within build28d, run:
 		"../configure --enable-debug --disable-shared --with-opengl"
-	c) Finally, run "make".
+	c) Still within build28d, run "make".
+	d) From within build28, run:
+		"../configure --disable-shared --with-opengl"
+	e) Still within build28, run "make".
 
 Notes:
 
@@ -36,4 +39,4 @@ Notes:
   - To ensure this, run the "Visual Studio 200{5/8} Command Prompt" shortcut to get your command prompt.
 * On Windows, you need to set wxWidgets_CONFIGURATION to msw and wxWidgets_USE_REL_AND_DBG to true in CMake.
 * On Linux, you'll be asked by CMake to specify the location of wx-config when generating your own project files
-  - This is at libraries/wxWidgets-2.8.10/build28d/wx-config
+  - This is at libraries/wxWidgets-2.8.10/build28d/wx-config for a debug build, and libraries/wxWidgets-2.8.10/build28/wx-config for a release one

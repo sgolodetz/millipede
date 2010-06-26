@@ -1,5 +1,5 @@
 ITK 3.14.0 Setup Instructions
-Last Updated by Stuart Golodetz on 10/05/10
+Last Updated by Stuart Golodetz on 26/06/10
 -------------------------------------------
 
 1. Create an ITK-3.14.0 subdirectory in the libraries directory.
@@ -29,10 +29,12 @@ BUILD_SHARED_LIBS	OFF
 BUILD_TESTING		OFF
 ITK_USE_KWSTYLE		OFF
 
-	b) The created solution (ITK.sln) will be in the build directory. Open it, and build the ALL_BUILD project.
+	b) The created solution (ITK.sln) will be in the build directory. Open it, set the solution configuration to Release, and build the ALL_BUILD project.
+	c) If desired, you can create a separate debug build tree by repeating steps (a) and (b) using different directory names. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug'. In (b), the solution configuration should this time be set to Debug rather than Release.
 
 	On Linux:
 
 	a) Make a subdirectory of ITK-3.14.0 called build (this will be a sibling of the source directory) and change to it.
 	b) Run "ccmake ../source" and set the options as per the instructions for Windows above.
 	c) Run "make".
+	d) If desired, you can create a separate debug build tree by repeating steps (a)-(c) using different directory names and CMAKE_BUILD_TYPE set to 'Debug'. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug', then do the same as before.
