@@ -76,10 +76,7 @@ void MainWindow::load_volume(const DICOMVolumeChoice& volumeChoice)
 void MainWindow::load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVolumeChoice& volumeChoice)
 {
 	DICOMVolumeLoader_Ptr loader(new DICOMVolumeLoader(dicomdir, volumeChoice));
-	Job::execute_in_thread(loader);
-	show_progress_dialog(this, "Loading DICOM Volume", loader);
-
-	if(!loader->is_aborted())
+	if(execute_with_progress_dialog(loader, this, "Loading DICOM Volume"))
 	{
 		// Create a window for the user to interact with the new volume.
 		std::string caption = "MAST - " + loader->volume_choice().description() + " - Untitled";

@@ -194,8 +194,7 @@ void PartitionView::segment_volume()
 
 		VolumeIPF_Ptr volumeIPF;
 		Job_Ptr job(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
-		Job::execute_in_thread(job);
-		if(show_progress_dialog(this, "Segmenting CT Volume", job))
+		if(execute_with_progress_dialog(job, this, "Segmenting CT Volume"))
 		{
 			m_model->set_volume_ipf(volumeIPF);
 			create_partition_textures();
@@ -236,8 +235,7 @@ void PartitionView::create_dicom_textures()
 		filler->set_volume_image(windowedImage);
 		job->add_subjob(filler);
 	}
-	Job::execute_in_thread(job);
-	show_progress_dialog(this, "Creating Slice Textures", job, false);
+	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
 
 	m_camera->set_dicom_texture_set(textureSet);
 }
@@ -271,8 +269,7 @@ void PartitionView::create_partition_textures()
 			job->add_subjob(textureSetFiller);
 		}
 	}
-	Job::execute_in_thread(job);
-	show_progress_dialog(this, "Creating Partition Texture Sets", job, false);
+	execute_with_progress_dialog(job, this, "Creating Partition Texture Sets", false);
 
 	m_camera->set_partition_texture_sets(partitionTextureSets);
 	m_layerSlider->SetRange(1, highestLayer);

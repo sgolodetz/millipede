@@ -40,8 +40,10 @@ wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& capt
 							wxSAVE | wxOVERWRITE_PROMPT));
 }
 
-bool show_progress_dialog(wxWindow *parent, const std::string& caption, const Job_Ptr& job, bool canAbort)
+bool execute_with_progress_dialog(const Job_Ptr& job, wxWindow *parent, const std::string& caption, bool canAbort)
 {
+	Job::execute_in_thread(job);
+
 	int style = wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_REMAINING_TIME|wxPD_SMOOTH;
 	if(canAbort) style |= wxPD_CAN_ABORT;
 	wxProgressDialog dialog(string_to_wxString(caption), wxEmptyString, job->length(), parent, style);
