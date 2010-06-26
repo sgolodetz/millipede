@@ -30,6 +30,12 @@ INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
 
 INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 
+#################################
+# Specify the libraries to link #
+#################################
+
+INCLUDE(${millipede_SOURCE_DIR}/LinkBoost.cmake)
+
 #############################
 # Specify things to install #
 #############################
