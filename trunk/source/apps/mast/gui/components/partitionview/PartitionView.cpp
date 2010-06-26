@@ -218,19 +218,12 @@ void PartitionView::calculate_canvas_size()
 
 void PartitionView::create_dicom_textures()
 {
-	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
+	m_dicomTextureSet.reset(new SliceTextureSet);
 
-	SliceTextureSet_Ptr textureSet(new SliceTextureSet);
-	CompositeJob_Ptr job(new CompositeJob);
-	for(int i=0; i<3; ++i)
-	{
-		SliceTextureSetFiller<unsigned char> *filler = new SliceTextureSetFiller<unsigned char>(SliceOrientation(i), m_model->dicom_volume()->size(), textureSet);
-		filler->set_volume_image(windowedImage);
-		job->add_subjob(filler);
-	}
+	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
+	Job_Ptr job fill_dicom_textures_job(m_camera->slice_orientation(), windowedImage);
 	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
 
-	m_dicomTextureSet = textureSet;
 	recreate_overlays();
 	refresh_canvases();
 }
@@ -244,29 +237,12 @@ void PartitionView::create_partition_textures()
 	if(!volumeIPF) return;
 	int highestLayer = volumeIPF->highest_layer();
 
-	// Create the partition texture sets.
-	std::vector<SliceTextureSet_Ptr> partitionTextureSets(highestLayer);
-	CompositeJob_Ptr job(new CompositeJob);
-	for(int layer=1; layer<=highestLayer; ++layer)
-	{
-		partitionTextureSets[layer-1].reset(new SliceTextureSet);
+	m_partitionTextureSets = std::vector<SliceTextureSet_Ptr>(highestLayer);
+	for(int layer=1; layer<=highestLayer; ++layer) m_partitionTextureSets[layer-1].reset(new SliceTextureSet);
 
-		typedef MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer> MIC;
-		typedef SliceTextureSetFiller<unsigned char> TSF;
-
-		for(int i=0; i<3; ++i)
-		{
-			MIC *mosaicImageCreator = new MIC(volumeIPF, layer, SliceOrientation(i), true);
-			TSF *textureSetFiller = new TSF(SliceOrientation(i), volumeIPF->volume_size(), partitionTextureSets[layer-1]);
-			textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
-
-			job->add_subjob(mosaicImageCreator);
-			job->add_subjob(textureSetFiller);
-		}
-	}
+	Job_Ptr job = fill_partition_textures_job(m_camera->slice_orientation());
 	execute_with_progress_dialog(job, this, "Creating Partition Texture Sets", false);
 
-	m_partitionTextureSets = partitionTextureSets;
 	recreate_overlays();
 	refresh_canvases();
 
@@ -279,6 +255,55 @@ void PartitionView::create_partition_textures()
 SliceTextureSet_CPtr PartitionView::dicom_texture_set() const
 {
 	return m_dicomTextureSet;
+}
+
+Job_Ptr PartitionView::fill_dicom_textures_job(SliceOrientation ori, const itk::Image<unsigned char,3>::Pointer& windowedImage) const
+{
+	SliceTextureSetFiller<unsigned char> *job = new SliceTextureSetFiller<unsigned char>(ori, m_model->dicom_volume()->size(), m_dicomTextureSet);
+	job->set_volume_image(windowedImage);
+	return Job_Ptr(job);
+}
+
+Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
+{
+	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> CTVolumeIPF;
+	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
+
+	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	int highestLayer = volumeIPF->highest_layer();
+
+	CompositeJob_Ptr job(new CompositeJob);
+	for(int layer=1; layer<=highestLayer; ++layer)
+	{
+		typedef MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer> MIC;
+		typedef SliceTextureSetFiller<unsigned char> TSF;
+
+		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
+		TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), m_partitionTextureSets[layer-1]);
+		textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
+
+		job->add_subjob(mosaicImageCreator);
+		job->add_subjob(textureSetFiller);
+	}
+	return job;
+}
+
+void PartitionView::fill_textures(SliceOrientation ori)
+{
+	CompositeJob_Ptr job(new CompositeJob);
+
+	if(!m_dicomTextureSet->has_textures(ori))
+	{
+		DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
+		job->add_subjob(fill_dicom_textures_job(ori, windowedImage));
+	}
+
+	if(!m_partitionTextureSets.empty() && !m_partitionTextureSets[0]->has_textures(ori))
+	{
+		job->add_subjob(fill_partition_textures_job(ori));
+	}
+
+	if(!job->empty()) execute_with_progress_dialog(job, this, "Creating Textures", false);
 }
 
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
@@ -438,18 +463,21 @@ void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
 
 void PartitionView::OnButtonViewXY(wxCommandEvent&)
 {
+	fill_textures(ORIENT_XY);
 	m_camera->set_slice_orientation(ORIENT_XY);
 	zoom_to_fit();
 }
 
 void PartitionView::OnButtonViewXZ(wxCommandEvent&)
 {
+	fill_textures(ORIENT_XZ);
 	m_camera->set_slice_orientation(ORIENT_XZ);
 	zoom_to_fit();
 }
 
 void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 {
+	fill_textures(ORIENT_YZ);
 	m_camera->set_slice_orientation(ORIENT_YZ);
 	zoom_to_fit();
 }

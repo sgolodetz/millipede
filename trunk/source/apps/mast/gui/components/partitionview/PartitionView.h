@@ -28,6 +28,7 @@ class wxButton;
 namespace mp {
 
 class DICOMCanvas;
+typedef boost::shared_ptr<class Job> Job_Ptr;
 class PartitionCanvas;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
@@ -98,6 +99,9 @@ private:
 	void create_dicom_textures();
 	void create_partition_textures();
 	SliceTextureSet_CPtr dicom_texture_set() const;
+	Job_Ptr fill_dicom_textures_job(SliceOrientation ori, const itk::Image<unsigned char,3>::Pointer& windowedImage) const;
+	Job_Ptr fill_partition_textures_job(SliceOrientation ori) const;
+	void fill_textures(SliceOrientation ori);
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_overlays();

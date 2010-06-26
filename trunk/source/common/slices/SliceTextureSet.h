@@ -29,6 +29,7 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	bool has_textures(SliceOrientation ori) const;
 	void set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures);
 	Texture_CPtr texture(SliceOrientation ori, int n) const;
 };

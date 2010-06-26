@@ -8,6 +8,11 @@
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
+bool SliceTextureSet::has_textures(SliceOrientation ori) const
+{
+	return !m_textures[ori].empty();
+}
+
 void SliceTextureSet::set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures)
 {
 	m_textures[ori] = textures;

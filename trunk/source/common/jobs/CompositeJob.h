@@ -33,6 +33,7 @@ public:
 	void add_subjob(const Job_Ptr& job);
 	void add_main_thread_subjob(Job *job);
 	void add_main_thread_subjob(const Job_Ptr& job);
+	bool empty() const;
 	void execute();
 	int length() const;
 	int progress() const;

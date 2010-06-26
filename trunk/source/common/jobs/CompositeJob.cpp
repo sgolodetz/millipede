@@ -49,6 +49,11 @@ void CompositeJob::add_main_thread_subjob(const Job_Ptr& job)
 	job->set_main_thread_job_queue(main_thread_job_queue());
 }
 
+bool CompositeJob::empty() const
+{
+	return m_jobs.empty();
+}
+
 void CompositeJob::execute()
 {
 	// Note:	Composite jobs with main-thread-only sub-jobs MUST be run in their own thread. (More precisely, they must be
