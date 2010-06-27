@@ -81,15 +81,15 @@ private:
 	struct CombineLeafLayersJob : SimpleJob
 	{
 		VolumeIPFBuilder *base;
+		int subvolumeCount;
 
 		explicit CombineLeafLayersJob(VolumeIPFBuilder *base_)
-		:	base(base_)
+		:	base(base_), subvolumeCount(static_cast<int>(base->m_leafLayers.size()))
 		{}
 
 		void execute()
 		{
 			set_status("Combining leaf layers...");
-			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 			std::vector<CTPixelProperties> nodeProperties(volumeSize[0] * volumeSize[1] * volumeSize[2]);
 			for(int i=0; i<subvolumeCount; ++i)
@@ -108,6 +108,9 @@ private:
 
 				// There's no more use for the subvolume's leaf layer, so free up the memory (space is at a premium during forest construction).
 				base->m_leafLayers[i].reset();
+
+				if(is_aborted()) return;
+				increment_progress();
 			}
 			base->m_combinedLeafLayer.reset(new LeafLayer(nodeProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
 			set_finished();
@@ -115,23 +118,23 @@ private:
 
 		int length() const
 		{
-			return 1;
+			return subvolumeCount;
 		}
 	};
 
 	struct CombineLowestBranchLayersJob : SimpleJob
 	{
 		VolumeIPFBuilder *base;
+		int subvolumeCount;
 
 		explicit CombineLowestBranchLayersJob(VolumeIPFBuilder *base_)
-		:	base(base_)
+		:	base(base_), subvolumeCount(static_cast<int>(base->m_leafLayers.size()))
 		{}
 
 		void execute()
 		{
 			set_status("Combining lowest branch layers...");
 			std::vector<std::set<int> > groups;
-			int subvolumeCount = static_cast<int>(base->m_leafLayers.size());
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 			for(int i=0; i<subvolumeCount; ++i)
 			{
@@ -148,6 +151,9 @@ private:
 					}
 					groups.push_back(group);
 				}
+
+				if(is_aborted()) return;
+				increment_progress();
 			}
 			base->m_combinedLowestBranchLayer = VolumeIPFT::make_lowest_branch_layer(base->m_combinedLeafLayer, groups);
 			set_finished();
@@ -155,7 +161,7 @@ private:
 
 		int length() const
 		{
-			return 1;
+			return subvolumeCount;
 		}
 	};
 
