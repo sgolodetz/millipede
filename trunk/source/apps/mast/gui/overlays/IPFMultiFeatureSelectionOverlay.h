@@ -32,7 +32,7 @@ public:
 
 		RGBA32Image::Pointer image = ITKImageUtil::make_image<RGBA32>(width, height);
 
-		std::vector<Feature> featureTypes = feature_types<Feature>();
+		std::vector<Feature> featureTypes = enum_values<Feature>();
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			PartitionForestSelection_CPtr selection = multiFeatureSelection->selection(featureTypes[i]);

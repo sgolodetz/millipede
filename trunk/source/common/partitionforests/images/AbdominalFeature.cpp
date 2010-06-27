@@ -7,12 +7,42 @@
 
 namespace mp {
 
-template <>
-std::vector<AbdominalFeature::Enum> feature_types()
+template <> AbdominalFeature::Enum enum_begin()
 {
-	std::vector<AbdominalFeature::Enum> ret(AbdominalFeature::COUNT);
-	for(int i=0; i<AbdominalFeature::COUNT; ++i) ret[i] = AbdominalFeature::Enum(i);
-	return ret;
+	return AbdominalFeature::KIDNEY;
+}
+
+template <> AbdominalFeature::Enum enum_end()
+{
+	return AbdominalFeature::COUNT;
+}
+
+AbdominalFeature::Enum& operator++(AbdominalFeature::Enum& e)
+{
+	e = AbdominalFeature::Enum(e + 1);
+	return e;
+}
+
+std::string feature_key(AbdominalFeature::Enum e)
+{
+	using namespace AbdominalFeature;
+	switch(e)
+	{
+		case KIDNEY:	return "K";
+		case LIVER:		return "L";
+		default:		return "";
+	}
+}
+
+std::string feature_name(AbdominalFeature::Enum e)
+{
+	using namespace AbdominalFeature;
+	switch(e)
+	{
+		case KIDNEY:	return "Kidney";
+		case LIVER:		return "Liver";
+		default:		return "";
+	}
 }
 
 }

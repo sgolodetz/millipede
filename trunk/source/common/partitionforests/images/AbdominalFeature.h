@@ -6,22 +6,30 @@
 #ifndef H_MILLIPEDE_ABDOMINALFEATURE
 #define H_MILLIPEDE_ABDOMINALFEATURE
 
+#include <string>
 #include <vector>
+
+#include <common/util/EnumUtil.h>
 
 namespace mp {
 
-struct AbdominalFeature
+namespace AbdominalFeature {
+
+enum Enum
 {
-	enum Enum
-	{
-		KIDNEY,
-		LIVER,
-		COUNT,
-	};
+	KIDNEY,
+	LIVER,
+	COUNT,
 };
 
-template <typename Feature> std::vector<Feature> feature_types();
-template <> std::vector<AbdominalFeature::Enum> feature_types();
+}
+
+template <> AbdominalFeature::Enum enum_begin();
+template <> AbdominalFeature::Enum enum_end();
+AbdominalFeature::Enum& operator++(AbdominalFeature::Enum& e);
+
+std::string feature_key(AbdominalFeature::Enum e);
+std::string feature_name(AbdominalFeature::Enum e);
 
 }
 

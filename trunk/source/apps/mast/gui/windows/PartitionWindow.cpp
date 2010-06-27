@@ -21,7 +21,8 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
-	MENUID_FEATURE_MANUALLYMARK_KIDNEY,
+	MENUID_FEATURE_MANUALLYMARK_BASE,
+	MENUID_FEATURE_MANUALLYMARK_LAST = (MENUID_FEATURE_MANUALLYMARK_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
@@ -62,8 +63,13 @@ wxGLContext *PartitionWindow::get_context() const
 //#################### PRIVATE METHODS ####################
 void PartitionWindow::connect_special_menu_items()
 {
-	Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureManuallyMark));
-	Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
+	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
+	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+	{
+		int id = (MENUID_FEATURE_MANUALLYMARK_BASE+1) + i;
+		Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureManuallyMark));
+		Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
+	}
 }
 
 void PartitionWindow::setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context)
@@ -149,13 +155,20 @@ void PartitionWindow::setup_menus()
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
 	wxMenu *manuMarkMenu = new wxMenu;
 	featureMenu->AppendSubMenu(manuMarkMenu, wxT("&Manually Mark"));
-		manuMarkMenu->Append(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxT("&Kidney"));
-		// TODO: Other features (possibly via iterating over the feature ID enumeration)
+		std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
+		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+		{
+			std::ostringstream oss;
+			oss << feature_name(featureTypes[i]);
+			std::string key = feature_key(featureTypes[i]);
+			if(key != "") oss << " (&" << key << ")\t" << key;
+			manuMarkMenu->Append((MENUID_FEATURE_MANUALLYMARK_BASE+1) + i, string_to_wxString(oss.str()));
+		}
 	featureMenu->AppendSeparator();
 	wxMenu *selectMarkedMenu = new wxMenu;
 	featureMenu->AppendSubMenu(selectMarkedMenu, wxT("&Select Marked"));
 		selectMarkedMenu->Append(wxID_ANY, wxT("&Kidney"));
-		// TODO: Other features (possibly via iterating over the feature ID enumeration)
+		// TODO: Other features (via iterating over the feature enumeration)
 	featureMenu->AppendSeparator();
 	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
@@ -200,8 +213,8 @@ void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 
 void PartitionWindow::OnMenuFeatureManuallyMark(wxCommandEvent& e)
 {
-	// TEMPORARY
-	m_view->model()->multi_feature_selection()->identify_selection(m_view->model()->selection(), AbdominalFeature::KIDNEY);
+	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURE_MANUALLYMARK_BASE+1));
+	m_view->model()->multi_feature_selection()->identify_selection(m_view->model()->selection(), feature);
 }
 
 void PartitionWindow::OnMenuFileExit(wxCommandEvent&)

@@ -247,6 +247,7 @@ util/ITKImageUtil.cpp
 )
 
 SET(util_headers
+util/EnumUtil.h
 util/GridUtil.h
 util/ITKImageUtil.h
 util/NullType.h
