@@ -76,6 +76,24 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	}
 };
 
+struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
+{
+	PartitionView *base;
+
+	explicit MultiFeatureSelectionListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void multi_feature_selection_changed(int commandDepth)
+	{
+		if(commandDepth == 0)
+		{
+			base->recreate_overlays();	// FIXME: Implement recreate_multi_feature_selection_overlay()
+			base->refresh_canvases();
+		}
+	}
+};
+
 struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer>::Listener
 {
 	PartitionView *base;
@@ -88,7 +106,7 @@ struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CT
 	{
 		if(commandDepth == 0)
 		{
-			base->recreate_overlays();
+			base->recreate_overlays();	// FIXME: Implement recreate_selection_overlay()
 			base->refresh_canvases();
 		}
 	}
@@ -194,7 +212,8 @@ void PartitionView::segment_volume()
 			recreate_overlays();
 			refresh_canvases();
 
-			m_model->selection()->add_shared_listener(boost::shared_ptr<VolumeIPFSelectionT::Listener>(new SelectionListener(this)));
+			m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
+			m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
 		}
 	}
 }

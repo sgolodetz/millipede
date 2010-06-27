@@ -47,6 +47,7 @@ public:
 	void OnMenuActionsClearHistory(wxCommandEvent&);
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
+	void OnMenuFeatureManuallyMark(wxCommandEvent& e);
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
 	void OnMenuNavigationFitToView(wxCommandEvent&);
@@ -73,6 +74,7 @@ public:
 	void OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e);
 	void OnUpdateMenuSelectionClearSelection(wxUpdateUIEvent& e);
+	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

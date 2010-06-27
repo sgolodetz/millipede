@@ -21,6 +21,7 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
+	MENUID_FEATURE_MANUALLYMARK_KIDNEY,
 	MENUID_FILE_EXIT,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
@@ -107,7 +108,7 @@ void PartitionWindow::setup_menus()
 	navigationMenu->Append(MENUID_NAVIGATION_FITTOVIEW, wxT("&Fit to View\tCtrl+KP_5"));
 
 	wxMenu *selectionMenu = new wxMenu;
-	selectionMenu->Append(wxID_ANY, wxT("&Select Nodes By ID..."));
+	selectionMenu->Append(wxID_ANY, wxT("&Manage Selection..."));
 	selectionMenu->AppendSeparator();
 	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
 
@@ -142,7 +143,9 @@ void PartitionWindow::setup_menus()
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
 	wxMenu *manuMarkMenu = new wxMenu;
 	featureMenu->AppendSubMenu(manuMarkMenu, wxT("&Manually Mark"));
-		manuMarkMenu->Append(wxID_ANY, wxT("&Kidney"));
+		manuMarkMenu->Append(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxT("&Kidney"));
+		Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureManuallyMark));
+		Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
 		// TODO: Other features (possibly via iterating over the feature ID enumeration)
 	featureMenu->AppendSeparator();
 	wxMenu *selectMarkedMenu = new wxMenu;
@@ -187,6 +190,12 @@ void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)
 void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 {
 	m_commandManager->undo();
+}
+
+void PartitionWindow::OnMenuFeatureManuallyMark(wxCommandEvent& e)
+{
+	// TEMPORARY
+	m_view->model()->multi_feature_selection()->identify_selection(m_view->model()->selection(), AF_KIDNEY);
 }
 
 void PartitionWindow::OnMenuFileExit(wxCommandEvent&)
@@ -323,7 +332,7 @@ void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 	e.Enable(m_view->camera()->has_previous_slice());
 }
 
-void PartitionWindow::OnUpdateMenuSelectionClearSelection(wxUpdateUIEvent& e)
+void PartitionWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->model()->selection() && !m_view->model()->selection()->empty());
 }
@@ -359,7 +368,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnUpdateMenuNavigationNextSlice)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnUpdateMenuNavigationPreviousLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnUpdateMenuNavigationPreviousSlice)
-	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnUpdateMenuSelectionClearSelection)
+	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnUpdateNonEmptySelectionNeeder)
 END_EVENT_TABLE()
 
 }

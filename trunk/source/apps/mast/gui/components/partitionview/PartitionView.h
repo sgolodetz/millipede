@@ -50,6 +50,7 @@ private:
 	//#################### LISTENERS ####################
 private:
 	struct CameraListener;
+	struct MultiFeatureSelectionListener;
 	struct SelectionListener;
 
 	//#################### PRIVATE VARIABLES ####################

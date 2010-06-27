@@ -159,6 +159,15 @@ public:
 		selection(feature)->select_node(node);
 	}
 
+	void identify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
+	{
+		SequenceGuard guard(m_commandManager, m_listeners, "Identify Selection");
+		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+		{
+			identify_node(*it, feature);
+		}
+	}
+
 	PartitionForestSelection_CPtr selection(const Feature& feature) const
 	{
 		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
