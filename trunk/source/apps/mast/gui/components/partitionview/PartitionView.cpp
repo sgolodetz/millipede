@@ -88,7 +88,7 @@ struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelec
 	{
 		if(commandDepth == 0)
 		{
-			base->recreate_overlays();	// FIXME: Implement recreate_multi_feature_selection_overlay()
+			base->recreate_multi_feature_selection_overlay();
 			base->refresh_canvases();
 		}
 	}
@@ -106,7 +106,7 @@ struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CT
 	{
 		if(commandDepth == 0)
 		{
-			base->recreate_overlays();	// FIXME: Implement recreate_selection_overlay()
+			base->recreate_selection_overlay();
 			base->refresh_canvases();
 		}
 	}
@@ -137,6 +137,7 @@ PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, co
 
 	fit_image_to_view();
 	create_dicom_textures();
+	create_overlays();
 }
 
 //#################### PUBLIC METHODS ####################
@@ -242,9 +243,13 @@ void PartitionView::create_dicom_textures()
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
 	Job_Ptr job = fill_dicom_textures_job(m_camera->slice_orientation(), windowedImage);
 	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
+}
 
-	recreate_overlays();
-	refresh_canvases();
+void PartitionView::create_overlays()
+{
+	m_overlayManager->clear_overlays();
+	m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", multi_feature_selection_overlay());
+	m_overlayManager->insert_overlay_at_top("IPFSelection", selection_overlay());
 }
 
 void PartitionView::create_partition_textures()
@@ -261,9 +266,6 @@ void PartitionView::create_partition_textures()
 
 	Job_Ptr job = fill_partition_textures_job(m_camera->slice_orientation());
 	execute_with_progress_dialog(job, this, "Creating Partition Texture Sets", false);
-
-	recreate_overlays();
-	refresh_canvases();
 
 	m_layerSlider->SetRange(1, highestLayer);
 	m_camera->set_highest_layer(highestLayer);
@@ -325,6 +327,17 @@ void PartitionView::fill_textures(SliceOrientation ori)
 	if(!job->empty()) execute_with_progress_dialog(job, this, "Creating Textures", false);
 }
 
+PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
+{
+	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
+	SliceLocation loc = m_camera->slice_location();
+	SliceOrientation ori = m_camera->slice_orientation();
+	Map<AbdominalFeature,RGBA32> colourMap;
+	colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
+	colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
+	return new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap);
+}
+
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
 {
 	return m_overlayManager;
@@ -337,33 +350,34 @@ SliceTextureSet_CPtr PartitionView::partition_texture_set(int layer) const
 	else return SliceTextureSet_CPtr();
 }
 
+void PartitionView::recreate_multi_feature_selection_overlay()
+{
+	m_overlayManager->replace_overlay("IPFMultiFeatureSelection", multi_feature_selection_overlay());
+}
+
 void PartitionView::recreate_overlays()
 {
-	m_overlayManager->clear_overlays();
+	recreate_multi_feature_selection_overlay();
+	recreate_selection_overlay();
+}
 
-	SliceLocation loc = m_camera->slice_location();
-	SliceOrientation ori = m_camera->slice_orientation();
-
-	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
-	if(multiFeatureSelection)
-	{
-		Map<AbdominalFeature,RGBA32> colourMap;
-		colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
-		colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
-		m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap));
-	}
-
-	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
-	if(selection)
-	{
-		m_overlayManager->insert_overlay_at_top("IPFSelection", new IPFSelectionOverlay(selection, loc, ori));
-	}
+void PartitionView::recreate_selection_overlay()
+{
+	m_overlayManager->replace_overlay("IPFSelection", selection_overlay());
 }
 
 void PartitionView::refresh_canvases()
 {
 	m_dicomCanvas->Refresh();
 	m_partitionCanvas->Refresh();
+}
+
+PartitionOverlay *PartitionView::selection_overlay() const
+{
+	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
+	SliceLocation loc = m_camera->slice_location();
+	SliceOrientation ori = m_camera->slice_orientation();
+	return new IPFSelectionOverlay(selection, loc, ori);
 }
 
 void PartitionView::setup_gui(wxGLContext *context)

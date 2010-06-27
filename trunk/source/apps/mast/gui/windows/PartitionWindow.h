@@ -38,6 +38,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void connect_special_menu_items();
 	void setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context);
 	void setup_menus();
 

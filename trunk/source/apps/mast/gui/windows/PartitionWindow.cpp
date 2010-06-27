@@ -60,6 +60,12 @@ wxGLContext *PartitionWindow::get_context() const
 }
 
 //#################### PRIVATE METHODS ####################
+void PartitionWindow::connect_special_menu_items()
+{
+	Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureManuallyMark));
+	Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
+}
+
 void PartitionWindow::setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
@@ -144,8 +150,6 @@ void PartitionWindow::setup_menus()
 	wxMenu *manuMarkMenu = new wxMenu;
 	featureMenu->AppendSubMenu(manuMarkMenu, wxT("&Manually Mark"));
 		manuMarkMenu->Append(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxT("&Kidney"));
-		Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureManuallyMark));
-		Connect(MENUID_FEATURE_MANUALLYMARK_KIDNEY, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
 		// TODO: Other features (possibly via iterating over the feature ID enumeration)
 	featureMenu->AppendSeparator();
 	wxMenu *selectMarkedMenu = new wxMenu;
@@ -172,6 +176,8 @@ void PartitionWindow::setup_menus()
 	m_menuBar->Append(helpMenu, wxT("&Help"));
 
 	SetMenuBar(m_menuBar);
+
+	connect_special_menu_items();
 }
 
 //#################### EVENT HANDLERS ####################

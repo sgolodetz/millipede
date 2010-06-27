@@ -88,6 +88,13 @@ void PartitionOverlayManager::render_partition_overlays(double left, double top,
 	}
 }
 
+void PartitionOverlayManager::replace_overlay(const std::string& name, PartitionOverlay *overlay)
+{
+	OverlayIter it = find_overlay(name);
+	if(it == m_overlays.end()) throw Exception("No such overlay: " + name);
+	it->second = PartitionOverlay_Ptr(overlay);
+}
+
 //#################### PRIVATE METHODS ####################
 PartitionOverlayManager::OverlayIter PartitionOverlayManager::find_overlay(const std::string& name)
 {

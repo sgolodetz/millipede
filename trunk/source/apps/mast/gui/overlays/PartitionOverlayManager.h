@@ -39,6 +39,7 @@ public:
 	void insert_overlay_below(const std::string& name, PartitionOverlay *overlay, const std::string& otherName);
 	void render_dicom_overlays(double left, double top, double right, double bottom) const;
 	void render_partition_overlays(double left, double top, double right, double bottom) const;
+	void replace_overlay(const std::string& name, PartitionOverlay *overlay);
 
 	//#################### PRIVATE METHODS ####################
 private:
