@@ -22,37 +22,27 @@ public:
 	IPFMultiFeatureSelectionOverlay(const boost::shared_ptr<const VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> >& multiFeatureSelection,
 									const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const Map<Feature,RGBA32>& colourMap)
 	{
-		RGBA32Image::Pointer image;
+		typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
+		typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 
-		if(multiFeatureSelection)
+		boost::shared_ptr<const VolumeIPF<LeafLayer,BranchLayer> > volumeIPF = multiFeatureSelection->volume_ipf();
+		itk::Index<3> sliceBegin, sliceEnd;
+		int width, height;
+		IPFOverlayTools::calculate_slice_parameters(volumeIPF->volume_size(), sliceLocation, sliceOrientation, sliceBegin, sliceEnd, width, height);
+
+		RGBA32Image::Pointer image = ITKImageUtil::make_image<RGBA32>(width, height);
+
+		std::vector<Feature> featureTypes = feature_types<Feature>();
+		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
-			typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
-			typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
+			PartitionForestSelection_CPtr selection = multiFeatureSelection->selection(featureTypes[i]);
+			RGBA32 colour = colourMap.contains(featureTypes[i]) ? *colourMap.get(featureTypes[i]) : ITKImageUtil::make_rgba32(255,0,255,255);
 
-			boost::shared_ptr<const VolumeIPF<LeafLayer,BranchLayer> > volumeIPF = multiFeatureSelection->volume_ipf();
-			itk::Index<3> sliceBegin, sliceEnd;
-			int width, height;
-			IPFOverlayTools::calculate_slice_parameters(volumeIPF->volume_size(), sliceLocation, sliceOrientation, sliceBegin, sliceEnd, width, height);
-
-			image = ITKImageUtil::make_image<RGBA32>(width, height);
-
-			std::vector<Feature> featureTypes = feature_types<Feature>();
-			for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+			typedef typename PartitionForestSelectionT::NodeConstIterator Iter;
+			for(Iter jt=selection->nodes_cbegin(), jend=selection->nodes_cend(); jt!=jend; ++jt)
 			{
-				PartitionForestSelection_CPtr selection = multiFeatureSelection->selection(featureTypes[i]);
-				RGBA32 colour = colourMap.contains(featureTypes[i]) ? *colourMap.get(featureTypes[i]) : ITKImageUtil::make_rgba32(255,0,255,255);
-
-				typedef typename PartitionForestSelectionT::NodeConstIterator Iter;
-				for(Iter jt=selection->nodes_cbegin(), jend=selection->nodes_cend(); jt!=jend; ++jt)
-				{
-					IPFOverlayTools::draw_node(volumeIPF, *jt, image, sliceBegin, sliceEnd, sliceOrientation, colour, false);
-				}
+				IPFOverlayTools::draw_node(volumeIPF, *jt, image, sliceBegin, sliceEnd, sliceOrientation, colour, false);
 			}
-		}
-		else
-		{
-			const int SUITABLY_SMALL_SIZE = 16;
-			image = ITKImageUtil::make_image<RGBA32>(SUITABLY_SMALL_SIZE, SUITABLY_SMALL_SIZE);
 		}
 
 		set_texture(TextureFactory::create_texture(image));

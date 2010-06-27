@@ -330,12 +330,16 @@ void PartitionView::fill_textures(SliceOrientation ori)
 PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 {
 	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
-	SliceLocation loc = m_camera->slice_location();
-	SliceOrientation ori = m_camera->slice_orientation();
-	Map<AbdominalFeature,RGBA32> colourMap;
-	colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
-	colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
-	return new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap);
+	if(multiFeatureSelection)
+	{
+		SliceLocation loc = m_camera->slice_location();
+		SliceOrientation ori = m_camera->slice_orientation();
+		Map<AbdominalFeature,RGBA32> colourMap;
+		colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
+		colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
+		return new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap);
+	}
+	else return NULL;
 }
 
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
@@ -375,9 +379,13 @@ void PartitionView::refresh_canvases()
 PartitionOverlay *PartitionView::selection_overlay() const
 {
 	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
-	SliceLocation loc = m_camera->slice_location();
-	SliceOrientation ori = m_camera->slice_orientation();
-	return new IPFSelectionOverlay(selection, loc, ori);
+	if(selection)
+	{
+		SliceLocation loc = m_camera->slice_location();
+		SliceOrientation ori = m_camera->slice_orientation();
+		return new IPFSelectionOverlay(selection, loc, ori);
+	}
+	else return NULL;
 }
 
 void PartitionView::setup_gui(wxGLContext *context)

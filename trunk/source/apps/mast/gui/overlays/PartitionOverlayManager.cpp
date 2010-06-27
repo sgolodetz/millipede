@@ -70,7 +70,7 @@ void PartitionOverlayManager::render_dicom_overlays(double left, double top, dou
 {
 	for(OverlayCIter it=m_overlays.begin(), iend=m_overlays.end(); it!=iend; ++it)
 	{
-		if(it->second->on_dicom_canvas())
+		if(it->second && it->second->on_dicom_canvas())
 		{
 			it->second->render(left, top, right, bottom);
 		}
@@ -81,7 +81,7 @@ void PartitionOverlayManager::render_partition_overlays(double left, double top,
 {
 	for(OverlayCIter it=m_overlays.begin(), iend=m_overlays.end(); it!=iend; ++it)
 	{
-		if(it->second->on_partition_canvas())
+		if(it->second && it->second->on_partition_canvas())
 		{
 			it->second->render(left, top, right, bottom);
 		}
