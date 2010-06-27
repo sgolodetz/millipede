@@ -15,11 +15,21 @@ using boost::shared_ptr;
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
 
+//#################### ENUMERATIONS ####################
+enum SimpleFeature
+{
+	KIDNEY,
+	LIVER,
+};
+
 //#################### TYPEDEFS ####################
 typedef PartitionForest<SimpleImageLeafLayer, SimpleImageBranchLayer> IPF;
-typedef boost::shared_ptr<IPF> IPF_Ptr;
 typedef PartitionForestSelection<SimpleImageLeafLayer, SimpleImageBranchLayer> Selection;
+typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeature> MFS;
+
+typedef boost::shared_ptr<IPF> IPF_Ptr;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
+typedef boost::shared_ptr<MFS> MFS_Ptr;
 
 //#################### LISTENERS ####################
 struct ForestListener : IPF::Listener
@@ -174,6 +184,68 @@ struct SelectionListener : Selection::Listener
 	}
 };
 
+struct MFSListener : MFS::Listener
+{
+	void command_sequence_execution_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "MFS command sequence execution began: " << description << '\n';
+	}
+
+	void command_sequence_execution_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "MFS command sequence execution ended: " << description << '\n';
+	}
+
+	void command_sequence_undo_began(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "MFS command sequence undo began: " << description << '\n';
+	}
+
+	void command_sequence_undo_ended(const std::string& description, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "MFS command sequence undo ended: " << description << '\n';
+	}
+
+	void feature_was_cleared(const MFS::Feature& feature, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Feature was cleared: " << feature << '\n';
+	}
+
+	void modification_redone(const MFS::Modification& modification, const MFS::Feature& feature, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "MFS modification of feature " << feature << " redone\n";
+	}
+
+	void modification_undone(const MFS::Modification& modification, const MFS::Feature& feature, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "MFS modification of feature " << feature << " undone\n";
+	}
+
+	void node_was_identified(const PFNodeID& node, const MFS::Feature& feature, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node " << node << " was identified as " << feature << '\n';
+	}
+
+	void node_was_unidentified(const PFNodeID& node, const MFS::Feature& feature, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Node " << node << " was unidentified as " << feature << '\n';
+	}
+
+	void output_command_depth(int commandDepth)
+	{
+		std::cout << '(' << commandDepth << ") ";
+	}
+};
+
 //#################### HELPERS ####################
 IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 {
@@ -213,28 +285,21 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 }
 
 //#################### TESTS ####################
-enum SimpleFeature
-{
-	KIDNEY,
-	LIVER,
-};
-
 void feature_selection_test()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
 
-	typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeature> MFS;
-	typedef boost::shared_ptr<MFS> MFS_Ptr;
 	MFS_Ptr mfs(new MFS(ipf));
 	mfs->set_command_manager(manager);
+	mfs->add_shared_listener(shared_ptr<MFSListener>(new MFSListener));
 
-	mfs->identify_feature(PFNodeID(1,6), LIVER);
-	mfs->unidentify_feature(PFNodeID(1,6), LIVER);
+	mfs->identify_node(PFNodeID(1,6), LIVER);
+	mfs->unidentify_node(PFNodeID(1,6), LIVER);
 	manager->undo();
 	mfs->clear_feature(LIVER);
 	manager->undo();
-	mfs->identify_feature(PFNodeID(3,0), KIDNEY);
+	mfs->identify_node(PFNodeID(3,0), KIDNEY);
 	std::vector<SimpleFeature> features = mfs->features_of(PFNodeID(0,7));
 	mfs->clear_all();
 	manager->undo();
@@ -431,11 +496,11 @@ void unzip_zip_test()
 
 int main()
 {
-	//feature_selection_test();
+	feature_selection_test();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
-	selection_test();
+	//selection_test();
 	//switch_parent_test();
 	//unzip_zip_test();
 	return 0;
