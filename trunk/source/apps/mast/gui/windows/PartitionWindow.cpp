@@ -201,7 +201,7 @@ void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 void PartitionWindow::OnMenuFeatureManuallyMark(wxCommandEvent& e)
 {
 	// TEMPORARY
-	m_view->model()->multi_feature_selection()->identify_selection(m_view->model()->selection(), AF_KIDNEY);
+	m_view->model()->multi_feature_selection()->identify_selection(m_view->model()->selection(), AbdominalFeature::KIDNEY);
 }
 
 void PartitionWindow::OnMenuFileExit(wxCommandEvent&)

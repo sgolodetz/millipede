@@ -8,10 +8,10 @@
 namespace mp {
 
 template <>
-std::vector<AbdominalFeature> feature_types()
+std::vector<AbdominalFeature::Enum> feature_types()
 {
-	std::vector<AbdominalFeature> ret(AF_COUNT);
-	for(int i=0; i<AF_COUNT; ++i) ret[i] = AbdominalFeature(i);
+	std::vector<AbdominalFeature::Enum> ret(AbdominalFeature::COUNT);
+	for(int i=0; i<AbdominalFeature::COUNT; ++i) ret[i] = AbdominalFeature::Enum(i);
 	return ret;
 }
 

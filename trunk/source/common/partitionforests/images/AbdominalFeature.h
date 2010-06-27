@@ -10,15 +10,18 @@
 
 namespace mp {
 
-enum AbdominalFeature
+struct AbdominalFeature
 {
-	AF_KIDNEY,
-	AF_LIVER,
-	AF_COUNT,
+	enum Enum
+	{
+		KIDNEY,
+		LIVER,
+		COUNT,
+	};
 };
 
 template <typename Feature> std::vector<Feature> feature_types();
-template <> std::vector<AbdominalFeature> feature_types();
+template <> std::vector<AbdominalFeature::Enum> feature_types();
 
 }
 

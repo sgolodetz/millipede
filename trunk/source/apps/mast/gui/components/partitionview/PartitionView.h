@@ -43,7 +43,7 @@ class PartitionView : public wxPanel
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> PartitionModelT;
+	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;

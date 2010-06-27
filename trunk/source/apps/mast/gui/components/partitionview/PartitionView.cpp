@@ -76,7 +76,7 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	}
 };
 
-struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature>::Listener
+struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature::Enum>::Listener
 {
 	PartitionView *base;
 
@@ -334,9 +334,9 @@ PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		Map<AbdominalFeature,RGBA32> colourMap;
-		colourMap.set(AF_KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
-		colourMap.set(AF_LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
+		Map<AbdominalFeature::Enum,RGBA32> colourMap;
+		colourMap.set(AbdominalFeature::KIDNEY, ITKImageUtil::make_rgba32(255,255,0,100));
+		colourMap.set(AbdominalFeature::LIVER, ITKImageUtil::make_rgba32(128,0,128,100));
 		return new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap);
 	}
 	else return NULL;

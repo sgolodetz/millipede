@@ -28,7 +28,7 @@ class BaseCanvas : public Canvas
 {
 	//#################### TYPEDEFS ####################
 protected:
-	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature> PartitionModelT;
+	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
