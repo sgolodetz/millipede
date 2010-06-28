@@ -159,15 +159,6 @@ public:
 		selection(feature)->select_node(node);
 	}
 
-	void identify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
-	{
-		SequenceGuard guard(m_commandManager, m_listeners, "Identify Selection");
-		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
-		{
-			identify_node(*it, feature);
-		}
-	}
-
 	PartitionForestSelection_CPtr selection(const Feature& feature) const
 	{
 		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
@@ -188,6 +179,20 @@ public:
 		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			it->second->set_command_manager(commandManager);
+		}
+	}
+
+	void toggle_node(const PFNodeID& node, const Feature& feature)
+	{
+		selection(feature)->toggle_node(node);
+	}
+
+	void toggle_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
+	{
+		SequenceGuard guard(m_commandManager, m_listeners, "Toggle Selection");
+		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+		{
+			toggle_node(*it, feature);
 		}
 	}
 
