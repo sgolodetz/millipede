@@ -25,8 +25,9 @@ enum
 {
 	BUTTONID_BASE = wxID_HIGHEST,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	BUTTONID_OPENDICOMDIR,
-	BUTTONID_OPENSAVEDVOLUMECHOICE,
+	BUTTONID_OPENVOLUMECHOICE,
 	BUTTONID_OPENTESTVOLUME1,
+	BUTTONID_OPENTESTVOLUME2,
 	BUTTONID_EXIT,
 };
 
@@ -34,11 +35,8 @@ enum
 {
 	MENUID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
 	MENUID_FILE_EXIT,
-	MENUID_FILE_OPEN,
-	MENUID_FILE_OPEN_DICOMDIR,
-	MENUID_FILE_OPEN_SAVEDVOLUME,
-	MENUID_FILE_OPEN_SAVEDVOLUMECHOICE,
-	MENUID_FILE_REPLACE_VOLUMECHOICESECTION,
+	MENUID_FILE_OPENDICOMDIR,
+	MENUID_FILE_OPENVOLUMECHOICE,
 	MENUID_HELP_ABOUT,
 };
 
@@ -107,8 +105,9 @@ void MainWindow::setup_gui()
 
 	std::vector<wxString> buttonCaptions;
 	buttonCaptions.push_back(wxT("Open DICOMDIR..."));
-	buttonCaptions.push_back(wxT("Open Saved Volume Choice..."));
+	buttonCaptions.push_back(wxT("Open Volume Choice..."));
 	buttonCaptions.push_back(wxT("Open Test Volume 1"));
+	buttonCaptions.push_back(wxT("Open Test Volume 2"));
 	buttonCaptions.push_back(wxT("Exit"));
 
 	for(size_t i=0, size=buttonCaptions.size(); i<size; ++i)
@@ -131,21 +130,22 @@ void MainWindow::setup_gui()
 void MainWindow::setup_menus()
 {
 	wxMenu *fileMenu = new wxMenu;
-	wxMenu *fileOpenMenu = new wxMenu;
-	fileMenu->AppendSubMenu(fileOpenMenu, wxT("&Open"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_DICOMDIR, wxT("&DICOMDIR...\tCtrl+O"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_SAVEDVOLUME, wxT("&Saved Volume...\tCtrl+Shift+O"));
-		fileOpenMenu->Append(MENUID_FILE_OPEN_SAVEDVOLUMECHOICE, wxT("&Saved Volume Choice...\tCtrl+Alt+O"));
+	fileMenu->Append(MENUID_FILE_OPENDICOMDIR, wxT("Open &DICOMDIR...\tCtrl+O"));
+	fileMenu->Append(wxID_ANY, wxT("Open &Volume...\tCtrl+Shift+O"));
+	fileMenu->Append(MENUID_FILE_OPENVOLUMECHOICE, wxT("Open Volume &Choice...\tCtrl+Alt+O"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(MENUID_FILE_REPLACE_VOLUMECHOICESECTION, wxT("&Replace Volume Choice Section..."));
-	fileMenu->AppendSeparator();
-	fileMenu->Append(MENUID_FILE_EXIT, wxT("E&xit\tAlt+F4"));
+	fileMenu->Append(MENUID_FILE_EXIT, wxT("&Exit\tAlt+F4"));
+
+	wxMenu *toolsMenu = new wxMenu;
+	toolsMenu->Append(wxID_ANY, wxT("&Anonymize Directory Tree...\tCtrl+A"));
+	toolsMenu->Append(wxID_ANY, wxT("&Replace Volume Choice Section...\tCtrl+R"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MENUID_HELP_ABOUT, wxT("&About...\tF2"));
 
 	m_menuBar = new wxMenuBar;
 	m_menuBar->Append(fileMenu, wxT("&File"));
+	m_menuBar->Append(toolsMenu, wxT("&Tools"));
 	m_menuBar->Append(helpMenu, wxT("&Help"));
 
 	SetMenuBar(m_menuBar);
@@ -159,6 +159,11 @@ void MainWindow::OnButtonOpenTestVolume1(wxCommandEvent&)
 	load_saved_volume_choice("../resources/testvolume1.vcf");
 }
 
+void MainWindow::OnButtonOpenTestVolume2(wxCommandEvent&)
+{
+	load_saved_volume_choice("../resources/testvolume2.vcf");
+}
+
 //~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
 void MainWindow::OnCommonExit(wxCommandEvent&)
 {
@@ -167,7 +172,7 @@ void MainWindow::OnCommonExit(wxCommandEvent&)
 
 void MainWindow::OnCommonOpenDICOMDIR(wxCommandEvent&)
 {
-	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open DICOMDIR", "DICOMDIR Files|DICOMDIR");
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open DICOMDIR", "DICOMDIR Files|DICOMDIR|All Files|*.*");
 	if(dialog->ShowModal() == wxID_OK)
 	{
 		std::string path = wxString_to_string(dialog->GetPath());
@@ -191,9 +196,9 @@ void MainWindow::OnCommonOpenDICOMDIR(wxCommandEvent&)
 	}
 }
 
-void MainWindow::OnCommonOpenSavedVolumeChoice(wxCommandEvent&)
+void MainWindow::OnCommonOpenVolumeChoice(wxCommandEvent&)
 {
-	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Saved Volume Choice", "Volume Choice Files (*.vcf)|*.vcf");
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Volume Choice", "Volume Choice Files (*.vcf)|*.vcf|All Files|*.*");
 	if(dialog->ShowModal() == wxID_OK)
 	{
 		std::string path = wxString_to_string(dialog->GetPath());
@@ -221,14 +226,15 @@ void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	EVT_BUTTON(BUTTONID_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
-	EVT_BUTTON(BUTTONID_OPENSAVEDVOLUMECHOICE, MainWindow::OnCommonOpenSavedVolumeChoice)
 	EVT_BUTTON(BUTTONID_OPENTESTVOLUME1, MainWindow::OnButtonOpenTestVolume1)
+	EVT_BUTTON(BUTTONID_OPENTESTVOLUME2, MainWindow::OnButtonOpenTestVolume2)
+	EVT_BUTTON(BUTTONID_OPENVOLUMECHOICE, MainWindow::OnCommonOpenVolumeChoice)
 	EVT_BUTTON(BUTTONID_EXIT, MainWindow::OnCommonExit)
 
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnCommonExit)
-	EVT_MENU(MENUID_FILE_OPEN_DICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
-	EVT_MENU(MENUID_FILE_OPEN_SAVEDVOLUMECHOICE, MainWindow::OnCommonOpenSavedVolumeChoice)
+	EVT_MENU(MENUID_FILE_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
+	EVT_MENU(MENUID_FILE_OPENVOLUMECHOICE, MainWindow::OnCommonOpenVolumeChoice)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
 END_EVENT_TABLE()
 

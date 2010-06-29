@@ -193,14 +193,14 @@ wxPanel *VolumeChooserDialog::create_advanced_page(wxWindow *parent)
 	// Set up the image window settings controls.
 	sizer->AddSpacer(10);
 
-	m_autoWindowCheckbox = new wxCheckBox(panel, CHECKBOXID_AUTOWINDOW, wxT("Use Automatic Window Settings"));
-	m_autoWindowCheckbox->SetValue(true);
-	sizer->Add(m_autoWindowCheckbox);
+	wxButton *aboutWindowsButton = new wxButton(panel, BUTTONID_ABOUTWINDOWS, wxT("About Windows..."));
+	sizer->Add(aboutWindowsButton);
 
 	sizer->AddSpacer(10);
 
-	wxButton *aboutWindowsButton = new wxButton(panel, BUTTONID_ABOUTWINDOWS, wxT("About Windows..."));
-	sizer->Add(aboutWindowsButton);
+	m_autoWindowCheckbox = new wxCheckBox(panel, CHECKBOXID_AUTOWINDOW, wxT("Use Automatic Window Settings"));
+	m_autoWindowCheckbox->SetValue(true);
+	sizer->Add(m_autoWindowCheckbox);
 
 	sizer->AddSpacer(10);
 

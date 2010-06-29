@@ -199,7 +199,10 @@ INCLUDE(${millipede_SOURCE_DIR}/LinkWxWidgets.cmake)
 # Specify resource files #
 ##########################
 
-SET(resources testvolume1.vcf)
+SET(resources
+testvolume1.vcf
+testvolume2.vcf
+)
 
 #########################################
 # Copy resource files to the build tree #

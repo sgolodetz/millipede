@@ -40,11 +40,12 @@ private:
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	void OnButtonOpenTestVolume1(wxCommandEvent&);
+	void OnButtonOpenTestVolume2(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ COMMON ~~~~~~~~~~~~~~~~~~~~
 	void OnCommonExit(wxCommandEvent&);
 	void OnCommonOpenDICOMDIR(wxCommandEvent&);
-	void OnCommonOpenSavedVolumeChoice(wxCommandEvent&);
+	void OnCommonOpenVolumeChoice(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	void OnMenuHelpAbout(wxCommandEvent&);
