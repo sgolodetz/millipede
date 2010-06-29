@@ -48,7 +48,7 @@ public:
 	void OnMenuActionsClearHistory(wxCommandEvent&);
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
-	void OnMenuFeatureManuallyToggle(wxCommandEvent& e);
+	void OnMenuFeatureToggle(wxCommandEvent& e);
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
 	void OnMenuNavigationFitToView(wxCommandEvent&);

@@ -21,8 +21,8 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
-	MENUID_FEATURE_MANUALLYTOGGLE_BASE,
-	MENUID_FEATURE_MANUALLYTOGGLE_LAST = (MENUID_FEATURE_MANUALLYTOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
+	MENUID_FEATURE_TOGGLE_BASE,
+	MENUID_FEATURE_TOGGLE_LAST = (MENUID_FEATURE_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
@@ -66,8 +66,8 @@ void PartitionWindow::connect_special_menu_items()
 	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
 	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 	{
-		int id = (MENUID_FEATURE_MANUALLYTOGGLE_BASE+1) + i;
-		Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureManuallyToggle));
+		int id = (MENUID_FEATURE_TOGGLE_BASE+1) + i;
+		Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureToggle));
 		Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
 	}
 }
@@ -153,8 +153,8 @@ void PartitionWindow::setup_menus()
 	featureMenu->AppendSubMenu(autoMarkMenu, wxT("&Automatically Mark"));
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Default Identifier"));
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
-	wxMenu *manuToggleMenu = new wxMenu;
-	featureMenu->AppendSubMenu(manuToggleMenu, wxT("&Manually Toggle"));
+	wxMenu *toggleMenu = new wxMenu;
+	featureMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selected Nodes"));
 		std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
@@ -162,7 +162,7 @@ void PartitionWindow::setup_menus()
 			oss << feature_name(featureTypes[i]);
 			std::string key = feature_key(featureTypes[i]);
 			if(key != "") oss << " (&" << key << ")\t" << key;
-			manuToggleMenu->Append((MENUID_FEATURE_MANUALLYTOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
+			toggleMenu->Append((MENUID_FEATURE_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
 	featureMenu->AppendSeparator();
 	wxMenu *selectMarkedMenu = new wxMenu;
@@ -173,6 +173,7 @@ void PartitionWindow::setup_menus()
 	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
+	toolsMenu->Append(wxID_ANY, wxT("&Calculate Feature Volumes..."));
 	toolsMenu->Append(wxID_ANY, wxT("&Visualize in 3D..."));
 
 	wxMenu *helpMenu = new wxMenu;
@@ -211,9 +212,9 @@ void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 	m_commandManager->undo();
 }
 
-void PartitionWindow::OnMenuFeatureManuallyToggle(wxCommandEvent& e)
+void PartitionWindow::OnMenuFeatureToggle(wxCommandEvent& e)
 {
-	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURE_MANUALLYTOGGLE_BASE+1));
+	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURE_TOGGLE_BASE+1));
 	m_view->model()->multi_feature_selection()->toggle_selection(m_view->model()->selection(), feature);
 }
 
