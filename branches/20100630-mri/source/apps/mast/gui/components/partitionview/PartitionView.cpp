@@ -31,7 +31,7 @@ namespace {
 enum
 {
 	ID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
-	BUTTONID_SEGMENT_CT_VOLUME,
+	BUTTONID_SEGMENT_VOLUME,
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
@@ -411,7 +411,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
 
 	// Top right
-	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_CT_VOLUME, wxT("Segment CT Volume..."));
+	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume..."));
 	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	// Middle left
@@ -496,8 +496,9 @@ void PartitionView::update_sliders()
 }
 
 //#################### EVENT HANDLERS ####################
+
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-void PartitionView::OnButtonSegmentCTVolume(wxCommandEvent&)
+void PartitionView::OnButtonSegmentVolume(wxCommandEvent&)
 {
 	segment_volume();
 }
@@ -562,7 +563,7 @@ void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	EVT_BUTTON(BUTTONID_SEGMENT_CT_VOLUME, PartitionView::OnButtonSegmentCTVolume)
+	EVT_BUTTON(BUTTONID_SEGMENT_VOLUME, PartitionView::OnButtonSegmentVolume)
 	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionView::OnButtonViewXY)
 	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionView::OnButtonViewXZ)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionView::OnButtonViewYZ)

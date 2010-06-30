@@ -120,7 +120,7 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	void OnButtonSegmentCTVolume(wxCommandEvent&);
+	void OnButtonSegmentVolume(wxCommandEvent&);
 	void OnButtonViewXY(wxCommandEvent&);
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);
