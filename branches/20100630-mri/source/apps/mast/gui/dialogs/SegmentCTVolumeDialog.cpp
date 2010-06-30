@@ -79,9 +79,9 @@ bool SegmentCTVolumeDialog::construct_segmentation_options()
 		}
 	}
 	int adfIterations = m_adfIterations->GetValue();
-	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
 	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
-	m_segmentationOptions = CTSegmentationOptions(adfIterations, inputType, subvolumeSize, waterfallLayerLimit, m_windowSettings);
+	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
+	m_segmentationOptions = CTSegmentationOptions(adfIterations, subvolumeSize, waterfallLayerLimit, m_windowSettings, inputType);
 	return true;
 }
 

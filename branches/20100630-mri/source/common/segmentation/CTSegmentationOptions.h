@@ -6,13 +6,11 @@
 #ifndef H_MILLIPEDE_CTSEGMENTATIONOPTIONS
 #define H_MILLIPEDE_CTSEGMENTATIONOPTIONS
 
-#include <itkSize.h>
-
-#include <common/dicom/util/WindowSettings.h>
+#include "SegmentationOptions.h"
 
 namespace mp {
 
-struct CTSegmentationOptions
+struct CTSegmentationOptions : SegmentationOptions
 {
 	//#################### CONSTANTS ####################
 	enum InputType
@@ -23,14 +21,10 @@ struct CTSegmentationOptions
 	};
 
 	//#################### PUBLIC VARIABLES ####################
-	int adfIterations;
 	InputType inputType;
-	itk::Size<3> subvolumeSize;
-	int waterfallLayerLimit;
-	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-	CTSegmentationOptions(int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
+	CTSegmentationOptions(int adfIterations_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_, InputType inputType_);
 };
 
 }
