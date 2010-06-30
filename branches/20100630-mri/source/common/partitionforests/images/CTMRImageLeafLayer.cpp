@@ -1,21 +1,21 @@
 /***
- * millipede: CTImageLeafLayer.cpp
+ * millipede: CTMRImageLeafLayer.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CTImageLeafLayer.h"
+#include "CTMRImageLeafLayer.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTImageLeafLayer::CTImageLeafLayer(const std::vector<CTPixelProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ)
+CTMRImageLeafLayer::CTMRImageLeafLayer(const std::vector<CTMRPixelProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ)
 {
 	initialise(nodeProperties, sizeX, sizeY, sizeZ);
 }
 
-CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage,
-								   const itk::Image<unsigned char,2>::Pointer& windowedImage,
-								   const itk::Image<short,2>::Pointer& gradientMagnitudeImage)
+CTMRImageLeafLayer::CTMRImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage,
+									   const itk::Image<unsigned char,2>::Pointer& windowedImage,
+									   const itk::Image<short,2>::Pointer& gradientMagnitudeImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -25,7 +25,7 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldI
 
 	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 
-	std::vector<CTPixelProperties> nodeProperties;
+	std::vector<CTMRPixelProperties> nodeProperties;
 	nodeProperties.reserve(size[0] * size[1]);
 
 	GradientMagnitudeImage::IndexType gradientMagnitudeIndex;
@@ -36,17 +36,17 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldI
 		{
 			gradientMagnitudeIndex[0] = windowedIndex[0] = hounsfieldIndex[0] = x;
 			gradientMagnitudeIndex[1] = windowedIndex[1] = hounsfieldIndex[1] = y;
-			nodeProperties.push_back(CTPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
-													   windowedImage->GetPixel(windowedIndex),
-													   hounsfieldImage->GetPixel(hounsfieldIndex)));
+			nodeProperties.push_back(CTMRPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
+														 windowedImage->GetPixel(windowedIndex),
+														 hounsfieldImage->GetPixel(hounsfieldIndex)));
 		}
 
 	initialise(nodeProperties, size[0], size[1]);
 }
 
-CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage,
-								   const itk::Image<unsigned char,3>::Pointer& windowedImage,
-								   const itk::Image<short,3>::Pointer& gradientMagnitudeImage)
+CTMRImageLeafLayer::CTMRImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage,
+									   const itk::Image<unsigned char,3>::Pointer& windowedImage,
+									   const itk::Image<short,3>::Pointer& gradientMagnitudeImage)
 {
 	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
@@ -56,7 +56,7 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldI
 
 	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 
-	std::vector<CTPixelProperties> nodeProperties;
+	std::vector<CTMRPixelProperties> nodeProperties;
 	nodeProperties.reserve(size[0] * size[1] * size[2]);
 
 	GradientMagnitudeImage::IndexType gradientMagnitudeIndex;
@@ -69,9 +69,9 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldI
 				gradientMagnitudeIndex[0] = windowedIndex[0] = hounsfieldIndex[0] = x;
 				gradientMagnitudeIndex[1] = windowedIndex[1] = hounsfieldIndex[1] = y;
 				gradientMagnitudeIndex[2] = windowedIndex[2] = hounsfieldIndex[2] = z;
-				nodeProperties.push_back(CTPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
-														   windowedImage->GetPixel(windowedIndex),
-														   hounsfieldImage->GetPixel(hounsfieldIndex)));
+				nodeProperties.push_back(CTMRPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
+															 windowedImage->GetPixel(windowedIndex),
+															 hounsfieldImage->GetPixel(hounsfieldIndex)));
 			}
 
 	initialise(nodeProperties, size[0], size[1], size[2]);
@@ -79,7 +79,7 @@ CTImageLeafLayer::CTImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldI
 
 //#################### PUBLIC METHODS ####################
 // Precondition: has_edge(u, v)
-CTImageLeafLayer::EdgeWeight CTImageLeafLayer::edge_weight(int u, int v) const
+CTMRImageLeafLayer::EdgeWeight CTMRImageLeafLayer::edge_weight(int u, int v) const
 {
 	return std::max(m_nodes[u].properties().gradient_magnitude_value(), m_nodes[v].properties().gradient_magnitude_value());
 }

@@ -18,12 +18,12 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 CTLowestLayersBuilder::CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions,
-											 CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer)
+											 CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer)
 :	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions), m_volume(new DICOMVolume_CPtr(volume))
 {}
 
 CTLowestLayersBuilder::CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions,
-											 CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer)
+											 CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer)
 :	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions), m_volume(volume)
 {}
 
@@ -122,7 +122,7 @@ void CTLowestLayersBuilder::execute()
 
 	set_status("Creating lowest forest layers...");
 
-	m_leafLayer.reset(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+	m_leafLayer.reset(new CTMRImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
 	if(is_aborted()) return;
 	m_lowestBranchLayer = IPF::make_lowest_branch_layer(m_leafLayer, ws.calculate_groups());
 	

@@ -1,30 +1,30 @@
 /***
- * millipede: CTRegionProperties.cpp
+ * millipede: CTMRRegionProperties.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CTRegionProperties.h"
+#include "CTMRRegionProperties.h"
 
 #include <ostream>
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTRegionProperties::CTRegionProperties()
+CTMRRegionProperties::CTMRRegionProperties()
 :	m_area(0),
 	m_meanGreyValue(0.0)
 {}
 
 //#################### PUBLIC METHODS ####################
-int CTRegionProperties::area() const
+int CTMRRegionProperties::area() const
 {
 	return m_area;
 }
 
 // Precondition: !properties.empty()
-CTRegionProperties CTRegionProperties::combine_branch_properties(const std::vector<CTRegionProperties>& properties)
+CTMRRegionProperties CTMRRegionProperties::combine_branch_properties(const std::vector<CTMRRegionProperties>& properties)
 {
-	CTRegionProperties ret;
+	CTMRRegionProperties ret;
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
@@ -37,9 +37,9 @@ CTRegionProperties CTRegionProperties::combine_branch_properties(const std::vect
 }
 
 // Precondition: !properties.empty()
-CTRegionProperties CTRegionProperties::combine_leaf_properties(const std::vector<CTPixelProperties>& properties)
+CTMRRegionProperties CTMRRegionProperties::combine_leaf_properties(const std::vector<CTMRPixelProperties>& properties)
 {
-	CTRegionProperties ret;
+	CTMRRegionProperties ret;
 
 	ret.m_area = properties.size();
 
@@ -52,13 +52,13 @@ CTRegionProperties CTRegionProperties::combine_leaf_properties(const std::vector
 	return ret;
 }
 
-double CTRegionProperties::mean_grey_value() const
+double CTMRRegionProperties::mean_grey_value() const
 {
 	return m_meanGreyValue;
 }
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const CTRegionProperties& rhs)
+std::ostream& operator<<(std::ostream& os, const CTMRRegionProperties& rhs)
 {
 	os << "<<" << rhs.area() << " | " << rhs.mean_grey_value() << ">>";
 	return os;

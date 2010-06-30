@@ -8,8 +8,8 @@
 
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/CTImageBranchLayer.h>
-#include <common/partitionforests/images/CTImageLeafLayer.h>
+#include <common/partitionforests/images/CTMRImageBranchLayer.h>
+#include <common/partitionforests/images/CTMRImageLeafLayer.h>
 #include "CTSegmentationOptions.h"
 
 namespace mp {
@@ -22,23 +22,23 @@ class CTLowestLayersBuilder : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 public:
-	typedef boost::shared_ptr<CTImageBranchLayer> CTImageBranchLayer_Ptr;
-	typedef boost::shared_ptr<CTImageLeafLayer> CTImageLeafLayer_Ptr;
-	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
+	typedef boost::shared_ptr<CTMRImageBranchLayer> CTMRImageBranchLayer_Ptr;
+	typedef boost::shared_ptr<CTMRImageLeafLayer> CTMRImageLeafLayer_Ptr;
+	typedef PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> IPF;
 	typedef boost::shared_ptr<IPF> IPF_Ptr;
 	typedef CTSegmentationOptions SegmentationOptions;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	CTImageLeafLayer_Ptr& m_leafLayer;
-	CTImageBranchLayer_Ptr& m_lowestBranchLayer;
+	CTMRImageLeafLayer_Ptr& m_leafLayer;
+	CTMRImageBranchLayer_Ptr& m_lowestBranchLayer;
 	CTSegmentationOptions m_segmentationOptions;
 	boost::shared_ptr<DICOMVolume_CPtr> m_volume;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer);
-	CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, CTImageLeafLayer_Ptr& leafLayer, CTImageBranchLayer_Ptr& lowestBranchLayer);
+	CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer);
+	CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer);
 
 	//#################### PUBLIC METHODS ####################
 public:

@@ -16,22 +16,22 @@ using boost::shared_ptr;
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/CTImageBranchLayer.h>
-#include <common/partitionforests/images/CTImageLeafLayer.h>
+#include <common/partitionforests/images/CTMRImageBranchLayer.h>
+#include <common/partitionforests/images/CTMRImageLeafLayer.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 #include <common/util/ITKImageUtil.h>
 using namespace mp;
 
-typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
+typedef PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> IPF;
 typedef shared_ptr<IPF> IPF_Ptr;
 
 //#################### HELPER FUNCTIONS ####################
-itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<const PartitionForest<CTImageLeafLayer,CTImageBranchLayer> >& ipf, int layerIndex,
+itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<const PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> >& ipf, int layerIndex,
 													   int width, int height)
 {
 	typedef itk::Image<unsigned char,2> Image;
-	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
+	typedef PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> IPF;
 
 	Image::Pointer image = ITKImageUtil::make_image<unsigned char>(width, height);
 
@@ -55,12 +55,12 @@ itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<c
 	return image;
 }
 
-itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boost::shared_ptr<const PartitionForest<CTImageLeafLayer,CTImageBranchLayer> >& ipf,
+itk::Image<unsigned char,2>::Pointer make_mosaic_image_with_boundaries(const boost::shared_ptr<const PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> >& ipf,
 																	   int layerIndex, int width, int height)
 {
 	typedef itk::Image<PFNodeID,2> AncestorImage;
 	typedef itk::Image<unsigned char,2> MosaicImage;
-	typedef PartitionForest<CTImageLeafLayer,CTImageBranchLayer> IPF;
+	typedef PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> IPF;
 
 	// Create an image of the ancestors of the pixels in the specified layer.
 	AncestorImage::Pointer ancestorImage = ITKImageUtil::make_image<PFNodeID>(width, height);
@@ -247,8 +247,8 @@ void real_image_test()
 
 	// Create the initial partition forest.
 	std::cout << "Creating initial partition forest...\n";
-	shared_ptr<CTImageLeafLayer> leafLayer(new CTImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
-	shared_ptr<CTImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
+	shared_ptr<CTMRImageLeafLayer> leafLayer(new CTMRImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+	shared_ptr<CTMRImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
 	IPF_Ptr ipf(new IPF(leafLayer, lowestBranchLayer));
 
 	// Create a rooted MST from the lowest branch layer.

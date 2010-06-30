@@ -76,7 +76,7 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	}
 };
 
-struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature::Enum>::Listener
+struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<CTMRImageLeafLayer,CTMRImageBranchLayer,AbdominalFeature::Enum>::Listener
 {
 	PartitionView *base;
 
@@ -94,7 +94,7 @@ struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelec
 	}
 };
 
-struct PartitionView::SelectionListener : VolumeIPFSelection<CTImageLeafLayer,CTImageBranchLayer>::Listener
+struct PartitionView::SelectionListener : VolumeIPFSelection<CTMRImageLeafLayer,CTMRImageBranchLayer>::Listener
 {
 	PartitionView *base;
 
@@ -254,7 +254,7 @@ void PartitionView::create_overlays()
 
 void PartitionView::create_partition_textures()
 {
-	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> CTVolumeIPF;
+	typedef VolumeIPF<CTMRImageLeafLayer,CTMRImageBranchLayer> CTVolumeIPF;
 	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
 
 	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
@@ -287,7 +287,7 @@ Job_Ptr PartitionView::fill_dicom_textures_job(SliceOrientation ori, const itk::
 
 Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 {
-	typedef VolumeIPF<CTImageLeafLayer,CTImageBranchLayer> CTVolumeIPF;
+	typedef VolumeIPF<CTMRImageLeafLayer,CTMRImageBranchLayer> CTVolumeIPF;
 	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
 
 	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
@@ -296,7 +296,7 @@ Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		typedef MosaicImageCreator<CTImageLeafLayer,CTImageBranchLayer> MIC;
+		typedef MosaicImageCreator<CTMRImageLeafLayer,CTMRImageBranchLayer> MIC;
 		typedef SliceTextureSetFiller<unsigned char> TSF;
 
 		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
