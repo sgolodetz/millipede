@@ -12,6 +12,7 @@
 #include <itkSize.h>
 
 #include <wx/bookctrl.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/propdlg.h>
 #include <wx/radiobox.h>
@@ -50,17 +51,19 @@ enum SegmentationType
 template <typename SegmentationOptionsType>
 class SegmentVolumeDialog : public wxPropertySheetDialog
 {
-	//#################### PROTECTED VARIABLES ####################
-	// TODO: Make as many of these private as possible later.
-protected:
+	//#################### PRIVATE VARIABLES ####################
+private:
 	itk::Size<3> m_volumeSize;
 	WindowSettings m_windowSettings;
-	boost::optional<SegmentationOptionsType> m_segmentationOptions;
 
 	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_segmentationType;
 	wxSpinCtrl *m_subvolumeSizes[3];
 	wxSpinCtrl *m_waterfallLayerLimit;
+
+	//#################### PROTECTED VARIABLES ####################
+protected:
+	boost::optional<SegmentationOptionsType> m_segmentationOptions;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -87,6 +90,26 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	int adf_iterations() const
+	{
+		return m_adfIterations->GetValue();
+	}
+
+	bool construct_subvolume_size(itk::Size<3>& subvolumeSize)
+	{
+		for(int i=0; i<3; ++i)
+		{
+			subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
+
+			if(m_volumeSize[i] % subvolumeSize[i] != 0)
+			{
+				wxMessageBox(wxT("Error: The subvolume dimensions must be factors of the volume dimensions."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+				return false;
+			}
+		}
+		return true;
+	}
+
 	void initialise(wxWindow *parent)
 	{
 		// Note:	This code can't be put in SegmentVolumeDialog's constructor because it calls a virtual method (create_modality_page).
@@ -104,6 +127,21 @@ protected:
 
 		CreateButtons();
 		LayoutDialog();
+	}
+
+	const itk::Size<3>& volume_size() const
+	{
+		return m_volumeSize;
+	}
+
+	int waterfall_layer_limit() const
+	{
+		return m_waterfallLayerLimit->GetValue();
+	}
+
+	const WindowSettings& window_settings() const
+	{
+		return m_windowSettings;
 	}
 
 	//#################### PRIVATE METHODS ####################

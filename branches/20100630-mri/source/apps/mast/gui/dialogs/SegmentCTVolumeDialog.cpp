@@ -5,8 +5,6 @@
 
 #include "SegmentCTVolumeDialog.h"
 
-#include <wx/msgdlg.h>
-
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -20,20 +18,9 @@ SegmentCTVolumeDialog::SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3
 bool SegmentCTVolumeDialog::construct_segmentation_options()
 {
 	itk::Size<3> subvolumeSize;
-	for(int i=0; i<3; ++i)
-	{
-		subvolumeSize[i] = m_subvolumeSizes[i]->GetValue();
-
-		if(m_volumeSize[i] % subvolumeSize[i] != 0)
-		{
-			wxMessageBox(wxT("Error: The subvolume dimensions must be factors of the volume dimensions."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
-			return false;
-		}
-	}
-	int adfIterations = m_adfIterations->GetValue();
-	int waterfallLayerLimit = m_waterfallLayerLimit->GetValue();
+	if(!construct_subvolume_size(subvolumeSize)) return false;
 	CTSegmentationOptions::InputType inputType = CTSegmentationOptions::InputType(m_inputType->GetSelection());
-	m_segmentationOptions = CTSegmentationOptions(adfIterations, subvolumeSize, waterfallLayerLimit, m_windowSettings, inputType);
+	m_segmentationOptions = CTSegmentationOptions(adf_iterations(), subvolumeSize, waterfall_layer_limit(), window_settings(), inputType);
 	return true;
 }
 
