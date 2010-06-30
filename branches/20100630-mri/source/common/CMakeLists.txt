@@ -155,6 +155,7 @@ partitionforests/images/AbdominalFeature.cpp
 partitionforests/images/CTImageLeafLayer.cpp
 partitionforests/images/CTPixelProperties.cpp
 partitionforests/images/CTRegionProperties.cpp
+partitionforests/images/MRPixelProperties.cpp
 partitionforests/images/SimpleImageLeafLayer.cpp
 partitionforests/images/SimplePixelProperties.cpp
 partitionforests/images/SimpleRegionProperties.cpp
@@ -169,6 +170,7 @@ partitionforests/images/CTRegionProperties.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/MosaicImageCreator.h
+partitionforests/images/MRPixelProperties.h
 partitionforests/images/SimpleImageBranchLayer.h
 partitionforests/images/SimpleImageLeafLayer.h
 partitionforests/images/SimplePixelProperties.h
