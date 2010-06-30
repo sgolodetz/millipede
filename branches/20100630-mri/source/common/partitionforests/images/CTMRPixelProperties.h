@@ -15,20 +15,20 @@ class CTMRPixelProperties
 	//#################### PRIVATE VARIABLES ####################
 private:
 	// Note: Deliberately listed in non-increasing order of data size to try and minimize padding.
-	int m_hounsfieldValue;
+	int m_baseValue;
 	short m_gradientMagnitudeValue;
 	unsigned char m_greyValue;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	CTMRPixelProperties();
-	CTMRPixelProperties(short gradientMagnitudeValue, unsigned char greyValue, int hounsfieldValue);
+	CTMRPixelProperties(int baseValue, short gradientMagnitudeValue, unsigned char greyValue);
 
 	//#################### PUBLIC METHODS ####################
 public:
+	int base_value() const;
 	short gradient_magnitude_value() const;
 	unsigned char grey_value() const;
-	int hounsfield_value() const;
 };
 
 //#################### GLOBAL OPERATORS ####################

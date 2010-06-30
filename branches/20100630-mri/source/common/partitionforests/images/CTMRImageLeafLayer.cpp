@@ -13,65 +13,65 @@ CTMRImageLeafLayer::CTMRImageLeafLayer(const std::vector<CTMRPixelProperties>& n
 	initialise(nodeProperties, sizeX, sizeY, sizeZ);
 }
 
-CTMRImageLeafLayer::CTMRImageLeafLayer(const itk::Image<int,2>::Pointer& hounsfieldImage,
+CTMRImageLeafLayer::CTMRImageLeafLayer(const itk::Image<int,2>::Pointer& baseImage,
 									   const itk::Image<unsigned char,2>::Pointer& windowedImage,
 									   const itk::Image<short,2>::Pointer& gradientMagnitudeImage)
 {
-	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
+	assert(baseImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
+	typedef itk::Image<int,2> BaseImage;
 	typedef itk::Image<short,2> GradientMagnitudeImage;
 	typedef itk::Image<unsigned char,2> WindowedImage;
-	typedef itk::Image<int,2> HounsfieldImage;
 
-	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
+	const BaseImage::SizeType& size = baseImage->GetLargestPossibleRegion().GetSize();
 
 	std::vector<CTMRPixelProperties> nodeProperties;
 	nodeProperties.reserve(size[0] * size[1]);
 
+	BaseImage::IndexType baseIndex;
 	GradientMagnitudeImage::IndexType gradientMagnitudeIndex;
 	WindowedImage::IndexType windowedIndex;
-	HounsfieldImage::IndexType hounsfieldIndex;
 	for(size_t y=0; y<size[1]; ++y)
 		for(size_t x=0; x<size[0]; ++x)
 		{
-			gradientMagnitudeIndex[0] = windowedIndex[0] = hounsfieldIndex[0] = x;
-			gradientMagnitudeIndex[1] = windowedIndex[1] = hounsfieldIndex[1] = y;
-			nodeProperties.push_back(CTMRPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
-														 windowedImage->GetPixel(windowedIndex),
-														 hounsfieldImage->GetPixel(hounsfieldIndex)));
+			baseIndex[0] = gradientMagnitudeIndex[0] = windowedIndex[0] = x;
+			baseIndex[1] = gradientMagnitudeIndex[1] = windowedIndex[1] = y;
+			nodeProperties.push_back(CTMRPixelProperties(baseImage->GetPixel(baseIndex),
+														 gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
+														 windowedImage->GetPixel(windowedIndex)));
 		}
 
 	initialise(nodeProperties, size[0], size[1]);
 }
 
-CTMRImageLeafLayer::CTMRImageLeafLayer(const itk::Image<int,3>::Pointer& hounsfieldImage,
+CTMRImageLeafLayer::CTMRImageLeafLayer(const itk::Image<int,3>::Pointer& baseImage,
 									   const itk::Image<unsigned char,3>::Pointer& windowedImage,
 									   const itk::Image<short,3>::Pointer& gradientMagnitudeImage)
 {
-	assert(hounsfieldImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
+	assert(baseImage->GetLargestPossibleRegion().GetSize() == windowedImage->GetLargestPossibleRegion().GetSize());
 
+	typedef itk::Image<int,3> BaseImage;
 	typedef itk::Image<short,3> GradientMagnitudeImage;
 	typedef itk::Image<unsigned char,3> WindowedImage;
-	typedef itk::Image<int,3> HounsfieldImage;
 
-	const HounsfieldImage::SizeType& size = hounsfieldImage->GetLargestPossibleRegion().GetSize();
+	const BaseImage::SizeType& size = baseImage->GetLargestPossibleRegion().GetSize();
 
 	std::vector<CTMRPixelProperties> nodeProperties;
 	nodeProperties.reserve(size[0] * size[1] * size[2]);
 
+	BaseImage::IndexType baseIndex;
 	GradientMagnitudeImage::IndexType gradientMagnitudeIndex;
 	WindowedImage::IndexType windowedIndex;
-	HounsfieldImage::IndexType hounsfieldIndex;
 	for(size_t z=0; z<size[2]; ++z)
 		for(size_t y=0; y<size[1]; ++y)
 			for(size_t x=0; x<size[0]; ++x)
 			{
-				gradientMagnitudeIndex[0] = windowedIndex[0] = hounsfieldIndex[0] = x;
-				gradientMagnitudeIndex[1] = windowedIndex[1] = hounsfieldIndex[1] = y;
-				gradientMagnitudeIndex[2] = windowedIndex[2] = hounsfieldIndex[2] = z;
-				nodeProperties.push_back(CTMRPixelProperties(gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
-															 windowedImage->GetPixel(windowedIndex),
-															 hounsfieldImage->GetPixel(hounsfieldIndex)));
+				baseIndex[0] = gradientMagnitudeIndex[0] = windowedIndex[0] = x;
+				baseIndex[1] = gradientMagnitudeIndex[1] = windowedIndex[1] = y;
+				baseIndex[2] = gradientMagnitudeIndex[2] = windowedIndex[2] = z;
+				nodeProperties.push_back(CTMRPixelProperties(baseImage->GetPixel(baseIndex),
+															 gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
+															 windowedImage->GetPixel(windowedIndex)));
 			}
 
 	initialise(nodeProperties, size[0], size[1], size[2]);
