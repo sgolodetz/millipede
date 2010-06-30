@@ -56,6 +56,7 @@ gui/dialogs/VolumeChooserDialog.cpp
 SET(gui_dialogs_headers
 gui/dialogs/DialogUtil.h
 gui/dialogs/SegmentCTVolumeDialog.h
+gui/dialogs/SegmentVolumeDialog.h
 gui/dialogs/VolumeChooserDialog.h
 )
 
