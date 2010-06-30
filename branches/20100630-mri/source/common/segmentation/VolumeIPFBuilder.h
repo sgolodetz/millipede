@@ -70,7 +70,7 @@ private:
 			extractor->SetRegionOfInterest(region);
 
 			extractor->Update();
-			subvolumeHook.set(DICOMVolume_CPtr(new DICOMVolume(extractor->GetOutput())));
+			subvolumeHook.set(DICOMVolume_CPtr(new DICOMVolume(extractor->GetOutput(), base->m_volume->modality())));
 
 			set_finished();
 		}

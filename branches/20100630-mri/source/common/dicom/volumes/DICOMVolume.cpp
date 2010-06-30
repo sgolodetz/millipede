@@ -12,14 +12,19 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-DICOMVolume::DICOMVolume(const BaseImagePointer& baseImage)
-:	m_baseImage(baseImage)
+DICOMVolume::DICOMVolume(const BaseImagePointer& baseImage, Modality modality)
+:	m_baseImage(baseImage), m_modality(modality)
 {}
 
 //#################### PUBLIC METHODS ####################
 DICOMVolume::BaseImagePointer DICOMVolume::base_image() const
 {
 	return m_baseImage;
+}
+
+DICOMVolume::Modality DICOMVolume::modality() const
+{
+	return m_modality;
 }
 
 itk::Size<3> DICOMVolume::size() const

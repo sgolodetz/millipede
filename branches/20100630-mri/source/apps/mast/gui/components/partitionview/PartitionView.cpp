@@ -13,10 +13,12 @@
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/segmentation/CTLowestLayersBuilder.h>
+#include <common/segmentation/MRLowestLayersBuilder.h>
 #include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
+#include <mast/gui/dialogs/SegmentMRVolumeDialog.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
@@ -195,27 +197,55 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 
 void PartitionView::segment_volume()
 {
-	// Display a segment CT volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
-	dialog.ShowModal();
+	typedef boost::shared_ptr<VolumeIPF<CTMRImageLeafLayer,CTMRImageBranchLayer> > VolumeIPF_Ptr;
+	VolumeIPF_Ptr volumeIPF;
 
-	if(dialog.segmentation_options())
+	Job_Ptr job;
+
+	// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
+	switch(m_model->dicom_volume()->modality())
 	{
-		typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
-		typedef CTVolumeIPFBuilder::VolumeIPF_Ptr VolumeIPF_Ptr;
-
-		VolumeIPF_Ptr volumeIPF;
-		Job_Ptr job(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
-		if(execute_with_progress_dialog(job, this, "Segmenting CT Volume"))
+		case DICOMVolume::CT:
 		{
-			m_model->set_volume_ipf(volumeIPF);
-			create_partition_textures();
-			recreate_overlays();
-			refresh_canvases();
-
-			m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
-			m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+			SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
+			dialog.ShowModal();
+			if(dialog.segmentation_options())
+			{
+				typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
+				job.reset(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
+			}
+			break;
 		}
+		case DICOMVolume::MR:
+		{
+			SegmentMRVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
+			dialog.ShowModal();
+			if(dialog.segmentation_options())
+			{
+				typedef VolumeIPFBuilder<MRLowestLayersBuilder> MRVolumeIPFBuilder;
+				job.reset(new MRVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
+			}
+			break;
+		}
+		default:
+		{
+			throw Exception("Unexpected modality");		// this should never happen
+		}
+	}
+
+	// If the user cancelled the segment volume dialog, exit.
+	if(!job) return;
+
+	// Actually segment the volume. If the segmentation finishes successfully, set up the textures, overlays, listeners, etc.
+	if(execute_with_progress_dialog(job, this, "Segmenting Volume"))
+	{
+		m_model->set_volume_ipf(volumeIPF);
+		create_partition_textures();
+		recreate_overlays();
+		refresh_canvases();
+
+		m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
+		m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
 	}
 }
 

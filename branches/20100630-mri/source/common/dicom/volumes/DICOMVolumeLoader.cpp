@@ -116,9 +116,20 @@ try
 
 	for(int i=m_volumeChoice.minZ; i<=m_volumeChoice.maxZ; ++i) joiner->PushBackInput(images[i]);
 	joiner->Update();
-
 	Image3D::Pointer volumeImage = joiner->GetOutput();
-	m_volume.reset(new DICOMVolume(volumeImage));
+
+	// Determine the modality of the images.
+	DICOMVolume::Modality modality = DICOMVolume::UNSUPPORTED_MODALITY;
+	std::string modalityString = read_header_field(images[m_volumeChoice.minZ], "0008|0060");
+	if(modalityString == "CT")		modality = DICOMVolume::CT;
+	else if(modalityString == "MR")	modality = DICOMVolume::MR;
+
+	if(modality == DICOMVolume::UNSUPPORTED_MODALITY)
+	{
+		throw Exception("Cannot currently handle modalities other than CT and MR - sorry!");
+	}
+
+	m_volume.reset(new DICOMVolume(volumeImage, modality));
 
 	set_finished();
 }
