@@ -110,12 +110,12 @@ protected:
 		return true;
 	}
 
-	void initialise(wxWindow *parent)
+	void initialise(wxWindow *parent, const std::string& title)
 	{
 		// Note:	This code can't be put in SegmentVolumeDialog's constructor because it calls a virtual method (create_modality_page).
 		//			It must therefore be placed here, and derived classes must call initialise(parent); in their constructors.
 
-		Create(parent, wxID_ANY, wxT("Segment Volume"), wxDefaultPosition, wxDefaultSize);
+		Create(parent, wxID_ANY, string_to_wxString(title), wxDefaultPosition, wxDefaultSize);
 
 		wxBookCtrlBase *notebook = GetBookCtrl();
 		wxPanel *basicPage = create_basic_page(notebook);
@@ -123,7 +123,7 @@ protected:
 		wxPanel *modalityPage = create_modality_page(notebook);
 		notebook->AddPage(basicPage, wxT("Basic"), true);
 		notebook->AddPage(advancedPage, wxT("Advanced"), false);
-		notebook->AddPage(modalityPage, wxT("Modality-Specific"), false);
+		if(modalityPage) notebook->AddPage(modalityPage, wxT("Modality-Specific"), false);
 
 		CreateButtons();
 		LayoutDialog();

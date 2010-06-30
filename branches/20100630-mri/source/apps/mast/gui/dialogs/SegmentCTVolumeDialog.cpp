@@ -11,7 +11,7 @@ namespace mp {
 SegmentCTVolumeDialog::SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize, const WindowSettings& windowSettings)
 :	SegmentVolumeDialog<CTSegmentationOptions>(parent, volumeSize, windowSettings)
 {
-	initialise(parent);
+	initialise(parent, "Segment CT Volume");
 }
 
 //#################### PRIVATE METHODS ####################
