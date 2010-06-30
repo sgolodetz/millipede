@@ -12,6 +12,8 @@
 
 namespace mp {
 
+// Note:	This is currently very similar to MRRegionProperties, but I'm not yet sure whether the two should be different or not (hence I'm leaving it for now).
+//			If they remain the same, the common functionality should ultimately be factored out.
 class CTRegionProperties
 {
 	//#################### PRIVATE VARIABLES ####################
