@@ -6,11 +6,20 @@
 #ifndef H_MILLIPEDE_SEGMENTVOLUMEDIALOG
 #define H_MILLIPEDE_SEGMENTVOLUMEDIALOG
 
+#include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
 #include <itkSize.h>
 
+#include <wx/bookctrl.h>
+#include <wx/panel.h>
 #include <wx/propdlg.h>
+#include <wx/radiobox.h>
+#include <wx/sizer.h>
+#include <wx/spinctrl.h>
+#include <wx/stattext.h>
+
+#include <mast/util/StringConversion.h>
 
 //#################### FORWARD DECLARATIONS ####################
 class wxPanel;
@@ -19,7 +28,26 @@ class wxSpinCtrl;
 
 namespace mp {
 
-template <typename SegmentationOptions>
+namespace mp_SegmentVolumeDialog {
+
+//#################### ENUMERATIONS ####################
+enum
+{
+	RADIOBOXID_SEGMENTATIONTYPE,
+	SPINID_GRIDSIZE,
+};
+
+enum SegmentationType
+{
+	SEGTYPE_XY,
+	SEGTYPE_XZ,
+	SEGTYPE_YZ,
+	SEGTYPE_3D,
+	SEGTYPE_CUSTOM,
+	SEGTYPE_COUNT,	// dummy value containing the number of segmentation types
+};
+
+template <typename SegmentationOptionsType>
 class SegmentVolumeDialog : public wxPropertySheetDialog
 {
 	//#################### PROTECTED VARIABLES ####################
@@ -27,7 +55,7 @@ class SegmentVolumeDialog : public wxPropertySheetDialog
 protected:
 	itk::Size<3> m_volumeSize;
 	WindowSettings m_windowSettings;
-	boost::optional<SegmentationOptions> m_segmentationOptions;
+	boost::optional<SegmentationOptionsType> m_segmentationOptions;
 
 	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_segmentationType;
@@ -47,11 +75,12 @@ protected:
 
 	//#################### PRIVATE ABSTRACT METHODS ####################
 private:
+	virtual bool construct_segmentation_options() = 0;
 	virtual wxPanel *create_modality_page(wxWindow *parent) = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:
-	const boost::optional<SegmentationOptions>& segmentation_options() const
+	const boost::optional<SegmentationOptionsType>& segmentation_options() const
 	{
 		return m_segmentationOptions;
 	}
@@ -151,7 +180,61 @@ private:
 		sizer->Fit(panel);
 		return panel;
 	}
+
+	//#################### EVENT HANDLERS ####################
+public:
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonOK(wxCommandEvent&)
+	{
+		if(construct_segmentation_options())
+		{
+			Close();
+		}
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
+	void OnRadioBoxSegmentationType(wxCommandEvent&)
+	{
+		if(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM) return;
+
+		itk::Size<3> subvolumeSize = m_volumeSize;
+		switch(m_segmentationType->GetSelection())
+		{
+			case SEGTYPE_XY:	subvolumeSize[2] = 1; break;
+			case SEGTYPE_XZ:	subvolumeSize[1] = 1; break;
+			case SEGTYPE_YZ:	subvolumeSize[0] = 1; break;
+			default:			break;
+		}
+
+		for(int i=0; i<3; ++i) m_subvolumeSizes[i]->SetValue(subvolumeSize[i]);
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateGridSizeControl(wxUpdateUIEvent& e)
+	{
+		// Enable the grid size controls iff custom segmentation is selected.
+		e.Enable(m_segmentationType->GetSelection() == SEGTYPE_CUSTOM);
+	}
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
+
+//#################### EVENT TABLE ####################
+BEGIN_EVENT_TABLE_TEMPLATE1(SegmentVolumeDialog, wxPropertySheetDialog, SegmentationOptionsType)
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(wxID_OK, SegmentVolumeDialog<SegmentationOptionsType>::OnButtonOK)
+
+	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
+	EVT_RADIOBOX(RADIOBOXID_SEGMENTATIONTYPE, SegmentVolumeDialog<SegmentationOptionsType>::OnRadioBoxSegmentationType)
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(SPINID_GRIDSIZE, SegmentVolumeDialog<SegmentationOptionsType>::OnUpdateGridSizeControl)
+END_EVENT_TABLE()
+
+}
+
+using mp_SegmentVolumeDialog::SegmentVolumeDialog;
 
 }
 

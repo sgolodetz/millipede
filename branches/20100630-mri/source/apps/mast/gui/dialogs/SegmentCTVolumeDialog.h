@@ -25,20 +25,6 @@ public:
 private:
 	bool construct_segmentation_options();
 	wxPanel *create_modality_page(wxWindow *parent);
-
-	//#################### EVENT HANDLERS ####################
-public:
-	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	void OnButtonOK(wxCommandEvent&);
-
-	//~~~~~~~~~~~~~~~~~~~~ RADIO BOXES ~~~~~~~~~~~~~~~~~~~~
-	void OnRadioBoxSegmentationType(wxCommandEvent&);
-
-	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-	void OnUpdateGridSizeControl(wxUpdateUIEvent& e);
-
-	//#################### EVENT TABLE ####################
-	DECLARE_EVENT_TABLE()
 };
 
 }
