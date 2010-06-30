@@ -171,6 +171,7 @@ partitionforests/images/CTRegionProperties.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/MosaicImageCreator.h
+partitionforests/images/MRImageBranchLayer.h
 partitionforests/images/MRPixelProperties.h
 partitionforests/images/MRRegionProperties.h
 partitionforests/images/SimpleImageBranchLayer.h
