@@ -16,8 +16,8 @@
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/partitionforests/images/CTImageBranchLayer.h>
-#include <common/partitionforests/images/CTImageLeafLayer.h>
+#include <common/partitionforests/images/CTMRImageBranchLayer.h>
+#include <common/partitionforests/images/CTMRImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
 #include "PartitionCamera.h"
 #include "PartitionModel.h"
@@ -43,7 +43,7 @@ class PartitionView : public wxPanel
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<CTImageLeafLayer,CTImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef PartitionModel<CTMRImageLeafLayer,CTMRImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
@@ -120,7 +120,7 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
-	void OnButtonSegmentCTVolume(wxCommandEvent&);
+	void OnButtonSegmentVolume(wxCommandEvent&);
 	void OnButtonViewXY(wxCommandEvent&);
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);

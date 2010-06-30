@@ -37,7 +37,7 @@ enum
 	MENUID_NAVIGATION_PREVIOUSSLICE,
 	MENUID_NAVIGATION_ZOOMIN,
 	MENUID_NAVIGATION_ZOOMOUT,
-	MENUID_SEGMENTATION_SEGMENTCTVOLUME,
+	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SELECTION_CLEARSELECTION,
 };
 
@@ -125,7 +125,7 @@ void PartitionWindow::setup_menus()
 	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
 
 	wxMenu *segmentationMenu = new wxMenu;
-	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTCTVOLUME, wxT("Segment CT &Volume..."));
+	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume..."));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(wxID_ANY, wxT("&Clone Current Layer"));
 	segmentationMenu->Append(wxID_ANY, wxT("&Delete Current Layer"));
@@ -288,7 +288,7 @@ void PartitionWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
 	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() - 1);
 }
 
-void PartitionWindow::OnMenuSegmentationSegmentCTVolume(wxCommandEvent&)
+void PartitionWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
 	m_view->segment_volume();
 }
@@ -377,7 +377,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnMenuNavigationPreviousSlice)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, PartitionWindow::OnMenuNavigationZoomIn)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, PartitionWindow::OnMenuNavigationZoomOut)
-	EVT_MENU(MENUID_SEGMENTATION_SEGMENTCTVOLUME, PartitionWindow::OnMenuSegmentationSegmentCTVolume)
+	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, PartitionWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnMenuSelectionClearSelection)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~

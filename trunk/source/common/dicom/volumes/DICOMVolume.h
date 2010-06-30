@@ -17,6 +17,15 @@ class WindowSettings;
 
 class DICOMVolume
 {
+	//#################### CONSTANTS ####################
+public:
+	enum Modality
+	{
+		UNSUPPORTED_MODALITY,
+		CT,
+		MR,
+	};
+
 	//#################### TYPEDEFS ####################
 public:
 	typedef itk::Image<int,3> BaseImage;
@@ -28,14 +37,16 @@ public:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	BaseImagePointer m_baseImage;
+	Modality m_modality;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit DICOMVolume(const BaseImagePointer& baseImage);
+	DICOMVolume(const BaseImagePointer& baseImage, Modality modality);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	BaseImagePointer base_image() const;
+	Modality modality() const;
 	itk::Size<3> size() const;
 	itk::Vector<double,3> spacing() const;
 	WindowedImagePointer windowed_image(const WindowSettings& windowSettings) const;
