@@ -30,6 +30,7 @@ public:
 	typedef typename IPF::BranchLayer BranchLayer;
 	typedef boost::shared_ptr<LeafLayer> LeafLayer_Ptr;
 	typedef boost::shared_ptr<BranchLayer> BranchLayer_Ptr;
+	typedef typename LeafLayer::NodeProperties LeafProperties;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
 	typedef typename LowestLayersBuilder::SegmentationOptions SegmentationOptions;
@@ -91,7 +92,7 @@ private:
 		{
 			set_status("Combining leaf layers...");
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
-			std::vector<CTPixelProperties> nodeProperties(volumeSize[0] * volumeSize[1] * volumeSize[2]);
+			std::vector<LeafProperties> leafProperties(volumeSize[0] * volumeSize[1] * volumeSize[2]);
 			for(int i=0; i<subvolumeCount; ++i)
 			{
 				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
@@ -102,8 +103,8 @@ private:
 					// Calculate the index of the leaf node in the combined leaf layer.
 					int leafIndex = indexMapper(jt.index());
 
-					// Copy the node's properties across to the correct place in the combined node properties.
-					nodeProperties[leafIndex] = jt->properties();
+					// Copy the leaf's properties across to the correct place in the combined leaf properties.
+					leafProperties[leafIndex] = jt->properties();
 				}
 
 				// There's no more use for the subvolume's leaf layer, so free up the memory (space is at a premium during forest construction).
@@ -112,7 +113,7 @@ private:
 				if(is_aborted()) return;
 				increment_progress();
 			}
-			base->m_combinedLeafLayer.reset(new LeafLayer(nodeProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
+			base->m_combinedLeafLayer.reset(new LeafLayer(leafProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
 			set_finished();
 		}
 
