@@ -12,6 +12,7 @@
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/io/util/OSSWrapper.h>
 #include <common/jobs/CompositeJob.h>
+#include <common/jobs/DataHook.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/util/GridUtil.h>
@@ -41,6 +42,7 @@ private:
 	{
 		VolumeIPFBuilder *base;
 		int subvolumeIndex;
+		DataHook<DICOMVolume_CPtr> subvolumeHook;
 
 		ExtractSubvolumeJob(VolumeIPFBuilder *base_, int subvolumeIndex_)
 		:	base(base_), subvolumeIndex(subvolumeIndex_)
@@ -68,7 +70,7 @@ private:
 			extractor->SetRegionOfInterest(region);
 
 			extractor->Update();
-			base->m_subvolume->reset(new DICOMVolume(extractor->GetOutput()));
+			subvolumeHook.set(DICOMVolume_CPtr(new DICOMVolume(extractor->GetOutput())));
 
 			set_finished();
 		}
@@ -263,14 +265,13 @@ private:
 	std::vector<LeafLayer_Ptr> m_leafLayers;
 	std::vector<BranchLayer_Ptr> m_lowestBranchLayers;
 	SegmentationOptions m_segmentationOptions;
-	boost::shared_ptr<DICOMVolume_CPtr> m_subvolume;
 	DICOMVolume_CPtr m_volume;
 	VolumeIPF_Ptr& m_volumeIPF;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	VolumeIPFBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, VolumeIPF_Ptr& volumeIPF)
-	:	m_segmentationOptions(segmentationOptions), m_subvolume(new DICOMVolume_CPtr), m_volume(volume), m_volumeIPF(volumeIPF)
+	:	m_segmentationOptions(segmentationOptions), m_volume(volume), m_volumeIPF(volumeIPF)
 	{
 		itk::Size<3> volumeSize = volume->size();
 		itk::Size<3> subvolumeSize = segmentationOptions.subvolumeSize;
@@ -287,8 +288,11 @@ public:
 
 		for(int i=0; i<subvolumeCount; ++i)
 		{
-			add_subjob(new ExtractSubvolumeJob(this, i));
-			add_subjob(new LowestLayersBuilder(m_subvolume, m_segmentationOptions, m_leafLayers[i], m_lowestBranchLayers[i]));
+			ExtractSubvolumeJob *extractor = new ExtractSubvolumeJob(this, i);
+			LowestLayersBuilder *builder = new LowestLayersBuilder(m_segmentationOptions, m_leafLayers[i], m_lowestBranchLayers[i]);
+			builder->set_volume_hook(extractor->subvolumeHook);
+			add_subjob(extractor);
+			add_subjob(builder);
 		}
 
 		add_subjob(new CombineLeafLayersJob(this));

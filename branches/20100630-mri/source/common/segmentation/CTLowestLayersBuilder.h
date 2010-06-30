@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_CTLOWESTLAYERSBUILDER
 #define H_MILLIPEDE_CTLOWESTLAYERSBUILDER
 
+#include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/base/PartitionForest.h>
 #include <common/partitionforests/images/CTMRImageBranchLayer.h>
@@ -33,17 +34,17 @@ private:
 	CTMRImageLeafLayer_Ptr& m_leafLayer;
 	CTMRImageBranchLayer_Ptr& m_lowestBranchLayer;
 	CTSegmentationOptions m_segmentationOptions;
-	boost::shared_ptr<DICOMVolume_CPtr> m_volume;
+	DataHook<DICOMVolume_CPtr> m_volumeHook;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer);
-	CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer);
+	CTLowestLayersBuilder(const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	void execute();
 	int length() const;
+	void set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook);
 };
 
 }

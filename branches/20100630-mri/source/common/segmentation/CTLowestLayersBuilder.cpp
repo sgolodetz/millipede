@@ -17,14 +17,9 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTLowestLayersBuilder::CTLowestLayersBuilder(const DICOMVolume_CPtr& volume, const CTSegmentationOptions& segmentationOptions,
-											 CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer)
-:	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions), m_volume(new DICOMVolume_CPtr(volume))
-{}
-
-CTLowestLayersBuilder::CTLowestLayersBuilder(const boost::shared_ptr<DICOMVolume_CPtr>& volume, const CTSegmentationOptions& segmentationOptions,
-											 CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer)
-:	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions), m_volume(volume)
+CTLowestLayersBuilder::CTLowestLayersBuilder(const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer,
+											 CTMRImageBranchLayer_Ptr& lowestBranchLayer)
+:	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -35,7 +30,7 @@ void CTLowestLayersBuilder::execute()
 	typedef itk::Image<float,3> RealImage;
 	typedef itk::Image<unsigned char,3> WindowedImage;
 
-	HounsfieldImage::Pointer hounsfieldImage = (*m_volume)->base_image();
+	HounsfieldImage::Pointer hounsfieldImage = m_volumeHook.get()->base_image();
 
 	//~~~~~~~
 	// STEP 1
@@ -44,7 +39,7 @@ void CTLowestLayersBuilder::execute()
 	set_status("Preprocessing image...");
 
 	// Construct the windowed image.
-	WindowedImage::Pointer windowedImage = (*m_volume)->windowed_image(m_segmentationOptions.windowSettings);
+	WindowedImage::Pointer windowedImage = m_volumeHook.get()->windowed_image(m_segmentationOptions.windowSettings);
 	if(is_aborted()) return;
 
 	// Cast the input image (whether Hounsfield or windowed) to make its pixels real-valued.
@@ -133,6 +128,11 @@ void CTLowestLayersBuilder::execute()
 int CTLowestLayersBuilder::length() const
 {
 	return m_segmentationOptions.adfIterations + 3;
+}
+
+void CTLowestLayersBuilder::set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook)
+{
+	m_volumeHook = volumeHook;
 }
 
 }
