@@ -1,17 +1,17 @@
 /***
- * millipede: SegmentCTVolumeDialog.h
+ * millipede: SegmentDICOMVolumeDialog.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_SEGMENTCTVOLUMEDIALOG
-#define H_MILLIPEDE_SEGMENTCTVOLUMEDIALOG
+#ifndef H_MILLIPEDE_SEGMENTDICOMVOLUMEDIALOG
+#define H_MILLIPEDE_SEGMENTDICOMVOLUMEDIALOG
 
-#include <common/segmentation/CTSegmentationOptions.h>
+#include <common/segmentation/DICOMSegmentationOptions.h>
 #include "SegmentVolumeDialog.h"
 
 namespace mp {
 
-class SegmentCTVolumeDialog : public SegmentVolumeDialog<CTSegmentationOptions>
+class SegmentDICOMVolumeDialog : public SegmentVolumeDialog<DICOMSegmentationOptions>
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -19,7 +19,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SegmentCTVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize, const WindowSettings& windowSettings);
+	SegmentDICOMVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize, const WindowSettings& windowSettings);
 
 	//#################### PRIVATE METHODS ####################
 private:

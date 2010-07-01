@@ -185,21 +185,15 @@ ogl/WrappedGL.h
 
 ##
 SET(segmentation_sources
-segmentation/CTLowestLayersBuilder.cpp
-segmentation/CTSegmentationOptions.cpp
-segmentation/MRLowestLayersBuilder.cpp
-segmentation/MRSegmentationOptions.cpp
-segmentation/SegmentationOptions.cpp
+segmentation/DICOMLowestLayersBuilder.cpp
+segmentation/DICOMSegmentationOptions.cpp
 segmentation/SubvolumeToVolumeIndexMapper.cpp
 )
 
 SET(segmentation_headers
-segmentation/CTLowestLayersBuilder.h
-segmentation/CTSegmentationOptions.h
+segmentation/DICOMLowestLayersBuilder.h
+segmentation/DICOMSegmentationOptions.h
 segmentation/ForestBuildingWaterfallPassListener.h
-segmentation/MRLowestLayersBuilder.h
-segmentation/MRSegmentationOptions.h
-segmentation/SegmentationOptions.h
 segmentation/SubvolumeToVolumeIndexMapper.h
 segmentation/VolumeIPFBuilder.h
 )

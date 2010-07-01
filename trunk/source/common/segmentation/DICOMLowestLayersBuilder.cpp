@@ -1,9 +1,9 @@
 /***
- * millipede: CTLowestLayersBuilder.cpp
+ * millipede: DICOMLowestLayersBuilder.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CTLowestLayersBuilder.h"
+#include "DICOMLowestLayersBuilder.h"
 
 #include <itkCastImageFilter.h>
 #include <itkGradientAnisotropicDiffusionImageFilter.h>
@@ -17,20 +17,20 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTLowestLayersBuilder::CTLowestLayersBuilder(const CTSegmentationOptions& segmentationOptions, DICOMImageLeafLayer_Ptr& leafLayer,
-											 DICOMImageBranchLayer_Ptr& lowestBranchLayer)
+DICOMLowestLayersBuilder::DICOMLowestLayersBuilder(const DICOMSegmentationOptions& segmentationOptions, DICOMImageLeafLayer_Ptr& leafLayer,
+												   DICOMImageBranchLayer_Ptr& lowestBranchLayer)
 :	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions)
 {}
 
 //#################### PUBLIC METHODS ####################
-void CTLowestLayersBuilder::execute()
+void DICOMLowestLayersBuilder::execute()
 {
+	typedef itk::Image<int,3> BaseImage;
 	typedef itk::Image<short,3> GradientMagnitudeImage;
-	typedef itk::Image<int,3> HounsfieldImage;
 	typedef itk::Image<float,3> RealImage;
 	typedef itk::Image<unsigned char,3> WindowedImage;
 
-	HounsfieldImage::Pointer hounsfieldImage = m_volumeHook.get()->base_image();
+	BaseImage::Pointer baseImage = m_volumeHook.get()->base_image();
 
 	//~~~~~~~
 	// STEP 1
@@ -42,20 +42,20 @@ void CTLowestLayersBuilder::execute()
 	WindowedImage::Pointer windowedImage = m_volumeHook.get()->windowed_image(m_segmentationOptions.windowSettings);
 	if(is_aborted()) return;
 
-	// Cast the input image (whether Hounsfield or windowed) to make its pixels real-valued.
+	// Cast the input image (whether base or windowed) to make its pixels real-valued.
 	RealImage::Pointer realImage;
 	switch(m_segmentationOptions.inputType)
 	{
-		case CTSegmentationOptions::INPUTTYPE_HOUNSFIELD:
+		case DICOMSegmentationOptions::INPUTTYPE_BASE:
 		{
-			typedef itk::CastImageFilter<HounsfieldImage,RealImage> CastFilter;
+			typedef itk::CastImageFilter<BaseImage,RealImage> CastFilter;
 			CastFilter::Pointer castFilter = CastFilter::New();
-			castFilter->SetInput(hounsfieldImage);
+			castFilter->SetInput(baseImage);
 			castFilter->Update();
 			realImage = castFilter->GetOutput();
 			break;
 		}
-		case CTSegmentationOptions::INPUTTYPE_WINDOWED:
+		case DICOMSegmentationOptions::INPUTTYPE_WINDOWED:
 		{
 			typedef itk::CastImageFilter<WindowedImage,RealImage> CastFilter;
 			CastFilter::Pointer castFilter = CastFilter::New();
@@ -66,7 +66,7 @@ void CTLowestLayersBuilder::execute()
 		}
 		default:
 		{
-			throw Exception("Unknown CT segmentation input type");	// this should never happen
+			throw Exception("Unknown segmentation input type");		// this should never happen
 		}
 	}
 	if(is_aborted()) return;
@@ -117,7 +117,7 @@ void CTLowestLayersBuilder::execute()
 
 	set_status("Creating lowest forest layers...");
 
-	m_leafLayer.reset(new DICOMImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+	m_leafLayer.reset(new DICOMImageLeafLayer(baseImage, windowedImage, gradientMagnitudeImage));
 	if(is_aborted()) return;
 	m_lowestBranchLayer = IPF::make_lowest_branch_layer(m_leafLayer, ws.calculate_groups());
 	
@@ -125,12 +125,12 @@ void CTLowestLayersBuilder::execute()
 	set_finished();
 }
 
-int CTLowestLayersBuilder::length() const
+int DICOMLowestLayersBuilder::length() const
 {
 	return m_segmentationOptions.adfIterations + 3;
 }
 
-void CTLowestLayersBuilder::set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook)
+void DICOMLowestLayersBuilder::set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook)
 {
 	m_volumeHook = volumeHook;
 }

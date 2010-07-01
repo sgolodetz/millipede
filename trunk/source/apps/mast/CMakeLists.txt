@@ -49,15 +49,13 @@ gui/components/partitionview/PartitionView.h
 ##
 SET(gui_dialogs_sources
 gui/dialogs/DialogUtil.cpp
-gui/dialogs/SegmentCTVolumeDialog.cpp
-gui/dialogs/SegmentMRVolumeDialog.cpp
+gui/dialogs/SegmentDICOMVolumeDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
 )
 
 SET(gui_dialogs_headers
 gui/dialogs/DialogUtil.h
-gui/dialogs/SegmentCTVolumeDialog.h
-gui/dialogs/SegmentMRVolumeDialog.h
+gui/dialogs/SegmentDICOMVolumeDialog.h
 gui/dialogs/SegmentVolumeDialog.h
 gui/dialogs/VolumeChooserDialog.h
 )

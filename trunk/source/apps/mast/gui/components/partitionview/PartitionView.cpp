@@ -12,13 +12,11 @@
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
-#include <common/segmentation/CTLowestLayersBuilder.h>
-#include <common/segmentation/MRLowestLayersBuilder.h>
+#include <common/segmentation/DICOMLowestLayersBuilder.h>
 #include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
-#include <mast/gui/dialogs/SegmentCTVolumeDialog.h>
-#include <mast/gui/dialogs/SegmentMRVolumeDialog.h>
+#include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
@@ -203,34 +201,12 @@ void PartitionView::segment_volume()
 	Job_Ptr job;
 
 	// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
-	switch(m_model->dicom_volume()->modality())
+	SegmentDICOMVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
+	dialog.ShowModal();
+	if(dialog.segmentation_options())
 	{
-		case DICOMVolume::CT:
-		{
-			SegmentCTVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
-			dialog.ShowModal();
-			if(dialog.segmentation_options())
-			{
-				typedef VolumeIPFBuilder<CTLowestLayersBuilder> CTVolumeIPFBuilder;
-				job.reset(new CTVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
-			}
-			break;
-		}
-		case DICOMVolume::MR:
-		{
-			SegmentMRVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
-			dialog.ShowModal();
-			if(dialog.segmentation_options())
-			{
-				typedef VolumeIPFBuilder<MRLowestLayersBuilder> MRVolumeIPFBuilder;
-				job.reset(new MRVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
-			}
-			break;
-		}
-		default:
-		{
-			throw Exception("Unexpected modality");		// this should never happen
-		}
+		typedef VolumeIPFBuilder<DICOMLowestLayersBuilder> DICOMVolumeIPFBuilder;
+		job.reset(new DICOMVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
 	}
 
 	// If the user cancelled the segment volume dialog, exit.
