@@ -15,7 +15,11 @@ class SegmentDICOMVolumeDialog : public SegmentVolumeDialog<DICOMSegmentationOpt
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
+	WindowSettings m_windowSettings;
+
+	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_inputType;
+	wxSpinCtrl *m_waterfallLayerLimit;
 
 	//#################### CONSTRUCTORS ####################
 public:

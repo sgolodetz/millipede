@@ -54,12 +54,9 @@ class SegmentVolumeDialog : public wxPropertySheetDialog
 	//#################### PRIVATE VARIABLES ####################
 private:
 	itk::Size<3> m_volumeSize;
-	WindowSettings m_windowSettings;
 
-	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_segmentationType;
 	wxSpinCtrl *m_subvolumeSizes[3];
-	wxSpinCtrl *m_waterfallLayerLimit;
 
 	//#################### PROTECTED VARIABLES ####################
 protected:
@@ -67,8 +64,8 @@ protected:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SegmentVolumeDialog(wxWindow *parent, const itk::Size<3>& volumeSize, const WindowSettings& windowSettings)
-	:	m_volumeSize(volumeSize), m_windowSettings(windowSettings)
+	explicit SegmentVolumeDialog(const itk::Size<3>& volumeSize)
+	:	m_volumeSize(volumeSize)
 	{}
 
 	//#################### DESTRUCTOR ####################
@@ -90,11 +87,6 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
-	int adf_iterations() const
-	{
-		return m_adfIterations->GetValue();
-	}
-
 	bool construct_subvolume_size(itk::Size<3>& subvolumeSize)
 	{
 		for(int i=0; i<3; ++i)
@@ -119,10 +111,8 @@ protected:
 
 		wxBookCtrlBase *notebook = GetBookCtrl();
 		wxPanel *basicPage = create_basic_page(notebook);
-		wxPanel *advancedPage = create_advanced_page(notebook);
 		wxPanel *modalityPage = create_modality_page(notebook);
 		notebook->AddPage(basicPage, wxT("Basic"), true);
-		notebook->AddPage(advancedPage, wxT("Advanced"), false);
 		if(modalityPage) notebook->AddPage(modalityPage, wxT("Modality-Specific"), false);
 
 		CreateButtons();
@@ -134,49 +124,7 @@ protected:
 		return m_volumeSize;
 	}
 
-	int waterfall_layer_limit() const
-	{
-		return m_waterfallLayerLimit->GetValue();
-	}
-
-	const WindowSettings& window_settings() const
-	{
-		return m_windowSettings;
-	}
-
 	//#################### PRIVATE METHODS ####################
-private:
-	wxPanel *create_advanced_page(wxWindow *parent)
-	{
-		wxPanel *panel = new wxPanel(parent);
-
-		wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-		panel->SetSizer(sizer);
-
-		// Set up the spin control to select the number of anisotropic diffusion filtering iterations.
-		wxPanel *filteringPanel = new wxPanel(panel);
-		sizer->Add(filteringPanel);
-		wxGridSizer *filteringSizer = new wxGridSizer(0, 2, 0, 0);
-		filteringPanel->SetSizer(filteringSizer);
-
-		filteringSizer->Add(new wxStaticText(filteringPanel, wxID_ANY, wxT("ADF Iterations:")));
-		m_adfIterations = new wxSpinCtrl(filteringPanel, wxID_ANY, wxT("20"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 20);
-		filteringSizer->Add(m_adfIterations);
-
-		// Set up the spin control to select a waterfall layer limit.
-		wxPanel *waterfallPanel = new wxPanel(panel);
-		sizer->Add(waterfallPanel);
-		wxGridSizer *waterfallSizer = new wxGridSizer(0, 2, 0, 0);
-		waterfallPanel->SetSizer(waterfallSizer);
-
-		waterfallSizer->Add(new wxStaticText(waterfallPanel, wxID_ANY, wxT("Waterfall Layer Limit:")));
-		m_waterfallLayerLimit = new wxSpinCtrl(waterfallPanel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 5);
-		waterfallSizer->Add(m_waterfallLayerLimit);
-
-		sizer->Fit(panel);
-		return panel;
-	}
-
 	wxPanel *create_basic_page(wxWindow *parent)
 	{
 		wxPanel *panel = new wxPanel(parent);
