@@ -24,7 +24,7 @@ bool SegmentDICOMVolumeDialog::construct_segmentation_options()
 	return true;
 }
 
-wxPanel *SegmentDICOMVolumeDialog::create_modality_page(wxWindow *parent)
+wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 {
 	wxPanel *panel = new wxPanel(parent);
 

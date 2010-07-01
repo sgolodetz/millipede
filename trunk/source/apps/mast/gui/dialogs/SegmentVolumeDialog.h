@@ -76,7 +76,7 @@ protected:
 	//#################### PRIVATE ABSTRACT METHODS ####################
 private:
 	virtual bool construct_segmentation_options() = 0;
-	virtual wxPanel *create_modality_page(wxWindow *parent) = 0;
+	virtual wxPanel *create_advanced_page(wxWindow *parent) = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -111,9 +111,9 @@ protected:
 
 		wxBookCtrlBase *notebook = GetBookCtrl();
 		wxPanel *basicPage = create_basic_page(notebook);
-		wxPanel *modalityPage = create_modality_page(notebook);
+		wxPanel *advancedPage = create_advanced_page(notebook);
 		notebook->AddPage(basicPage, wxT("Basic"), true);
-		if(modalityPage) notebook->AddPage(modalityPage, wxT("Modality-Specific"), false);
+		if(advancedPage) notebook->AddPage(advancedPage, wxT("Advanced"), false);
 
 		CreateButtons();
 		LayoutDialog();

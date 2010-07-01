@@ -28,7 +28,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	bool construct_segmentation_options();
-	wxPanel *create_modality_page(wxWindow *parent);
+	wxPanel *create_advanced_page(wxWindow *parent);
 };
 
 }
