@@ -9,8 +9,8 @@
 #include <boost/shared_ptr.hpp>
 
 #include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/partitionforests/images/CTMRImageBranchLayer.h>
-#include <common/partitionforests/images/CTMRImageLeafLayer.h>
+#include <common/partitionforests/images/DICOMImageBranchLayer.h>
+#include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <mast/gui/components/canvas/Canvas.h>
 #include "PartitionModel.h"
 
@@ -28,7 +28,7 @@ class BaseCanvas : public Canvas
 {
 	//#################### TYPEDEFS ####################
 protected:
-	typedef PartitionModel<CTMRImageLeafLayer,CTMRImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################

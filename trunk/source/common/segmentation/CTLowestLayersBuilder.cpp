@@ -17,8 +17,8 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTLowestLayersBuilder::CTLowestLayersBuilder(const CTSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer,
-											 CTMRImageBranchLayer_Ptr& lowestBranchLayer)
+CTLowestLayersBuilder::CTLowestLayersBuilder(const CTSegmentationOptions& segmentationOptions, DICOMImageLeafLayer_Ptr& leafLayer,
+											 DICOMImageBranchLayer_Ptr& lowestBranchLayer)
 :	m_leafLayer(leafLayer), m_lowestBranchLayer(lowestBranchLayer), m_segmentationOptions(segmentationOptions)
 {}
 
@@ -117,7 +117,7 @@ void CTLowestLayersBuilder::execute()
 
 	set_status("Creating lowest forest layers...");
 
-	m_leafLayer.reset(new CTMRImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+	m_leafLayer.reset(new DICOMImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
 	if(is_aborted()) return;
 	m_lowestBranchLayer = IPF::make_lowest_branch_layer(m_leafLayer, ws.calculate_groups());
 	

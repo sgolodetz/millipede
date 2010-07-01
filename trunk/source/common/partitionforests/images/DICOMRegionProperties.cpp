@@ -1,30 +1,30 @@
 /***
- * millipede: CTMRRegionProperties.cpp
+ * millipede: DICOMRegionProperties.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CTMRRegionProperties.h"
+#include "DICOMRegionProperties.h"
 
 #include <ostream>
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-CTMRRegionProperties::CTMRRegionProperties()
+DICOMRegionProperties::DICOMRegionProperties()
 :	m_area(0),
 	m_meanGreyValue(0.0)
 {}
 
 //#################### PUBLIC METHODS ####################
-int CTMRRegionProperties::area() const
+int DICOMRegionProperties::area() const
 {
 	return m_area;
 }
 
 // Precondition: !properties.empty()
-CTMRRegionProperties CTMRRegionProperties::combine_branch_properties(const std::vector<CTMRRegionProperties>& properties)
+DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std::vector<DICOMRegionProperties>& properties)
 {
-	CTMRRegionProperties ret;
+	DICOMRegionProperties ret;
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
@@ -37,9 +37,9 @@ CTMRRegionProperties CTMRRegionProperties::combine_branch_properties(const std::
 }
 
 // Precondition: !properties.empty()
-CTMRRegionProperties CTMRRegionProperties::combine_leaf_properties(const std::vector<CTMRPixelProperties>& properties)
+DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::vector<DICOMPixelProperties>& properties)
 {
-	CTMRRegionProperties ret;
+	DICOMRegionProperties ret;
 
 	ret.m_area = properties.size();
 
@@ -52,13 +52,13 @@ CTMRRegionProperties CTMRRegionProperties::combine_leaf_properties(const std::ve
 	return ret;
 }
 
-double CTMRRegionProperties::mean_grey_value() const
+double DICOMRegionProperties::mean_grey_value() const
 {
 	return m_meanGreyValue;
 }
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const CTMRRegionProperties& rhs)
+std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)
 {
 	os << "<<" << rhs.area() << " | " << rhs.mean_grey_value() << ">>";
 	return os;

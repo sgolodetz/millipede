@@ -9,8 +9,8 @@
 #include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/CTMRImageBranchLayer.h>
-#include <common/partitionforests/images/CTMRImageLeafLayer.h>
+#include <common/partitionforests/images/DICOMImageBranchLayer.h>
+#include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include "MRSegmentationOptions.h"
 
 namespace mp {
@@ -22,22 +22,22 @@ class MRLowestLayersBuilder : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 public:
-	typedef boost::shared_ptr<CTMRImageBranchLayer> CTMRImageBranchLayer_Ptr;
-	typedef boost::shared_ptr<CTMRImageLeafLayer> CTMRImageLeafLayer_Ptr;
-	typedef PartitionForest<CTMRImageLeafLayer,CTMRImageBranchLayer> IPF;
+	typedef boost::shared_ptr<DICOMImageBranchLayer> DICOMImageBranchLayer_Ptr;
+	typedef boost::shared_ptr<DICOMImageLeafLayer> DICOMImageLeafLayer_Ptr;
+	typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
 	typedef boost::shared_ptr<IPF> IPF_Ptr;
 	typedef MRSegmentationOptions SegmentationOptions;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	CTMRImageLeafLayer_Ptr& m_leafLayer;
-	CTMRImageBranchLayer_Ptr& m_lowestBranchLayer;
+	DICOMImageLeafLayer_Ptr& m_leafLayer;
+	DICOMImageBranchLayer_Ptr& m_lowestBranchLayer;
 	MRSegmentationOptions m_segmentationOptions;
 	DataHook<DICOMVolume_CPtr> m_volumeHook;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MRLowestLayersBuilder(const MRSegmentationOptions& segmentationOptions, CTMRImageLeafLayer_Ptr& leafLayer, CTMRImageBranchLayer_Ptr& lowestBranchLayer);
+	MRLowestLayersBuilder(const MRSegmentationOptions& segmentationOptions, DICOMImageLeafLayer_Ptr& leafLayer, DICOMImageBranchLayer_Ptr& lowestBranchLayer);
 
 	//#################### PUBLIC METHODS ####################
 public:

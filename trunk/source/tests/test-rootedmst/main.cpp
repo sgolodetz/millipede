@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include <common/adts/RootedMST.h>
-#include <common/partitionforests/images/CTMRImageLeafLayer.h>
+#include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
 #include <common/util/ITKImageUtil.h>
 using namespace mp;
@@ -59,9 +59,9 @@ void ct_leaf_layer_mst()
 	WindowedImagePointer windowedImage = ITKImageUtil::make_filled_image(3, 3, 2, windowedPixels);
 	GradientMagnitudeImagePointer gradientMagnitudeImage = ITKImageUtil::make_filled_image(3, 3, 2, gradientMagnitudePixels);
 
-	CTMRImageLeafLayer leafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage);
+	DICOMImageLeafLayer leafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage);
 
-	RootedMST<CTMRImageLeafLayer::EdgeWeight> mst(leafLayer);
+	RootedMST<DICOMImageLeafLayer::EdgeWeight> mst(leafLayer);
 }
 
 void simple_leaf_layer_mst()

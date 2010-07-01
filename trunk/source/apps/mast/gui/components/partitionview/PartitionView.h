@@ -16,8 +16,8 @@
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/partitionforests/images/CTMRImageBranchLayer.h>
-#include <common/partitionforests/images/CTMRImageLeafLayer.h>
+#include <common/partitionforests/images/DICOMImageBranchLayer.h>
+#include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
 #include "PartitionCamera.h"
 #include "PartitionModel.h"
@@ -43,7 +43,7 @@ class PartitionView : public wxPanel
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<CTMRImageLeafLayer,CTMRImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;

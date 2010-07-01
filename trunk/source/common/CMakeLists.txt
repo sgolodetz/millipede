@@ -152,9 +152,9 @@ partitionforests/base/PFNodeID.h
 ##
 SET(partitionforests_images_sources
 partitionforests/images/AbdominalFeature.cpp
-partitionforests/images/CTMRImageLeafLayer.cpp
-partitionforests/images/CTMRPixelProperties.cpp
-partitionforests/images/CTMRRegionProperties.cpp
+partitionforests/images/DICOMImageLeafLayer.cpp
+partitionforests/images/DICOMPixelProperties.cpp
+partitionforests/images/DICOMRegionProperties.cpp
 partitionforests/images/SimpleImageLeafLayer.cpp
 partitionforests/images/SimplePixelProperties.cpp
 partitionforests/images/SimpleRegionProperties.cpp
@@ -162,10 +162,10 @@ partitionforests/images/SimpleRegionProperties.cpp
 
 SET(partitionforests_images_headers
 partitionforests/images/AbdominalFeature.h
-partitionforests/images/CTMRImageBranchLayer.h
-partitionforests/images/CTMRImageLeafLayer.h
-partitionforests/images/CTMRPixelProperties.h
-partitionforests/images/CTMRRegionProperties.h
+partitionforests/images/DICOMImageBranchLayer.h
+partitionforests/images/DICOMImageLeafLayer.h
+partitionforests/images/DICOMPixelProperties.h
+partitionforests/images/DICOMRegionProperties.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/MosaicImageCreator.h

@@ -78,7 +78,7 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	}
 };
 
-struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<CTMRImageLeafLayer,CTMRImageBranchLayer,AbdominalFeature::Enum>::Listener
+struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum>::Listener
 {
 	PartitionView *base;
 
@@ -96,7 +96,7 @@ struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelec
 	}
 };
 
-struct PartitionView::SelectionListener : VolumeIPFSelection<CTMRImageLeafLayer,CTMRImageBranchLayer>::Listener
+struct PartitionView::SelectionListener : VolumeIPFSelection<DICOMImageLeafLayer,DICOMImageBranchLayer>::Listener
 {
 	PartitionView *base;
 
@@ -197,7 +197,7 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 
 void PartitionView::segment_volume()
 {
-	typedef boost::shared_ptr<VolumeIPF<CTMRImageLeafLayer,CTMRImageBranchLayer> > VolumeIPF_Ptr;
+	typedef boost::shared_ptr<VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> > VolumeIPF_Ptr;
 	VolumeIPF_Ptr volumeIPF;
 
 	Job_Ptr job;
@@ -284,7 +284,7 @@ void PartitionView::create_overlays()
 
 void PartitionView::create_partition_textures()
 {
-	typedef VolumeIPF<CTMRImageLeafLayer,CTMRImageBranchLayer> CTVolumeIPF;
+	typedef VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> CTVolumeIPF;
 	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
 
 	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
@@ -317,16 +317,16 @@ Job_Ptr PartitionView::fill_dicom_textures_job(SliceOrientation ori, const itk::
 
 Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 {
-	typedef VolumeIPF<CTMRImageLeafLayer,CTMRImageBranchLayer> CTVolumeIPF;
-	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
+	typedef VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> VolumeIPFT;
+	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
-	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
 	int highestLayer = volumeIPF->highest_layer();
 
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		typedef MosaicImageCreator<CTMRImageLeafLayer,CTMRImageBranchLayer> MIC;
+		typedef MosaicImageCreator<DICOMImageLeafLayer,DICOMImageBranchLayer> MIC;
 		typedef SliceTextureSetFiller<unsigned char> TSF;
 
 		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);

@@ -1,16 +1,16 @@
 /***
- * millipede: CTMRPixelProperties.h
+ * millipede: DICOMPixelProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_CTMRPIXELPROPERTIES
-#define H_MILLIPEDE_CTMRPIXELPROPERTIES
+#ifndef H_MILLIPEDE_DICOMPIXELPROPERTIES
+#define H_MILLIPEDE_DICOMPIXELPROPERTIES
 
 #include <iosfwd>
 
 namespace mp {
 
-class CTMRPixelProperties
+class DICOMPixelProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -21,8 +21,8 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	CTMRPixelProperties();
-	CTMRPixelProperties(int baseValue, short gradientMagnitudeValue, unsigned char greyValue);
+	DICOMPixelProperties();
+	DICOMPixelProperties(int baseValue, short gradientMagnitudeValue, unsigned char greyValue);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -32,7 +32,7 @@ public:
 };
 
 //#################### GLOBAL OPERATORS ####################
-std::ostream& operator<<(std::ostream& os, const CTMRPixelProperties& rhs);
+std::ostream& operator<<(std::ostream& os, const DICOMPixelProperties& rhs);
 
 }
 
