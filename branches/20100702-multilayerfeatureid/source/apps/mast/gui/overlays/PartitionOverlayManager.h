@@ -34,12 +34,17 @@ public:
 	void clear_overlays();
 	void erase_overlay(const std::string& name);
 	void insert_overlay_above(const std::string& name, PartitionOverlay *overlay, const std::string& otherName);
+	void insert_overlay_above(const std::string& name, const PartitionOverlay_Ptr& overlay, const std::string& otherName);
 	void insert_overlay_at_bottom(const std::string& name, PartitionOverlay *overlay);
+	void insert_overlay_at_bottom(const std::string& name, const PartitionOverlay_Ptr& overlay);
 	void insert_overlay_at_top(const std::string& name, PartitionOverlay *overlay);
+	void insert_overlay_at_top(const std::string& name, const PartitionOverlay_Ptr& overlay);
 	void insert_overlay_below(const std::string& name, PartitionOverlay *overlay, const std::string& otherName);
+	void insert_overlay_below(const std::string& name, const PartitionOverlay_Ptr& overlay, const std::string& otherName);
 	void render_dicom_overlays(double left, double top, double right, double bottom) const;
 	void render_partition_overlays(double left, double top, double right, double bottom) const;
 	void replace_overlay(const std::string& name, PartitionOverlay *overlay);
+	void replace_overlay(const std::string& name, const PartitionOverlay_Ptr& overlay);
 
 	//#################### PRIVATE METHODS ####################
 private:
