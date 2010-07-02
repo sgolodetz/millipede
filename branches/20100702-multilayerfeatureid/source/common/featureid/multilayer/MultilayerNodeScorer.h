@@ -22,9 +22,11 @@ class MultilayerNodeScorer
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef std::map<PFNodeID,double> Scores;
+protected:
+	typedef typename BranchLayer::NodeProperties BranchProperties;
 	typedef PartitionForest<LeafLayer,BranchLayer> PartitionForestT;
 	typedef boost::shared_ptr<const PartitionForestT> PartitionForest_CPtr;
-	typedef std::map<PFNodeID,double> Scores;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -44,7 +46,7 @@ public:
 
 	//#################### PRIVATE ABSTRACT METHODS ####################
 private:
-	virtual double calculate_score(const PFNodeID& node) const = 0;
+	virtual double calculate_score(const BranchProperties& properties) const = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -57,7 +59,9 @@ public:
 		for(Iter it=m_forest->branch_nodes_cbegin(highestLayer), iend=m_forest->branch_nodes_cend(highestLayer); it!=iend; ++it)
 		{
 			propagate_scores_up(*it);
+			normalize_scores();
 			propagate_scores_down(*it);
+			normalize_scores();
 		}
 	}
 
@@ -65,9 +69,33 @@ public:
 	{
 		return m_scores;
 	}
+
+	//#################### PROTECTED METHODS ####################
+protected:
+	static double gaussian_minmax(double x, double min, double max)
+	{
+		return gaussian_musigma(x, (min+max)/2, max - min);
+	}
+
+	static double gaussian_musigma(double x, double mu, double sigma)
+	{
+		// TODO: This should be placed somewhere more central.
+		const double PI = 3.141592654;
+
+		double offset = x - mu;
+		double denom = 2*sigma*sigma;
+		double numer = -offset*offset;
+		return 1/sqrt(PI*denom) * exp(numer/denom);
+	}
 	
 	//#################### PRIVATE METHODS ####################
 private:
+	void normalize_scores()
+	{
+		// NYI
+		throw 23;
+	}
+
 	void propagate_scores_down(const PFNodeID& cur, double parentScore = -1.0)
 	{
 		double& score = m_scores[cur];
@@ -89,7 +117,7 @@ private:
 		if(cur.layer() == 1)
 		{
 			// If the current node's in the lowest branch layer, calculate its score explicitly.
-			result = calculate_score(cur);
+			result = calculate_score(m_forest->branch_properties(cur));
 		}
 		else
 		{
