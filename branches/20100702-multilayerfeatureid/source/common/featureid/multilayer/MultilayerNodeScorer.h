@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_MULTILAYERNODESCORER
 
 #include <cassert>
+#include <cmath>
 #include <map>
 
 #include <boost/shared_ptr.hpp>
@@ -56,7 +57,7 @@ public:
 		for(Iter it=m_forest->branch_nodes_cbegin(highestLayer), iend=m_forest->branch_nodes_cend(highestLayer); it!=iend; ++it)
 		{
 			propagate_scores_up(*it);
-			propagate_scores_down(*it, m_scores[*it]);
+			propagate_scores_down(*it);
 		}
 	}
 
@@ -67,27 +68,19 @@ public:
 	
 	//#################### PRIVATE METHODS ####################
 private:
-	void propagate_scores_down(const PFNodeID& cur, double parentScore)
+	void propagate_scores_down(const PFNodeID& cur, double parentScore = -1.0)
 	{
-#if 0
-		double thisProbability,probability;
-				thisProbability = probabilities[region];
-			probability		= pow(parentProbability * thisProbability,0.5);
-			std::list<RegionLocator> children = (*m_tree).children_of(region);
-			if (children.empty())
-			{
-				m_probabilities_down[region]=probability;
-			}
-			else
-			{
-				for (std::list<RegionLocator>::const_iterator it=children.begin() ; it != children.end(); it++ )
-				{	
-					filter_down(*it,probability,probabilities);
-				}
-			}
-#endif
+		double& score = m_scores[cur];
+		if(parentScore >= 0.0) score = sqrt(score * parentScore);
 
-		// TODO
+		if(cur.layer() > 1)
+		{
+			std::set<PFNodeID> children = m_forest->children_of(cur);
+			for(std::list<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
+			{
+				propagate_scores_down(*it, score);
+			}
+		}
 	}
 
 	double propagate_scores_up(const PFNodeID& cur)
