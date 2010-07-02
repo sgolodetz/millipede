@@ -82,7 +82,6 @@ exceptions/FileNotFoundException.h
 SET(featureid_multilayer_headers
 featureid/multilayer/MultilayerNodeScorer.h
 featureid/multilayer/MultilayerNodeScorer_Kidney.h
-featureid/multilayer/MultilayerPropagatingFeatureIdentifier.h
 )
 
 ##
