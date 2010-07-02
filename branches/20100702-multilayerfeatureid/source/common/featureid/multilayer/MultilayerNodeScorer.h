@@ -21,7 +21,7 @@ template <typename LeafLayer, typename BranchLayer>
 class MultilayerNodeScorer
 {
 	//#################### TYPEDEFS ####################
-private:
+public:
 	typedef std::map<PFNodeID,double> Scores;
 protected:
 	typedef typename BranchLayer::NodeProperties BranchProperties;
@@ -65,6 +65,11 @@ public:
 		}
 	}
 
+	void reset()
+	{
+		m_scores.clear();
+	}
+
 	const Scores& scores() const
 	{
 		return m_scores;
@@ -92,8 +97,7 @@ protected:
 private:
 	void normalize_scores()
 	{
-		// NYI
-		throw 23;
+		// TODO
 	}
 
 	void propagate_scores_down(const PFNodeID& cur, double parentScore = -1.0)

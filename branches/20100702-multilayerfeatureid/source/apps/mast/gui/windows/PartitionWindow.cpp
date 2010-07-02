@@ -21,6 +21,8 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
+	MENUID_FEATURE_MULTILAYERNODESCORER_ITERATE,
+	MENUID_FEATURE_MULTILAYERNODESCORER_RESET,
 	MENUID_FEATURE_TOGGLE_BASE,
 	MENUID_FEATURE_TOGGLE_LAST = (MENUID_FEATURE_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
@@ -170,6 +172,11 @@ void PartitionWindow::setup_menus()
 		selectMarkedMenu->Append(wxID_ANY, wxT("&Kidney"));
 		// TODO: Other features (via iterating over the feature enumeration)
 	featureMenu->AppendSeparator();
+	wxMenu *multilayerNodeScorerMenu = new wxMenu;
+	featureMenu->AppendSubMenu(multilayerNodeScorerMenu, wxT("&Multilayer Node Scorer"));
+		multilayerNodeScorerMenu->Append(MENUID_FEATURE_MULTILAYERNODESCORER_ITERATE, wxT("&Iterate"));
+		multilayerNodeScorerMenu->Append(MENUID_FEATURE_MULTILAYERNODESCORER_RESET, wxT("&Reset"));
+	featureMenu->AppendSeparator();
 	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
@@ -210,6 +217,16 @@ void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)
 void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 {
 	m_commandManager->undo();
+}
+
+void PartitionWindow::OnMenuFeatureMultilayerNodeScorerIterate(wxCommandEvent&)
+{
+	// TODO
+}
+
+void PartitionWindow::OnMenuFeatureMultilayerNodeScorerReset(wxCommandEvent&)
+{
+	// TODO
 }
 
 void PartitionWindow::OnMenuFeatureToggle(wxCommandEvent& e)
@@ -363,6 +380,8 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnMenuActionsClearHistory)
 	EVT_MENU(MENUID_ACTIONS_REDO, PartitionWindow::OnMenuActionsRedo)
 	EVT_MENU(MENUID_ACTIONS_UNDO, PartitionWindow::OnMenuActionsUndo)
+	EVT_MENU(MENUID_FEATURE_MULTILAYERNODESCORER_ITERATE, PartitionWindow::OnMenuFeatureMultilayerNodeScorerIterate)
+	EVT_MENU(MENUID_FEATURE_MULTILAYERNODESCORER_RESET, PartitionWindow::OnMenuFeatureMultilayerNodeScorerReset)
 	EVT_MENU(MENUID_FILE_EXIT, PartitionWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, PartitionWindow::OnMenuNavigationCentreCamera)
 	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, PartitionWindow::OnMenuNavigationFitToView)

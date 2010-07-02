@@ -48,6 +48,8 @@ public:
 	void OnMenuActionsClearHistory(wxCommandEvent&);
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
+	void OnMenuFeatureMultilayerNodeScorerIterate(wxCommandEvent&);
+	void OnMenuFeatureMultilayerNodeScorerReset(wxCommandEvent&);
 	void OnMenuFeatureToggle(wxCommandEvent& e);
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
