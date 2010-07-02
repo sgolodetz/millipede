@@ -79,6 +79,13 @@ exceptions/FileNotFoundException.h
 )
 
 ##
+SET(featureid_multilayer_headers
+featureid/multilayer/MultilayerFeatureIdentifier.h
+featureid/multilayer/MultilayerNodeScorer.h
+featureid/multilayer/MultilayerNodeScorer_Kidney.h
+)
+
+##
 SET(io_files_sources
 io/files/DICOMDIRFile.cpp
 io/files/VolumeChoiceFile.cpp
@@ -282,6 +289,7 @@ ${dicom_directories_headers}
 ${dicom_util_headers}
 ${dicom_volumes_headers}
 ${exceptions_headers}
+${featureid_multilayer_headers}
 ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
@@ -327,6 +335,9 @@ SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
 
 ##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
+
+##
+SOURCE_GROUP(featureid\\multilayer\\.h FILES ${featureid_multilayer_headers})
 
 ##
 SOURCE_GROUP(io\\files\\.cpp FILES ${io_files_sources})
