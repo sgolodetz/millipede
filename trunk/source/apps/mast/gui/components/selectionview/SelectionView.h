@@ -116,7 +116,7 @@ private:
 	{
 		DeleteAllItems();
 
-		PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
+		typename PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
 		int index = 0;
 
 		typedef typename PartitionModelT::VolumeIPFSelectionT::NodeConstIterator Iter;
