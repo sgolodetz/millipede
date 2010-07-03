@@ -302,7 +302,10 @@ void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 
 void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 {
-	FeatureVolumesDialog dialog(this);
+	// Note:	This is done this way to ensure that the const version of PartitionView::model() gets called.
+	//			If we don't do this, the non-const version gets called and we get an error.
+	const PartitionView *view = m_view;
+	FeatureVolumesDialog dialog(this, view->model());
 	dialog.ShowModal();
 }
 
@@ -360,6 +363,11 @@ void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 	e.Enable(m_view->camera()->has_previous_slice());
 }
 
+void PartitionWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->model()->volume_ipf());
+}
+
 void PartitionWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->model()->selection() && !m_view->model()->selection()->empty());
@@ -398,6 +406,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnUpdateMenuNavigationPreviousLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnUpdateMenuNavigationPreviousSlice)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnUpdateNonEmptySelectionNeeder)
+	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, PartitionWindow::OnUpdateForestNeeder)
 END_EVENT_TABLE()
 
 }

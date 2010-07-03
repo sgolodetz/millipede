@@ -76,6 +76,7 @@ public:
 	void OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e);
 	void OnUpdateMenuSelectionClearSelection(wxUpdateUIEvent& e);
+	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################

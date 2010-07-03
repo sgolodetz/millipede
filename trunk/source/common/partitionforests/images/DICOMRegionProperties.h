@@ -16,8 +16,8 @@ class DICOMRegionProperties
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	size_t m_area;
 	double m_meanGreyValue;
+	size_t m_voxelCount;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -25,10 +25,10 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	int area() const;
 	static DICOMRegionProperties combine_branch_properties(const std::vector<DICOMRegionProperties>& properties);
 	static DICOMRegionProperties combine_leaf_properties(const std::vector<DICOMPixelProperties>& properties);
 	double mean_grey_value() const;
+	int voxel_count() const;
 };
 
 //#################### GLOBAL OPERATORS ####################

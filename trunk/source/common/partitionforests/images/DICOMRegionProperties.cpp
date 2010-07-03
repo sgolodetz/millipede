@@ -11,16 +11,11 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 DICOMRegionProperties::DICOMRegionProperties()
-:	m_area(0),
-	m_meanGreyValue(0.0)
+:	m_meanGreyValue(0.0),
+	m_voxelCount(0)
 {}
 
 //#################### PUBLIC METHODS ####################
-int DICOMRegionProperties::area() const
-{
-	return m_area;
-}
-
 // Precondition: !properties.empty()
 DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std::vector<DICOMRegionProperties>& properties)
 {
@@ -28,10 +23,10 @@ DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
-		ret.m_area += properties[i].m_area;
-		ret.m_meanGreyValue += properties[i].m_meanGreyValue * properties[i].m_area;
+		ret.m_voxelCount += properties[i].m_voxelCount;
+		ret.m_meanGreyValue += properties[i].m_meanGreyValue * properties[i].m_voxelCount;
 	}
-	ret.m_meanGreyValue /= ret.m_area;
+	ret.m_meanGreyValue /= ret.m_voxelCount;
 
 	return ret;
 }
@@ -41,7 +36,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::
 {
 	DICOMRegionProperties ret;
 
-	ret.m_area = properties.size();
+	ret.m_voxelCount = properties.size();
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
@@ -57,10 +52,15 @@ double DICOMRegionProperties::mean_grey_value() const
 	return m_meanGreyValue;
 }
 
+int DICOMRegionProperties::voxel_count() const
+{
+	return m_voxelCount;
+}
+
 //#################### GLOBAL OPERATORS ####################
 std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)
 {
-	os << "<<" << rhs.area() << " | " << rhs.mean_grey_value() << ">>";
+	os << "<<" << rhs.voxel_count() << " | " << rhs.mean_grey_value() << ">>";
 	return os;
 }
 

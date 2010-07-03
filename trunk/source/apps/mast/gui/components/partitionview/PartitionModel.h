@@ -55,6 +55,25 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	double calculate_feature_volume(Feature feature) const
+	{
+		typedef PartitionForestSelection<LeafLayer,BranchLayer> SelectionT;
+		typedef boost::shared_ptr<const SelectionT> Selection_CPtr;
+		Selection_CPtr featureSelection = multi_feature_selection()->selection(feature);
+
+		itk::Vector<double,3> spacing = m_dicomVolume->spacing();
+		double voxelVolume = spacing[0] * spacing[1] * spacing[2];
+
+		double volume = 0;
+		for(typename SelectionT::NodeConstIterator it=featureSelection->nodes_cbegin(), iend=featureSelection->nodes_cend(); it!=iend; ++it)
+		{
+			const PFNodeID& node = *it;
+			if(node.layer() > 0)	volume += m_volumeIPF->branch_properties(node).voxel_count() * voxelVolume;
+			else					volume += voxelVolume;
+		}
+		return volume;
+	}
+
 	DICOMVolume_CPtr dicom_volume() const
 	{
 		return m_dicomVolume;
