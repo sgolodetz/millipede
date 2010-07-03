@@ -124,7 +124,17 @@ private:
 		{
 			InsertItem(index, string_to_wxString(boost::lexical_cast<std::string>(*it)));
 
-			// TODO
+			std::map<std::string,std::string> propertyMap = m_model->volume_ipf()->branch_properties(*it).property_map();
+			for(std::map<std::string,std::string>::const_iterator jt=propertyMap.begin(), jend=propertyMap.end(); jt!=jend; ++jt)
+			{
+				int column = m_columnMap.find(jt->first)->second;
+				SetItem(index, column, string_to_wxString(jt->second));
+			}
+		}
+
+		for(int i=0, count=GetColumnCount(); i<count; ++i)
+		{
+			SetColumnWidth(i, wxLIST_AUTOSIZE_USEHEADER);
 		}
 	}
 };

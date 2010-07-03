@@ -6,6 +6,9 @@
 #include "DICOMRegionProperties.h"
 
 #include <ostream>
+#include <sstream>
+
+#include <boost/lexical_cast.hpp>
 
 namespace mp {
 
@@ -50,6 +53,22 @@ DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::
 double DICOMRegionProperties::mean_grey_value() const
 {
 	return m_meanGreyValue;
+}
+
+std::map<std::string,std::string> DICOMRegionProperties::property_map() const
+{
+	std::map<std::string,std::string> m;
+
+	{
+		std::ostringstream oss;
+		oss.setf(std::ios::fixed, std::ios::floatfield);
+		oss.precision(2);
+		oss << m_meanGreyValue;
+		m.insert(std::make_pair("Mean Grey Value", oss.str()));
+	}
+
+	m.insert(std::make_pair("Voxel Count", boost::lexical_cast<std::string>(m_voxelCount)));
+	return m;
 }
 
 std::vector<std::string> DICOMRegionProperties::property_names()

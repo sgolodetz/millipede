@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_DICOMREGIONPROPERTIES
 #define H_MILLIPEDE_DICOMREGIONPROPERTIES
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,7 @@ public:
 	static DICOMRegionProperties combine_branch_properties(const std::vector<DICOMRegionProperties>& properties);
 	static DICOMRegionProperties combine_leaf_properties(const std::vector<DICOMPixelProperties>& properties);
 	double mean_grey_value() const;
+	std::map<std::string,std::string> property_map() const;
 	static std::vector<std::string> property_names();
 	int voxel_count() const;
 };
