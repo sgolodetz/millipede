@@ -419,36 +419,8 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	// Middle left
-	wxPanel *middleLeft = new wxPanel(this);
-	wxBoxSizer *middleLeftSizer = new wxBoxSizer(wxVERTICAL);
-	middleLeft->SetSizer(middleLeftSizer);
-		m_dicomCanvas = new DICOMCanvas(middleLeft, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
-		middleLeftSizer->Add(m_dicomCanvas);
-
-		wxPanel *middleLeftBottom = new wxPanel(middleLeft);
-		wxFlexGridSizer *middleLeftBottomSizer = new wxFlexGridSizer(0, 2, 0, 0);
-		middleLeftBottom->SetSizer(middleLeftBottomSizer);
-			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
-			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, volume_choice().minX + m_camera->slice_location().x, volume_choice().minX, volume_choice().maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
-
-			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
-			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, volume_choice().minY + m_camera->slice_location().y, volume_choice().minY, volume_choice().maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
-
-			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
-			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, volume_choice().minZ+1 + m_camera->slice_location().z, volume_choice().minZ+1, volume_choice().maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
-
-			wxStaticText *zoomText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Zoom: "));
-			middleLeftBottomSizer->Add(zoomText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zoomSlider = new wxSlider(middleLeftBottom, SLIDERID_ZOOM, m_camera->zoom_level(), m_camera->min_zoom_level(), m_camera->max_zoom_level(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			middleLeftBottomSizer->Add(m_zoomSlider, 0, wxALIGN_CENTER);
-		middleLeftSizer->Add(middleLeftBottom, 0, wxALIGN_CENTER_HORIZONTAL);
-	sizer->Add(middleLeft);
+	m_dicomCanvas = new DICOMCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
+	sizer->Add(m_dicomCanvas);
 
 	// Middle
 	wxPanel *middle = new wxPanel(this);
@@ -467,24 +439,53 @@ void PartitionView::setup_gui(wxGLContext *context)
 
 		wxButton *visualizeIn3DButton = new wxButton(middle, BUTTONID_VISUALIZE_IN_3D, wxT("Visualize in 3D..."));
 		middleSizer->Add(visualizeIn3DButton, 0, wxALIGN_CENTER_HORIZONTAL);
+
+		middleSizer->AddSpacer(20);
+
+		wxPanel *locationControls = new wxPanel(middle);
+		wxFlexGridSizer *locationControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
+		locationControls->SetSizer(locationControlsSizer);
+			wxStaticText *xText = new wxStaticText(locationControls, wxID_ANY, wxT("X: "));
+			locationControlsSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
+			m_xSlider = new wxSlider(locationControls, SLIDERID_X, volume_choice().minX + m_camera->slice_location().x, volume_choice().minX, volume_choice().maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			locationControlsSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
+
+			wxStaticText *yText = new wxStaticText(locationControls, wxID_ANY, wxT("Y: "));
+			locationControlsSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
+			m_ySlider = new wxSlider(locationControls, SLIDERID_Y, volume_choice().minY + m_camera->slice_location().y, volume_choice().minY, volume_choice().maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			locationControlsSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
+
+			wxStaticText *zText = new wxStaticText(locationControls, wxID_ANY, wxT("Z: "));
+			locationControlsSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
+			m_zSlider = new wxSlider(locationControls, SLIDERID_Z, volume_choice().minZ+1 + m_camera->slice_location().z, volume_choice().minZ+1, volume_choice().maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			locationControlsSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
+
+			wxStaticText *zoomText = new wxStaticText(locationControls, wxID_ANY, wxT("Zoom: "));
+			locationControlsSizer->Add(zoomText, 0, wxALIGN_CENTER_VERTICAL);
+			m_zoomSlider = new wxSlider(locationControls, SLIDERID_ZOOM, m_camera->zoom_level(), m_camera->min_zoom_level(), m_camera->max_zoom_level(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			locationControlsSizer->Add(m_zoomSlider, 0, wxALIGN_CENTER);
+		middleSizer->Add(locationControls, 0, wxALIGN_CENTER_HORIZONTAL);
 	sizer->Add(middle);
 
 	// Middle right
-	wxPanel *middleRight = new wxPanel(this);
-	wxBoxSizer *middleRightSizer = new wxBoxSizer(wxVERTICAL);
-	middleRight->SetSizer(middleRightSizer);
-		m_partitionCanvas = new PartitionCanvas(middleRight, get_context(), attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
-		middleRightSizer->Add(m_partitionCanvas);
+	m_partitionCanvas = new PartitionCanvas(this, get_context(), attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
+	sizer->Add(m_partitionCanvas);
 
-		wxPanel *middleRightBottom = new wxPanel(middleRight);
-		wxFlexGridSizer *middleRightBottomSizer = new wxFlexGridSizer(0, 2, 0, 0);
-		middleRightBottom->SetSizer(middleRightBottomSizer);
-			wxStaticText *layerText = new wxStaticText(middleRightBottom, wxID_ANY, wxT("Layer: "));
-			middleRightBottomSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
-			m_layerSlider = new wxSlider(middleRightBottom, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			middleRightBottomSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
-		middleRightSizer->Add(middleRightBottom, 0, wxALIGN_CENTER_HORIZONTAL);
-	sizer->Add(middleRight);
+	// Bottom left
+	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
+
+	// Bottom middle
+	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
+
+	// Bottom right
+	wxPanel *bottomRight = new wxPanel(this);
+	wxFlexGridSizer *bottomRightSizer = new wxFlexGridSizer(0, 2, 0, 0);
+	bottomRight->SetSizer(bottomRightSizer);
+		wxStaticText *layerText = new wxStaticText(bottomRight, wxID_ANY, wxT("Layer: "));
+		bottomRightSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
+		m_layerSlider = new wxSlider(bottomRight, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		bottomRightSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
+	sizer->Add(bottomRight, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->Fit(this);
 }

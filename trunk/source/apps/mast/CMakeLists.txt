@@ -46,6 +46,11 @@ gui/components/partitionview/PartitionView.h
 )
 
 ##
+SET(gui_components_selectionview_headers
+gui/components/selectionview/SelectionView.h
+)
+
+##
 SET(gui_dialogs_sources
 gui/dialogs/DialogUtil.cpp
 gui/dialogs/SegmentDICOMVolumeDialog.cpp
@@ -118,6 +123,7 @@ SET(headers
 ${mast_headers}
 ${gui_components_canvas_headers}
 ${gui_components_partitionview_headers}
+${gui_components_selectionview_headers}
 ${gui_dialogs_headers}
 ${gui_overlays_headers}
 ${gui_windows_headers}
@@ -143,6 +149,9 @@ SOURCE_GROUP(gui\\components\\canvas\\.h FILES ${gui_components_canvas_headers})
 ##
 SOURCE_GROUP(gui\\components\\partitionview\\.cpp FILES ${gui_components_partitionview_sources})
 SOURCE_GROUP(gui\\components\\partitionview\\.h FILES ${gui_components_partitionview_headers})
+
+##
+SOURCE_GROUP(gui\\components\\selectionview\\.h FILES ${gui_components_selectionview_headers})
 
 ##
 SOURCE_GROUP(gui\\dialogs\\.cpp FILES ${gui_dialogs_sources})

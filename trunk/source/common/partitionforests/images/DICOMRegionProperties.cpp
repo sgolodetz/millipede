@@ -52,6 +52,14 @@ double DICOMRegionProperties::mean_grey_value() const
 	return m_meanGreyValue;
 }
 
+std::vector<std::string> DICOMRegionProperties::property_names()
+{
+	std::vector<std::string> names;
+	names.push_back("Mean Grey Value");
+	names.push_back("Voxel Count");
+	return names;
+}
+
 int DICOMRegionProperties::voxel_count() const
 {
 	return m_voxelCount;

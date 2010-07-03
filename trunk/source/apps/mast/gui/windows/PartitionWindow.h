@@ -24,7 +24,10 @@ class PartitionWindow : public wxFrame
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef DICOMImageBranchLayer BranchLayer;
+	typedef AbdominalFeature::Enum Feature;
+	typedef DICOMImageLeafLayer LeafLayer;
+	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################

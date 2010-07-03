@@ -10,7 +10,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <wx/glcanvas.h>
-#include <wx/listctrl.h>
 #include <wx/panel.h>
 #include <wx/slider.h>
 
@@ -69,14 +68,15 @@ private:
 
 	// Middle left
 	DICOMCanvas *m_dicomCanvas;
+
+	// Middle
 	wxSlider *m_xSlider, *m_ySlider, *m_zSlider, *m_zoomSlider;
 
 	// Middle right
 	PartitionCanvas *m_partitionCanvas;
-	wxSlider *m_layerSlider;
 
-	// Bottom
-	wxListCtrl *m_regionInfo;
+	// Bottom right
+	wxSlider *m_layerSlider;
 
 	//#################### CONSTRUCTORS ####################
 public:

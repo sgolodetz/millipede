@@ -10,6 +10,7 @@
 
 #include <common/commands/UndoableCommandManager.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
+#include <mast/gui/components/selectionview/SelectionView.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
 #include <mast/util/StringConversion.h>
 
@@ -77,13 +78,17 @@ void PartitionWindow::setup_gui(const PartitionModel_Ptr& model, wxGLContext *co
 {
 	SetBackgroundColour(wxColour(240,240,240));
 
-	wxGridSizer *sizer = new wxGridSizer(1, 1, 0, 0);
+	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	SetSizer(sizer);
 
 	Show();
 
 	m_view = new PartitionView(this, model, m_commandManager, context);
-	sizer->Add(m_view);
+	sizer->Add(m_view, 0, wxALIGN_CENTER_HORIZONTAL);
+
+	sizer->AddSpacer(10);
+
+	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this), 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->Fit(this);
 }
