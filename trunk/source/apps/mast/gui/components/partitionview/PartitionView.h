@@ -44,7 +44,6 @@ private:
 	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
-	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
 
 	//#################### LISTENERS ####################
 private:

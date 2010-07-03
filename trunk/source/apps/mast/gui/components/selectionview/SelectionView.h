@@ -8,6 +8,8 @@
 
 #include <map>
 
+#include <boost/lexical_cast.hpp>
+
 #include <wx/listctrl.h>
 
 #include <mast/models/PartitionModel.h>
@@ -41,6 +43,34 @@ private:
 		}
 	};
 
+	struct MultiFeatureSelectionListener : PartitionModelT::VolumeIPFMultiFeatureSelectionT::Listener
+	{
+		SelectionView *base;
+
+		explicit MultiFeatureSelectionListener(SelectionView *base_)
+		:	base(base_)
+		{}
+
+		void multi_feature_selection_changed(int commandDepth)
+		{
+			if(commandDepth == 0) base->refresh_list();
+		}
+	};
+
+	struct SelectionListener : PartitionModelT::VolumeIPFSelectionT::Listener
+	{
+		SelectionView *base;
+
+		explicit SelectionListener(SelectionView *base_)
+		:	base(base_)
+		{}
+
+		void selection_changed(int commandDepth)
+		{
+			if(commandDepth == 0) base->refresh_list();
+		}
+	};
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	std::map<std::string,size_t> m_columnMap;
@@ -55,7 +85,6 @@ public:
 
 		// Set up the columns.
 		add_column("Node ID");
-		add_column("Feature");
 		std::vector<std::string> propertyNames = BranchProperties::property_names();
 		for(size_t i=0, size=propertyNames.size(); i<size; ++i)
 		{
@@ -79,12 +108,24 @@ private:
 
 	void add_selection_listeners()
 	{
-		// TODO
+		m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
+		m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
 	}
 
 	void refresh_list()
 	{
-		// TODO
+		DeleteAllItems();
+
+		PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
+		int index = 0;
+
+		typedef typename PartitionModelT::VolumeIPFSelectionT::NodeConstIterator Iter;
+		for(Iter it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it, ++index)
+		{
+			InsertItem(index, string_to_wxString(boost::lexical_cast<std::string>(*it)));
+
+			// TODO
+		}
 	}
 };
 

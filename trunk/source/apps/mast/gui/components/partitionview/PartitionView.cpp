@@ -93,7 +93,7 @@ struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
 	}
 };
 
-struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum>::Listener
+struct PartitionView::MultiFeatureSelectionListener : PartitionModelT::VolumeIPFMultiFeatureSelectionT::Listener
 {
 	PartitionView *base;
 
@@ -111,7 +111,7 @@ struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelec
 	}
 };
 
-struct PartitionView::SelectionListener : PartitionView::VolumeIPFSelectionT::Listener
+struct PartitionView::SelectionListener : PartitionModelT::VolumeIPFSelectionT::Listener
 {
 	PartitionView *base;
 
