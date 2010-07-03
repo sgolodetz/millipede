@@ -55,7 +55,17 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	double calculate_feature_volume(Feature feature) const
+	/**
+	Calculates the total volume of the voxels marked as the specified feature (in cubic mm).
+
+	@param[in]	feature		The feature whose volume is to be calculated
+	@pre
+		-	dicom_volume() is non-null
+		-	multi_feature_selection() is non-null
+		-	volume_ipf() is non-null
+	@return	As described
+	*/
+	double calculate_feature_volume_mm3(const Feature& feature) const
 	{
 		typedef PartitionForestSelection<LeafLayer,BranchLayer> SelectionT;
 		typedef boost::shared_ptr<const SelectionT> Selection_CPtr;
