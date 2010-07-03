@@ -15,6 +15,7 @@
 
 #include <common/util/NumericUtil.h>
 #include <mast/gui/components/partitionview/PartitionModel.h>
+#include <mast/util/StringConversion.h>
 
 namespace mp {
 
