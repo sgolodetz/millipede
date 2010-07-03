@@ -13,7 +13,6 @@
 #include <wx/listctrl.h>
 #include <wx/sizer.h>
 
-#include <common/dicom/volumes/DICOMVolume.h>
 #include <common/util/NumericUtil.h>
 #include <mast/gui/components/partitionview/PartitionModel.h>
 

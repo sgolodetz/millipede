@@ -11,16 +11,13 @@
 #include <boost/shared_ptr.hpp>
 
 #include <common/commands/UndoableCommandManager.h>
+#include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
 #include <common/util/ITKImageUtil.h>
 
 namespace mp {
-
-//#################### FORWARD DECLARATIONS ####################
-typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
-typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
