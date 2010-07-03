@@ -11,17 +11,24 @@
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 
-#include <common/dicom/volumes/DICOMVolumeChoice.h>
+#include <common/partitionforests/images/AbdominalFeature.h>
+#include <common/partitionforests/images/DICOMImageBranchLayer.h>
+#include <common/partitionforests/images/DICOMImageLeafLayer.h>
+#include <mast/gui/components/partitionview/PartitionModel.h>
 
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
-typedef boost::shared_ptr<class DICOMVolume> DICOMVolume_Ptr;
 typedef boost::shared_ptr<class ICommandManager> ICommandManager_Ptr;
 class PartitionView;
 
 class PartitionWindow : public wxFrame
 {
+	//#################### TYPEDEFS ####################
+private:
+	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	ICommandManager_Ptr m_commandManager;
@@ -30,7 +37,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context = NULL);
+	PartitionWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -39,7 +46,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void connect_special_menu_items();
-	void setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context);
+	void setup_gui(const PartitionModel_Ptr& model, wxGLContext *context);
 	void setup_menus();
 
 	//#################### EVENT HANDLERS ####################

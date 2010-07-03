@@ -10,6 +10,7 @@
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
 #include <common/io/files/DICOMDIRFile.h>
 #include <common/io/files/VolumeChoiceFile.h>
@@ -76,9 +77,14 @@ void MainWindow::load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVol
 	DICOMVolumeLoader_Ptr loader(new DICOMVolumeLoader(dicomdir, volumeChoice));
 	if(execute_with_progress_dialog(loader, this, "Loading DICOM Volume"))
 	{
-		// Create a window for the user to interact with the new volume.
+		// Create a model from the loaded volume.
+		typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+		typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
+		PartitionModel_Ptr model(new PartitionModelT(loader->volume(), loader->volume_choice()));
+
+		// Create a window for the user to interact with the new model.
 		std::string caption = "MAST - " + loader->volume_choice().description() + " - Untitled";
-		PartitionWindow *partitionWindow = new PartitionWindow(this, caption, loader->volume(), loader->volume_choice());
+		PartitionWindow *partitionWindow = new PartitionWindow(this, caption, model);
 		partitionWindow->Show(true);
 	}
 }

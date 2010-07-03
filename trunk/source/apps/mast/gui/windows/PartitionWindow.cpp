@@ -48,12 +48,11 @@ enum
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
-								 wxGLContext *context)
+PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context)
 :	wxFrame(parent, -1, string_to_wxString(title)), m_commandManager(new UndoableCommandManager)
 {
 	setup_menus();
-	setup_gui(volume, volumeChoice, context);
+	setup_gui(model, context);
 }
 
 //#################### PUBLIC METHODS ####################
@@ -74,7 +73,7 @@ void PartitionWindow::connect_special_menu_items()
 	}
 }
 
-void PartitionWindow::setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, wxGLContext *context)
+void PartitionWindow::setup_gui(const PartitionModel_Ptr& model, wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
 
@@ -83,7 +82,7 @@ void PartitionWindow::setup_gui(const DICOMVolume_Ptr& volume, const DICOMVolume
 
 	Show();
 
-	m_view = new PartitionView(this, volume, volumeChoice, m_commandManager, context);
+	m_view = new PartitionView(this, model, m_commandManager, context);
 	sizer->Add(m_view);
 
 	sizer->Fit(this);

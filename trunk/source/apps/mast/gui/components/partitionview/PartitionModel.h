@@ -12,6 +12,7 @@
 
 #include <common/commands/UndoableCommandManager.h>
 #include <common/dicom/volumes/DICOMVolume.h>
+#include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
@@ -40,14 +41,15 @@ public:
 private:
 	ICommandManager_Ptr m_commandManager;
 	DICOMVolume_Ptr m_dicomVolume;
+	DICOMVolumeChoice m_dicomVolumeChoice;
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
 	VolumeIPFSelection_Ptr m_selection;
 	VolumeIPF_Ptr m_volumeIPF;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit PartitionModel(const DICOMVolume_Ptr& dicomVolume)
-	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume)
+	PartitionModel(const DICOMVolume_Ptr& dicomVolume, const DICOMVolumeChoice& dicomVolumeChoice)
+	:	m_commandManager(new UndoableCommandManager), m_dicomVolume(dicomVolume), m_dicomVolumeChoice(dicomVolumeChoice)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -84,6 +86,11 @@ public:
 	DICOMVolume_CPtr dicom_volume() const
 	{
 		return m_dicomVolume;
+	}
+
+	const DICOMVolumeChoice& dicom_volume_choice() const
+	{
+		return m_dicomVolumeChoice;
 	}
 
 	const VolumeIPFMultiFeatureSelection_Ptr& multi_feature_selection()

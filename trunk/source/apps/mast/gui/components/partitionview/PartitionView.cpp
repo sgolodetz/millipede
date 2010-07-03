@@ -113,18 +113,16 @@ struct PartitionView::SelectionListener : VolumeIPFSelection<DICOMImageLeafLayer
 };
 
 //#################### CONSTRUCTORS ####################
-PartitionView::PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice,
-							 const ICommandManager_Ptr& commandManager, wxGLContext *context)
+PartitionView::PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, const ICommandManager_Ptr& commandManager, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)),
 	m_camera(new PartitionCamera(
-		SliceLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0),
+		initial_slice_location(model->dicom_volume_choice()),
 		ORIENT_XY,
-		volume->size()
+		model->dicom_volume()->size()
 	)),
 	m_commandManager(commandManager),
-	m_model(new PartitionModelT(volume)),
-	m_overlayManager(new PartitionOverlayManager),
-	m_volumeChoice(volumeChoice)
+	m_model(model),
+	m_overlayManager(new PartitionOverlayManager)
 {
 	m_camera->add_shared_listener(boost::shared_ptr<PartitionCamera::Listener>(new CameraListener(this)));
 	m_model->set_command_manager(commandManager);
@@ -183,6 +181,11 @@ void PartitionView::goto_slice()
 	}
 }
 
+SliceLocation PartitionView::initial_slice_location(const DICOMVolumeChoice& volumeChoice)
+{
+	return SliceLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0);
+}
+
 const PartitionView::PartitionModel_Ptr& PartitionView::model()
 {
 	return m_model;
@@ -201,7 +204,7 @@ void PartitionView::segment_volume()
 	Job_Ptr job;
 
 	// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentDICOMVolumeDialog dialog(this, m_model->dicom_volume()->size(), m_volumeChoice.windowSettings);
+	SegmentDICOMVolumeDialog dialog(this, m_model->dicom_volume()->size(), volume_choice().windowSettings);
 	dialog.ShowModal();
 	if(dialog.segmentation_options())
 	{
@@ -225,11 +228,6 @@ void PartitionView::segment_volume()
 	}
 }
 
-void PartitionView::zoom_to_fit()
-{
-	m_dicomCanvas->zoom_to_fit();
-}
-
 //#################### PRIVATE METHODS ####################
 void PartitionView::calculate_canvas_size()
 {
@@ -246,7 +244,7 @@ void PartitionView::create_dicom_textures()
 {
 	m_dicomTextureSet.reset(new SliceTextureSet);
 
-	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
+	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(volume_choice().windowSettings);
 	Job_Ptr job = fill_dicom_textures_job(m_camera->slice_orientation(), windowedImage);
 	execute_with_progress_dialog(job, this, "Creating DICOM Texture Set", false);
 }
@@ -321,7 +319,7 @@ void PartitionView::fill_textures(SliceOrientation ori)
 
 	if(!m_dicomTextureSet->has_textures(ori))
 	{
-		DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(m_volumeChoice.windowSettings);
+		DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(volume_choice().windowSettings);
 		job->add_subjob(fill_dicom_textures_job(ori, windowedImage));
 	}
 
@@ -432,17 +430,17 @@ void PartitionView::setup_gui(wxGLContext *context)
 		middleLeftBottom->SetSizer(middleLeftBottomSizer);
 			wxStaticText *xText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("X: "));
 			middleLeftBottomSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
-			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, m_volumeChoice.minX + m_camera->slice_location().x, m_volumeChoice.minX, m_volumeChoice.maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(middleLeftBottom, SLIDERID_X, volume_choice().minX + m_camera->slice_location().x, volume_choice().minX, volume_choice().maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *yText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Y: "));
 			middleLeftBottomSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
-			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, m_volumeChoice.minY + m_camera->slice_location().y, m_volumeChoice.minY, m_volumeChoice.maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(middleLeftBottom, SLIDERID_Y, volume_choice().minY + m_camera->slice_location().y, volume_choice().minY, volume_choice().maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Z: "));
 			middleLeftBottomSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
-			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, m_volumeChoice.minZ+1 + m_camera->slice_location().z, m_volumeChoice.minZ+1, m_volumeChoice.maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(middleLeftBottom, SLIDERID_Z, volume_choice().minZ+1 + m_camera->slice_location().z, volume_choice().minZ+1, volume_choice().maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			middleLeftBottomSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
 
 			wxStaticText *zoomText = new wxStaticText(middleLeftBottom, wxID_ANY, wxT("Zoom: "));
@@ -499,6 +497,16 @@ void PartitionView::update_sliders()
 	m_zSlider->SetValue(m_zSlider->GetMin() + loc.z);
 	m_layerSlider->SetValue(loc.layer);
 	m_zoomSlider->SetValue(m_camera->zoom_level());
+}
+
+const DICOMVolumeChoice& PartitionView::volume_choice() const
+{
+	return m_model->dicom_volume_choice();
+}
+
+void PartitionView::zoom_to_fit()
+{
+	m_dicomCanvas->zoom_to_fit();
 }
 
 //#################### EVENT HANDLERS ####################

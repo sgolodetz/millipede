@@ -14,7 +14,6 @@
 #include <wx/panel.h>
 #include <wx/slider.h>
 
-#include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
@@ -64,7 +63,6 @@ private:
 	PartitionModel_Ptr m_model;
 	PartitionOverlayManager_Ptr m_overlayManager;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
-	DICOMVolumeChoice m_volumeChoice;
 
 	// Top right
 	wxButton *m_segmentVolumeButton;
@@ -82,7 +80,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionView(wxWindow *parent, const DICOMVolume_Ptr& volume, const DICOMVolumeChoice& volumeChoice, const ICommandManager_Ptr& commandManager, wxGLContext *context = NULL);
+	PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, const ICommandManager_Ptr& commandManager, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -105,6 +103,7 @@ private:
 	Job_Ptr fill_dicom_textures_job(SliceOrientation ori, const itk::Image<unsigned char,3>::Pointer& windowedImage) const;
 	Job_Ptr fill_partition_textures_job(SliceOrientation ori) const;
 	void fill_textures(SliceOrientation ori);
+	static SliceLocation initial_slice_location(const DICOMVolumeChoice& volumeChoice);
 	PartitionOverlay *multi_feature_selection_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
@@ -115,6 +114,7 @@ private:
 	PartitionOverlay *selection_overlay() const;
 	void setup_gui(wxGLContext *context);
 	void update_sliders();
+	const DICOMVolumeChoice& volume_choice() const;
 	void zoom_to_fit();
 
 	//#################### EVENT HANDLERS ####################
