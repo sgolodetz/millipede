@@ -91,6 +91,7 @@ void PartitionWindow::setup_gui(const PartitionModel_Ptr& model, wxGLContext *co
 	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this), 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->Fit(this);
+	CenterOnScreen();
 }
 
 void PartitionWindow::setup_menus()

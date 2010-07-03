@@ -23,6 +23,23 @@ namespace mp {
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
 {
+	//#################### LISTENERS ####################
+public:
+	struct Listener
+	{
+		virtual ~Listener() {}
+		virtual void forest_changed() = 0;
+	};
+
+private:
+	struct CompositeListener : CompositeListenerBase<Listener>
+	{
+		void forest_changed()
+		{
+			multicast(boost::bind(&Listener::forest_changed, _1));
+		}
+	};
+
 	//#################### TYPEDEFS ####################
 public:
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
@@ -42,6 +59,7 @@ private:
 	ICommandManager_Ptr m_commandManager;
 	DICOMVolume_Ptr m_dicomVolume;
 	DICOMVolumeChoice m_dicomVolumeChoice;
+	CompositeListener m_listeners;
 	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
 	VolumeIPFSelection_Ptr m_selection;
 	VolumeIPF_Ptr m_volumeIPF;
@@ -54,6 +72,11 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	void add_shared_listener(const boost::shared_ptr<Listener>& listener)
+	{
+		m_listeners.add_shared_listener(listener);
+	}
+
 	/**
 	Calculates the total volume of the voxels marked as the specified feature (in cubic mm).
 
@@ -131,6 +154,8 @@ public:
 
 		volumeIPF->add_weak_listener(m_selection);
 		set_command_manager(m_commandManager);
+
+		m_listeners.forest_changed();
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()

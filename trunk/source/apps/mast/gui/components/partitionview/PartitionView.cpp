@@ -76,6 +76,23 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	}
 };
 
+struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
+{
+	PartitionView *base;
+
+	explicit ModelListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void forest_changed()
+	{
+		base->create_partition_textures();
+		base->recreate_overlays();
+		base->refresh_canvases();
+		base->add_selection_listeners();
+	}
+};
+
 struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelection<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum>::Listener
 {
 	PartitionView *base;
@@ -94,7 +111,7 @@ struct PartitionView::MultiFeatureSelectionListener : VolumeIPFMultiFeatureSelec
 	}
 };
 
-struct PartitionView::SelectionListener : VolumeIPFSelection<DICOMImageLeafLayer,DICOMImageBranchLayer>::Listener
+struct PartitionView::SelectionListener : PartitionView::VolumeIPFSelectionT::Listener
 {
 	PartitionView *base;
 
@@ -124,7 +141,8 @@ PartitionView::PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, 
 	m_model(model),
 	m_overlayManager(new PartitionOverlayManager)
 {
-	m_camera->add_shared_listener(boost::shared_ptr<PartitionCamera::Listener>(new CameraListener(this)));
+	m_camera->add_shared_listener(boost::shared_ptr<CameraListener>(new CameraListener(this)));
+	m_model->add_shared_listener(boost::shared_ptr<ModelListener>(new ModelListener(this)));
 	m_model->set_command_manager(commandManager);
 
 	calculate_canvas_size();
@@ -215,20 +233,20 @@ void PartitionView::segment_volume()
 	// If the user cancelled the segment volume dialog, exit.
 	if(!job) return;
 
-	// Actually segment the volume. If the segmentation finishes successfully, set up the textures, overlays, listeners, etc.
+	// Actually segment the volume. If the segmentation finishes successfully, set the model's IPF accordingly.
 	if(execute_with_progress_dialog(job, this, "Segmenting Volume"))
 	{
 		m_model->set_volume_ipf(volumeIPF);
-		create_partition_textures();
-		recreate_overlays();
-		refresh_canvases();
-
-		m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
-		m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
 	}
 }
 
 //#################### PRIVATE METHODS ####################
+void PartitionView::add_selection_listeners()
+{
+	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
+	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+}
+
 void PartitionView::calculate_canvas_size()
 {
 	// We want our canvases to be at least 512x512, but beyond that their size should be dictated by the sizes

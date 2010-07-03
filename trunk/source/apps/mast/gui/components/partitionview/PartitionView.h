@@ -49,6 +49,7 @@ private:
 	//#################### LISTENERS ####################
 private:
 	struct CameraListener;
+	struct ModelListener;
 	struct MultiFeatureSelectionListener;
 	struct SelectionListener;
 
@@ -95,6 +96,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void add_selection_listeners();
 	void calculate_canvas_size();
 	void create_dicom_textures();
 	void create_overlays();

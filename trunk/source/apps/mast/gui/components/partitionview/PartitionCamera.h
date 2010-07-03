@@ -21,7 +21,7 @@ namespace mp {
 
 class PartitionCamera
 {
-	//#################### NESTED CLASSES (EXCLUDING COMMANDS) ####################
+	//#################### LISTENERS ####################
 public:
 	struct Listener
 	{
