@@ -12,7 +12,7 @@
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <mast/gui/components/canvas/Canvas.h>
-#include "PartitionModel.h"
+#include <mast/models/PartitionModel.h>
 
 namespace mp {
 

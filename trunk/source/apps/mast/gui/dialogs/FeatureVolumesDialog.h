@@ -14,7 +14,7 @@
 #include <wx/sizer.h>
 
 #include <common/util/NumericUtil.h>
-#include <mast/gui/components/partitionview/PartitionModel.h>
+#include <mast/models/PartitionModel.h>
 #include <mast/util/StringConversion.h>
 
 namespace mp {

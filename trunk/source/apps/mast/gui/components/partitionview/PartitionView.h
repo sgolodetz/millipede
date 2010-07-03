@@ -18,8 +18,8 @@
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
+#include <mast/models/PartitionModel.h>
 #include "PartitionCamera.h"
-#include "PartitionModel.h"
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;

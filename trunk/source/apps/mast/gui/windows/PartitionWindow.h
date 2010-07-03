@@ -6,15 +6,13 @@
 #ifndef H_MILLIPEDE_PARTITIONWINDOW
 #define H_MILLIPEDE_PARTITIONWINDOW
 
-#include <boost/shared_ptr.hpp>
-
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
-#include <mast/gui/components/partitionview/PartitionModel.h>
+#include <mast/models/PartitionModel.h>
 
 namespace mp {
 
