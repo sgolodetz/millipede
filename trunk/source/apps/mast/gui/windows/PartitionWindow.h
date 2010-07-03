@@ -65,6 +65,7 @@ public:
 	void OnMenuNavigationZoomOut(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
+	void OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e);

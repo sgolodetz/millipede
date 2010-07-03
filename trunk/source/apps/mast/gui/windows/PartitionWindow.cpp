@@ -10,6 +10,7 @@
 
 #include <common/commands/UndoableCommandManager.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
+#include <mast/gui/dialogs/FeatureVolumesDialog.h>
 #include <mast/util/StringConversion.h>
 
 namespace {
@@ -39,6 +40,7 @@ enum
 	MENUID_NAVIGATION_ZOOMOUT,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SELECTION_CLEARSELECTION,
+	MENUID_TOOLS_QUANTIFYFEATUREVOLUMES,
 };
 
 }
@@ -173,7 +175,7 @@ void PartitionWindow::setup_menus()
 	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->Append(wxID_ANY, wxT("&Calculate Feature Volumes..."));
+	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+Q"));
 	toolsMenu->Append(wxID_ANY, wxT("&Visualize in 3D..."));
 
 	wxMenu *helpMenu = new wxMenu;
@@ -298,6 +300,12 @@ void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 	m_view->model()->selection()->clear();
 }
 
+void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
+{
+	FeatureVolumesDialog dialog(this);
+	dialog.ShowModal();
+}
+
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
 {
@@ -379,6 +387,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, PartitionWindow::OnMenuNavigationZoomOut)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, PartitionWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnMenuSelectionClearSelection)
+	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, PartitionWindow::OnMenuToolsQuantifyFeatureVolumes)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnUpdateMenuActionsClearHistory)
