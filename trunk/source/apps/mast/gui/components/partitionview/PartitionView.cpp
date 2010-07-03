@@ -6,8 +6,10 @@
 #include "PartitionView.h"
 
 #include <wx/button.h>
+#include <wx/glcanvas.h>
 #include <wx/numdlg.h>
 #include <wx/sizer.h>
+#include <wx/slider.h>
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
@@ -19,6 +21,7 @@
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
+#include "PartitionCamera.h"
 #include "PartitionCanvas.h"
 using namespace mp;
 

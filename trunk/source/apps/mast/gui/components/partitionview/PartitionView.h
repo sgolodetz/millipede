@@ -6,27 +6,27 @@
 #ifndef H_MILLIPEDE_PARTITIONVIEW
 #define H_MILLIPEDE_PARTITIONVIEW
 
-#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
-#include <wx/slider.h>
 
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
 #include <mast/models/PartitionModel.h>
-#include "PartitionCamera.h"
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;
+class wxSlider;
 
 namespace mp {
 
 class DICOMCanvas;
 typedef boost::shared_ptr<class Job> Job_Ptr;
+typedef boost::shared_ptr<class PartitionCamera> PartitionCamera_Ptr;
+typedef boost::shared_ptr<const class PartitionCamera> PartitionCamera_CPtr;
 class PartitionCanvas;
 class PartitionOverlay;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;

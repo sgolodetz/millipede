@@ -9,6 +9,7 @@
 #include <wx/sizer.h>
 
 #include <common/commands/UndoableCommandManager.h>
+#include <mast/gui/components/partitionview/PartitionCamera.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/gui/components/selectionview/SelectionView.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
@@ -50,10 +51,10 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context)
-:	wxFrame(parent, -1, string_to_wxString(title)), m_commandManager(new UndoableCommandManager)
+:	wxFrame(parent, -1, string_to_wxString(title)), m_commandManager(new UndoableCommandManager), m_model(model)
 {
 	setup_menus();
-	setup_gui(model, context);
+	setup_gui(context);
 }
 
 //#################### PUBLIC METHODS ####################
@@ -74,7 +75,7 @@ void PartitionWindow::connect_special_menu_items()
 	}
 }
 
-void PartitionWindow::setup_gui(const PartitionModel_Ptr& model, wxGLContext *context)
+void PartitionWindow::setup_gui(wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
 
@@ -83,12 +84,12 @@ void PartitionWindow::setup_gui(const PartitionModel_Ptr& model, wxGLContext *co
 
 	Show();
 
-	m_view = new PartitionView(this, model, m_commandManager, context);
+	m_view = new PartitionView(this, m_model, m_commandManager, context);
 	sizer->Add(m_view, 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->AddSpacer(10);
 
-	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this), 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this, m_model), 0, wxALIGN_CENTER_HORIZONTAL);
 
 	sizer->Fit(this);
 	CenterOnScreen();
@@ -222,7 +223,7 @@ void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 void PartitionWindow::OnMenuFeatureToggle(wxCommandEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURE_TOGGLE_BASE+1));
-	m_view->model()->multi_feature_selection()->toggle_selection(m_view->model()->selection(), feature);
+	m_model->multi_feature_selection()->toggle_selection(m_model->selection(), feature);
 }
 
 void PartitionWindow::OnMenuFileExit(wxCommandEvent&)
@@ -297,20 +298,17 @@ void PartitionWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
 
 void PartitionWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
-	m_view->model()->segment_volume(this);
+	m_model->segment_volume(this);
 }
 
 void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 {
-	m_view->model()->selection()->clear();
+	m_model->selection()->clear();
 }
 
 void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 {
-	// Note:	This is done this way to ensure that the const version of PartitionView::model() gets called.
-	//			If we don't do this, the non-const version gets called and we get an error.
-	const PartitionView *view = m_view;
-	FeatureVolumesDialog dialog(this, view->model());
+	FeatureVolumesDialog dialog(this, PartitionModel_CPtr(m_model));
 	dialog.ShowModal();
 }
 
@@ -370,12 +368,12 @@ void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 
 void PartitionWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
 {
-	e.Enable(m_view->model()->volume_ipf());
+	e.Enable(m_model->volume_ipf());
 }
 
 void PartitionWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)
 {
-	e.Enable(m_view->model()->selection() && !m_view->model()->selection()->empty());
+	e.Enable(m_model->selection() && !m_model->selection()->empty());
 }
 
 //#################### EVENT TABLE ####################

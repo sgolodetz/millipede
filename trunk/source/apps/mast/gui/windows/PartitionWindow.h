@@ -29,11 +29,13 @@ private:
 	typedef DICOMImageLeafLayer LeafLayer;
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
+	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	ICommandManager_Ptr m_commandManager;
 	wxMenuBar *m_menuBar;
+	PartitionModel_Ptr m_model;
 	PartitionView *m_view;
 
 	//#################### CONSTRUCTORS ####################
@@ -47,7 +49,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void connect_special_menu_items();
-	void setup_gui(const PartitionModel_Ptr& model, wxGLContext *context);
+	void setup_gui(wxGLContext *context);
 	void setup_menus();
 
 	//#################### EVENT HANDLERS ####################
