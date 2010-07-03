@@ -12,11 +12,8 @@
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
-#include <common/segmentation/DICOMLowestLayersBuilder.h>
-#include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
-#include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
@@ -212,32 +209,6 @@ const PartitionView::PartitionModel_Ptr& PartitionView::model()
 PartitionView::PartitionModel_CPtr PartitionView::model() const
 {
 	return m_model;
-}
-
-void PartitionView::segment_volume()
-{
-	typedef boost::shared_ptr<VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> > VolumeIPF_Ptr;
-	VolumeIPF_Ptr volumeIPF;
-
-	Job_Ptr job;
-
-	// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
-	SegmentDICOMVolumeDialog dialog(this, m_model->dicom_volume()->size(), volume_choice().windowSettings);
-	dialog.ShowModal();
-	if(dialog.segmentation_options())
-	{
-		typedef VolumeIPFBuilder<DICOMLowestLayersBuilder> DICOMVolumeIPFBuilder;
-		job.reset(new DICOMVolumeIPFBuilder(m_model->dicom_volume(), *dialog.segmentation_options(), volumeIPF));
-	}
-
-	// If the user cancelled the segment volume dialog, exit.
-	if(!job) return;
-
-	// Actually segment the volume. If the segmentation finishes successfully, set the model's IPF accordingly.
-	if(execute_with_progress_dialog(job, this, "Segmenting Volume"))
-	{
-		m_model->set_volume_ipf(volumeIPF);
-	}
 }
 
 //#################### PRIVATE METHODS ####################
@@ -533,7 +504,7 @@ void PartitionView::zoom_to_fit()
 //~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnButtonSegmentVolume(wxCommandEvent&)
 {
-	segment_volume();
+	m_model->segment_volume(this);
 }
 
 void PartitionView::OnButtonViewXY(wxCommandEvent&)

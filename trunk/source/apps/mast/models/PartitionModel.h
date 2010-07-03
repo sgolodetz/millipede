@@ -16,7 +16,11 @@
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
+#include <common/segmentation/DICOMLowestLayersBuilder.h>
+#include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/util/ITKImageUtil.h>
+#include <mast/gui/dialogs/DialogUtil.h>
+#include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 
 namespace mp {
 
@@ -124,6 +128,31 @@ public:
 	VolumeIPFMultiFeatureSelection_CPtr multi_feature_selection() const
 	{
 		return m_multiFeatureSelection;
+	}
+
+	void segment_volume(wxWindow *parent)
+	{
+		VolumeIPF_Ptr volumeIPF;
+
+		Job_Ptr job;
+
+		// Display a segment volume dialog to allow the user to choose how the segmentation process should work.
+		SegmentDICOMVolumeDialog dialog(parent, m_dicomVolume->size(), m_dicomVolumeChoice.windowSettings);
+		dialog.ShowModal();
+		if(dialog.segmentation_options())
+		{
+			typedef VolumeIPFBuilder<DICOMLowestLayersBuilder> DICOMVolumeIPFBuilder;
+			job.reset(new DICOMVolumeIPFBuilder(m_dicomVolume, *dialog.segmentation_options(), volumeIPF));
+		}
+
+		// If the user cancelled the segment volume dialog, exit.
+		if(!job) return;
+
+		// Actually segment the volume. If the segmentation finishes successfully, set the volume IPF accordingly.
+		if(execute_with_progress_dialog(job, parent, "Segmenting Volume"))
+		{
+			set_volume_ipf(volumeIPF);
+		}
 	}
 
 	const VolumeIPFSelection_Ptr& selection()

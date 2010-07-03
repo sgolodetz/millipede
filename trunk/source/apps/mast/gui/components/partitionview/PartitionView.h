@@ -92,7 +92,6 @@ public:
 	void goto_slice();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
-	void segment_volume();
 
 	//#################### PRIVATE METHODS ####################
 private:

@@ -297,7 +297,7 @@ void PartitionWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
 
 void PartitionWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
-	m_view->segment_volume();
+	m_view->model()->segment_volume(this);
 }
 
 void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
