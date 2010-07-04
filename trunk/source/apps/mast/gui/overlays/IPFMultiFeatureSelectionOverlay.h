@@ -45,6 +45,9 @@ public:
 			}
 		}
 
+		RGBA32 bc = ITKImageUtil::make_rgba32(255,0,0,255);	// boundary colour
+		IPFOverlayTools::draw_boundaries(image, image, bc);
+
 		set_texture(TextureFactory::create_texture(image));
 	}
 };

@@ -5,6 +5,8 @@
 
 #include "IPFOverlayTools.h"
 
+#include <cassert>
+
 #include <itkImageRegionIterator.h>
 #include <itkShapedNeighborhoodIterator.h>
 #include <itkZeroFluxNeumannBoundaryCondition.h>
@@ -40,15 +42,17 @@ void calculate_slice_parameters(const itk::Size<3>& volumeSize, const SliceLocat
 	}
 }
 
-void draw_boundaries(RGBA32Image::Pointer image, const RGBA32& colour)
+void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer destImage, const RGBA32& colour)
 {
+	assert(sourceImage->GetLargestPossibleRegion().GetSize() == destImage->GetLargestPossibleRegion().GetSize());
+
 	typedef itk::Image<bool,2> BoundaryImage;
-	BoundaryImage::Pointer boundariesImage = ITKImageUtil::make_image<bool>(image->GetLargestPossibleRegion().GetSize());
+	BoundaryImage::Pointer boundariesImage = ITKImageUtil::make_image<bool>(sourceImage->GetLargestPossibleRegion().GetSize());
 
 	// Set up an iterator to traverse the image, whilst allowing us to access the neighbours of each pixel.
 	typedef itk::ConstShapedNeighborhoodIterator<RGBA32Image> NIT;
 	itk::Size<2> radius = {{1,1}};
-	NIT it(radius, image, image->GetLargestPossibleRegion());
+	NIT it(radius, sourceImage, sourceImage->GetLargestPossibleRegion());
 	std::vector<itk::Offset<2> > offsets = ITKImageUtil::make_4_connected_offsets();
 	for(std::vector<itk::Offset<2> >::const_iterator kt=offsets.begin(), kend=offsets.end(); kt!=kend; ++kt)
 	{
@@ -75,14 +79,14 @@ void draw_boundaries(RGBA32Image::Pointer image, const RGBA32& colour)
 		}
 	}
 
-	// Write the specified colour into the original image wherever there is a boundary.
-	itk::ImageRegionIterator<RGBA32Image> mainIt(image, image->GetLargestPossibleRegion());
+	// Write the specified colour into the destination image wherever there is a boundary.
+	itk::ImageRegionIterator<RGBA32Image> destIt(destImage, destImage->GetLargestPossibleRegion());
 	itk::ImageRegionIterator<BoundaryImage> boundariesIt(boundariesImage, boundariesImage->GetLargestPossibleRegion());
-	for(mainIt.GoToBegin(), boundariesIt.GoToBegin(); !mainIt.IsAtEnd(); ++mainIt, ++boundariesIt)
+	for(destIt.GoToBegin(), boundariesIt.GoToBegin(); !destIt.IsAtEnd(); ++destIt, ++boundariesIt)
 	{
 		if(boundariesIt.Get() == true)
 		{
-			mainIt.Set(colour);
+			destIt.Set(colour);
 		}
 	}
 }

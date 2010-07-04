@@ -35,9 +35,6 @@ public:
 			{
 				IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fc, false);
 			}
-
-			RGBA32 bc = ITKImageUtil::make_rgba32(255,0,0,255);		// boundary colour
-			IPFOverlayTools::draw_boundaries(image, bc);
 		}
 
 		set_texture(TextureFactory::create_texture(image));

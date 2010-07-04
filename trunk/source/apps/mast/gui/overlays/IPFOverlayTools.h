@@ -34,12 +34,17 @@ void calculate_slice_parameters(const itk::Size<3>& volumeSize, const SliceLocat
 								itk::Index<3>& sliceBegin, itk::Index<3>& sliceEnd, int& width, int& height);
 
 /**
-@brief	Draws the boundaries between regions of different colour in an image.
+@brief	Draws the boundaries between regions of different colour in a source image into a destination image.
 
-@param[in]	image	The image
-@param[in]	colour	The colour with which to draw the boundaries
+The source and destination are allowed to be the same image. Whether they are or not, however, they must be the same size.
+
+@param[in]	sourceImage		The source image
+@param[in]	destImage		The destination image
+@param[in]	colour			The colour with which to draw the boundaries
+@pre
+	-	sourceImage->GetLargestPossibleRegion().GetSize() == destImage->GetLargestPossibleRegion().GetSize()
 */
-void draw_boundaries(RGBA32Image::Pointer image, const RGBA32& colour);
+void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer destImage, const RGBA32& colour);
 
 //#################### TEMPLATE FUNCTIONS ####################
 /**
