@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_SELECTIONVIEW
 
 #include <map>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -85,6 +86,7 @@ public:
 
 		// Set up the columns.
 		add_column("Node ID");
+		add_column("Features");
 		std::vector<std::string> propertyNames = BranchProperties::property_names();
 		for(size_t i=0, size=propertyNames.size(); i<size; ++i)
 		{
@@ -117,12 +119,22 @@ private:
 		DeleteAllItems();
 
 		typename PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
+		typename PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
 		int index = 0;
 
 		typedef typename PartitionModelT::VolumeIPFSelectionT::NodeConstIterator Iter;
 		for(Iter it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it, ++index)
 		{
 			InsertItem(index, string_to_wxString(boost::lexical_cast<std::string>(*it)));
+
+			std::vector<Feature> features = multiFeatureSelection->features_of(*it);
+			std::ostringstream oss;
+			for(size_t j=0, size=features.size(); j<size; ++j)
+			{
+				oss << feature_name(features[j]);
+				if(j < size-1) oss << ", ";
+			}
+			SetItem(index, m_columnMap.find("Features")->second, string_to_wxString(oss.str()));
 
 			std::map<std::string,std::string> propertyMap = m_model->volume_ipf()->branch_properties(*it).property_map();
 			for(std::map<std::string,std::string>::const_iterator jt=propertyMap.begin(), jend=propertyMap.end(); jt!=jend; ++jt)
