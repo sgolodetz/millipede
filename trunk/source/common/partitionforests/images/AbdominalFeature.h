@@ -17,8 +17,15 @@ namespace AbdominalFeature {
 
 enum Enum
 {
+	AORTA,
+	INFERIOR_VENA_CAVA,
 	KIDNEY,
 	LIVER,
+	OTHER_ARTERY,
+	OTHER_VEIN,
+	SPINAL_CORD,
+	SPLEEN,
+	VERTEBRA,
 	COUNT,
 };
 
@@ -30,6 +37,7 @@ AbdominalFeature::Enum& operator++(AbdominalFeature::Enum& e);
 
 std::string feature_key(AbdominalFeature::Enum e);
 std::string feature_name(AbdominalFeature::Enum e);
+std::string feature_shortcut(AbdominalFeature::Enum e);
 
 }
 

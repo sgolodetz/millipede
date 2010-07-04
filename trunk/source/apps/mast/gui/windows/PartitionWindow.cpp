@@ -172,7 +172,9 @@ void PartitionWindow::setup_menus()
 			std::ostringstream oss;
 			oss << feature_name(featureTypes[i]);
 			std::string key = feature_key(featureTypes[i]);
-			if(key != "") oss << " (&" << key << ")\t" << key;
+			std::string shortcut = feature_shortcut(featureTypes[i]);
+			if(key != "") oss << " (&" << key << ")";
+			if(shortcut != "") oss << '\t' << shortcut;
 			toggleMenu->Append((MENUID_FEATURE_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
 	featureMenu->AppendSeparator();

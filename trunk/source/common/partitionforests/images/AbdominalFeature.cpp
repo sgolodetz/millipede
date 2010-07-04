@@ -9,7 +9,7 @@ namespace mp {
 
 template <> AbdominalFeature::Enum enum_begin()
 {
-	return AbdominalFeature::KIDNEY;
+	return AbdominalFeature::AORTA;
 }
 
 template <> AbdominalFeature::Enum enum_end()
@@ -28,9 +28,14 @@ std::string feature_key(AbdominalFeature::Enum e)
 	using namespace AbdominalFeature;
 	switch(e)
 	{
-		case KIDNEY:	return "K";
-		case LIVER:		return "L";
-		default:		return "";
+		case AORTA:					return "A";
+		case INFERIOR_VENA_CAVA:	return "V";
+		case KIDNEY:				return "K";
+		case LIVER:					return "L";
+		case SPINAL_CORD:			return "C";
+		case SPLEEN:				return "P";
+		case VERTEBRA:				return "S";
+		default:					return "";
 	}
 }
 
@@ -39,9 +44,27 @@ std::string feature_name(AbdominalFeature::Enum e)
 	using namespace AbdominalFeature;
 	switch(e)
 	{
-		case KIDNEY:	return "Kidney";
-		case LIVER:		return "Liver";
-		default:		return "";
+		case AORTA:					return "Aorta";
+		case INFERIOR_VENA_CAVA:	return "Inferior Vena Cava";
+		case KIDNEY:				return "Kidney";
+		case LIVER:					return "Liver";
+		case OTHER_ARTERY:			return "Other Artery";
+		case OTHER_VEIN:			return "Other Vein";
+		case SPINAL_CORD:			return "Spinal Cord";
+		case SPLEEN:				return "Spleen";
+		case VERTEBRA:				return "Vertebra";
+		default:					return "";
+	}
+}
+
+std::string feature_shortcut(AbdominalFeature::Enum e)
+{
+	using namespace AbdominalFeature;
+	switch(e)
+	{
+		case OTHER_ARTERY:	return "Shift+A";
+		case OTHER_VEIN:	return "Shift+V";
+		default:			return feature_key(e);
 	}
 }
 
