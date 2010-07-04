@@ -127,11 +127,6 @@ void PartitionWindow::setup_menus()
 	navigationMenu->Append(MENUID_NAVIGATION_CENTRECAMERA, wxT("&Centre Camera\tKP_5"));
 	navigationMenu->Append(MENUID_NAVIGATION_FITTOVIEW, wxT("&Fit to View\tCtrl+KP_5"));
 
-	wxMenu *selectionMenu = new wxMenu;
-	selectionMenu->Append(wxID_ANY, wxT("&Manage Selection..."));
-	selectionMenu->AppendSeparator();
-	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
-
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume..."));
 	segmentationMenu->AppendSeparator();
@@ -156,6 +151,14 @@ void PartitionWindow::setup_menus()
 		switchParentMenu->AppendSeparator();
 		switchParentMenu->Append(wxID_ANY, wxT("&Start Again"));
 
+	wxMenu *selectionMenu = new wxMenu;
+	wxMenu *selectMarkedMenu = new wxMenu;
+	selectionMenu->AppendSubMenu(selectMarkedMenu, wxT("&Select Marked"));
+		selectMarkedMenu->Append(wxID_ANY, wxT("&Kidney"));
+		// TODO: Other features (via iterating over the feature enumeration)
+	selectionMenu->AppendSeparator();
+	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
+
 	wxMenu *featureMenu = new wxMenu;
 	wxMenu *autoMarkMenu = new wxMenu;
 	featureMenu->AppendSubMenu(autoMarkMenu, wxT("&Automatically Mark"));
@@ -173,11 +176,6 @@ void PartitionWindow::setup_menus()
 			toggleMenu->Append((MENUID_FEATURE_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
 	featureMenu->AppendSeparator();
-	wxMenu *selectMarkedMenu = new wxMenu;
-	featureMenu->AppendSubMenu(selectMarkedMenu, wxT("&Select Marked"));
-		selectMarkedMenu->Append(wxID_ANY, wxT("&Kidney"));
-		// TODO: Other features (via iterating over the feature enumeration)
-	featureMenu->AppendSeparator();
 	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
@@ -191,8 +189,8 @@ void PartitionWindow::setup_menus()
 	m_menuBar->Append(fileMenu, wxT("&File"));
 	m_menuBar->Append(actionsMenu, wxT("&Actions"));
 	m_menuBar->Append(navigationMenu, wxT("&Navigation"));
-	m_menuBar->Append(selectionMenu, wxT("S&election"));
 	m_menuBar->Append(segmentationMenu, wxT("&Segmentation"));
+	m_menuBar->Append(selectionMenu, wxT("S&election"));
 	m_menuBar->Append(featureMenu, wxT("Feature &Identification"));
 	m_menuBar->Append(toolsMenu, wxT("&Tools"));
 	m_menuBar->Append(helpMenu, wxT("&Help"));
