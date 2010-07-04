@@ -17,7 +17,7 @@ Last Updated by Stuart Golodetz on 04/07/10
 
 	On Windows:
 
-	a) Open libraries\cpptest-1.1.1\win\VisualStudio.NET\VisualStudio.NET.sln.
+	a) Open libraries/cpptest-1.1.1/win/VisualStudio.NET/VisualStudio.NET.sln.
 	b) Open the properties dialog for the cpptest project.
 	   - Right-click on cpptest in Solution Explorer and choose "Properties".
 	c) Go to Configuration Properties -> C/C++ -> Code Generation.
@@ -30,7 +30,9 @@ Last Updated by Stuart Golodetz on 04/07/10
 
 	On Linux:
 
-	TODO
+	a) In libraries/cpptest-1.1.1, run:
+		"./configure --enable-shared=no --prefix=<full path to libraries/cpptest-1.1.1> --exec-prefix=<full path to libraries/cpptest-1.1.1>"
+	b) Run "make install".
 
 Notes:
 
