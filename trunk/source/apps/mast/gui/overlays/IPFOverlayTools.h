@@ -33,6 +33,14 @@ The bounding indices are 3D positions sliceBegin and sliceEnd such that precisel
 void calculate_slice_parameters(const itk::Size<3>& volumeSize, const SliceLocation& sliceLocation, SliceOrientation sliceOrientation,
 								itk::Index<3>& sliceBegin, itk::Index<3>& sliceEnd, int& width, int& height);
 
+/**
+@brief	Draws the boundaries between regions of different colour in an image.
+
+@param[in]	image	The image
+@param[in]	colour	The colour with which to draw the boundaries
+*/
+void draw_boundaries(RGBA32Image::Pointer image, const RGBA32& colour);
+
 //#################### TEMPLATE FUNCTIONS ####################
 /**
 @brief	Draws a node in a volume IPF onto an image corresponding to a slice through the volume the IPF represents.
