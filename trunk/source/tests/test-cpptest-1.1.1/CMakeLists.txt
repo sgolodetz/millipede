@@ -30,9 +30,9 @@ INCLUDE(${millipede_SOURCE_DIR}/UseCppTest.cmake)
 
 INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 
-###########################################
-# Specify the necessary libraries to link #
-###########################################
+#################################
+# Specify the libraries to link #
+#################################
 
 INCLUDE(${millipede_SOURCE_DIR}/LinkCppTest.cmake)
 

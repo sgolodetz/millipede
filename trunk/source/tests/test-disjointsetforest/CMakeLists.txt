@@ -22,9 +22,13 @@ SOURCE_GROUP(.cpp FILES ${sources})
 # Specify the necessary paths #
 ###############################
 
-INCLUDE_DIRECTORIES(
-${millipede_SOURCE_DIR}
-)
+INCLUDE_DIRECTORIES(${millipede_SOURCE_DIR})
+
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${millipede_SOURCE_DIR}/UseCppTest.cmake)
 
 ##########################################
 # Specify the target and where to put it #
@@ -32,11 +36,12 @@ ${millipede_SOURCE_DIR}
 
 INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 
-###########################################
-# Specify the necessary libraries to link #
-###########################################
+#################################
+# Specify the libraries to link #
+#################################
 
 TARGET_LINK_LIBRARIES(${targetname} common)
+INCLUDE(${millipede_SOURCE_DIR}/LinkCppTest.cmake)
 
 #############################
 # Specify things to install #
