@@ -56,13 +56,14 @@ void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer dest
 @param[in]	sliceBegin			The lower bounding index of the slice
 @param[in]	sliceEnd			The upper bounding index of the slice
 @param[in]	sliceOrientation	The orientation of the slice (XY, XZ or YZ)
-@param[in]	colour				The colour with which to draw the node
-@param[in]	boundariesOnly		Whether or not to draw just the boundary of the node
+@param[in]	fillColour			The colour with which to fill the node (if any)
+@param[in]	boundaryColour		The colour with which to draw the boundaries of the node (if any)
+@param[in]	hatchingColour		The colour with which to draw hatching on the node (if any)
 */
 template <typename VolumeIPF_CPtr>
 void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Image::Pointer image,
 			   const itk::Index<3>& sliceBegin, const itk::Index<3>& sliceEnd, SliceOrientation sliceOrientation,
-			   const RGBA32& colour, bool boundariesOnly)
+			   const boost::optional<RGBA32>& fillColour, const boost::optional<RGBA32>& boundaryColour, const boost::optional<RGBA32>& hatchingColour)
 {
 	std::deque<int> receptiveRegion = volumeIPF->receptive_region_of(node);
 	for(std::deque<int>::const_iterator it=receptiveRegion.begin(), iend=receptiveRegion.end(); it!=iend; ++it)
@@ -77,9 +78,10 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 			continue;
 		}
 
-		if(boundariesOnly)
+		// If there's a boundary colour, determine whether this pixel is a boundary.
+		bool boundary = false;
+		if(boundaryColour)
 		{
-			bool boundary = false;
 			std::vector<itk::Offset<3> > offsets = ITKImageUtil::make_4_connected_offsets(sliceOrientation);
 			for(size_t i=0, size=offsets.size(); i<size; ++i)
 			{
@@ -89,7 +91,6 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 					break;
 				}
 			}
-			if(!boundary) continue;
 		}
 
 		// Project the position into image coordinates.
@@ -101,8 +102,21 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 			case ORIENT_YZ:	imagePos[0] = volumePos[1]; imagePos[1] = volumePos[2]; break;
 		}
 
+		// If there's a hatching colour, determine whether this pixel is on a hatching line.
+		bool hatching = false;
+		if(hatchingColour)
+		{
+			// We want to draw diagonal hatching of the form y = -x + c (bear in mind that +y is down the screen).
+			const int LINE_SPACING = 20;
+			const int LINE_HALF_THICKNESS = 1;
+			int c = imagePos[0] + imagePos[1];
+			hatching = abs(c % LINE_SPACING) <= LINE_HALF_THICKNESS;
+		}
+
 		// Draw the pixel.
-		image->SetPixel(imagePos, colour);
+		if(boundary)			image->SetPixel(imagePos, *boundaryColour);
+		else if(hatching)		image->SetPixel(imagePos, *hatchingColour);
+		else if(fillColour)		image->SetPixel(imagePos, *fillColour);
 	}
 }
 

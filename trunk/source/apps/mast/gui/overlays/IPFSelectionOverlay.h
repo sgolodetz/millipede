@@ -29,11 +29,12 @@ public:
 
 		if(sliceLocation.layer <= volumeIPF->highest_layer())
 		{
-			RGBA32 fc = ITKImageUtil::make_rgba32(255,0,0,50);		// fill colour
-			typedef typename VolumeIPFSelection<LeafLayer,BranchLayer>::NodeConstIterator Iter;
-			for(Iter it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+			RGBA32 fillColour = ITKImageUtil::make_rgba32(255,0,0,50);
+			RGBA32 boundaryColour = ITKImageUtil::make_rgba32(255,0,0,255);
+			typedef typename VolumeIPFSelection<LeafLayer,BranchLayer>::ViewNodeConstIterator Iter;
+			for(Iter it=selection->view_at_layer_cbegin(sliceLocation.layer), iend=selection->view_at_layer_cend(sliceLocation.layer); it!=iend; ++it)
 			{
-				IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fc, false);
+				IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fillColour, boundaryColour, boost::none);
 			}
 		}
 

@@ -36,17 +36,16 @@ public:
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			PartitionForestSelection_CPtr selection = multiFeatureSelection->selection(featureTypes[i]);
-			RGBA32 colour = colourMap.contains(featureTypes[i]) ? *colourMap.get(featureTypes[i]) : ITKImageUtil::make_rgba32(255,0,255,255);
+			RGBA32 fillColour = colourMap.contains(featureTypes[i]) ? *colourMap.get(featureTypes[i]) : ITKImageUtil::make_rgba32(255,0,255,255);
+			RGBA32 hatchingColour = fillColour;
+			hatchingColour[3] = 200;	// set the alpha value to a reasonably high value (fill colours for features tend to be relatively transparent)
 
 			typedef typename PartitionForestSelectionT::NodeConstIterator Iter;
 			for(Iter jt=selection->nodes_cbegin(), jend=selection->nodes_cend(); jt!=jend; ++jt)
 			{
-				IPFOverlayTools::draw_node(volumeIPF, *jt, image, sliceBegin, sliceEnd, sliceOrientation, colour, false);
+				IPFOverlayTools::draw_node(volumeIPF, *jt, image, sliceBegin, sliceEnd, sliceOrientation, fillColour, boost::none, hatchingColour);
 			}
 		}
-
-		RGBA32 bc = ITKImageUtil::make_rgba32(255,0,0,255);	// boundary colour
-		IPFOverlayTools::draw_boundaries(image, image, bc);
 
 		set_texture(TextureFactory::create_texture(image));
 	}
