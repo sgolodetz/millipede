@@ -3,7 +3,7 @@
 ##################
 
 SET(Boost_ADDITIONAL_VERSIONS "1.39" "1.39.0")
-SET(BOOST_ROOT ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0)
+SET(BOOST_ROOT ${millipede_SOURCE_DIR}/../libraries/boost_1_39_0 CACHE PATH "The location of the Boost root directory")
 SET(Boost_USE_STATIC_LIBS ON)
 FIND_PACKAGE(Boost 1.39.0 REQUIRED COMPONENTS thread)
 IF(Boost_FOUND)
