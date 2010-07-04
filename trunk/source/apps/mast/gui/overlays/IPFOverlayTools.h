@@ -65,6 +65,8 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 			   const itk::Index<3>& sliceBegin, const itk::Index<3>& sliceEnd, SliceOrientation sliceOrientation,
 			   const boost::optional<RGBA32>& fillColour, const boost::optional<RGBA32>& boundaryColour, const boost::optional<RGBA32>& hatchingColour)
 {
+	std::vector<itk::Offset<3> > offsets = ITKImageUtil::make_4_connected_offsets(sliceOrientation);
+
 	std::deque<int> receptiveRegion = volumeIPF->receptive_region_of(node);
 	for(std::deque<int>::const_iterator it=receptiveRegion.begin(), iend=receptiveRegion.end(); it!=iend; ++it)
 	{
@@ -82,7 +84,6 @@ void draw_node(const VolumeIPF_CPtr& volumeIPF, const PFNodeID& node, RGBA32Imag
 		bool boundary = false;
 		if(boundaryColour)
 		{
-			std::vector<itk::Offset<3> > offsets = ITKImageUtil::make_4_connected_offsets(sliceOrientation);
 			for(size_t i=0, size=offsets.size(); i<size; ++i)
 			{
 				if(volumeIPF->node_of(node.layer(), volumePos + offsets[i]) != node)

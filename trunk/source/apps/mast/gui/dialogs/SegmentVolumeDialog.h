@@ -140,6 +140,7 @@ protected:
 		strings[SEGTYPE_3D] = wxT("Segment as 3D &Volume");
 		strings[SEGTYPE_CUSTOM] = wxT("Segment using C&ustomised Sub-Volume Size");
 		m_segmentationType = new wxRadioBox(panel, RADIOBOXID_SEGMENTATIONTYPE, wxT("Segmentation Type"), wxDefaultPosition, wxDefaultSize, SEGTYPE_COUNT, strings, 1, wxRA_SPECIFY_COLS);
+		m_segmentationType->SetSelection(SEGTYPE_3D);
 		sizer->Add(m_segmentationType, 0, wxALIGN_CENTER_HORIZONTAL);
 
 		sizer->AddSpacer(10);
@@ -157,7 +158,7 @@ protected:
 		for(int i=0; i<3; ++i)
 		{
 			subvolumeSizer->Add(new wxStaticText(subvolumePanel, wxID_ANY, captions[i]));
-			int initial = i != 2 ? m_volumeSize[i] : 1;
+			int initial = m_volumeSize[i];
 			wxString initialValue = string_to_wxString(boost::lexical_cast<std::string>(initial));
 			m_subvolumeSizes[i] = new wxSpinCtrl(subvolumePanel, SPINID_GRIDSIZE, initialValue, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, m_volumeSize[i], initial);
 			subvolumeSizer->Add(m_subvolumeSizes[i]);
