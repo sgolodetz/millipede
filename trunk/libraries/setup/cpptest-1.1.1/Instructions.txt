@@ -1,0 +1,37 @@
+cpptest 1.1.1 Setup Instructions
+Last Updated by Stuart Golodetz on 04/07/10
+-------------------------------------------
+
+1. Extract cpptest-1.1.1.tar.gz into the libraries directory.
+
+	On Windows:
+
+	a) Just extract it using something like the shareware version of WinRAR.
+
+	On Linux:
+
+	a) Change to the libraries directory.
+	b) Run "tar xzf setup/cpptest-1.1.1/cpptest-1.1.1.tar.gz".
+
+2. Build cpptest.
+
+	On Windows:
+
+	a) Open libraries\cpptest-1.1.1\win\VisualStudio.NET\VisualStudio.NET.sln.
+	b) Open the properties dialog for the cpptest project.
+	   - Right-click on cpptest in Solution Explorer and choose "Properties".
+	c) Go to Configuration Properties -> C/C++ -> Code Generation.
+	d) Set the appropriate Runtime Library for each configuration.
+	   - You can choose which configuration to edit from the drop-down box at the top.
+	   - For Release, the appropriate Runtime Library is Multi-threaded DLL.
+	   - For Debug, it's Multi-threaded Debug DLL.
+	e) Repeat steps (b)-(d) for the test project.
+	f) Build the solution for both Debug and Release configurations.
+
+	On Linux:
+
+	TODO
+
+Notes:
+
+* The provided .sln file is for an older version of Visual Studio and will need to be converted if you open it in a newer version. This (trivial) process is handled automatically by a Visual Studio wizard (just follow the on-screen instructions).
