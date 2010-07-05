@@ -11,6 +11,7 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
+#include <common/featureid/multilayer/MultilayerNodeScorer_Kidney.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/segmentation/DICOMLowestLayersBuilder.h>
 #include <common/segmentation/VolumeIPFBuilder.h>
@@ -19,6 +20,7 @@
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
+#include <mast/gui/overlays/MultilayerNodeScorerOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
@@ -183,6 +185,11 @@ void PartitionView::goto_slice()
 	}
 }
 
+void PartitionView::iterate_multilayer_node_scorer()
+{
+	// TODO
+}
+
 const PartitionView::PartitionModel_Ptr& PartitionView::model()
 {
 	return m_model;
@@ -191,6 +198,11 @@ const PartitionView::PartitionModel_Ptr& PartitionView::model()
 PartitionView::PartitionModel_CPtr PartitionView::model() const
 {
 	return m_model;
+}
+
+void PartitionView::reset_multilayer_node_scorer()
+{
+	// TODO
 }
 
 void PartitionView::segment_volume()
@@ -254,6 +266,7 @@ void PartitionView::create_dicom_textures()
 void PartitionView::create_overlays()
 {
 	m_overlayManager->clear_overlays();
+	m_overlayManager->insert_overlay_at_top("MultilayerNodeScorer", multilayer_node_scorer_overlay());
 	m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", multi_feature_selection_overlay());
 	m_overlayManager->insert_overlay_at_top("IPFSelection", selection_overlay());
 }
@@ -348,6 +361,24 @@ PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 	else return NULL;
 }
 
+PartitionOverlay *PartitionView::multilayer_node_scorer_overlay() const
+{
+	typedef MultilayerNodeScorer<LeafLayer,BranchLayer> MultilayerNodeScorerT;
+	typedef boost::shared_ptr<MultilayerNodeScorerT> MultilayerNodeScorer_Ptr;
+	typedef MultilayerNodeScorer_Kidney<LeafLayer,BranchLayer> MultilayerNodeScorer_KidneyT;
+	typedef MultilayerNodeScorerOverlay<LeafLayer,BranchLayer> MultilayerNodeScorerOverlayT;
+
+	PartitionModelT::VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(volumeIPF)
+	{
+		SliceLocation loc = m_camera->slice_location();
+		SliceOrientation ori = m_camera->slice_orientation();
+		MultilayerNodeScorer_Ptr scorer(new MultilayerNodeScorer_KidneyT(volumeIPF));
+		return new MultilayerNodeScorerOverlayT(scorer, volumeIPF, loc, ori);
+	}
+	else return NULL;
+}
+
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
 {
 	return m_overlayManager;
@@ -365,9 +396,15 @@ void PartitionView::recreate_multi_feature_selection_overlay()
 	m_overlayManager->replace_overlay("IPFMultiFeatureSelection", multi_feature_selection_overlay());
 }
 
+void PartitionView::recreate_multilayer_node_scorer_overlay()
+{
+	m_overlayManager->replace_overlay("MultilayerNodeScorer", multilayer_node_scorer_overlay());
+}
+
 void PartitionView::recreate_overlays()
 {
 	recreate_multi_feature_selection_overlay();
+	recreate_multilayer_node_scorer_overlay();
 	recreate_selection_overlay();
 }
 

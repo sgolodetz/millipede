@@ -221,12 +221,12 @@ void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 
 void PartitionWindow::OnMenuFeatureMultilayerNodeScorerIterate(wxCommandEvent&)
 {
-	// TODO
+	m_view->iterate_multilayer_node_scorer();
 }
 
 void PartitionWindow::OnMenuFeatureMultilayerNodeScorerReset(wxCommandEvent&)
 {
-	// TODO
+	m_view->reset_multilayer_node_scorer();
 }
 
 void PartitionWindow::OnMenuFeatureToggle(wxCommandEvent& e)

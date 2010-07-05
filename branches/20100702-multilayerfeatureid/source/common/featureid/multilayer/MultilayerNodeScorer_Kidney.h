@@ -28,7 +28,12 @@ public:
 private:
 	double calculate_score(const BranchProperties& properties) const
 	{
+#if 0
 		return this->gaussian_minmax(properties.mean_grey_value(), 165, 175);
+#else
+		double offset = fabs(properties.mean_grey_value() - 170);
+		return std::max(1 - offset / 10.0, 0.0);
+#endif
 	}
 };
 

@@ -58,9 +58,10 @@ public:
 		typedef typename BranchLayer::BranchNodeConstIterator Iter;
 		for(Iter it=m_forest->branch_nodes_cbegin(highestLayer), iend=m_forest->branch_nodes_cend(highestLayer); it!=iend; ++it)
 		{
-			propagate_scores_up(*it);
+			PFNodeID node(highestLayer, it.index());
+			propagate_scores_up(node);
 			normalize_scores();
-			propagate_scores_down(*it);
+			propagate_scores_down(node);
 			normalize_scores();
 		}
 	}
@@ -108,7 +109,7 @@ private:
 		if(cur.layer() > 1)
 		{
 			std::set<PFNodeID> children = m_forest->children_of(cur);
-			for(std::list<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
+			for(std::set<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
 			{
 				propagate_scores_down(*it, score);
 			}

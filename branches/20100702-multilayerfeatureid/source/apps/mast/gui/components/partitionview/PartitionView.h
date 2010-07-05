@@ -43,7 +43,10 @@ class PartitionView : public wxPanel
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef DICOMImageBranchLayer BranchLayer;
+	typedef AbdominalFeature::Enum Feature;
+	typedef DICOMImageLeafLayer LeafLayer;
+	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
@@ -91,8 +94,10 @@ public:
 	void fit_image_to_view();
 	wxGLContext *get_context() const;
 	void goto_slice();
+	void iterate_multilayer_node_scorer();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
+	void reset_multilayer_node_scorer();
 	void segment_volume();
 
 	//#################### PRIVATE METHODS ####################
@@ -106,9 +111,11 @@ private:
 	Job_Ptr fill_partition_textures_job(SliceOrientation ori) const;
 	void fill_textures(SliceOrientation ori);
 	PartitionOverlay *multi_feature_selection_overlay() const;
+	PartitionOverlay *multilayer_node_scorer_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_multi_feature_selection_overlay();
+	void recreate_multilayer_node_scorer_overlay();
 	void recreate_overlays();
 	void recreate_selection_overlay();
 	void refresh_canvases();

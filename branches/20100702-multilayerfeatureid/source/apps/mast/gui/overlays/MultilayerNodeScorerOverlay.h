@@ -19,7 +19,7 @@ class MultilayerNodeScorerOverlay : public PartitionOverlay
 	//#################### TYPEDEFS ####################
 private:
 	typedef MultilayerNodeScorer<LeafLayer,BranchLayer> MultilayerNodeScorerT;
-	typedef boost::shared_ptr<MultilayerNodeScorer> MultilayerNodeScorer_Ptr;
+	typedef boost::shared_ptr<MultilayerNodeScorerT> MultilayerNodeScorer_Ptr;
 	typedef typename MultilayerNodeScorerT::Scores Scores;
 	typedef boost::shared_ptr<const VolumeIPF<LeafLayer,BranchLayer> > VolumeIPF_CPtr;
 
@@ -34,7 +34,8 @@ public:
 								const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
 	:	m_scorer(scorer), m_volumeIPF(volumeIPF)
 	{
-		iterate(sliceLocation, sliceOrientation);
+		for(int i=0; i<10; ++i) iterate();
+		recreate_texture(sliceLocation, sliceOrientation);
 	}
 
 	//#################### PUBLIC METHODS ####################
@@ -55,6 +56,8 @@ public:
 		const Scores& scores = m_scorer->scores();
 		for(typename Scores::const_iterator it=scores.begin(), iend=scores.end(); it!=iend; ++it)
 		{
+			if(it->first.layer() != sliceLocation.layer) continue;
+
 			int k = NumericUtil::round_to_nearest<int>(255 * it->second);
 			if(k < 0) k = 0;
 			if(k > 255) k = 255;
