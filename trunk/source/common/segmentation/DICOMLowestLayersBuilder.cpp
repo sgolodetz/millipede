@@ -77,7 +77,7 @@ void DICOMLowestLayersBuilder::execute()
 	{
 		ADFilter::Pointer adFilter = ADFilter::New();
 		adFilter->SetInput(realImage);
-		adFilter->SetConductanceParameter(1.0);
+		adFilter->SetConductanceParameter(m_segmentationOptions.adfConductance);
 		adFilter->SetNumberOfIterations(1);
 		adFilter->SetTimeStep(0.0625);
 		adFilter->Update();

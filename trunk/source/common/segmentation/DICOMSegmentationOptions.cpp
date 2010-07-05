@@ -8,9 +8,15 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-DICOMSegmentationOptions::DICOMSegmentationOptions(int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_,
+DICOMSegmentationOptions::DICOMSegmentationOptions(double adfConductance_, int adfIterations_, InputType inputType_,
+												   const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_,
 												   const WindowSettings& windowSettings_)
-:	adfIterations(adfIterations_), inputType(inputType_), subvolumeSize(subvolumeSize_), waterfallLayerLimit(waterfallLayerLimit_), windowSettings(windowSettings_)
+:	adfConductance(adfConductance_),
+	adfIterations(adfIterations_),
+	inputType(inputType_),
+	subvolumeSize(subvolumeSize_),
+	waterfallLayerLimit(waterfallLayerLimit_),
+	windowSettings(windowSettings_)
 {}
 
 }

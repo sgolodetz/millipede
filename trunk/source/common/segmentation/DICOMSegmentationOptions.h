@@ -23,6 +23,7 @@ struct DICOMSegmentationOptions
 	};
 
 	//#################### PUBLIC VARIABLES ####################
+	double adfConductance;
 	int adfIterations;
 	InputType inputType;
 	itk::Size<3> subvolumeSize;
@@ -30,7 +31,7 @@ struct DICOMSegmentationOptions
 	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-	DICOMSegmentationOptions(int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
+	DICOMSegmentationOptions(double adfConductance_, int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
 };
 
 }

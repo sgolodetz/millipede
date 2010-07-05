@@ -209,12 +209,12 @@ wxPanel *VolumeChooserDialog::create_advanced_page(wxWindow *parent)
 	windowControls->SetSizer(windowControlsSizer);
 		wxStaticText *windowCentreLabel = new wxStaticText(windowControls, wxID_ANY, wxT("Window Centre:"));
 		windowControlsSizer->Add(windowCentreLabel);
-		m_windowCentre = new wxTextCtrl(windowControls, TEXTID_WINDOWCENTRE);
+		m_windowCentre = new wxTextCtrl(windowControls, TEXTID_WINDOWCENTRE, wxT("40"));
 		windowControlsSizer->Add(m_windowCentre);
 
 		wxStaticText *windowWidthLabel = new wxStaticText(windowControls, wxID_ANY, wxT("Window Width:"));
 		windowControlsSizer->Add(windowWidthLabel);
-		m_windowWidth = new wxTextCtrl(windowControls, TEXTID_WINDOWWIDTH);
+		m_windowWidth = new wxTextCtrl(windowControls, TEXTID_WINDOWWIDTH, wxT("400"));
 		windowControlsSizer->Add(m_windowWidth);
 	sizer->Add(windowControls);
 

@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_SEGMENTDICOMVOLUMEDIALOG
 #define H_MILLIPEDE_SEGMENTDICOMVOLUMEDIALOG
 
+#include <wx/textctrl.h>
+
 #include <common/segmentation/DICOMSegmentationOptions.h>
 #include "SegmentVolumeDialog.h"
 
@@ -17,6 +19,7 @@ class SegmentDICOMVolumeDialog : public SegmentVolumeDialog<DICOMSegmentationOpt
 private:
 	WindowSettings m_windowSettings;
 
+	wxTextCtrl *m_adfConductance;
 	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_inputType;
 	wxSpinCtrl *m_waterfallLayerLimit;

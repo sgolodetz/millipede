@@ -5,6 +5,10 @@
 
 #include "SegmentDICOMVolumeDialog.h"
 
+#include <boost/lexical_cast.hpp>
+using boost::bad_lexical_cast;
+using boost::lexical_cast;
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -19,8 +23,20 @@ bool SegmentDICOMVolumeDialog::construct_segmentation_options()
 {
 	itk::Size<3> subvolumeSize;
 	if(!construct_subvolume_size(subvolumeSize)) return false;
+
+	double adfConductance;
+	try
+	{
+		adfConductance = lexical_cast<double>(m_adfConductance->GetValue());
+	}
+	catch(bad_lexical_cast&)
+	{
+		wxMessageBox(wxT("Error: The ADF conductance must be a decimal number."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+		return false;
+	}
+
 	DICOMSegmentationOptions::InputType inputType = DICOMSegmentationOptions::InputType(m_inputType->GetSelection());
-	m_segmentationOptions = DICOMSegmentationOptions(m_adfIterations->GetValue(), inputType, subvolumeSize, m_waterfallLayerLimit->GetValue(), m_windowSettings);
+	m_segmentationOptions = DICOMSegmentationOptions(adfConductance, m_adfIterations->GetValue(), inputType, subvolumeSize, m_waterfallLayerLimit->GetValue(), m_windowSettings);
 	return true;
 }
 
@@ -41,17 +57,21 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 
 	sizer->AddSpacer(10);
 
-	// Set up the spin control to select the number of anisotropic diffusion filtering iterations.
+	// Set up the panel that allows the user to set the parameters for anisotropic diffusion filtering.
 	wxPanel *filteringPanel = new wxPanel(panel);
 	sizer->Add(filteringPanel);
 	wxGridSizer *filteringSizer = new wxGridSizer(0, 2, 0, 0);
 	filteringPanel->SetSizer(filteringSizer);
 
+	filteringSizer->Add(new wxStaticText(filteringPanel, wxID_ANY, wxT("ADF Conductance:")));
+	m_adfConductance = new wxTextCtrl(filteringPanel, wxID_ANY, wxT("1.0"));
+	filteringSizer->Add(m_adfConductance);
+
 	filteringSizer->Add(new wxStaticText(filteringPanel, wxID_ANY, wxT("ADF Iterations:")));
 	m_adfIterations = new wxSpinCtrl(filteringPanel, wxID_ANY, wxT("20"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 20);
 	filteringSizer->Add(m_adfIterations);
 
-	// Set up the spin control to select a waterfall layer limit.
+	// Set up the spin control that allows the user to select a waterfall layer limit.
 	wxPanel *waterfallPanel = new wxPanel(panel);
 	sizer->Add(waterfallPanel);
 	wxGridSizer *waterfallSizer = new wxGridSizer(0, 2, 0, 0);
