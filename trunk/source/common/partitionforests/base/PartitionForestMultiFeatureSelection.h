@@ -156,7 +156,7 @@ public:
 
 	void identify_node(const PFNodeID& node, const Feature& feature)
 	{
-		selection(feature)->select_node(node);
+		selection_internal(feature)->select_node(node);
 	}
 
 	PartitionForestSelection_CPtr selection(const Feature& feature) const
@@ -184,7 +184,7 @@ public:
 
 	void toggle_node(const PFNodeID& node, const Feature& feature)
 	{
-		selection(feature)->toggle_node(node);
+		selection_internal(feature)->toggle_node(node);
 	}
 
 	void toggle_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
@@ -198,15 +198,14 @@ public:
 
 	void unidentify_node(const PFNodeID& node, const Feature& feature)
 	{
-		selection(feature)->deselect_node(node);
+		selection_internal(feature)->deselect_node(node);
 	}
 
 	//#################### PRIVATE METHODS ####################
 private:
-	PartitionForestSelection_Ptr selection(const Feature& feature)
+	PartitionForestSelection_Ptr selection_internal(const Feature& feature)
 	{
-		PartitionForestSelection_CPtr s = const_cast<const PartitionForestMultiFeatureSelectionT*>(this)->selection(feature);
-		return boost::const_pointer_cast<PartitionForestSelectionT>(s);
+		return boost::const_pointer_cast<PartitionForestSelectionT>(selection(feature));
 	}
 };
 

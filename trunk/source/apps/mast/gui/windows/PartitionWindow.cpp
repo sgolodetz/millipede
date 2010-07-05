@@ -42,6 +42,8 @@ enum
 	MENUID_NAVIGATION_ZOOMOUT,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SELECTION_CLEARSELECTION,
+	MENUID_SELECTION_SELECTMARKED_BASE,
+	MENUID_SELECTION_SELECTMARKED_LAST = (MENUID_SELECTION_SELECTMARKED_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_TOOLS_QUANTIFYFEATUREVOLUMES,
 	MENUID_TOOLS_VISUALIZEIN3D,
 };
@@ -70,9 +72,17 @@ void PartitionWindow::connect_special_menu_items()
 	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
 	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 	{
-		int id = (MENUID_FEATURE_TOGGLE_BASE+1) + i;
-		Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureToggle));
-		Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
+		{
+			int id = (MENUID_FEATURE_TOGGLE_BASE+1) + i;
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureToggle));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
+		}
+
+		{
+			int id = (MENUID_SELECTION_SELECTMARKED_BASE+1) + i;
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuSelectionSelectMarked));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateMenuSelectionSelectMarked));
+		}
 	}
 }
 
@@ -98,6 +108,8 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 
 void PartitionWindow::setup_menus()
 {
+	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
+
 	wxMenu *fileMenu = new wxMenu;
 	fileMenu->Append(wxID_ANY, wxT("&Save\tCtrl+S"));
 	fileMenu->Append(wxID_ANY, wxT("Save &As..."));
@@ -131,8 +143,14 @@ void PartitionWindow::setup_menus()
 	wxMenu *selectionMenu = new wxMenu;
 	wxMenu *selectMarkedMenu = new wxMenu;
 	selectionMenu->AppendSubMenu(selectMarkedMenu, wxT("&Select Marked"));
-		selectMarkedMenu->Append(wxID_ANY, wxT("&Kidney"));
-		// TODO: Other features (via iterating over the feature enumeration)
+		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+		{
+			std::ostringstream oss;
+			oss << feature_name(featureTypes[i]);
+			std::string key = feature_key(featureTypes[i]);
+			if(key != "") oss << " (&" << key << ")";
+			selectMarkedMenu->Append((MENUID_SELECTION_SELECTMARKED_BASE+1) + i, string_to_wxString(oss.str()));
+		}
 	selectionMenu->AppendSeparator();
 	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
 
@@ -167,7 +185,6 @@ void PartitionWindow::setup_menus()
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
 	wxMenu *toggleMenu = new wxMenu;
 	featureMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selected Nodes"));
-		std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			std::ostringstream oss;
@@ -307,6 +324,11 @@ void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 	m_model->selection()->clear();
 }
 
+void PartitionWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
+{
+	// TODO
+}
+
 void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 {
 	FeatureVolumesDialog dialog(this, PartitionModel_CPtr(m_model));
@@ -370,6 +392,12 @@ void PartitionWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)
 void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->camera()->has_previous_slice());
+}
+
+void PartitionWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
+{
+	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
+	e.Enable(m_model->multi_feature_selection() && !m_model->multi_feature_selection()->selection(feature)->empty());
 }
 
 void PartitionWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
