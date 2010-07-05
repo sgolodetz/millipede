@@ -6,102 +6,84 @@
 #include <iostream>
 #include <string>
 
-#include <cpptest.h>
+#define BOOST_TEST_MODULE Disjoint Set Forest Test
+#include <boost/test/included/unit_test.hpp>
 
 #include <common/adts/DisjointSetForest.h>
 using namespace mp;
 
-struct DSFTestSuite : Test::Suite
+BOOST_AUTO_TEST_CASE(add_element_test)
 {
-	DSFTestSuite()
-	{
-		TEST_ADD(DSFTestSuite::test_add_element)
-		TEST_ADD(DSFTestSuite::test_add_elements)
-		TEST_ADD(DSFTestSuite::test_find_set)
-		TEST_ADD(DSFTestSuite::test_union_sets)
-	}
+	DisjointSetForest<std::string> dsf;
+	dsf.add_element(0, "a");
+		BOOST_CHECK_EQUAL(dsf.element_count(), 1);
+		BOOST_CHECK_EQUAL(dsf.set_count(), 1);
+		BOOST_CHECK_EQUAL(dsf.find_set(0), 0);
+		BOOST_CHECK_EQUAL(dsf.value_of(0), "a");
+	dsf.add_element(2, "c");
+		BOOST_CHECK_EQUAL(dsf.element_count(), 2);
+		BOOST_CHECK_EQUAL(dsf.set_count(), 2);
+		BOOST_CHECK_EQUAL(dsf.find_set(2), 2);
+		BOOST_CHECK_EQUAL(dsf.value_of(2), "c");
+}
 
-	void test_add_element()
-	{
-		DisjointSetForest<std::string> dsf;
-		dsf.add_element(0, "a");
-			TEST_ASSERT(dsf.element_count() == 1);
-			TEST_ASSERT(dsf.set_count() == 1);
-			TEST_ASSERT(dsf.find_set(0) == 0);
-			TEST_ASSERT(dsf.value_of(0) == "a");
-		dsf.add_element(2, "c");
-			TEST_ASSERT(dsf.element_count() == 2);
-			TEST_ASSERT(dsf.set_count() == 2);
-			TEST_ASSERT(dsf.find_set(2) == 2);
-			TEST_ASSERT(dsf.value_of(2) == "c");
-	}
-
-	void test_add_elements()
-	{
-		DisjointSetForest<std::string> dsf;
-		std::map<int,std::string> elements;
-		elements[23] = "s";
-		elements[9] = "m";
-		elements[84] = "g";
-		dsf.add_elements(elements);
-			TEST_ASSERT(dsf.element_count() == 3);
-			TEST_ASSERT(dsf.set_count() == 3);
-			TEST_ASSERT(dsf.find_set(23) == 23);
-			TEST_ASSERT(dsf.find_set(9) == 9);
-			TEST_ASSERT(dsf.find_set(84) == 84);
-			TEST_ASSERT(dsf.value_of(23) == "s");
-			TEST_ASSERT(dsf.value_of(9) == "m");
-			TEST_ASSERT(dsf.value_of(84) == "g");
-	}
-
-	void test_find_set()
-	{
-		DisjointSetForest<std::string> dsf;
-			TEST_THROWS(dsf.find_set(17), Exception);
-			TEST_THROWS(dsf.find_set(10), Exception);
-		dsf.add_element(17, "s");
-			TEST_ASSERT(dsf.find_set(17) == 17);
-			TEST_THROWS(dsf.find_set(10), Exception);
-		dsf.add_element(10, "g");
-			TEST_ASSERT(dsf.find_set(17) == 17);
-			TEST_ASSERT(dsf.find_set(10) == 10);
-	}
-
-	void test_union_sets()
-	{
-		DisjointSetForest<std::string> dsf;
-		dsf.add_element(23, "s");
-		dsf.add_element(9, "m");
-		dsf.add_element(84, "g");
-			TEST_ASSERT(dsf.element_count() == 3);
-			TEST_ASSERT(dsf.set_count() == 3);
-			TEST_ASSERT(dsf.find_set(23) == 23);
-			TEST_ASSERT(dsf.find_set(9) == 9);
-			TEST_ASSERT(dsf.find_set(84) == 84);
-		dsf.union_sets(23, 84);
-			TEST_ASSERT(dsf.element_count() == 3);
-			TEST_ASSERT(dsf.set_count() == 2);
-			TEST_ASSERT(dsf.find_set(23) == dsf.find_set(84));
-			TEST_ASSERT(dsf.find_set(23) == 23 || dsf.find_set(23) == 84);
-			TEST_ASSERT(dsf.find_set(9) == 9);
-			TEST_ASSERT(dsf.value_of(23) == "s");
-			TEST_ASSERT(dsf.value_of(9) == "m");
-			TEST_ASSERT(dsf.value_of(84) == "g");
-		dsf.union_sets(84, 9);
-			TEST_ASSERT(dsf.element_count() == 3);
-			TEST_ASSERT(dsf.set_count() == 1);
-			TEST_ASSERT(dsf.find_set(9) == dsf.find_set(84) && dsf.find_set(84) == dsf.find_set(23));
-			TEST_ASSERT(dsf.find_set(9) == 9 || dsf.find_set(9) == 84 || dsf.find_set(9) == 23);
-			TEST_ASSERT(dsf.value_of(23) == "s");
-			TEST_ASSERT(dsf.value_of(9) == "m");
-			TEST_ASSERT(dsf.value_of(84) == "g");
-	}
-};
-
-int main()
+BOOST_AUTO_TEST_CASE(add_elements_test)
 {
-	DSFTestSuite suite;
-	Test::TextOutput output(Test::TextOutput::Verbose);
-	suite.run(output, true);
-	return 0;
+	DisjointSetForest<std::string> dsf;
+	std::map<int,std::string> elements;
+	elements[23] = "s";
+	elements[9] = "m";
+	elements[84] = "g";
+	dsf.add_elements(elements);
+		BOOST_CHECK_EQUAL(dsf.element_count(), 3);
+		BOOST_CHECK_EQUAL(dsf.set_count(), 3);
+		BOOST_CHECK_EQUAL(dsf.find_set(23), 23);
+		BOOST_CHECK_EQUAL(dsf.find_set(9), 9);
+		BOOST_CHECK_EQUAL(dsf.find_set(84), 84);
+		BOOST_CHECK_EQUAL(dsf.value_of(23), "s");
+		BOOST_CHECK_EQUAL(dsf.value_of(9), "m");
+		BOOST_CHECK_EQUAL(dsf.value_of(84), "g");
+}
+
+BOOST_AUTO_TEST_CASE(find_set_test)
+{
+	DisjointSetForest<std::string> dsf;
+		BOOST_CHECK_THROW(dsf.find_set(17), Exception);
+		BOOST_CHECK_THROW(dsf.find_set(10), Exception);
+	dsf.add_element(17, "s");
+		BOOST_CHECK_EQUAL(dsf.find_set(17), 17);
+		BOOST_CHECK_THROW(dsf.find_set(10), Exception);
+	dsf.add_element(10, "g");
+		BOOST_CHECK_EQUAL(dsf.find_set(17), 17);
+		BOOST_CHECK_EQUAL(dsf.find_set(10), 10);
+}
+
+BOOST_AUTO_TEST_CASE(union_sets_test)
+{
+	DisjointSetForest<std::string> dsf;
+	dsf.add_element(23, "s");
+	dsf.add_element(9, "m");
+	dsf.add_element(84, "g");
+		BOOST_CHECK_EQUAL(dsf.element_count(), 3);
+		BOOST_CHECK_EQUAL(dsf.set_count(), 3);
+		BOOST_CHECK_EQUAL(dsf.find_set(23), 23);
+		BOOST_CHECK_EQUAL(dsf.find_set(9), 9);
+		BOOST_CHECK_EQUAL(dsf.find_set(84), 84);
+	dsf.union_sets(23, 84);
+		BOOST_CHECK_EQUAL(dsf.element_count(), 3);
+		BOOST_CHECK_EQUAL(dsf.set_count(), 2);
+		BOOST_CHECK_EQUAL(dsf.find_set(23), dsf.find_set(84));
+		BOOST_CHECK(dsf.find_set(23) == 23 || dsf.find_set(23) == 84);
+		BOOST_CHECK_EQUAL(dsf.find_set(9), 9);
+		BOOST_CHECK_EQUAL(dsf.value_of(23), "s");
+		BOOST_CHECK_EQUAL(dsf.value_of(9), "m");
+		BOOST_CHECK_EQUAL(dsf.value_of(84), "g");
+	dsf.union_sets(84, 9);
+		BOOST_CHECK_EQUAL(dsf.element_count(), 3);
+		BOOST_CHECK_EQUAL(dsf.set_count(), 1);
+		BOOST_CHECK(dsf.find_set(9) == dsf.find_set(84) && dsf.find_set(84) == dsf.find_set(23));
+		BOOST_CHECK(dsf.find_set(9) == 9 || dsf.find_set(9) == 84 || dsf.find_set(9) == 23);
+		BOOST_CHECK_EQUAL(dsf.value_of(23), "s");
+		BOOST_CHECK_EQUAL(dsf.value_of(9), "m");
+		BOOST_CHECK_EQUAL(dsf.value_of(84), "g");
 }

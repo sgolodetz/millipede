@@ -28,7 +28,15 @@ INCLUDE_DIRECTORIES(${millipede_SOURCE_DIR})
 # Specify the libraries to use #
 ################################
 
-INCLUDE(${millipede_SOURCE_DIR}/UseCppTest.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
+
+#####################################
+# Specify additional compiler flags #
+#####################################
+
+IF(MSVC_IDE)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHa")
+ENDIF(MSVC_IDE)
 
 ##########################################
 # Specify the target and where to put it #
@@ -41,7 +49,14 @@ INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 #################################
 
 TARGET_LINK_LIBRARIES(${targetname} common)
-INCLUDE(${millipede_SOURCE_DIR}/LinkCppTest.cmake)
+
+###############################
+# Specify the post-build step #
+###############################
+
+IF(MSVC_IDE)
+	ADD_CUSTOM_COMMAND(TARGET ${targetname} COMMAND ${targetname} ARGS --result-code=no --report-level=no)
+ENDIF(MSVC_IDE)
 
 #############################
 # Specify things to install #
