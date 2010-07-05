@@ -19,6 +19,7 @@
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
+#include <mast/gui/overlays/MultilayerNodeScorerOverlay.h>
 #include "PartitionCamera.h"
 #include "PartitionModel.h"
 
@@ -46,6 +47,8 @@ private:
 	typedef DICOMImageBranchLayer BranchLayer;
 	typedef AbdominalFeature::Enum Feature;
 	typedef DICOMImageLeafLayer LeafLayer;
+	typedef MultilayerNodeScorerOverlay<LeafLayer,BranchLayer> MultilayerNodeScorerOverlayT;
+	typedef boost::shared_ptr<MultilayerNodeScorerOverlayT> MultilayerNodeScorerOverlay_Ptr;
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
@@ -65,6 +68,7 @@ private:
 	wxGLContext *m_context;
 	SliceTextureSet_Ptr m_dicomTextureSet;
 	PartitionModel_Ptr m_model;
+	MultilayerNodeScorerOverlay_Ptr m_multilayerNodeScorerOverlay;
 	PartitionOverlayManager_Ptr m_overlayManager;
 	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
 	DICOMVolumeChoice m_volumeChoice;
@@ -111,7 +115,7 @@ private:
 	Job_Ptr fill_partition_textures_job(SliceOrientation ori) const;
 	void fill_textures(SliceOrientation ori);
 	PartitionOverlay *multi_feature_selection_overlay() const;
-	PartitionOverlay *multilayer_node_scorer_overlay() const;
+	MultilayerNodeScorerOverlay_Ptr multilayer_node_scorer_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_multi_feature_selection_overlay();

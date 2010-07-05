@@ -34,7 +34,6 @@ public:
 								const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
 	:	m_scorer(scorer), m_volumeIPF(volumeIPF)
 	{
-		for(int i=0; i<10; ++i) iterate();
 		recreate_texture(sliceLocation, sliceOrientation);
 	}
 
