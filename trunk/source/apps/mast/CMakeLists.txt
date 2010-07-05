@@ -62,6 +62,7 @@ gui/dialogs/DialogUtil.h
 gui/dialogs/FeatureVolumesDialog.h
 gui/dialogs/SegmentDICOMVolumeDialog.h
 gui/dialogs/SegmentVolumeDialog.h
+gui/dialogs/VisualizeIn3DDialog.h
 gui/dialogs/VolumeChooserDialog.h
 )
 

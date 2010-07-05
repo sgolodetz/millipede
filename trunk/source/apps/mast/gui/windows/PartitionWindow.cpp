@@ -43,6 +43,7 @@ enum
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SELECTION_CLEARSELECTION,
 	MENUID_TOOLS_QUANTIFYFEATUREVOLUMES,
+	MENUID_TOOLS_VISUALIZEIN3D,
 };
 
 }
@@ -182,7 +183,7 @@ void PartitionWindow::setup_menus()
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+Q"));
-	toolsMenu->Append(wxID_ANY, wxT("&Visualize in 3D..."));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D..."));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(wxID_ANY, wxT("&Contents..."));
@@ -312,6 +313,11 @@ void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 	dialog.ShowModal();
 }
 
+void PartitionWindow::OnMenuToolsVisualizeIn3D(wxCommandEvent&)
+{
+	m_model->visualize_in_3d(this);
+}
+
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
 {
@@ -399,6 +405,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, PartitionWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnMenuSelectionClearSelection)
 	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, PartitionWindow::OnMenuToolsQuantifyFeatureVolumes)
+	EVT_MENU(MENUID_TOOLS_VISUALIZEIN3D, PartitionWindow::OnMenuToolsVisualizeIn3D)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnUpdateMenuActionsClearHistory)
@@ -410,6 +417,7 @@ BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnUpdateMenuNavigationPreviousSlice)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, PartitionWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, PartitionWindow::OnUpdateForestNeeder)
 END_EVENT_TABLE()
 
 }

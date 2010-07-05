@@ -21,6 +21,7 @@
 #include <common/util/ITKImageUtil.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
+#include <mast/gui/dialogs/VisualizeIn3DDialog.h>
 
 namespace mp {
 
@@ -185,6 +186,15 @@ public:
 		set_command_manager(m_commandManager);
 
 		m_listeners.forest_changed();
+	}
+
+	void visualize_in_3d(wxWindow *parent)
+	{
+		// Display a visualize in 3D dialog to allow the user to choose how the visualization process should work.
+		VisualizeIn3DDialog dialog(parent);
+		dialog.ShowModal();
+
+		// TODO
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()

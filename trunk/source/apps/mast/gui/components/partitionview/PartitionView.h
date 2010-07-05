@@ -124,6 +124,7 @@ public:
 	void OnButtonViewXY(wxCommandEvent&);
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);
+	void OnButtonVisualizeIn3D(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	void OnSliderX(wxScrollEvent&);
@@ -133,6 +134,7 @@ public:
 	void OnSliderZoom(wxScrollEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateSliderLayer(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################

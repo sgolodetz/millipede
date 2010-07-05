@@ -76,6 +76,7 @@ public:
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
 	void OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&);
+	void OnMenuToolsVisualizeIn3D(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e);

@@ -538,6 +538,11 @@ void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 	zoom_to_fit();
 }
 
+void PartitionView::OnButtonVisualizeIn3D(wxCommandEvent&)
+{
+	m_model->visualize_in_3d(this);
+}
+
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnSliderX(wxScrollEvent&)
 {
@@ -569,6 +574,11 @@ void PartitionView::OnSliderZoom(wxScrollEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+void PartitionView::OnUpdateForestNeeder(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->volume_ipf());
+}
+
 void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)
 {
 	e.Enable(partition_texture_set(1).get() != NULL);
@@ -581,6 +591,7 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionView::OnButtonViewXY)
 	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionView::OnButtonViewXZ)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionView::OnButtonViewYZ)
+	EVT_BUTTON(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnButtonVisualizeIn3D)
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	EVT_COMMAND_SCROLL(SLIDERID_X, PartitionView::OnSliderX)
@@ -590,6 +601,7 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_COMMAND_SCROLL(SLIDERID_ZOOM, PartitionView::OnSliderZoom)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(SLIDERID_LAYER, PartitionView::OnUpdateSliderLayer)
 END_EVENT_TABLE()
 
