@@ -2,7 +2,6 @@
 
 ADD_SUBDIRECTORY(test-adjacencygraph)
 ADD_SUBDIRECTORY(test-boost_1_39_0)
-ADD_SUBDIRECTORY(test-cpptest-1.1.1)
 ADD_SUBDIRECTORY(test-disjointsetforest)
 ADD_SUBDIRECTORY(test-gdcm-1.2.5)
 ADD_SUBDIRECTORY(test-ITK-3.14.0)

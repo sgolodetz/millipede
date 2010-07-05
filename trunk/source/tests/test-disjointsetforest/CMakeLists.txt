@@ -34,9 +34,7 @@ INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
 # Specify additional compiler flags #
 #####################################
 
-IF(MSVC_IDE)
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHa")
-ENDIF(MSVC_IDE)
+INCLUDE(${millipede_SOURCE_DIR}/BoostTestCompilerFlags.cmake)
 
 ##########################################
 # Specify the target and where to put it #
@@ -54,9 +52,7 @@ TARGET_LINK_LIBRARIES(${targetname} common)
 # Specify the post-build step #
 ###############################
 
-IF(MSVC_IDE)
-	ADD_CUSTOM_COMMAND(TARGET ${targetname} COMMAND ${targetname} ARGS --result-code=no --report-level=no)
-ENDIF(MSVC_IDE)
+INCLUDE(${millipede_SOURCE_DIR}/BoostTestPostBuild.cmake)
 
 #############################
 # Specify things to install #
