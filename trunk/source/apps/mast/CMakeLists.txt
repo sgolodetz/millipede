@@ -54,6 +54,7 @@ gui/components/selectionview/SelectionView.h
 SET(gui_dialogs_sources
 gui/dialogs/DialogUtil.cpp
 gui/dialogs/SegmentDICOMVolumeDialog.cpp
+gui/dialogs/VisualizeIn3DDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
 )
 

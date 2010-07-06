@@ -191,7 +191,7 @@ public:
 	void visualize_in_3d(wxWindow *parent)
 	{
 		// Display a visualize in 3D dialog to allow the user to choose how the visualization process should work.
-		VisualizeIn3DDialog<LeafLayer,BranchLayer,Feature> dialog(parent);
+		VisualizeIn3DDialog dialog(parent);
 		dialog.ShowModal();
 
 		// TODO
