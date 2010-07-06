@@ -24,6 +24,12 @@ SOURCE_GROUP(.cpp FILES ${sources})
 
 INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
 
+#####################################
+# Specify additional compiler flags #
+#####################################
+
+INCLUDE(${millipede_SOURCE_DIR}/BoostTestCompilerFlags.cmake)
+
 ###############################
 # Specify the necessary paths #
 ###############################
@@ -41,6 +47,12 @@ INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 #################################
 
 TARGET_LINK_LIBRARIES(${targetname} common)
+
+###############################
+# Specify the post-build step #
+###############################
+
+INCLUDE(${millipede_SOURCE_DIR}/BoostTestPostBuild.cmake)
 
 #############################
 # Specify things to install #

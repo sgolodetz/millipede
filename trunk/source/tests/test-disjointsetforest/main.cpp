@@ -3,10 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include <iostream>
-#include <string>
-
-#define BOOST_TEST_MODULE Disjoint Set Forest Test
+#define BOOST_TEST_MODULE DisjointSetForest Test
 #include <boost/test/included/unit_test.hpp>
 
 #include <common/adts/DisjointSetForest.h>

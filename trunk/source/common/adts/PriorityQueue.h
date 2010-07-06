@@ -184,6 +184,14 @@ public:
 	}
 
 	/**
+	@brief	Returns the number of elements in the priority queue.
+	*/
+	size_t size() const
+	{
+		return m_dictionary.size();
+	}
+
+	/**
 	@brief	Returns the element at the front of the priority queue.
 
 	@pre
