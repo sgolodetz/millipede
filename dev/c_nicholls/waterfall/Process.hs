@@ -5,21 +5,26 @@ module Process(
   output,
   getAdjacencyList,
   arrayToNode,freeze'',
-  Adjacency,Point
+  Adjacency,Point,
+  save,Voxel(..)
     ) where
 
 
-import SkewHeap (Heap,fromList,merge,getMin )
+import Bucket (Bucket,fromList,getMin,inserts )
 import qualified Data.Set  as S
 import Data.Array.IO
 import Data.Array.Unboxed       (IArray,  UArray, amap, bounds,  (!)  )
 import Data.Word                ( Word16)
-import Waterfall(Node,mkNode,Edge,mkEdge,Mergeable(union),getRegion,getEdges,getNode)
+import Waterfall(Node,mkNode,Edge,mkEdge,Mergeable(union,unions),getRegion,getEdges,getNode)
+import PGM(arrayToFile)
 
-type Adjacency  = (Int,Voxel,Voxel)
+
+type Adjacency  = (Int,(Voxel,Voxel))
 type Point = (Int,Int)
-type Voxel = (Int,Point)
+data Voxel = Voxel Int Point deriving (Eq)
 
+getPoint :: Voxel -> Point
+getPoint (Voxel _ p) = p
 
 -- check index bounds and filter out the out-of-bounds indices
 -- (input (c,d) is the max size of the array)
@@ -34,15 +39,15 @@ neighbours   arr  (a,b) (x,y) = neighbours' arr  (a,b) (x,y) ls'
 
 neighbours' :: UArray Point Int -> Point -> Point -> [Point] -> [Adjacency]
 neighbours' _  _ _ [] =  []
-neighbours' arr  (a,b) (x,y) (p:ps) = 
+neighbours' arr  (a,b) (x,y) (p:ps) =
       let v1 = arr!(a,b) in
       let v2 = arr! p in
       let rs = neighbours' arr  (a,b) (x,y) ps in
-      ((abs (v1-v2), (v1,(a,b)),(v2,p) ):rs)
+      ((abs (v1-v2), (Voxel v1 (a,b),Voxel v2 p) ):rs)
 
-               
----- IO Array Functions ----            
-fillIn :: Node (S.Set Voxel) -> IOUArray Point Int -> IO (IOUArray Point Int)
+
+---- IO Array Functions ----
+fillIn :: Node (S.Set (Int,Point)) -> IOUArray Point Int -> IO (IOUArray Point Int)
 fillIn node ar = do
   {let rs' = S.toList (getRegion node)
   ;let x = avg rs'
@@ -51,8 +56,8 @@ fillIn node ar = do
   ;return $!  ar'
   }
 
-arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (S.Set Voxel))
-arrayToNode arr miss (n,(v,p))  = do
+arrayToNode :: IOArray Point [(Int, Voxel)] -> Point -> (Int, Voxel) -> IO (Edge (S.Set (Int,Point)))
+arrayToNode arr miss (n,(Voxel v p))  = do
   { --print p
   ;ls <-readArray arr p
   ;let ls' = remove miss ls
@@ -63,28 +68,28 @@ arrayToNode arr miss (n,(v,p))  = do
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
 remove _ [] = []
-remove p ((w,(v,a)):ps) 
+remove p (x@(_,(Voxel _ a)):ps)
   | a ==p = remove p ps
-  | otherwise = ((w,(v,a)):remove p ps)
+  | otherwise = (x:remove p ps)
 
 
--- take the initial array of greyscale values and 
+-- take the initial array of greyscale values and
 -- initialise the MST (with empty list); then
 -- put a `fake' first edge into the MST pointing to (0,0)
 
 getAdjacencyList :: (IArray UArray Int) =>  UArray Point Int -> IO (IOArray Point [(Int,Voxel)])
-getAdjacencyList arr = do 
+getAdjacencyList arr = do
   {let ((a,b),(c,d)) = bounds arr
   ;brr <- newArray ((a,b),(c,d)) [] :: IO (IOArray Point [(Int,Voxel)]  )
-  ;writeArray brr (0,0) [(0,(0,(0,0)))] 
+  ;writeArray brr (0,0) [(0,(Voxel 0(0,0)))]
   ;let e = neighbours arr (0,0) (c,d)
-  ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr 
+  ;pickNAdjacencys (c*d-1) (c,d) (fromList e) arr brr
   }
 
 -- add n more edges to the MST (where n=c*d-1, i.e. the number of nodes);
 -- first argument is n;
 -- second argument is the max size of the array;
--- input heap h of available next points to pick 
+-- input Bucket h of available next points to pick
 -- (i.e. the frontier of the current MST as per PRIMS algorithm;
 -- input the greyscale values (in the array ar);
 -- input the array ls to modify (which holds the MST);
@@ -97,36 +102,37 @@ getAdjacencyList arr = do
 -- or by encoding the presence of edges in an integer and
 -- calculating the weight on the fly each time.
 
-pickNAdjacencys ::  Int-> Point ->Heap Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> IO (IOArray Point [(Int,Voxel)])
+pickNAdjacencys ::  Int-> Point ->Bucket Adjacency-> UArray Point Int -> IOArray Point [(Int,Voxel)] -> IO (IOArray Point [(Int,Voxel)])
 pickNAdjacencys 0 _ _ _  ls  = do {return $!  ls}
 pickNAdjacencys n is h ar ls   = do
   {
-  ;let ((w,a,b),h') = getMin h
-  ;l1 <- readArray ls  (snd a)
-  ;l2 <- readArray ls  (snd b)
+  ;let ((w,(a,b)),h') = getMin h
+  ;l1 <- readArray ls  (getPoint a)
+  ;l2 <- readArray ls  (getPoint b)
   ;if((l1==[]||l2==[]))
      then do
-       {writeArray ls (snd a) ((w,b):l1)
-       ;writeArray ls (snd b) ((w,a):l2)
-       ;let ns = neighbours ar (snd b) is
+       {writeArray ls (getPoint a) ((w,b):l1)
+       ;writeArray ls (getPoint b) ((w,a):l2)
+       ;let ns = neighbours ar (getPoint b) is
        ;l <- (filter' ls [] ns)
-       ;let h'' = merge h' (fromList l)
-       ;pickNAdjacencys (n-1) is h'' ar ls 
+       ;let h'' = inserts  h' l
+       ;let _ = l `seq` h'' `seq` undefined
+       ;pickNAdjacencys (n-1) is h'' ar ls
        }
      else do {(pickNAdjacencys n is h' ar ls)}
   }
 
 filter' :: IOArray Point [(Int,Voxel)]-> [Adjacency]-> [Adjacency]-> IO ([Adjacency])
 filter' _ ls [] = do{ return $!  ls}
-filter' br ls ((a,b,(c,d)):xs) = do
+filter' br ls (x@(_,(_,(Voxel _ d))):xs) = do
   {l <- readArray br d
-  ;if l == [] 
-    then filter' br ((a,b,(c,d)):ls) xs
+  ;if l == []
+    then filter' br (x:ls) xs
     else filter' br ls xs
   }
 
----  Main  -------------  
-output :: (Point, Point) -> Node (S.Set Voxel) -> IO (UArray Point Word16)
+---  Main  -------------
+output :: (Point, Point) -> Node (S.Set (Int,Point)) -> IO (UArray Point Word16)
 output bound tree = do
   {arr <- newArray bound 0 :: IO (IOUArray Point Int)
   ;arrr <- fillIn tree arr
@@ -136,12 +142,19 @@ output bound tree = do
   }
 
 
+save :: String ->  Int -> [UArray Point Word16] -> IO ()
+save _ _ [] = return ()
+save path n (a:as) = do
+  {putStrLn ("Saving file "++show n)
+  ;arrayToFile (path++show n++".pgm") a
+  ;save path (n+1) as
+  }
+
 --- Other Functions ---------
-instance Ord a => Mergeable (Heap a) where
-  union = merge
 
 instance Ord a => Mergeable (S.Set a) where
   union = S.union
+  unions = S.unions
 
 freeze' :: ( MArray a Int IO, IArray UArray Int) => a Point Int -> IO (UArray Point Int)
 freeze' = freeze
@@ -149,10 +162,10 @@ freeze' = freeze
 freeze'' :: ( MArray a b IO, IArray UArray b) => a Point b -> IO (UArray Point b)
 freeze'' = freeze
 
-    
+
 foldR            :: (Monad m) => (a -> b -> m b) -> b -> [a] -> m b
 foldR _ a []     = return $!  a
 foldR f a (x:xs) = foldR f a xs >>= \y -> f x y
 
-avg :: [Voxel] -> Int
-avg xs = (sum$map fst xs) `div` length xs
+avg :: [(Int,a)] -> Int
+avg xs = (sum$map fst  xs) `div` length xs

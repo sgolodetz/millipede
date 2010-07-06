@@ -1,56 +1,49 @@
-import Process(bounds,output,getAdjacencyList,arrayToNode)
-import PGM(arraysToFile,
-  arrayToFile,
-  pgmsFromFile)
+{-# OPTIONS_GHC -Wall#-}
+import Process(bounds,output,getAdjacencyList,arrayToNode,save,Voxel(Voxel) )
+
 import Waterfall(waterfall,getNode)
-import Dendragram(dendragram)
-import Data.Time.Clock(getCurrentTime,diffUTCTime,NominalDiffTime)
+import Data.Time.Clock(getCurrentTime,diffUTCTime,NominalDiffTime,UTCTime)
+import PGM( pgmsFromFile)
+import System.Environment(getArgs)
 
-import System(getArgs)
-
-main = do 
+main :: IO()
+main = do
   t0 <- getCurrentTime
   putStrLn "Reading file"
   args <- getArgs
-  Right (ar:as) <-   pgmsFromFile (head args)
-  
+  Right (ar:_) <-   pgmsFromFile (head args)
+
   t1 <- timeSince t0
   putStrLn "Generating MST"
   es <- getAdjacencyList  ar
-  
+
   t2 <- timeSince t1
-  putStrLn "Making Tree" 
-  edge <- arrayToNode es (-1,-1) (0,(0,(0,0)))
-  
+  putStrLn "Making Tree"
+  edge <- arrayToNode es (-1,-1) (0,(Voxel 0 (0,0)))
+
   t3 <- timeSince t2
   putStrLn "Doing Waterfall"
   let bs = bounds ar
-  let trees = (take 6  $! iterate (waterfall$!)$!getNode edge)
-  
-  t4 <- seq (head trees) (timeSince t3)
+  let trees = (take 6  $ iterate (waterfall)$getNode edge)
+
+  t4 <- (timeSince t3)
   putStrLn "Converting output"
   ars <- mapM (output bs) trees
-  
-  t5 <- timeSince t4
-  save 1 (ars)
-  t4 <- timeSince t5
-  putStrLn "Done"
-  timeSince t0
-  
 
+  t5 <- timeSince t4
+  save path 1 (ars)
+  _ <- timeSince t5
+  putStrLn "Done"
+  _ <- timeSince t0
+  return ()
+
+path :: String
 path="./output/output"
 
 
 
-save n [a] =do {arrayToFile ("./output/output"++show n++".pgm") a}
 
-save n (a:as) = do 
-  {putStrLn ("Saving file "++show n)
-  ;arrayToFile (path++show n++".pgm") a
-  ;save (n+1) as
-  }
-
-
+timeSince ::UTCTime -> IO UTCTime
 timeSince t = do
   {t' <- getCurrentTime
   ;(putStrLn.show. (\x ->  (fromInteger (round (x*10000)) :: NominalDiffTime)/10000)) (diffUTCTime t' t)

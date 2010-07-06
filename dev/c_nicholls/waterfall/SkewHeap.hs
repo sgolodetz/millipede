@@ -1,7 +1,7 @@
 module SkewHeap 
   (Heap
   ,fromList,toList
-  ,merge
+  ,merge,merges
   ,insert
   ,getMin
   ) where
@@ -10,6 +10,9 @@ data Heap a = Node a (Heap a) (Heap a) | Leaf
 
 findMin :: Heap a -> a
 findMin (Node a l r) = a
+
+merges :: Ord a => [Heap a] -> Heap a 
+merges = foldl merge Leaf 
 
 merge :: Ord a =>  Heap a -> Heap a -> Heap a
 merge a Leaf = a
