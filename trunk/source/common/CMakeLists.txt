@@ -254,6 +254,11 @@ util/NullType.h
 util/NumericUtil.h
 )
 
+##
+SET(visualization_headers
+visualization/MeshBuilder.h
+)
+
 #################################################################
 # Collect the project files into sources, headers and templates #
 #################################################################
@@ -296,6 +301,7 @@ ${segmentation_watershed_headers}
 ${slices_headers}
 ${textures_headers}
 ${util_headers}
+${visualization_headers}
 )
 
 SET(templates
@@ -380,6 +386,9 @@ SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
+
+##
+SOURCE_GROUP(visualization\\.h FILES ${visualization_headers})
 
 ################################
 # Specify the libraries to use #
