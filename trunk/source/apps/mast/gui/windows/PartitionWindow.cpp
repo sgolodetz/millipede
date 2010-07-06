@@ -24,8 +24,8 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
-	MENUID_FEATURE_TOGGLE_BASE,
-	MENUID_FEATURE_TOGGLE_LAST = (MENUID_FEATURE_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
+	MENUID_FEATURES_TOGGLE_BASE,
+	MENUID_FEATURES_TOGGLE_LAST = (MENUID_FEATURES_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
@@ -73,7 +73,7 @@ void PartitionWindow::connect_special_menu_items()
 	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 	{
 		{
-			int id = (MENUID_FEATURE_TOGGLE_BASE+1) + i;
+			int id = (MENUID_FEATURES_TOGGLE_BASE+1) + i;
 			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureToggle));
 			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
 		}
@@ -178,13 +178,13 @@ void PartitionWindow::setup_menus()
 		switchParentMenu->AppendSeparator();
 		switchParentMenu->Append(wxID_ANY, wxT("&Start Again"));
 
-	wxMenu *featureMenu = new wxMenu;
+	wxMenu *featuresMenu = new wxMenu;
 	wxMenu *autoMarkMenu = new wxMenu;
-	featureMenu->AppendSubMenu(autoMarkMenu, wxT("&Automatically Mark"));
+	featuresMenu->AppendSubMenu(autoMarkMenu, wxT("&Automatically Mark"));
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Default Identifier"));
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
 	wxMenu *toggleMenu = new wxMenu;
-	featureMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selected Nodes"));
+	featuresMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selected Nodes"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			std::ostringstream oss;
@@ -193,10 +193,10 @@ void PartitionWindow::setup_menus()
 			std::string shortcut = feature_shortcut(featureTypes[i]);
 			if(key != "") oss << " (&" << key << ")";
 			if(shortcut != "") oss << '\t' << shortcut;
-			toggleMenu->Append((MENUID_FEATURE_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
+			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
-	featureMenu->AppendSeparator();
-	featureMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
+	featuresMenu->AppendSeparator();
+	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+Q"));
@@ -211,7 +211,7 @@ void PartitionWindow::setup_menus()
 	m_menuBar->Append(navigationMenu, wxT("&Navigation"));
 	m_menuBar->Append(selectionMenu, wxT("S&election"));
 	m_menuBar->Append(segmentationMenu, wxT("&Segmentation"));
-	m_menuBar->Append(featureMenu, wxT("Feature &Identification"));
+	m_menuBar->Append(featuresMenu, wxT("Feat&ures"));
 	m_menuBar->Append(toolsMenu, wxT("&Tools"));
 	m_menuBar->Append(helpMenu, wxT("&Help"));
 
@@ -240,7 +240,7 @@ void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
 
 void PartitionWindow::OnMenuFeatureToggle(wxCommandEvent& e)
 {
-	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURE_TOGGLE_BASE+1));
+	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURES_TOGGLE_BASE+1));
 	m_model->multi_feature_selection()->toggle_selection(m_model->selection(), feature);
 }
 
