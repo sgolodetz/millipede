@@ -2,6 +2,7 @@
 {-# LANGUAGE  FlexibleInstances #-}
 module Waterfall(waterfall, mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union,unions),getRegion,getEdges,getNode,getWeight,size) where
 
+import Data.List (mapAccumL)
 
 data Node a = Node a [Edge a]
 data Edge a = Edge Int (Node a)
@@ -48,17 +49,25 @@ mergeChildren (Edge w (Node r es) )
   | (b && w'<=w) = (join r ((e,False): es') w, True)
   | otherwise    = (join r ((e,b): es')  w, (w'<w))
   where
-    ((e,b),es') = minEdge es
+    ((e,b),es') =   findMin cmpEdge (map mergeChildren es)
     w' = getWeight e
 
-minEdge :: (Mergeable a)  => [Edge a] -> ((Edge a,Bool),[(Edge a,Bool)])
-minEdge [] = error "the impossible happened"
-minEdge es = let x:xs = map mergeChildren es in minEdge' (x,[]) xs
+{-
+It would be nice to have the signature of findMin as
 
-minEdge' ::  ((Edge a,Bool),[(Edge a,Bool)]) -> [(Edge a,Bool)] -> ((Edge a,Bool),[(Edge a,Bool)] )
-minEdge' = foldr (\x (e,es)-> case (cmpEdge x e) of
+>findMin :: Ord a => [a] -> (a,[a])
+
+rather than refer to an ordering function, but we cannot make
+(Edge a, Bool) an instasnce of the Ord class without a being in the EQ
+class, which it needn't be.
+-}
+
+findMin :: (a -> a -> Ordering) ->  [a] -> (a,[a])
+findMin cmp  (z:zs) = foldr (\x (e,es)-> case (cmp x e) of
   LT -> (x,e:es)
-  _ -> (e,x:es))
+  _ -> (e,x:es)) (z,[]) zs
+findMin _ [] = error "The impossible happened"
+
 
 -- Initial join function
 -- (should recurse only once because the tree is built bottom-up)
@@ -106,7 +115,7 @@ join r ebs w =
 -- by putting the region of the current node(s) in a list (as),
 -- and the regions of the children in a list (bs).
 
-extractEdgeRegions :: [(Edge a,Bool)] ->[a] ->  [Edge a] -> ([a],[Edge a])
+extractEdgeRegions :: [(Edge a,Bool)] ->[a] ->  [Edge a] -> ([a],[Edge a]) -- ##
 extractEdgeRegions xs as rs  | xs `seq` as `seq` rs `seq` False = undefined
 extractEdgeRegions [] as rs = (as,rs)
 extractEdgeRegions ((e,True):es) as rs = extractEdgeRegions es as (e:rs)
