@@ -29,6 +29,7 @@ typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBr
 
 typedef boost::shared_ptr<IPF> IPF_Ptr;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
+typedef boost::shared_ptr<const Selection> Selection_CPtr;
 typedef boost::shared_ptr<MFS> MFS_Ptr;
 
 //#################### LISTENERS ####################
@@ -181,6 +182,12 @@ struct SelectionListener : Selection::Listener
 	{
 		output_command_depth(commandDepth);
 		std::cout << "Selection was cleared\n";
+	}
+
+	void selection_was_replaced(const Selection_CPtr& selection, int commandDepth)
+	{
+		output_command_depth(commandDepth);
+		std::cout << "Selection was replaced\n";
 	}
 };
 

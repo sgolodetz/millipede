@@ -326,7 +326,8 @@ void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 
 void PartitionWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
 {
-	// TODO
+	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
+	m_model->selection()->replace_with_selection(m_model->multi_feature_selection()->selection(feature));
 }
 
 void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
