@@ -36,6 +36,11 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	LabelImagePointer labelling() const
+	{
+		return m_labellingHook.get();
+	}
+
 	void set_labelling(const LabelImagePointer& labelling)
 	{
 		m_labellingHook.set(labelling);

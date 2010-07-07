@@ -8,6 +8,7 @@
 SET(adts_headers
 adts/AdjacencyGraph.h
 adts/DisjointSetForest.h
+adts/Edge.h
 adts/Map.h
 adts/PriorityQueue.h
 adts/RootedMST.h
