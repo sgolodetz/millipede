@@ -63,7 +63,7 @@ bool execute_with_progress_dialog(const Job_Ptr& job, wxWindow *parent, const st
 
 		if(job->is_aborted())
 		{
-			// The loading process failed (i.e. the job aborted itself).
+			// The job failed (i.e. the job aborted itself).
 			wxMessageBox(string_to_wxString(job->status()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, parent);
 			break;
 		}
