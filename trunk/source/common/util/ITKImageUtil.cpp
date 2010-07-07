@@ -10,19 +10,6 @@ namespace mp {
 namespace ITKImageUtil {
 
 //#################### FUNCTIONS ####################
-itk::Index<3> make_index(long x, long y, long z)
-{
-	itk::Index<3> ret = {{x,y,z}};
-	return ret;
-}
-
-itk::RGBAPixel<unsigned char> make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
-{
-	itk::RGBAPixel<unsigned char> p;
-	p[0] = r, p[1] = g, p[2] = b, p[3] = a;
-	return p;
-}
-
 std::vector<itk::Offset<2> > make_4_connected_offsets()
 {
 	std::vector<itk::Offset<2> > offsets(4);
@@ -70,6 +57,26 @@ std::vector<itk::Offset<3> > make_6_connected_offsets()
 	offsets[4][0] = 0;	offsets[4][1] = 1;	offsets[4][2] = 0;
 	offsets[5][0] = 0;	offsets[5][1] = 0;	offsets[5][2] = 1;
 	return offsets;
+}
+
+itk::Index<3> make_index(long x, long y, long z)
+{
+	itk::Index<3> ret = {{x,y,z}};
+	return ret;
+}
+
+itk::RGBAPixel<unsigned char> make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+	itk::RGBAPixel<unsigned char> p;
+	p[0] = r, p[1] = g, p[2] = b, p[3] = a;
+	return p;
+}
+
+itk::Vector<double,3> make_vector3d(double x, double y, double z)
+{
+	itk::Vector<double,3> v;
+	v[0] = x, v[1] = y, v[2] = z;
+	return v;
 }
 
 }

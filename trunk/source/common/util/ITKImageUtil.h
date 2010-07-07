@@ -18,11 +18,12 @@ namespace mp {
 namespace ITKImageUtil {
 
 //#################### FUNCTIONS ####################
-itk::Index<3> make_index(long x, long y, long z);
-itk::RGBAPixel<unsigned char> make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 std::vector<itk::Offset<2> > make_4_connected_offsets();
 std::vector<itk::Offset<3> > make_4_connected_offsets(SliceOrientation ori);
 std::vector<itk::Offset<3> > make_6_connected_offsets();
+itk::Index<3> make_index(long x, long y, long z);
+itk::RGBAPixel<unsigned char> make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+itk::Vector<double,3> make_vector3d(double x, double y, double z);
 
 //#################### TEMPLATE FUNCTIONS ####################
 template <typename TPixel, unsigned int Dimension>

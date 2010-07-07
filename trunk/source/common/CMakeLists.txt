@@ -267,8 +267,11 @@ visualization/CubeFace.h
 visualization/CubeFaceDesignator.h
 visualization/CubeFaceGenerator.h
 visualization/CubeFaceTable.h
+visualization/GlobalNodeTable.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
+visualization/MeshNode.h
+visualization/SourcedLabel.h
 )
 
 #################################################################
