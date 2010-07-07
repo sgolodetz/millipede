@@ -2,8 +2,6 @@
 {-# LANGUAGE  FlexibleInstances #-}
 module Waterfall(waterfall, mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union,unions),getRegion,getEdges,getNode,getWeight,size) where
 
-import Data.List (mapAccumL)
-
 data Node a = Node a [Edge a]
 data Edge a = Edge Int (Node a)
 
@@ -46,8 +44,8 @@ waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (1 + maximum (map get
 mergeChildren :: (Mergeable a )=> Edge a -> (Edge a,Bool)
 mergeChildren n@(Edge _ (Node _ [])) = (n,False)
 mergeChildren (Edge w (Node r es) )
-  | (b && w'<=w) = (join r ((e,False): es') w, True)
-  | otherwise    = (join r ((e,b): es')  w, (w'<w))
+  | (b && w'<=w) = (join r ((e,False):es') w, True  )
+  | otherwise    = (join r ((e,b)    :es') w, (w'<w))
   where
     ((e,b),es') =   findMin cmpEdge (map mergeChildren es)
     w' = getWeight e
@@ -124,7 +122,6 @@ extractEdgeRegions ((Edge _ n,False):es) as rs = extractEdgeRegions es (getRegio
 
 
 -- Auxiliary functions
-
 
 -- Compare the weights of two edges.
 -- Returns a comparison operator that can then be used in sort.
