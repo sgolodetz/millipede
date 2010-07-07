@@ -11,9 +11,10 @@ using namespace mp;
 int main()
 {
 	typedef AbdominalFeature::Enum Label;
-	typedef MeshBuilder<Label> MB;
-	MB::LabelImagePointer labelling = ITKImageUtil::make_image<Label>(2, 2, 2);
-	MB mb(labelling->GetLargestPossibleRegion().GetSize(), labelling);
-	// TODO
+	typedef MeshBuilder<Label> MeshBuilderT;
+	typedef boost::shared_ptr<MeshBuilderT> MeshBuilder_Ptr;
+	MeshBuilderT::LabelImagePointer labelling = ITKImageUtil::make_image<Label>(2, 2, 2);
+	MeshBuilder_Ptr builder(new MeshBuilderT(labelling->GetLargestPossibleRegion().GetSize(), labelling));
+	Job::execute_managed(builder);
 	return 0;
 }

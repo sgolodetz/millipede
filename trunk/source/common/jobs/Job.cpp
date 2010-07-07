@@ -32,6 +32,18 @@ boost::shared_ptr<boost::thread> Job::execute_in_thread(const boost::shared_ptr<
 	return boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&Job::safe_job_executor, job)));
 }
 
+void Job::execute_managed(const boost::shared_ptr<Job>& job)
+{
+	execute_in_thread(job);
+
+	MainThreadJobQueue_Ptr mtjq = job->main_thread_job_queue();
+	while(!job->is_finished())
+	{
+		if(job->is_aborted()) break;
+		if(mtjq->has_jobs()) mtjq->run_next_job();
+	}
+}
+
 bool Job::is_aborted() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);

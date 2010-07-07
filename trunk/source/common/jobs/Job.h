@@ -48,6 +48,7 @@ public:
 public:
 	virtual void abort();
 	static boost::shared_ptr<boost::thread> execute_in_thread(const boost::shared_ptr<Job>& job);
+	static void execute_managed(const boost::shared_ptr<Job>& job);
 	bool is_aborted() const;
 	bool is_finished() const;
 	MainThreadJobQueue_Ptr main_thread_job_queue();

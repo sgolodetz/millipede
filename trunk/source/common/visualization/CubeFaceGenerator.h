@@ -45,6 +45,8 @@ public:
 	void execute()
 	{
 		// TODO
+
+		set_finished();
 	}
 
 	int length() const
