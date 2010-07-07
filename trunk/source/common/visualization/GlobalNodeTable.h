@@ -14,6 +14,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 
+#include <common/util/ITKImageUtil.h>
 #include "MeshNode.h"
 
 namespace mp {
@@ -73,13 +74,53 @@ public:
 public:
 	int find_index(const IntTriple& loc, NodeDesignator nodeDesignator)
 	{
-		// NYI
-		throw 23;
+		SubtableIter it = m_subtables[nodeDesignator].find(loc);
+		if(it != m_subtables[nodeDesignator].end())
+		{
+			return it->second;
+		}
+		else
+		{
+			int index = static_cast<int>(m_masterArray->size());
+			switch(nodeDesignator)
+			{
+			case NODE_001:
+				m_masterArray->push_back(make_node(loc.get<0>(), loc.get<1>(), loc.get<2>() + 0.5));
+				break;
+			case NODE_010:
+				m_masterArray->push_back(make_node(loc.get<0>(), loc.get<1>() + 0.5, loc.get<2>()));
+				break;
+			case NODE_011:
+				m_masterArray->push_back(make_node(loc.get<0>(), loc.get<1>() + 0.5, loc.get<2>() + 0.5));
+				break;
+			case NODE_100:
+				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>(), loc.get<2>()));
+				break;
+			case NODE_101:
+				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>(), loc.get<2>() + 0.5));
+				break;
+			case NODE_110:
+				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>() + 0.5, loc.get<2>()));
+				break;
+			case NODE_111:
+				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>() + 0.5, loc.get<2>() + 0.5));
+				break;
+			}
+			m_subtables[nodeDesignator].insert(std::make_pair(loc, index));
+			return index;
+		}
 	}
 
 	const MeshNodeVector_Ptr& master_array()
 	{
 		return m_masterArray;
+	}
+
+	//#################### PRIVATE METHODS ####################
+private:
+	static MeshNodeT make_node(double x, double y, double z)
+	{
+		return MeshNodeT(ITKImageUtil::make_vector3d(x, y, z));
 	}
 };
 
