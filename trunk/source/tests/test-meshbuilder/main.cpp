@@ -13,7 +13,7 @@ int main()
 	typedef AbdominalFeature::Enum Label;
 	typedef MeshBuilder<Label> MB;
 	MB::LabelImagePointer labelling = ITKImageUtil::make_image<Label>(2, 2, 2);
-	MB mb(labelling);
+	MB mb(labelling->GetLargestPossibleRegion().GetSize(), labelling);
 	// TODO
 	return 0;
 }

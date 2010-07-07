@@ -257,6 +257,7 @@ util/NumericUtil.h
 ##
 SET(visualization_sources
 visualization/CubeFace.cpp
+visualization/CubeFaceDesignator.cpp
 visualization/CubeFaceTable.cpp
 )
 

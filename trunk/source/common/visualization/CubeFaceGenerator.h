@@ -30,13 +30,26 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	// TODO
+	MeshBuildingData_Ptr m_data;
+	int m_x, m_y, m_z;
+	CubeFaceDesignator::Enum m_f;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	CubeFaceGenerator(const MeshBuildingData_Ptr& data, int x, int y, int z, CubeFaceDesignator::Enum f)
+	:	m_data(data), m_x(x), m_y(y), m_z(z), m_f(f)
+	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	void execute()
 	{
 		// TODO
+	}
+
+	int length() const
+	{
+		return 1;
 	}
 };
 

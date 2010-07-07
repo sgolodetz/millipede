@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_CUBEFACEDESIGNATOR
 #define H_MILLIPEDE_CUBEFACEDESIGNATOR
 
+#include <common/util/EnumUtil.h>
+
 namespace mp {
 
 namespace CubeFaceDesignator {
@@ -19,6 +21,10 @@ enum Enum
 };
 
 }
+
+template <> CubeFaceDesignator::Enum enum_begin();
+template <> CubeFaceDesignator::Enum enum_end();
+CubeFaceDesignator::Enum& operator++(CubeFaceDesignator::Enum& e);
 
 }
 

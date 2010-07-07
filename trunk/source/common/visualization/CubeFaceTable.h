@@ -9,6 +9,7 @@
 #include <map>
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 
@@ -62,6 +63,9 @@ public:
 	*/
 	void set_cube_face(int x, int y, int z, CubeFaceDesignator::Enum f, const CubeFace& cubeFace);
 };
+
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<CubeFaceTable> CubeFaceTable_Ptr;
 
 }
 
