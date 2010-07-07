@@ -79,7 +79,7 @@ public:
 	void clear()
 	{
 		m_dictionary.clear();
-		m_heap.swap(Heap());
+		Heap().swap(m_heap);
 
 		ensure_invariant();
 	}

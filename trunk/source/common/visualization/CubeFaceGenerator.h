@@ -9,6 +9,7 @@
 #include <set>
 
 #include <common/adts/Edge.h>
+#include <common/exceptions/Exception.h>
 #include <common/jobs/SimpleJob.h>
 #include "CubeFaceDesignator.h"
 #include "MeshBuildingData.h"
@@ -43,7 +44,7 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	CubeFaceGenerator(const MeshBuildingData_Ptr& data, int x, int y, int z, CubeFaceDesignator::Enum faceDesignator)
-	:	m_data(data), m_x(x), m_y(y), m_z(z), m_faceDesignator(faceDesignator)
+	:	m_data(data), m_faceDesignator(faceDesignator), m_x(x), m_y(y), m_z(z)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -190,6 +191,10 @@ private:
 				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x,m_y+1,m_z+1);
 				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x,m_y+1,m_z);
 				break;
+			}
+			default:
+			{
+				throw Exception("Invalid face designator");		// this should never happen
 			}
 		}
 
