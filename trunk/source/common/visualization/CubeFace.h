@@ -6,8 +6,6 @@
 #ifndef H_MILLIPEDE_CUBEFACE
 #define H_MILLIPEDE_CUBEFACE
 
-#include <boost/array.hpp>
-
 namespace mp {
 
 /**
@@ -39,7 +37,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	boost::array<int,POTENTIAL_NODE_COUNT> m_localToGlobalNodeMap;
+	int m_localToGlobalNodeMap[POTENTIAL_NODE_COUNT];
 
 	//#################### CONSTRUCTORS ####################
 public:

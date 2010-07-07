@@ -7,6 +7,17 @@
 
 namespace mp {
 
-// TODO
+//#################### PUBLIC METHODS ####################
+boost::optional<const CubeFace&> CubeFaceTable::lookup_cube_face(int x, int y, int z, CubeFaceDesignator::Enum f) const
+{
+	SubtableCIter it = m_subtables[f].find(IntTriple(x,y,z));
+	if(it != m_subtables[f].end()) return it->second;
+	else return boost::none;
+}
+
+void CubeFaceTable::set_cube_face(int x, int y, int z, CubeFaceDesignator::Enum f, const CubeFace& cubeFace)
+{
+	m_subtables[f].insert(std::make_pair(IntTriple(x,y,z), cubeFace));
+}
 
 }
