@@ -255,8 +255,18 @@ util/NumericUtil.h
 )
 
 ##
+SET(visualization_sources
+visualization/CubeFace.cpp
+visualization/CubeFaceTable.cpp
+)
+
 SET(visualization_headers
+visualization/CubeFace.h
+visualization/CubeFaceDesignator.h
+visualization/CubeFaceGenerator.h
+visualization/CubeFaceTable.h
 visualization/MeshBuilder.h
+visualization/MeshBuildingData.h
 )
 
 #################################################################
@@ -278,6 +288,7 @@ ${segmentation_sources}
 ${slices_sources}
 ${textures_sources}
 ${util_sources}
+${visualization_sources}
 )
 
 SET(headers
@@ -388,6 +399,7 @@ SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
 ##
+SOURCE_GROUP(visualization\\.cpp FILES ${visualization_sources})
 SOURCE_GROUP(visualization\\.h FILES ${visualization_headers})
 
 ################################

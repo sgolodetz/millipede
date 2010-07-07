@@ -11,6 +11,7 @@
 #include <itkImage.h>
 
 #include <common/jobs/CompositeJob.h>
+#include "CubeFaceGenerator.h"
 
 namespace mp {
 
@@ -27,6 +28,13 @@ class MeshBuilder : public CompositeJob
 public:
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
+private:
+	typedef MeshBuildingData<Label> MeshBuildingDataT;
+	typedef boost::shared_ptr<MeshBuildingDataT> MeshBuildingData_Ptr;
+
+	//#################### PRIVATE VARIABLES ####################
+private:
+	MeshBuildingData_Ptr m_data;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -39,6 +47,7 @@ public:
 	*/
 	explicit MeshBuilder(const LabelImagePointer& labelling)
 	{
+		m_data.reset(new MeshBuildingDataT(labelling));
 		// TODO
 	}
 };
