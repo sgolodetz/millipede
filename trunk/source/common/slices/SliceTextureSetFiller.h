@@ -38,7 +38,7 @@ private:
 		:	ori(ori_), sliceIndex(sliceIndex_)
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status(OSSWrapper() << "Extracting slice " << sliceIndex << "...");
 
@@ -69,8 +69,6 @@ private:
 			if(is_aborted()) return;
 			sliceImageHook.set(extractor->GetOutput());
 			if(is_aborted()) return;
-
-			set_finished();
 		}
 
 		int length() const
@@ -89,12 +87,11 @@ private:
 		:	sliceIndex(sliceIndex_)
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status(OSSWrapper() << "Creating texture for slice " << sliceIndex << "...");
 			textureHook.set(TextureFactory::create_texture(sliceImageHook.get()));
 			if(is_aborted()) return;
-			set_finished();
 		}
 
 		int length() const
@@ -113,7 +110,7 @@ private:
 		:	ori(ori_), sliceTextureSet(sliceTextureSet_)
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status("Filling texture set...");
 
@@ -125,7 +122,6 @@ private:
 			sliceTextureSet->set_textures(ori, textures);
 
 			if(is_aborted()) return;
-			set_finished();
 		}
 
 		int length() const

@@ -48,58 +48,6 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void execute()
-	{
-		m_labelling = m_data->labelling();
-
-		Label topleft, topright, bottomleft, bottomright;
-
-		// Look up the labels of the face corners.
-		switch(m_faceDesignator)
-		{
-			case CubeFaceDesignator::FACE_XY:
-			{
-				topleft = label(m_x,m_y+1,m_z);		topright = label(m_x+1,m_y+1,m_z);
-				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x+1,m_y,m_z);
-				break;
-			}
-			case CubeFaceDesignator::FACE_XZ:
-			{
-				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x+1,m_y,m_z+1);
-				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x+1,m_y,m_z);
-				break;
-			}
-			case CubeFaceDesignator::FACE_YZ:
-			{
-				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x,m_y+1,m_z+1);
-				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x,m_y+1,m_z);
-				break;
-			}
-		}
-
-		// Calculate the edges on the face from the labels of the corners.
-		std::list<Edge> edges = edges_on_face(topleft, topright, bottomleft, bottomright);
-
-		// If there aren't any edges, this cube face is irrelevant to the mesh.
-		if(edges.size() == 0)
-		{
-			set_finished();
-			return;
-		}
-
-		// Construct the cube face, marking each used local node to indicate that we need to look up its global node.
-		CubeFace cubeFace;
-		for(std::list<Edge>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
-		{
-			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->u));
-			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->v));
-		}
-
-		// TODO
-
-		set_finished();
-	}
-
 	int length() const
 	{
 		return 1;
@@ -214,6 +162,52 @@ private:
 		}
 
 		return edges;
+	}
+
+	void execute_impl()
+	{
+		m_labelling = m_data->labelling();
+
+		Label topleft, topright, bottomleft, bottomright;
+
+		// Look up the labels of the face corners.
+		switch(m_faceDesignator)
+		{
+			case CubeFaceDesignator::FACE_XY:
+			{
+				topleft = label(m_x,m_y+1,m_z);		topright = label(m_x+1,m_y+1,m_z);
+				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x+1,m_y,m_z);
+				break;
+			}
+			case CubeFaceDesignator::FACE_XZ:
+			{
+				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x+1,m_y,m_z+1);
+				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x+1,m_y,m_z);
+				break;
+			}
+			case CubeFaceDesignator::FACE_YZ:
+			{
+				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x,m_y+1,m_z+1);
+				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x,m_y+1,m_z);
+				break;
+			}
+		}
+
+		// Calculate the edges on the face from the labels of the corners.
+		std::list<Edge> edges = edges_on_face(topleft, topright, bottomleft, bottomright);
+
+		// If there aren't any edges, this cube face is irrelevant to the mesh.
+		if(edges.size() == 0) return;
+
+		// Construct the cube face, marking each used local node to indicate that we need to look up its global node.
+		CubeFace cubeFace;
+		for(std::list<Edge>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
+		{
+			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->u));
+			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->v));
+		}
+
+		// TODO
 	}
 
 	Label label(int x, int y, int z) const

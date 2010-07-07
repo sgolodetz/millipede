@@ -35,13 +35,13 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void execute();
 	int length() const;
 	const DICOMVolume_Ptr& volume();
 	const DICOMVolumeChoice& volume_choice() const;
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void execute_impl();
 	static std::string read_header_field(const itk::Image<int,2>::Pointer& image, const std::string& key);
 };
 

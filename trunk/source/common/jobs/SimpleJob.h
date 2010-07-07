@@ -20,15 +20,19 @@ private:
 public:
 	SimpleJob();
 
+	//#################### PRIVATE ABSTRACT METHODS ####################
+private:
+	virtual void execute_impl() = 0;
+
 	//#################### PUBLIC METHODS ####################
 public:
+	void execute();
 	int progress() const;
 	std::string status() const;
 
 	//#################### PROTECTED METHODS ####################
 protected:
 	void increment_progress();
-	void set_finished();
 	void set_progress(int progress);
 };
 

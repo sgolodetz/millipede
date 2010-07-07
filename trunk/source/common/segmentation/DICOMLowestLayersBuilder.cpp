@@ -23,7 +23,18 @@ DICOMLowestLayersBuilder::DICOMLowestLayersBuilder(const DICOMSegmentationOption
 {}
 
 //#################### PUBLIC METHODS ####################
-void DICOMLowestLayersBuilder::execute()
+int DICOMLowestLayersBuilder::length() const
+{
+	return m_segmentationOptions.adfIterations + 3;
+}
+
+void DICOMLowestLayersBuilder::set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook)
+{
+	m_volumeHook = volumeHook;
+}
+
+//#################### PRIVATE METHODS ####################
+void DICOMLowestLayersBuilder::execute_impl()
 {
 	typedef itk::Image<int,3> BaseImage;
 	typedef itk::Image<short,3> GradientMagnitudeImage;
@@ -120,19 +131,7 @@ void DICOMLowestLayersBuilder::execute()
 	m_leafLayer.reset(new DICOMImageLeafLayer(baseImage, windowedImage, gradientMagnitudeImage));
 	if(is_aborted()) return;
 	m_lowestBranchLayer = IPF::make_lowest_branch_layer(m_leafLayer, ws.calculate_groups());
-	
 	if(is_aborted()) return;
-	set_finished();
-}
-
-int DICOMLowestLayersBuilder::length() const
-{
-	return m_segmentationOptions.adfIterations + 3;
-}
-
-void DICOMLowestLayersBuilder::set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook)
-{
-	m_volumeHook = volumeHook;
 }
 
 }

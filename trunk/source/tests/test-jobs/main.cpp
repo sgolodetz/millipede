@@ -22,12 +22,11 @@ struct TestJob : SimpleJob
 
 	explicit TestJob(int i) : m_i(i) {}
 
-	void execute()
+	void execute_impl()
 	{
 		std::ostringstream oss;
 		oss << "Doing a test job in the main thread: " << m_i << '\n';
 		std::cout << oss.str();
-		set_finished();
 	}
 
 	int length() const
@@ -75,12 +74,11 @@ void test1()
 //#################### TEST 2 ####################
 struct MainThreadJob : SimpleJob
 {
-	void execute()
+	void execute_impl()
 	{
 		// Note: We can't do anything too interesting in a main thread job without locking up the user interface.
 		int k = 23 * 9;
 		std::cout << k << '\n';
-		set_finished();
 	}
 
 	int length() const
@@ -97,7 +95,7 @@ struct OtherThreadJob : SimpleJob
 	:	m_index(index)
 	{}
 
-	void execute()
+	void execute_impl()
 	{
 		std::cout << "[Other Thread] Executing Sub-Job\n";
 
@@ -116,8 +114,6 @@ struct OtherThreadJob : SimpleJob
 				set_status(OSSWrapper() << '(' << m_index << ") Finished iteration " << i);
 			}
 		}
-
-		set_finished();
 	}
 
 	int length() const
@@ -194,10 +190,11 @@ private:
 	DataHook<int> m_input;
 	DataHook<int> m_output;
 public:
-	void execute()										{ m_output.set(m_input.get() + 23); set_finished(); }
 	DataHook<int> get_output_hook() const				{ return m_output; }
 	int length() const									{ return 1; }
 	void set_input_hook(const DataHook<int>& input)		{ m_input = input; }
+private:
+	void execute_impl()									{ m_output.set(m_input.get() + 23); }
 };
 
 class IntermediateJob : public SimpleJob
@@ -206,10 +203,11 @@ private:
 	DataHook<int> m_input;
 	DataHook<double> m_output;
 public:
-	void execute()										{ m_output.set(m_input.get() * 2.0); set_finished(); }
 	DataHook<double> get_output_hook() const			{ return m_output; }
 	int length() const									{ return 1; }
 	void set_input_hook(const DataHook<int>& input)		{ m_input = input; }
+private:
+	void execute_impl()									{ m_output.set(m_input.get() * 2.0); }
 };
 
 class FinalJob : public SimpleJob
@@ -218,10 +216,11 @@ private:
 	DataHook<double> m_input;
 	DataHook<double> m_output;
 public:
-	void execute()										{ m_output.set(m_input.get() + 9.0); set_finished(); }
 	DataHook<double> get_output_hook() const			{ return m_output; }
 	int length() const									{ return 1; }
 	void set_input_hook(const DataHook<double>& input)	{ m_input = input; }
+private:
+	void execute_impl()									{ m_output.set(m_input.get() + 9.0); }
 };
 
 class OverallJob : public CompositeJob

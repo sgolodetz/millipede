@@ -28,7 +28,23 @@ DICOMVolumeLoader::DICOMVolumeLoader(const DICOMDirectory_CPtr& dicomdir, const 
 {}
 
 //#################### PUBLIC METHODS ####################
-void DICOMVolumeLoader::execute()
+int DICOMVolumeLoader::length() const
+{
+	return m_volumeChoice.maxZ - m_volumeChoice.minZ + 1;
+}
+
+const DICOMVolume_Ptr& DICOMVolumeLoader::volume()
+{
+	return m_volume;
+}
+
+const DICOMVolumeChoice& DICOMVolumeLoader::volume_choice() const
+{
+	return m_volumeChoice;
+}
+
+//#################### PRIVATE METHODS ####################
+void DICOMVolumeLoader::execute_impl()
 try
 {
 	typedef itk::GDCMImageIO ImageIO;
@@ -130,8 +146,6 @@ try
 	}
 
 	m_volume.reset(new DICOMVolume(volumeImage, modality));
-
-	set_finished();
 }
 catch(std::exception& e)
 {
@@ -139,22 +153,6 @@ catch(std::exception& e)
 	set_status(e.what());
 }
 
-int DICOMVolumeLoader::length() const
-{
-	return m_volumeChoice.maxZ - m_volumeChoice.minZ + 1;
-}
-
-const DICOMVolume_Ptr& DICOMVolumeLoader::volume()
-{
-	return m_volume;
-}
-
-const DICOMVolumeChoice& DICOMVolumeLoader::volume_choice() const
-{
-	return m_volumeChoice;
-}
-
-//#################### PRIVATE METHODS ####################
 std::string DICOMVolumeLoader::read_header_field(const itk::Image<int,2>::Pointer& image, const std::string& key)
 {
 	const itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();

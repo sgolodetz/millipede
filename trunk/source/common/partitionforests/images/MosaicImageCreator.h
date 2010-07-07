@@ -43,14 +43,6 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void execute()
-	{
-		set_status("Creating mosaic image...");
-		if(m_withBoundaries)	execute_boundaries();
-		else					execute_no_boundaries();
-		set_finished();
-	}
-
 	const DataHook<MosaicImage::Pointer>& get_mosaic_image_hook() const
 	{
 		return m_mosaicImageHook;
@@ -129,6 +121,13 @@ private:
 		}
 
 		m_mosaicImageHook.set(mosaicImage);
+	}
+
+	void execute_impl()
+	{
+		set_status("Creating mosaic image...");
+		if(m_withBoundaries)	execute_boundaries();
+		else					execute_no_boundaries();
 	}
 
 	void execute_no_boundaries()

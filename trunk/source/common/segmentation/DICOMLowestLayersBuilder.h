@@ -41,9 +41,12 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void execute();
 	int length() const;
 	void set_volume_hook(const DataHook<DICOMVolume_CPtr>& volumeHook);
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void execute_impl();
 };
 
 }

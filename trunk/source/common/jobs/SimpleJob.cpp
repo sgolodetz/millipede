@@ -13,6 +13,12 @@ SimpleJob::SimpleJob()
 {}
 
 //#################### PUBLIC METHODS ####################
+void SimpleJob::execute()
+{
+	execute_impl();
+	set_progress(length());
+}
+
 int SimpleJob::progress() const
 {
 	boost::mutex::scoped_lock lock(m_mutex);
@@ -30,11 +36,6 @@ void SimpleJob::increment_progress()
 {
 	boost::mutex::scoped_lock lock(m_mutex);
 	++m_progress;
-}
-
-void SimpleJob::set_finished()
-{
-	set_progress(length());
 }
 
 void SimpleJob::set_progress(int progress)

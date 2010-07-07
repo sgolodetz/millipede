@@ -48,7 +48,7 @@ private:
 		:	base(base_), subvolumeIndex(subvolumeIndex_)
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status("Extracting subvolume...");
 
@@ -71,8 +71,6 @@ private:
 
 			extractor->Update();
 			subvolumeHook.set(DICOMVolume_CPtr(new DICOMVolume(extractor->GetOutput(), base->m_volume->modality())));
-
-			set_finished();
 		}
 
 		int length() const
@@ -90,7 +88,7 @@ private:
 		:	base(base_), subvolumeCount(static_cast<int>(base->m_leafLayers.size()))
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status("Combining leaf layers...");
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
@@ -116,7 +114,6 @@ private:
 				increment_progress();
 			}
 			base->m_combinedLeafLayer.reset(new LeafLayer(leafProperties, volumeSize[0], volumeSize[1], volumeSize[2]));
-			set_finished();
 		}
 
 		int length() const
@@ -134,7 +131,7 @@ private:
 		:	base(base_), subvolumeCount(static_cast<int>(base->m_leafLayers.size()))
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status("Combining lowest branch layers...");
 			std::vector<std::set<int> > groups;
@@ -159,7 +156,6 @@ private:
 				increment_progress();
 			}
 			base->m_combinedLowestBranchLayer = VolumeIPFT::make_lowest_branch_layer(base->m_combinedLeafLayer, groups);
-			set_finished();
 		}
 
 		int length() const
@@ -176,11 +172,10 @@ private:
 		:	base(base_)
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			set_status("Creating initial partition forest...");
 			base->m_volumeIPF.reset(new VolumeIPFT(base->m_volume->size(), base->m_combinedLeafLayer, base->m_combinedLowestBranchLayer));
-			set_finished();
 		}
 
 		int length() const
@@ -198,7 +193,7 @@ private:
 		:	base(base_), subvolumeCount(static_cast<int>(base->m_leafLayers.size()))
 		{}
 
-		void execute()
+		void execute_impl()
 		{
 			//~~~~~~~
 			// STEP 1
@@ -247,8 +242,6 @@ private:
 				}
 				if(is_aborted()) return;
 			}
-
-			set_finished();
 		}
 
 		int length() const
