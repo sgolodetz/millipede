@@ -34,6 +34,17 @@ public:
 		POTENTIAL_NODE_COUNT,	// = 5, since there are five potential nodes on a face: top, left, middle, right and bottom (numbered here in that order)
 	};
 
+	/**
+	@brief	An enum representing the locations of the face's vertices.
+	*/
+	enum VertexDesignator
+	{
+		TOP_LEFT_VERTEX,
+		TOP_RIGHT_VERTEX,
+		BOTTOM_LEFT_VERTEX,
+		BOTTOM_RIGHT_VERTEX,
+	};
+
 private:
 	static const int UNUSED = -1;
 	static const int USED = -2;
