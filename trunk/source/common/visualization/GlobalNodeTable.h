@@ -35,9 +35,9 @@ public:
 
 	//#################### NESTED CLASSES ####################
 public:
-	struct NodePosition
+	class NodePosition
 	{
-		friend GlobalNodeTable<Label>;
+		friend class GlobalNodeTable<Label>;
 
 	private:
 		Vector3i base;
