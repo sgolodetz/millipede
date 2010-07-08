@@ -15,7 +15,7 @@ import qualified Data.Set  as S
 import Data.Array.IO
 import Data.Array.Unboxed       (IArray,  UArray, amap, bounds,  (!)  )
 import Data.Word                ( Word16)
-import Waterfall(mkNode,Edge,Mergeable(union,unions),getRegion,getEdges)
+import Waterfall(Tree(Node),Edge,Mergeable(union,unions),getRegion,getEdges)
 import PGM(arrayToFile)
 
 type Adjacency  = (Int,(Voxel,Voxel))
@@ -62,7 +62,7 @@ arrayToNode arr miss (n,(Voxel v p))  = do
   ;let ls' = remove miss ls
   ;let ls'' = remove p ls'
   ;es <- mapM  (arrayToNode arr p) ls''
-  ;return $!  (mkNode (S.fromList [(v,p)],n) es)
+  ;return $!  (Node (S.fromList [(v,p)],n) es)
   }
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
