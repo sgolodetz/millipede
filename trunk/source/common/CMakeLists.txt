@@ -264,6 +264,7 @@ SET(visualization_sources
 visualization/CubeFace.cpp
 visualization/CubeFaceDesignator.cpp
 visualization/CubeTable.cpp
+visualization/MeshTriangle.cpp
 )
 
 SET(visualization_headers
@@ -272,10 +273,12 @@ visualization/CubeFaceDesignator.h
 visualization/CubeFaceGenerator.h
 visualization/CubeInternalGenerator.h
 visualization/CubeTable.h
+visualization/CubeTriangleGenerator.h
 visualization/GlobalNodeTable.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
 visualization/MeshNode.h
+visualization/MeshTriangle.h
 visualization/SourcedLabel.h
 )
 

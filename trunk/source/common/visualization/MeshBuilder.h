@@ -13,6 +13,7 @@
 #include <common/jobs/CompositeJob.h>
 #include "CubeFaceGenerator.h"
 #include "CubeInternalGenerator.h"
+#include "CubeTriangleGenerator.h"
 
 namespace mp {
 
@@ -80,7 +81,13 @@ public:
 					add_subjob(new CubeInternalGenerator<Label>(m_data, x, y, z));
 				}
 
-		// TODO
+		// Add the CubeTriangleGenerator sub-jobs.
+		for(int x=0; x<xSize; ++x)
+			for(int y=0; y<ySize; ++y)
+				for(int z=0; z<zSize; ++z)
+				{
+					add_subjob(new CubeTriangleGenerator<Label>(m_data, x, y, z));
+				}
 	}
 
 	//#################### PUBLIC METHODS ####################

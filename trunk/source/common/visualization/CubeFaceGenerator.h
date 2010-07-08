@@ -38,7 +38,7 @@ private:
 private:
 	CubeFace m_cubeFace;
 	MeshBuildingData_Ptr m_data;
-	std::list<CubeFace::Edge> m_edges;
+	std::vector<CubeFace::Edge> m_edges;
 	CubeFaceDesignator::Enum m_faceDesignator;
 	int m_x, m_y, m_z;
 	LabelImagePointer m_labelling;
@@ -66,7 +66,7 @@ private:
 	CubeFace construct_initial_cube_face() const
 	{
 		CubeFace cubeFace;
-		for(std::list<CubeFace::Edge>::const_iterator it=m_edges.begin(), iend=m_edges.end(); it!=iend; ++it)
+		for(std::vector<CubeFace::Edge>::const_iterator it=m_edges.begin(), iend=m_edges.end(); it!=iend; ++it)
 		{
 			cubeFace.set_used(it->u);
 			cubeFace.set_used(it->v);
@@ -118,9 +118,9 @@ private:
 	@param[in]	labels	The labels on the face vertices
 	@return	The edges induced by these labels
 	*/
-	static std::list<CubeFace::Edge> edges_on_face(const std::vector<Label>& labels)
+	static std::vector<CubeFace::Edge> edges_on_face(const std::vector<Label>& labels)
 	{
-		std::list<CubeFace::Edge> edges;
+		std::vector<CubeFace::Edge> edges;
 
 		std::set<Label, PriorityPred> uniqueLabels(labels.begin(), labels.end());
 		const size_t uniqueLabelCount = uniqueLabels.size();
@@ -257,7 +257,7 @@ private:
 	void fill_in_adjacent_nodes()
 	{
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
-		for(std::list<CubeFace::Edge>::const_iterator it=m_edges.begin(), iend=m_edges.end(); it!=iend; ++it)
+		for(std::vector<CubeFace::Edge>::const_iterator it=m_edges.begin(), iend=m_edges.end(); it!=iend; ++it)
 		{
 			int u = m_cubeFace.global_node_index(it->u);
 			int v = m_cubeFace.global_node_index(it->v);

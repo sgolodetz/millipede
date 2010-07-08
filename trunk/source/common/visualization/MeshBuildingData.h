@@ -11,6 +11,7 @@
 #include <common/jobs/DataHook.h>
 #include "CubeTable.h"
 #include "GlobalNodeTable.h"
+#include "MeshTriangle.h"
 
 namespace mp {
 
@@ -22,17 +23,20 @@ public:
 	typedef GlobalNodeTable<Label> GlobalNodeTableT;
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
+	typedef std::list<MeshTriangle> MeshTriangleList;
+	typedef boost::shared_ptr<MeshTriangleList> MeshTriangleList_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	CubeTable m_cubeTable;
 	GlobalNodeTableT m_globalNodeTable;
 	DataHook<LabelImagePointer> m_labellingHook;
-	// TODO: Triangles
+	MeshTriangleList_Ptr m_triangles;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	MeshBuildingData()
+	:	m_triangles(new MeshTriangleList)
 	{}
 
 	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
@@ -71,6 +75,11 @@ public:
 	void set_labelling_hook(const DataHook<LabelImagePointer>& labellingHook)
 	{
 		m_labellingHook = labellingHook;
+	}
+
+	MeshTriangleList_Ptr triangles()
+	{
+		return m_triangles;
 	}
 };
 

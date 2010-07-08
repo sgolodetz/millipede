@@ -11,6 +11,19 @@
 
 namespace mp {
 
+/**
+@brief	A CubeInternalGenerator handles node and edge generation within a cube.
+
+The nodes and edges added depend on the number of face-centre nodes.
+
+-	If there are 0 face centre nodes, nothing needs doing.
+-	If there are 2 face-centre nodes, an edge needs to be added between them.
+-	If there are > 2 face-centre nodes, a cube centre node needs to be added, along with edges joining it to the face-centre nodes.
+
+It is not possible for there to be a single face-centre node, so that case is explicitly excluded.
+
+@tparam	Label	The type of label to be used
+*/
 template <typename Label>
 class CubeInternalGenerator : public SimpleJob
 {
