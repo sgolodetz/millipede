@@ -36,6 +36,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	CubeFace m_cubeFace;
 	MeshBuildingData_Ptr m_data;
 	CubeFaceDesignator::Enum m_faceDesignator;
 	int m_x, m_y, m_z;
@@ -86,6 +87,12 @@ private:
 		}
 	}
 
+	/**
+	@brief	Constructs the cube face, marking which face nodes are being used based on the face edges.
+
+	@param[in]	edges	The face edges
+	@return	The constructed cube face
+	*/
 	CubeFace construct_initial_cube_face(const std::list<CubeFace::Edge>& edges) const
 	{
 		CubeFace cubeFace;
@@ -97,29 +104,40 @@ private:
 		return cubeFace;
 	}
 
-	std::vector<Vector3i> determine_face_corner_locations() const
+	/**
+	@brief	Calculates the locations of the four face vertices in the volume.
+
+	@return	A std::vector containing the face vertex locations
+	*/
+	std::vector<Vector3i> determine_face_vertex_locations() const
 	{
-		std::vector<Vector3i> vertexLocs(CubeFace::POTENTIAL_NODE_COUNT);
+		std::vector<Vector3i> locs(CubeFace::POTENTIAL_NODE_COUNT);
 		switch(m_faceDesignator)
 		{
 			case CubeFaceDesignator::FACE_XY:
-				vertexLocs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y+1,m_z);		vertexLocs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x+1,m_y+1,m_z);
-				vertexLocs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		vertexLocs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z);
+				locs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y+1,m_z);		locs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x+1,m_y+1,m_z);
+				locs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		locs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z);
 				break;
 			case CubeFaceDesignator::FACE_XZ:
-				vertexLocs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z+1);		vertexLocs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z+1);
-				vertexLocs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		vertexLocs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z);
+				locs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z+1);		locs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z+1);
+				locs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		locs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z);
 				break;
 			case CubeFaceDesignator::FACE_YZ:
-				vertexLocs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z+1);		vertexLocs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x,m_y+1,m_z+1);
-				vertexLocs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		vertexLocs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x,m_y+1,m_z);
+				locs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z+1);		locs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x,m_y+1,m_z+1);
+				locs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		locs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x,m_y+1,m_z);
 				break;
 			default:
 				throw Exception("Invalid face designator");		// this should never happen
 		}
-		return vertexLocs;
+		return locs;
 	}
 
+	/**
+	@brief	Determines the pattern of edges on the face, based on the labels of the face vertices.
+
+	@param[in]	labels	The labels on the face vertices
+	@return	The edges induced by these labels
+	*/
 	static std::list<CubeFace::Edge> edges_on_face(const std::vector<Label>& labels)
 	{
 		std::list<CubeFace::Edge> edges;
@@ -233,20 +251,20 @@ private:
 		m_labelling = m_data->labelling();
 
 		// Determine the locations of the face vertices.
-		std::vector<Vector3i> vertexLocs = determine_face_corner_locations();
+		std::vector<Vector3i> vertexLocs = determine_face_vertex_locations();
 
 		// Look up the labels of the face vertices.
 		std::vector<Label> vertexLabels(4);
 		for(int i=0; i<4; ++i) vertexLabels[i] = label(vertexLocs[i]);
 
-		// Calculate the edges on the face from the labels of the corners.
+		// Calculate the edges on the face from the labels of the vertices.
 		std::list<CubeFace::Edge> edges = edges_on_face(vertexLabels);
 
 		// If there aren't any edges, this cube face is irrelevant to the mesh.
 		if(edges.size() == 0) return;
 
 		// Construct the cube face, marking each used local node to indicate that we need to look up its global node.
-		CubeFace cubeFace = construct_initial_cube_face(edges);
+		m_cubeFace = construct_initial_cube_face(edges);
 
 		// Build the mapping from local node indices to global coordinates.
 		std::vector<Vector3i> nodeLocs(CubeFace::POTENTIAL_NODE_COUNT);
@@ -254,53 +272,52 @@ private:
 		build_mapping_to_global_coordinates(nodeLocs, nodeDesignators);
 
 		// Fill in the global node indices of the cube face's nodes.
-		fill_in_global_indices(cubeFace, nodeLocs, nodeDesignators);
+		fill_in_global_indices(nodeLocs, nodeDesignators);
 
 		// Fill in the labels for each node.
-		fill_in_sourced_labels(cubeFace, vertexLabels, vertexLocs);
+		fill_in_sourced_labels(vertexLabels, vertexLocs);
 
 		// Run through the edges and fill in the adjacent node entries in the global nodes.
 		// Note that the edge endpoints are *local* indices, so they need to be mapped to
 		// global indices before being stored in the global nodes.
-		fill_in_adjacent_nodes(cubeFace, edges);
+		fill_in_adjacent_nodes(edges);
 
 		// Fill in the cube face in the cube face table.
-		m_data->cube_face_table().set_cube_face(m_x, m_y, m_z, m_faceDesignator, cubeFace);
+		m_data->cube_face_table().set_cube_face(m_x, m_y, m_z, m_faceDesignator, m_cubeFace);
 	}
 
-	void fill_in_adjacent_nodes(CubeFace& cubeFace, const std::list<CubeFace::Edge>& edges)
+	void fill_in_adjacent_nodes(const std::list<CubeFace::Edge>& edges)
 	{
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
 		for(std::list<CubeFace::Edge>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
 		{
-			int u = cubeFace.global_node_index(it->u);
-			int v = cubeFace.global_node_index(it->v);
+			int u = m_cubeFace.global_node_index(it->u);
+			int v = m_cubeFace.global_node_index(it->v);
 			globalNodeTable(u).adjacentNodes.insert(v);
 			globalNodeTable(v).adjacentNodes.insert(u);
 		}
 	}
 
-	void fill_in_global_indices(CubeFace& cubeFace, const std::vector<Vector3i>& nodeLocs,
-								const std::vector<typename GlobalNodeTableT::NodeDesignator>& nodeDesignators)
+	void fill_in_global_indices(const std::vector<Vector3i>& nodeLocs, const std::vector<typename GlobalNodeTableT::NodeDesignator>& nodeDesignators)
 	{
 		for(CubeFace::NodeDesignator n=enum_begin<CubeFace::NodeDesignator>(), end=enum_end<CubeFace::NodeDesignator>(); n!=end; ++n)
 		{
-			if(cubeFace.is_used(n))
+			if(m_cubeFace.is_used(n))
 			{
 				int globalNodeIndex = m_data->global_node_table().find_index(nodeLocs[n], nodeDesignators[n]);
-				cubeFace.set_global_node_index(n, globalNodeIndex);
+				m_cubeFace.set_global_node_index(n, globalNodeIndex);
 			}
 		}
 	}
 
-	void fill_in_sourced_labels(CubeFace& cubeFace, const std::vector<Label>& vertexLabels, const std::vector<Vector3i>& vertexLocs)
+	void fill_in_sourced_labels(const std::vector<Label>& vertexLabels, const std::vector<Vector3i>& vertexLocs)
 	{
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
 		for(CubeFace::NodeDesignator n=enum_begin<CubeFace::NodeDesignator>(), end=enum_end<CubeFace::NodeDesignator>(); n!=end; ++n)
 		{
-			if(cubeFace.is_used(n))
+			if(m_cubeFace.is_used(n))
 			{
-				MeshNodeT& node = globalNodeTable(cubeFace.global_node_index(n));
+				MeshNodeT& node = globalNodeTable(m_cubeFace.global_node_index(n));
 				const std::vector<CubeFace::VertexDesignator>& labelSources = label_sources(n);
 				for(size_t i=0, size=labelSources.size(); i<size; ++i)
 				{
@@ -316,6 +333,12 @@ private:
 		return m_labelling->GetPixel(index);
 	}
 
+	/**
+	@brief	Returns the set of face vertices that provide the labels for the specified face node.
+
+	@param[in]	n	A face node designator
+	@return	The set of face vertices that provide labels for n
+	*/
 	static const std::vector<CubeFace::VertexDesignator>& label_sources(CubeFace::NodeDesignator n)
 	{
 		static std::vector<std::vector<CubeFace::VertexDesignator> > labelSources(CubeFace::POTENTIAL_NODE_COUNT);
