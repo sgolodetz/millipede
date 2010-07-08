@@ -8,14 +8,15 @@
 
 namespace mp {
 
+template <typename T = int>
 struct Edge
 {
 	//#################### PUBLIC VARIABLES ####################
-	int u;
-	int v;
+	T u;
+	T v;
 
 	//#################### CONSTRUCTORS ####################
-	Edge(int u_, int v_)
+	Edge(T u_, T v_)
 	:	u(u_), v(v_)
 	{}
 };

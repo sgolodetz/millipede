@@ -28,6 +28,7 @@ class CubeFaceGenerator : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef Edge<CubeFace::FaceNodeDesignator> EdgeT;
 	typedef GlobalNodeTable<Label> GlobalNodeTableT;
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
@@ -57,9 +58,9 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	static std::list<Edge> edges_on_face(Label topleft, Label topright, Label bottomleft, Label bottomright)
+	static std::list<EdgeT> edges_on_face(Label topleft, Label topright, Label bottomleft, Label bottomright)
 	{
-		std::list<Edge> edges;
+		std::list<EdgeT> edges;
 
 		std::set<Label, PriorityPred> labels;
 		labels.insert(topleft);
@@ -81,35 +82,35 @@ private:
 					case 0:		// 0000 or 1111
 						break;
 					case 1:		// 0001 or 1110
-						edges.push_back(Edge(3, 4));
+						edges.push_back(EdgeT(CubeFace::RIGHT_NODE, CubeFace::BOTTOM_NODE));
 						break;
 					case 2:		// 0010 or 1101
-						edges.push_back(Edge(1, 4));
+						edges.push_back(EdgeT(CubeFace::LEFT_NODE, CubeFace::BOTTOM_NODE));
 						break;
 					case 3:		// 0011 or 1100
-						edges.push_back(Edge(1, 3));
+						edges.push_back(EdgeT(CubeFace::LEFT_NODE, CubeFace::RIGHT_NODE));
 						break;
 					case 4:		// 0100 or 1011
-						edges.push_back(Edge(3, 0));
+						edges.push_back(EdgeT(CubeFace::RIGHT_NODE, CubeFace::TOP_NODE));
 						break;
 					case 5:		// 0101 or 1010
-						edges.push_back(Edge(0, 4));
+						edges.push_back(EdgeT(CubeFace::TOP_NODE, CubeFace::BOTTOM_NODE));
 						break;
 					case 6:		// 0110 or 1001
 						// Ambiguous case: use label priorities to resolve.
 						if(PriorityPred()(topleft, topright))	// if the topleft label has priority over the topright one
 						{
-							edges.push_back(Edge(0, 3));
-							edges.push_back(Edge(1, 4));
+							edges.push_back(EdgeT(CubeFace::TOP_NODE, CubeFace::RIGHT_NODE));
+							edges.push_back(EdgeT(CubeFace::LEFT_NODE, CubeFace::BOTTOM_NODE));
 						}
 						else
 						{
-							edges.push_back(Edge(0, 1));
-							edges.push_back(Edge(3, 4));
+							edges.push_back(EdgeT(CubeFace::TOP_NODE, CubeFace::LEFT_NODE));
+							edges.push_back(EdgeT(CubeFace::RIGHT_NODE, CubeFace::BOTTOM_NODE));
 						}
 						break;
 					case 7:		// 0111 or 1000
-						edges.push_back(Edge(1, 0));
+						edges.push_back(EdgeT(CubeFace::LEFT_NODE, CubeFace::TOP_NODE));
 						break;
 				}
 				break;
@@ -119,46 +120,46 @@ private:
 				// Cases: tl=tr, tl=bl, tl=br, tr=bl, tr=br, bl=br
 				if(topleft == topright)
 				{
-					edges.push_back(Edge(2, 1));
-					edges.push_back(Edge(2, 3));
-					edges.push_back(Edge(2, 4));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::RIGHT_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				}
 				else if(topleft == bottomleft)
 				{
-					edges.push_back(Edge(2, 0));
-					edges.push_back(Edge(2, 3));
-					edges.push_back(Edge(2, 4));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::RIGHT_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				}
 				else if(topleft == bottomright)
 				{
-					edges.push_back(Edge(0, 3));
-					edges.push_back(Edge(1, 4));
+					edges.push_back(EdgeT(CubeFace::TOP_NODE, CubeFace::RIGHT_NODE));
+					edges.push_back(EdgeT(CubeFace::LEFT_NODE, CubeFace::BOTTOM_NODE));
 				}
 				else if(topright == bottomleft)
 				{
-					edges.push_back(Edge(0, 1));
-					edges.push_back(Edge(3, 4));
+					edges.push_back(EdgeT(CubeFace::TOP_NODE, CubeFace::LEFT_NODE));
+					edges.push_back(EdgeT(CubeFace::RIGHT_NODE, CubeFace::BOTTOM_NODE));
 				}
 				else if(topright == bottomright)
 				{
-					edges.push_back(Edge(2, 0));
-					edges.push_back(Edge(2, 1));
-					edges.push_back(Edge(2, 4));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				}
 				else	// bottomleft == bottomright
 				{
-					edges.push_back(Edge(2, 0));
-					edges.push_back(Edge(2, 1));
-					edges.push_back(Edge(2, 3));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
+					edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::RIGHT_NODE));
 				}
 				break;
 			}
 			default:
 			{
-				edges.push_back(Edge(2, 0));
-				edges.push_back(Edge(2, 1));
-				edges.push_back(Edge(2, 3));
-				edges.push_back(Edge(2, 4));
+				edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
+				edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
+				edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::RIGHT_NODE));
+				edges.push_back(EdgeT(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				break;
 			}
 		}
@@ -197,17 +198,17 @@ private:
 		Label bottomrightLabel = label(bottomrightLoc);
 
 		// Calculate the edges on the face from the labels of the corners.
-		std::list<Edge> edges = edges_on_face(topleftLabel, toprightLabel, bottomleftLabel, bottomrightLabel);
+		std::list<EdgeT> edges = edges_on_face(topleftLabel, toprightLabel, bottomleftLabel, bottomrightLabel);
 
 		// If there aren't any edges, this cube face is irrelevant to the mesh.
 		if(edges.size() == 0) return;
 
 		// Construct the cube face, marking each used local node to indicate that we need to look up its global node.
 		CubeFace cubeFace;
-		for(std::list<Edge>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
+		for(std::list<EdgeT>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
 		{
-			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->u));
-			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->v));
+			cubeFace.set_used(it->u);
+			cubeFace.set_used(it->v);
 		}
 
 		// Build the mapping from local node indices to global coordinates.
@@ -293,10 +294,10 @@ private:
 		// Run through the edges and fill in the adjacent node entries in the global nodes.
 		// Note that the edge endpoints have *local* indices, so they need to be mapped
 		// to global indices before being stored in the global nodes.
-		for(std::list<Edge>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
+		for(std::list<EdgeT>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
 		{
-			int u = cubeFace.global_node_index(CubeFace::FaceNodeDesignator(it->u));
-			int v = cubeFace.global_node_index(CubeFace::FaceNodeDesignator(it->v));
+			int u = cubeFace.global_node_index(it->u);
+			int v = cubeFace.global_node_index(it->v);
 			globalNodeTable(u).adjacentNodes.insert(v);
 			globalNodeTable(v).adjacentNodes.insert(u);
 		}
