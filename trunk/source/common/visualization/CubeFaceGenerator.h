@@ -56,15 +56,15 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	static std::list<CubeFace::Edge> edges_on_face(Label topleft, Label topright, Label bottomleft, Label bottomright)
+	static std::list<CubeFace::Edge> edges_on_face(Label topLeft, Label topRight, Label bottomLeft, Label bottomRight)
 	{
 		std::list<CubeFace::Edge> edges;
 
 		std::set<Label, PriorityPred> labels;
-		labels.insert(topleft);
-		labels.insert(topright);
-		labels.insert(bottomleft);
-		labels.insert(bottomright);
+		labels.insert(topLeft);
+		labels.insert(topRight);
+		labels.insert(bottomLeft);
+		labels.insert(bottomRight);
 
 		const int labelCount = static_cast<int>(labels.size());
 
@@ -73,7 +73,7 @@ private:
 			case 1:
 			case 2:
 			{
-				int a = topright != topleft, b = bottomleft != topleft, c = bottomright != topleft;
+				int a = topRight != topLeft, b = bottomLeft != topLeft, c = bottomRight != topLeft;
 				int combo = (a << 2) + (b << 1) + c;
 				switch(combo)
 				{
@@ -96,7 +96,7 @@ private:
 						break;
 					case 6:		// 0110 or 1001
 						// Ambiguous case: use label priorities to resolve.
-						if(PriorityPred()(topleft, topright))	// if the topleft label has priority over the topright one
+						if(PriorityPred()(topLeft, topRight))	// if the topLeft label has priority over the topRight one
 						{
 							edges.push_back(CubeFace::Edge(CubeFace::TOP_NODE, CubeFace::RIGHT_NODE));
 							edges.push_back(CubeFace::Edge(CubeFace::LEFT_NODE, CubeFace::BOTTOM_NODE));
@@ -116,35 +116,35 @@ private:
 			case 3:
 			{
 				// Cases: tl=tr, tl=bl, tl=br, tr=bl, tr=br, bl=br
-				if(topleft == topright)
+				if(topLeft == topRight)
 				{
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::RIGHT_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				}
-				else if(topleft == bottomleft)
+				else if(topLeft == bottomLeft)
 				{
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::RIGHT_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				}
-				else if(topleft == bottomright)
+				else if(topLeft == bottomRight)
 				{
 					edges.push_back(CubeFace::Edge(CubeFace::TOP_NODE, CubeFace::RIGHT_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::LEFT_NODE, CubeFace::BOTTOM_NODE));
 				}
-				else if(topright == bottomleft)
+				else if(topRight == bottomLeft)
 				{
 					edges.push_back(CubeFace::Edge(CubeFace::TOP_NODE, CubeFace::LEFT_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::RIGHT_NODE, CubeFace::BOTTOM_NODE));
 				}
-				else if(topright == bottomright)
+				else if(topRight == bottomRight)
 				{
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::BOTTOM_NODE));
 				}
-				else	// bottomleft == bottomright
+				else	// bottomLeft == bottomRight
 				{
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::TOP_NODE));
 					edges.push_back(CubeFace::Edge(CubeFace::MIDDLE_NODE, CubeFace::LEFT_NODE));
@@ -170,33 +170,33 @@ private:
 		m_labelling = m_data->labelling();
 
 		// Determine the locations of the face corners.
-		Vector3i topleftLoc, toprightLoc, bottomleftLoc, bottomrightLoc;
+		Vector3i topLeftLoc, topRightLoc, bottomLeftLoc, bottomRightLoc;
 		switch(m_faceDesignator)
 		{
 			case CubeFaceDesignator::FACE_XY:
-				topleftLoc = Vector3i(m_x,m_y+1,m_z);		toprightLoc = Vector3i(m_x+1,m_y+1,m_z);
-				bottomleftLoc = Vector3i(m_x,m_y,m_z);		bottomrightLoc = Vector3i(m_x+1,m_y,m_z);
+				topLeftLoc = Vector3i(m_x,m_y+1,m_z);		topRightLoc = Vector3i(m_x+1,m_y+1,m_z);
+				bottomLeftLoc = Vector3i(m_x,m_y,m_z);		bottomRightLoc = Vector3i(m_x+1,m_y,m_z);
 				break;
 			case CubeFaceDesignator::FACE_XZ:
-				topleftLoc = Vector3i(m_x,m_y,m_z+1);		toprightLoc = Vector3i(m_x+1,m_y,m_z+1);
-				bottomleftLoc = Vector3i(m_x,m_y,m_z);		bottomrightLoc = Vector3i(m_x+1,m_y,m_z);
+				topLeftLoc = Vector3i(m_x,m_y,m_z+1);		topRightLoc = Vector3i(m_x+1,m_y,m_z+1);
+				bottomLeftLoc = Vector3i(m_x,m_y,m_z);		bottomRightLoc = Vector3i(m_x+1,m_y,m_z);
 				break;
 			case CubeFaceDesignator::FACE_YZ:
-				topleftLoc = Vector3i(m_x,m_y,m_z+1);		toprightLoc = Vector3i(m_x,m_y+1,m_z+1);
-				bottomleftLoc = Vector3i(m_x,m_y,m_z);		bottomrightLoc = Vector3i(m_x,m_y+1,m_z);
+				topLeftLoc = Vector3i(m_x,m_y,m_z+1);		topRightLoc = Vector3i(m_x,m_y+1,m_z+1);
+				bottomLeftLoc = Vector3i(m_x,m_y,m_z);		bottomRightLoc = Vector3i(m_x,m_y+1,m_z);
 				break;
 			default:
 				throw Exception("Invalid face designator");		// this should never happen
 		}
 
 		// Look up the labels of the face corners.
-		Label topleftLabel = label(topleftLoc);
-		Label toprightLabel = label(toprightLoc);
-		Label bottomleftLabel = label(bottomleftLoc);
-		Label bottomrightLabel = label(bottomrightLoc);
+		Label topLeftLabel = label(topLeftLoc);
+		Label topRightLabel = label(topRightLoc);
+		Label bottomLeftLabel = label(bottomLeftLoc);
+		Label bottomRightLabel = label(bottomRightLoc);
 
 		// Calculate the edges on the face from the labels of the corners.
-		std::list<CubeFace::Edge> edges = edges_on_face(topleftLabel, toprightLabel, bottomleftLabel, bottomrightLabel);
+		std::list<CubeFace::Edge> edges = edges_on_face(topLeftLabel, topRightLabel, bottomLeftLabel, bottomRightLabel);
 
 		// If there aren't any edges, this cube face is irrelevant to the mesh.
 		if(edges.size() == 0) return;
@@ -254,34 +254,34 @@ private:
 		if(cubeFace.is_used(CubeFace::TOP_NODE))
 		{
 			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::TOP_NODE));
-			n.sourcedLabels.insert(make_sourced_label(topleftLabel, topleftLoc));
-			n.sourcedLabels.insert(make_sourced_label(toprightLabel, toprightLoc));
+			n.sourcedLabels.insert(make_sourced_label(topLeftLabel, topLeftLoc));
+			n.sourcedLabels.insert(make_sourced_label(topRightLabel, topRightLoc));
 		}
 		if(cubeFace.is_used(CubeFace::LEFT_NODE))
 		{
 			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::LEFT_NODE));
-			n.sourcedLabels.insert(make_sourced_label(topleftLabel, topleftLoc));
-			n.sourcedLabels.insert(make_sourced_label(bottomleftLabel, bottomleftLoc));
+			n.sourcedLabels.insert(make_sourced_label(topLeftLabel, topLeftLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomLeftLabel, bottomLeftLoc));
 		}
 		if(cubeFace.is_used(CubeFace::MIDDLE_NODE))
 		{
 			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::MIDDLE_NODE));
-			n.sourcedLabels.insert(make_sourced_label(topleftLabel, topleftLoc));
-			n.sourcedLabels.insert(make_sourced_label(toprightLabel, toprightLoc));
-			n.sourcedLabels.insert(make_sourced_label(bottomleftLabel, bottomleftLoc));
-			n.sourcedLabels.insert(make_sourced_label(bottomrightLabel, bottomrightLoc));
+			n.sourcedLabels.insert(make_sourced_label(topLeftLabel, topLeftLoc));
+			n.sourcedLabels.insert(make_sourced_label(topRightLabel, topRightLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomLeftLabel, bottomLeftLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomRightLabel, bottomRightLoc));
 		}
 		if(cubeFace.is_used(CubeFace::RIGHT_NODE))
 		{
 			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::RIGHT_NODE));
-			n.sourcedLabels.insert(make_sourced_label(toprightLabel, toprightLoc));
-			n.sourcedLabels.insert(make_sourced_label(bottomrightLabel, bottomrightLoc));
+			n.sourcedLabels.insert(make_sourced_label(topRightLabel, topRightLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomRightLabel, bottomRightLoc));
 		}
 		if(cubeFace.is_used(CubeFace::BOTTOM_NODE))
 		{
 			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::BOTTOM_NODE));
-			n.sourcedLabels.insert(make_sourced_label(bottomleftLabel, bottomleftLoc));
-			n.sourcedLabels.insert(make_sourced_label(bottomrightLabel, bottomrightLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomLeftLabel, bottomLeftLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomRightLabel, bottomRightLoc));
 		}
 
 		// Run through the edges and fill in the adjacent node entries in the global nodes.
