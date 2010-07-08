@@ -240,12 +240,11 @@ private:
 		}
 
 		// Lookup the global node indices.
-		for(int i=0; i<CubeFace::POTENTIAL_NODE_COUNT; ++i)
+		for(CubeFace::NodeDesignator n=enum_begin<CubeFace::NodeDesignator>(), end=enum_end<CubeFace::NodeDesignator>(); n!=end; ++n)
 		{
-			CubeFace::NodeDesignator n = static_cast<CubeFace::NodeDesignator>(i);
 			if(cubeFace.is_used(n))
 			{
-				int globalNodeIndex = m_data->global_node_table().find_index(locs[i], nodeDesignators[i]);
+				int globalNodeIndex = m_data->global_node_table().find_index(locs[n], nodeDesignators[n]);
 				cubeFace.set_global_node_index(n, globalNodeIndex);
 			}
 		}

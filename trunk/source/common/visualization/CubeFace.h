@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_CUBEFACE
 #define H_MILLIPEDE_CUBEFACE
 
+#include <common/util/EnumUtil.h>
+
 namespace mp {
 
 /**
@@ -99,6 +101,11 @@ public:
 	*/
 	void set_used(NodeDesignator n);
 };
+
+//#################### ENUMERATION HELPERS ####################
+template <> CubeFace::NodeDesignator enum_begin();
+template <> CubeFace::NodeDesignator enum_end();
+CubeFace::NodeDesignator& operator++(CubeFace::NodeDesignator& e);
 
 }
 

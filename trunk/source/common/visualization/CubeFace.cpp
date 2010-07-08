@@ -37,4 +37,21 @@ void CubeFace::set_used(NodeDesignator n)
 	m_localToGlobalNodeMap[n] = USED;
 }
 
+//#################### ENUMERATION HELPERS ####################
+template <> CubeFace::NodeDesignator enum_begin()
+{
+	return CubeFace::TOP_NODE;
+}
+
+template <> CubeFace::NodeDesignator enum_end()
+{
+	return CubeFace::POTENTIAL_NODE_COUNT;
+}
+
+CubeFace::NodeDesignator& operator++(CubeFace::NodeDesignator& e)
+{
+	e = CubeFace::NodeDesignator(e + 1);
+	return e;
+}
+
 }
