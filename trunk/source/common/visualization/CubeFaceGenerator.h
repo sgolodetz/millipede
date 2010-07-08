@@ -57,6 +57,9 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	/**
+	@brief	Build the mapping that allows cube face nodes to be looked up in the global node table.
+	*/
 	void build_mapping_to_global_coordinates(std::vector<Vector3i>& nodeLocs, std::vector<typename GlobalNodeTableT::NodeDesignator>& nodeDesignators) const
 	{
 		switch(m_faceDesignator)
@@ -250,42 +253,29 @@ private:
 	{
 		m_labelling = m_data->labelling();
 
-		// Determine the locations of the face vertices.
 		std::vector<Vector3i> vertexLocs = determine_face_vertex_locations();
 
-		// Look up the labels of the face vertices.
 		std::vector<Label> vertexLabels(4);
 		for(int i=0; i<4; ++i) vertexLabels[i] = label(vertexLocs[i]);
 
-		// Calculate the edges on the face from the labels of the vertices.
 		std::list<CubeFace::Edge> edges = edges_on_face(vertexLabels);
+		if(edges.size() == 0) return;	// if there aren't any edges, this cube face is irrelevant to the mesh
 
-		// If there aren't any edges, this cube face is irrelevant to the mesh.
-		if(edges.size() == 0) return;
-
-		// Construct the cube face, marking each used local node to indicate that we need to look up its global node.
 		m_cubeFace = construct_initial_cube_face(edges);
-
-		// Build the mapping from local node indices to global coordinates.
-		std::vector<Vector3i> nodeLocs(CubeFace::POTENTIAL_NODE_COUNT);
-		std::vector<typename GlobalNodeTableT::NodeDesignator> nodeDesignators(CubeFace::POTENTIAL_NODE_COUNT);
-		build_mapping_to_global_coordinates(nodeLocs, nodeDesignators);
-
-		// Fill in the global node indices of the cube face's nodes.
-		fill_in_global_indices(nodeLocs, nodeDesignators);
-
-		// Fill in the labels for each node.
+		fill_in_global_indices();
 		fill_in_sourced_labels(vertexLabels, vertexLocs);
-
-		// Run through the edges and fill in the adjacent node entries in the global nodes.
-		// Note that the edge endpoints are *local* indices, so they need to be mapped to
-		// global indices before being stored in the global nodes.
 		fill_in_adjacent_nodes(edges);
-
-		// Fill in the cube face in the cube face table.
 		m_data->cube_face_table().set_cube_face(m_x, m_y, m_z, m_faceDesignator, m_cubeFace);
 	}
 
+	/**
+	@brief	Updates the nodes adjacent to each global node, based on the edges found on this cube face.
+
+	Note that the endpoints of the edges passed in are *local* to the cube face, so they will be
+	mapped to global indices before being stored in the global nodes.
+
+	@param[in]	edges	The edges on this cube face
+	*/
 	void fill_in_adjacent_nodes(const std::list<CubeFace::Edge>& edges)
 	{
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
@@ -298,8 +288,15 @@ private:
 		}
 	}
 
-	void fill_in_global_indices(const std::vector<Vector3i>& nodeLocs, const std::vector<typename GlobalNodeTableT::NodeDesignator>& nodeDesignators)
+	/**
+	@brief	Fills in the global indices of any used cube face nodes.
+	*/
+	void fill_in_global_indices()
 	{
+		std::vector<Vector3i> nodeLocs(CubeFace::POTENTIAL_NODE_COUNT);
+		std::vector<typename GlobalNodeTableT::NodeDesignator> nodeDesignators(CubeFace::POTENTIAL_NODE_COUNT);
+		build_mapping_to_global_coordinates(nodeLocs, nodeDesignators);
+
 		for(CubeFace::NodeDesignator n=enum_begin<CubeFace::NodeDesignator>(), end=enum_end<CubeFace::NodeDesignator>(); n!=end; ++n)
 		{
 			if(m_cubeFace.is_used(n))
@@ -310,6 +307,15 @@ private:
 		}
 	}
 
+	/**
+	@brief	Fills in the sourced labels for each global node referenced by the cube face.
+
+	Specifically, this involves selecting the face vertices that produce labels for a given node,
+	and writing their labels and locations into the node structure.
+
+	@param[in]	vertexLabels	The labels of the face vertices
+	@param[in]	vertexLocs		The locations of the face vertices
+	*/
 	void fill_in_sourced_labels(const std::vector<Label>& vertexLabels, const std::vector<Vector3i>& vertexLocs)
 	{
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
@@ -327,6 +333,12 @@ private:
 		}
 	}
 
+	/**
+	@brief	Returns the label of the specified location in the volume.
+
+	@param[in]	loc		A location in the volume
+	@return	As described
+	*/
 	Label label(const Vector3i& loc) const
 	{
 		itk::Index<3> index = {{loc.x, loc.y, loc.z}};
