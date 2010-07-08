@@ -12,6 +12,7 @@
 
 #include <common/jobs/CompositeJob.h>
 #include "CubeFaceGenerator.h"
+#include "CubeInternalGenerator.h"
 
 namespace mp {
 
@@ -56,7 +57,7 @@ public:
 	{
 		if(labelling) set_labelling(*labelling);
 
-		// Add the CubeFaceGenerator subjobs.
+		// Add the CubeFaceGenerator sub-jobs.
 		int xSize = volumeSize[0] - 1, ySize = volumeSize[1] - 1, zSize = volumeSize[2] - 1;
 		int xDim[3], yDim[3], zDim[3];
 		xDim[CubeFaceDesignator::FACE_XY] = xSize;		xDim[CubeFaceDesignator::FACE_XZ] = xSize;		xDim[CubeFaceDesignator::FACE_YZ] = xSize+1;
@@ -70,6 +71,14 @@ public:
 					{
 						add_subjob(new CubeFaceGenerator<Label,PriorityPred>(m_data, x, y, z, f));
 					}
+
+		// Add the CubeInternalGenerator sub-jobs.
+		for(int x=0; x<xSize; ++x)
+			for(int y=0; y<ySize; ++y)
+				for(int z=0; z<zSize; ++z)
+				{
+					add_subjob(new CubeInternalGenerator<Label>(m_data, x, y, z));
+				}
 
 		// TODO
 	}
