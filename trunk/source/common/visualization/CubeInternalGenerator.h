@@ -41,7 +41,47 @@ public:
 private:
 	void execute_impl()
 	{
+		std::vector<boost::optional<const CubeFace&> > cubeFaces = lookup_cube_faces();
+
+		// Determine the set of nodes used on the cube faces, and calculate the number of face-centre nodes.
+		std::set<int> nodeSet;
+		std::vector<int> faceCentreNodes;
+		for(int i=0; i<6; ++i)
+		{
+			if(!cubeFaces[i]) continue;
+
+			for(CubeFace::NodeDesignator n=enum_begin<CubeFace::NodeDesignator>(), end=enum_end<CubeFace::NodeDesignator>(); n!=end; ++n)
+			{
+				if(cubeFaces[i]->is_used(n)) nodeSet.insert(cubeFaces[i]->global_node_index(n));
+			}
+
+			if(cubeFaces[i]->is_used(CubeFace::MIDDLE_NODE))
+			{
+				faceCentreNodes.push_back(cubeFaces[i]->global_node_index(CubeFace::MIDDLE_NODE));
+			}
+		}
+
+		if(nodeSet.empty()) return;
+
 		// TODO
+	}
+
+	/**
+	@brief	Looks up the faces of this cube in the cube face table.
+
+	@return	A std::vector containing the cube faces (where present)
+	*/
+	std::vector<boost::optional<const CubeFace&> > lookup_cube_faces() const
+	{
+		const CubeFaceTable& cubeFaceTable = m_data->cube_face_table();
+		std::vector<boost::optional<const CubeFace&> > cubeFaces(6);
+		cubeFaces[0] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_XY);
+		cubeFaces[1] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z+1,	CubeFaceDesignator::FACE_XY);
+		cubeFaces[2] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_XZ);
+		cubeFaces[3] = cubeFaceTable.lookup_cube_face(m_x,		m_y+1,	m_z,	CubeFaceDesignator::FACE_XZ);
+		cubeFaces[4] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_YZ);
+		cubeFaces[5] = cubeFaceTable.lookup_cube_face(m_x+1,	m_y,	m_z,	CubeFaceDesignator::FACE_YZ);
+		return cubeFaces;
 	}
 };
 
