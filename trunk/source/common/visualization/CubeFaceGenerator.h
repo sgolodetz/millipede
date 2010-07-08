@@ -11,7 +11,6 @@
 #include <common/adts/Edge.h>
 #include <common/exceptions/Exception.h>
 #include <common/jobs/SimpleJob.h>
-#include "CubeFaceDesignator.h"
 #include "MeshBuildingData.h"
 
 namespace mp {
@@ -29,10 +28,12 @@ class CubeFaceGenerator : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef GlobalNodeTable<Label> GlobalNodeTableT;
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
 	typedef MeshBuildingData<Label> MeshBuildingDataT;
 	typedef boost::shared_ptr<MeshBuildingDataT> MeshBuildingData_Ptr;
+	typedef MeshNode<Label> MeshNodeT;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -169,37 +170,34 @@ private:
 	{
 		m_labelling = m_data->labelling();
 
-		Label topleft, topright, bottomleft, bottomright;
-
-		// Look up the labels of the face corners.
+		// Determine the locations of the face corners.
+		Vector3i topleftLoc, toprightLoc, bottomleftLoc, bottomrightLoc;
 		switch(m_faceDesignator)
 		{
 			case CubeFaceDesignator::FACE_XY:
-			{
-				topleft = label(m_x,m_y+1,m_z);		topright = label(m_x+1,m_y+1,m_z);
-				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x+1,m_y,m_z);
+				topleftLoc = Vector3i(m_x,m_y+1,m_z);		toprightLoc = Vector3i(m_x+1,m_y+1,m_z);
+				bottomleftLoc = Vector3i(m_x,m_y,m_z);		bottomrightLoc = Vector3i(m_x+1,m_y,m_z);
 				break;
-			}
 			case CubeFaceDesignator::FACE_XZ:
-			{
-				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x+1,m_y,m_z+1);
-				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x+1,m_y,m_z);
+				topleftLoc = Vector3i(m_x,m_y,m_z+1);		toprightLoc = Vector3i(m_x+1,m_y,m_z+1);
+				bottomleftLoc = Vector3i(m_x,m_y,m_z);		bottomrightLoc = Vector3i(m_x+1,m_y,m_z);
 				break;
-			}
 			case CubeFaceDesignator::FACE_YZ:
-			{
-				topleft = label(m_x,m_y,m_z+1);		topright = label(m_x,m_y+1,m_z+1);
-				bottomleft = label(m_x,m_y,m_z);	bottomright = label(m_x,m_y+1,m_z);
+				topleftLoc = Vector3i(m_x,m_y,m_z+1);		toprightLoc = Vector3i(m_x,m_y+1,m_z+1);
+				bottomleftLoc = Vector3i(m_x,m_y,m_z);		bottomrightLoc = Vector3i(m_x,m_y+1,m_z);
 				break;
-			}
 			default:
-			{
 				throw Exception("Invalid face designator");		// this should never happen
-			}
 		}
 
+		// Look up the labels of the face corners.
+		Label topleftLabel = label(topleftLoc);
+		Label toprightLabel = label(toprightLoc);
+		Label bottomleftLabel = label(bottomleftLoc);
+		Label bottomrightLabel = label(bottomrightLoc);
+
 		// Calculate the edges on the face from the labels of the corners.
-		std::list<Edge> edges = edges_on_face(topleft, topright, bottomleft, bottomright);
+		std::list<Edge> edges = edges_on_face(topleftLabel, toprightLabel, bottomleftLabel, bottomrightLabel);
 
 		// If there aren't any edges, this cube face is irrelevant to the mesh.
 		if(edges.size() == 0) return;
@@ -212,12 +210,104 @@ private:
 			cubeFace.set_used(CubeFace::FaceNodeDesignator(it->v));
 		}
 
-		// TODO
+		// Build the mapping from local node indices to global coordinates.
+		Vector3i locs[CubeFace::POTENTIAL_NODE_COUNT];
+		typename GlobalNodeTableT::NodeDesignator nodeDesignators[CubeFace::POTENTIAL_NODE_COUNT];
+		switch(m_faceDesignator)
+		{
+			case CubeFaceDesignator::FACE_XY:
+			{
+				locs[CubeFace::TOP_NODE] = Vector3i(m_x,m_y+1,m_z);		nodeDesignators[CubeFace::TOP_NODE] = GlobalNodeTableT::NODE_100;
+				locs[CubeFace::LEFT_NODE] = Vector3i(m_x,m_y,m_z);		nodeDesignators[CubeFace::LEFT_NODE] = GlobalNodeTableT::NODE_010;
+				locs[CubeFace::MIDDLE_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::MIDDLE_NODE] = GlobalNodeTableT::NODE_110;
+				locs[CubeFace::RIGHT_NODE] = Vector3i(m_x+1,m_y,m_z);	nodeDesignators[CubeFace::RIGHT_NODE] = GlobalNodeTableT::NODE_010;
+				locs[CubeFace::BOTTOM_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::BOTTOM_NODE] = GlobalNodeTableT::NODE_100;
+				break;
+			}
+			case CubeFaceDesignator::FACE_XZ:
+			{
+				locs[CubeFace::TOP_NODE] = Vector3i(m_x,m_y,m_z+1);		nodeDesignators[CubeFace::TOP_NODE] = GlobalNodeTableT::NODE_100;
+				locs[CubeFace::LEFT_NODE] = Vector3i(m_x,m_y,m_z);		nodeDesignators[CubeFace::LEFT_NODE] = GlobalNodeTableT::NODE_001;
+				locs[CubeFace::MIDDLE_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::MIDDLE_NODE] = GlobalNodeTableT::NODE_101;
+				locs[CubeFace::RIGHT_NODE] = Vector3i(m_x+1,m_y,m_z);	nodeDesignators[CubeFace::RIGHT_NODE] = GlobalNodeTableT::NODE_001;
+				locs[CubeFace::BOTTOM_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::BOTTOM_NODE] = GlobalNodeTableT::NODE_100;
+				break;
+			}
+			case CubeFaceDesignator::FACE_YZ:
+			{
+				locs[CubeFace::TOP_NODE] = Vector3i(m_x,m_y,m_z+1);		nodeDesignators[CubeFace::TOP_NODE] = GlobalNodeTableT::NODE_010;
+				locs[CubeFace::LEFT_NODE] = Vector3i(m_x,m_y,m_z);		nodeDesignators[CubeFace::LEFT_NODE] = GlobalNodeTableT::NODE_001;
+				locs[CubeFace::MIDDLE_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::MIDDLE_NODE] = GlobalNodeTableT::NODE_011;
+				locs[CubeFace::RIGHT_NODE] = Vector3i(m_x,m_y+1,m_z);	nodeDesignators[CubeFace::RIGHT_NODE] = GlobalNodeTableT::NODE_001;
+				locs[CubeFace::BOTTOM_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::BOTTOM_NODE] = GlobalNodeTableT::NODE_010;
+				break;
+			}
+		}
+
+		// Lookup the global node indices.
+		for(int i=0; i<CubeFace::POTENTIAL_NODE_COUNT; ++i)
+		{
+			CubeFace::FaceNodeDesignator n = CubeFace::FaceNodeDesignator(i);
+			if(cubeFace.is_used(n))
+			{
+				int globalNodeIndex = m_data->global_node_table().find_index(locs[i], nodeDesignators[i]);
+				cubeFace.set_global_node_index(n, globalNodeIndex);
+			}
+		}
+
+		// Fill in the labels for each node.
+		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
+		if(cubeFace.is_used(CubeFace::TOP_NODE))
+		{
+			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::TOP_NODE));
+			n.sourcedLabels.insert(make_sourced_label(topleftLabel, topleftLoc));
+			n.sourcedLabels.insert(make_sourced_label(toprightLabel, toprightLoc));
+		}
+		if(cubeFace.is_used(CubeFace::LEFT_NODE))
+		{
+			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::LEFT_NODE));
+			n.sourcedLabels.insert(make_sourced_label(topleftLabel, topleftLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomleftLabel, bottomleftLoc));
+		}
+		if(cubeFace.is_used(CubeFace::MIDDLE_NODE))
+		{
+			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::MIDDLE_NODE));
+			n.sourcedLabels.insert(make_sourced_label(topleftLabel, topleftLoc));
+			n.sourcedLabels.insert(make_sourced_label(toprightLabel, toprightLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomleftLabel, bottomleftLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomrightLabel, bottomrightLoc));
+		}
+		if(cubeFace.is_used(CubeFace::RIGHT_NODE))
+		{
+			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::RIGHT_NODE));
+			n.sourcedLabels.insert(make_sourced_label(toprightLabel, toprightLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomrightLabel, bottomrightLoc));
+		}
+		if(cubeFace.is_used(CubeFace::BOTTOM_NODE))
+		{
+			MeshNodeT& n = globalNodeTable(cubeFace.global_node_index(CubeFace::BOTTOM_NODE));
+			n.sourcedLabels.insert(make_sourced_label(bottomleftLabel, bottomleftLoc));
+			n.sourcedLabels.insert(make_sourced_label(bottomrightLabel, bottomrightLoc));
+		}
+
+		// Run through the edges and fill in the adjacent node entries in the global nodes.
+		// Note that the edge endpoints have *local* indices, so they need to be mapped
+		// to global indices before being stored in the global nodes.
+		for(std::list<Edge>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
+		{
+			int u = cubeFace.global_node_index(CubeFace::FaceNodeDesignator(it->u));
+			int v = cubeFace.global_node_index(CubeFace::FaceNodeDesignator(it->v));
+			globalNodeTable(u).adjacentNodes.insert(v);
+			globalNodeTable(v).adjacentNodes.insert(u);
+		}
+
+		// Fill in the cube face in the cube face table.
+		m_data->cube_face_table().set_cube_face(m_x, m_y, m_z, m_faceDesignator, cubeFace);
 	}
 
-	Label label(int x, int y, int z) const
+	Label label(const Vector3i& loc) const
 	{
-		itk::Index<3> index = {{x,y,z}};
+		itk::Index<3> index = {{loc.get<0>(), loc.get<1>(), loc.get<2>()}};
 		return m_labelling->GetPixel(index);
 	}
 };

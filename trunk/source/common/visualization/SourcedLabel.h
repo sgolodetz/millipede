@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_SOURCEDLABEL
 #define H_MILLIPEDE_SOURCEDLABEL
 
-#include <itkVector.h>
+#include <common/util/Vectors.h>
 
 namespace mp {
 
@@ -15,10 +15,10 @@ struct SourcedLabel
 {
 	//#################### PUBLIC VARIABLES ####################
 	Label label;
-	itk::Vector<double,3> source;
+	Vector3i source;
 
 	//#################### CONSTRUCTORS ####################
-	SourcedLabel(Label label_, const itk::Vector<double,3>& source_)
+	SourcedLabel(Label label_, const Vector3i& source_)
 	:	label(label_), source(source_)
 	{}
 
@@ -31,7 +31,7 @@ struct SourcedLabel
 
 //#################### TEMPLATE FUNCTIONS ####################
 template <typename Label>
-SourcedLabel<Label> make_sourced_label(Label label, const itk::Vector<double,3>& source)
+SourcedLabel<Label> make_sourced_label(Label label, const Vector3i& source)
 {
 	return SourcedLabel<Label>(label, source);
 }

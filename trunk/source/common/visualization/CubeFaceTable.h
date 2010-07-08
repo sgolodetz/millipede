@@ -10,9 +10,8 @@
 
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 
+#include <common/util/Vectors.h>
 #include "CubeFace.h"
 #include "CubeFaceDesignator.h"
 
@@ -29,8 +28,7 @@ class CubeFaceTable
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef boost::tuples::tuple<int,int,int> IntTriple;
-	typedef std::map<IntTriple,CubeFace> Subtable;
+	typedef std::map<Vector3i,CubeFace> Subtable;
 	typedef Subtable::const_iterator SubtableCIter;
 
 	//#################### PRIVATE VARIABLES ####################

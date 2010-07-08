@@ -13,8 +13,14 @@ int main()
 	typedef int Label;
 	typedef MeshBuilder<Label> MeshBuilderT;
 	typedef boost::shared_ptr<MeshBuilderT> MeshBuilder_Ptr;
-	Label pixels[] = {0,2,2,2,2,1,2,1};
-	MeshBuilderT::LabelImagePointer labelling = ITKImageUtil::make_filled_image<Label>(2, 2, 2, pixels);
+	Label pixels[] = {
+		0,0,0,
+		0,0,0,
+
+		1,1,0,
+		1,1,0
+	};
+	MeshBuilderT::LabelImagePointer labelling = ITKImageUtil::make_filled_image<Label>(3, 2, 2, pixels);
 	MeshBuilder_Ptr builder(new MeshBuilderT(labelling->GetLargestPossibleRegion().GetSize(), labelling));
 	Job::execute_managed(builder);
 	return 0;

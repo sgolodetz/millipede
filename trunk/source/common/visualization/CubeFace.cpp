@@ -17,7 +17,7 @@ CubeFace::CubeFace()
 }
 
 //#################### PUBLIC METHODS ####################
-int CubeFace::global_node_id(FaceNodeDesignator n) const
+int CubeFace::global_node_index(FaceNodeDesignator n) const
 {
 	return m_localToGlobalNodeMap[n];
 }
@@ -27,9 +27,9 @@ bool CubeFace::is_used(FaceNodeDesignator n) const
 	return m_localToGlobalNodeMap[n] != UNUSED;
 }
 
-void CubeFace::set_global_node_id(FaceNodeDesignator n, int id)
+void CubeFace::set_global_node_index(FaceNodeDesignator n, int index)
 {
-	m_localToGlobalNodeMap[n] = id;
+	m_localToGlobalNodeMap[n] = index;
 }
 
 void CubeFace::set_used(FaceNodeDesignator n)

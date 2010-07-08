@@ -17,12 +17,12 @@ struct MeshNode
 {
 	//#################### PUBLIC VARIABLES ####################
 	std::set<int> adjacentNodes;
-	itk::Vector<double,3> position;
+	Vector3d position;
 	std::set<SourcedLabel<Label> > sourcedLabels;
 	bool valid;
 
 	//#################### CONSTRUCTORS ####################
-	explicit MeshNode(const itk::Vector<double,3>& position_)
+	explicit MeshNode(const Vector3d& position_)
 	:	position(position_), valid(true)
 	{}
 };

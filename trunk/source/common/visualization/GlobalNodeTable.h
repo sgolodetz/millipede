@@ -11,10 +11,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 
-#include <common/util/ITKImageUtil.h>
 #include "MeshNode.h"
 
 namespace mp {
@@ -38,11 +35,10 @@ public:
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef boost::tuples::tuple<int,int,int> IntTriple;
 	typedef MeshNode<Label> MeshNodeT;
 	typedef std::vector<MeshNodeT> MeshNodeVector;
 	typedef boost::shared_ptr<MeshNodeVector> MeshNodeVector_Ptr;
-	typedef std::map<IntTriple,int> Subtable;
+	typedef std::map<Vector3i,int> Subtable;
 	typedef Subtable::iterator SubtableIter;
 
 	//#################### PRIVATE VARIABLES ####################
@@ -72,7 +68,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	int find_index(const IntTriple& loc, NodeDesignator nodeDesignator)
+	int find_index(const Vector3i& loc, NodeDesignator nodeDesignator)
 	{
 		SubtableIter it = m_subtables[nodeDesignator].find(loc);
 		if(it != m_subtables[nodeDesignator].end())
@@ -120,7 +116,7 @@ public:
 private:
 	static MeshNodeT make_node(double x, double y, double z)
 	{
-		return MeshNodeT(ITKImageUtil::make_vector3d(x, y, z));
+		return MeshNodeT(Vector3d(x,y,z));
 	}
 };
 

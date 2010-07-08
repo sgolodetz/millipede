@@ -10,6 +10,7 @@
 
 #include <common/jobs/DataHook.h>
 #include "CubeFaceTable.h"
+#include "GlobalNodeTable.h"
 
 namespace mp {
 
@@ -18,24 +19,39 @@ class MeshBuildingData
 {
 	//#################### TYPEDEFS ####################
 public:
+	typedef GlobalNodeTable<Label> GlobalNodeTableT;
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	CubeFaceTable m_cubeFaceTable;
+	GlobalNodeTableT m_globalNodeTable;
 	DataHook<LabelImagePointer> m_labellingHook;
-	CubeFaceTable_Ptr m_cubeFaceTable;
-	// TODO: Node map
 	// TODO: Triangles
 
 	//#################### CONSTRUCTORS ####################
 public:
 	MeshBuildingData()
-	:	m_cubeFaceTable(new CubeFaceTable)
 	{}
+
+	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
+private:
+	MeshBuildingData(const MeshBuildingData&);
+	MeshBuildingData& operator=(const MeshBuildingData&);
 
 	//#################### PUBLIC METHODS ####################
 public:
+	CubeFaceTable& cube_face_table()
+	{
+		return m_cubeFaceTable;
+	}
+
+	GlobalNodeTableT& global_node_table()
+	{
+		return m_globalNodeTable;
+	}
+
 	LabelImagePointer labelling() const
 	{
 		return m_labellingHook.get();

@@ -253,6 +253,7 @@ util/GridUtil.h
 util/ITKImageUtil.h
 util/NullType.h
 util/NumericUtil.h
+util/Vectors.h
 )
 
 ##
