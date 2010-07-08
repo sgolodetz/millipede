@@ -17,7 +17,7 @@ namespace mp {
 /**
 @brief	A CubeFaceGenerator determines the multiple material marching squares (M3S) pattern on a cube face
 		and generates global nodes and edges (stored implicitly in the nodes) accordingly. It also builds
-		a map from local to global nodes and stores this in the cube face table.
+		a map from local to global nodes and stores this against the face in the cube table.
 
 @tparam	Label			The type of label to be used
 @tparam	PriorityPred	A predicate type defining an ordering over the labels for resolving conflicts that arise during the algorithm
@@ -273,7 +273,7 @@ private:
 		fill_in_global_indices();
 		fill_in_sourced_labels(vertexLabels, vertexPositions);
 		fill_in_adjacent_nodes();
-		m_data->cube_face_table().set_cube_face(m_x, m_y, m_z, m_faceDesignator, m_cubeFace);
+		m_data->cube_table().set_cube_face(m_x, m_y, m_z, m_faceDesignator, m_cubeFace);
 	}
 
 	/**

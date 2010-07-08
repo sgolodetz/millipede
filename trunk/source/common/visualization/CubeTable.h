@@ -1,15 +1,14 @@
 /***
- * millipede: CubeFaceTable.h
+ * millipede: CubeTable.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_CUBEFACETABLE
-#define H_MILLIPEDE_CUBEFACETABLE
+#ifndef H_MILLIPEDE_CUBETABLE
+#define H_MILLIPEDE_CUBETABLE
 
 #include <map>
 
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <common/vectors/Vector3.h>
 #include "CubeFace.h"
@@ -17,14 +16,7 @@
 
 namespace mp {
 
-/**
-@brief	A CubeFaceTable is a map from (x,y,z,faceDesignator) tuples to cube faces.
-
-The reason it is implemented specially, rather than just using a std::map, is that there
-are a small, finite number of possibilities for the cube face designator, so it is better
-to store a 3D lookup table for each rather than a single large 4D lookup table.
-*/
-class CubeFaceTable
+class CubeTable
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -61,9 +53,6 @@ public:
 	*/
 	void set_cube_face(int x, int y, int z, CubeFaceDesignator::Enum f, const CubeFace& cubeFace);
 };
-
-//#################### TYPEDEFS ####################
-typedef boost::shared_ptr<CubeFaceTable> CubeFaceTable_Ptr;
 
 }
 

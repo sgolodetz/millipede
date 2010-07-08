@@ -67,20 +67,20 @@ private:
 	}
 
 	/**
-	@brief	Looks up the faces of this cube in the cube face table.
+	@brief	Looks up the faces of this cube in the cube table.
 
 	@return	A std::vector containing the cube faces (where present)
 	*/
 	std::vector<boost::optional<const CubeFace&> > lookup_cube_faces() const
 	{
-		const CubeFaceTable& cubeFaceTable = m_data->cube_face_table();
+		const CubeTable& cubeTable = m_data->cube_table();
 		std::vector<boost::optional<const CubeFace&> > cubeFaces(6);
-		cubeFaces[0] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_XY);
-		cubeFaces[1] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z+1,	CubeFaceDesignator::FACE_XY);
-		cubeFaces[2] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_XZ);
-		cubeFaces[3] = cubeFaceTable.lookup_cube_face(m_x,		m_y+1,	m_z,	CubeFaceDesignator::FACE_XZ);
-		cubeFaces[4] = cubeFaceTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_YZ);
-		cubeFaces[5] = cubeFaceTable.lookup_cube_face(m_x+1,	m_y,	m_z,	CubeFaceDesignator::FACE_YZ);
+		cubeFaces[0] = cubeTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_XY);
+		cubeFaces[1] = cubeTable.lookup_cube_face(m_x,		m_y,	m_z+1,	CubeFaceDesignator::FACE_XY);
+		cubeFaces[2] = cubeTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_XZ);
+		cubeFaces[3] = cubeTable.lookup_cube_face(m_x,		m_y+1,	m_z,	CubeFaceDesignator::FACE_XZ);
+		cubeFaces[4] = cubeTable.lookup_cube_face(m_x,		m_y,	m_z,	CubeFaceDesignator::FACE_YZ);
+		cubeFaces[5] = cubeTable.lookup_cube_face(m_x+1,	m_y,	m_z,	CubeFaceDesignator::FACE_YZ);
 		return cubeFaces;
 	}
 };

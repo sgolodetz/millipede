@@ -9,7 +9,7 @@
 #include <itkImage.h>
 
 #include <common/jobs/DataHook.h>
-#include "CubeFaceTable.h"
+#include "CubeTable.h"
 #include "GlobalNodeTable.h"
 
 namespace mp {
@@ -25,7 +25,7 @@ public:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	CubeFaceTable m_cubeFaceTable;
+	CubeTable m_cubeTable;
 	GlobalNodeTableT m_globalNodeTable;
 	DataHook<LabelImagePointer> m_labellingHook;
 	// TODO: Triangles
@@ -42,9 +42,9 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	CubeFaceTable& cube_face_table()
+	CubeTable& cube_table()
 	{
-		return m_cubeFaceTable;
+		return m_cubeTable;
 	}
 
 	GlobalNodeTableT& global_node_table()

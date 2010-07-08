@@ -263,15 +263,15 @@ vectors/Vector3.h
 SET(visualization_sources
 visualization/CubeFace.cpp
 visualization/CubeFaceDesignator.cpp
-visualization/CubeFaceTable.cpp
+visualization/CubeTable.cpp
 )
 
 SET(visualization_headers
 visualization/CubeFace.h
 visualization/CubeFaceDesignator.h
 visualization/CubeFaceGenerator.h
-visualization/CubeFaceTable.h
 visualization/CubeInternalGenerator.h
+visualization/CubeTable.h
 visualization/GlobalNodeTable.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
