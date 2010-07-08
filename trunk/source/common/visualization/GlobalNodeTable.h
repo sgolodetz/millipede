@@ -70,6 +70,11 @@ public:
 public:
 	int find_index(const Vector3i& loc, NodeDesignator nodeDesignator)
 	{
+		if(nodeDesignator == NODE_DESIGNATOR_COUNT)
+		{
+			throw Exception("Invalid node designator");
+		}
+
 		SubtableIter it = m_subtables[nodeDesignator].find(loc);
 		if(it != m_subtables[nodeDesignator].end())
 		{
@@ -100,6 +105,9 @@ public:
 				break;
 			case NODE_111:
 				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>() + 0.5, loc.get<2>() + 0.5));
+				break;
+			default:
+				// This will never happen: nodeDesignator != NODE_DESIGNATOR_COUNT
 				break;
 			}
 			m_subtables[nodeDesignator].insert(std::make_pair(loc, index));

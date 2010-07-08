@@ -217,32 +217,28 @@ private:
 		switch(m_faceDesignator)
 		{
 			case CubeFaceDesignator::FACE_XY:
-			{
 				locs[CubeFace::TOP_NODE] = Vector3i(m_x,m_y+1,m_z);		nodeDesignators[CubeFace::TOP_NODE] = GlobalNodeTableT::NODE_100;
 				locs[CubeFace::LEFT_NODE] = Vector3i(m_x,m_y,m_z);		nodeDesignators[CubeFace::LEFT_NODE] = GlobalNodeTableT::NODE_010;
 				locs[CubeFace::MIDDLE_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::MIDDLE_NODE] = GlobalNodeTableT::NODE_110;
 				locs[CubeFace::RIGHT_NODE] = Vector3i(m_x+1,m_y,m_z);	nodeDesignators[CubeFace::RIGHT_NODE] = GlobalNodeTableT::NODE_010;
 				locs[CubeFace::BOTTOM_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::BOTTOM_NODE] = GlobalNodeTableT::NODE_100;
 				break;
-			}
 			case CubeFaceDesignator::FACE_XZ:
-			{
 				locs[CubeFace::TOP_NODE] = Vector3i(m_x,m_y,m_z+1);		nodeDesignators[CubeFace::TOP_NODE] = GlobalNodeTableT::NODE_100;
 				locs[CubeFace::LEFT_NODE] = Vector3i(m_x,m_y,m_z);		nodeDesignators[CubeFace::LEFT_NODE] = GlobalNodeTableT::NODE_001;
 				locs[CubeFace::MIDDLE_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::MIDDLE_NODE] = GlobalNodeTableT::NODE_101;
 				locs[CubeFace::RIGHT_NODE] = Vector3i(m_x+1,m_y,m_z);	nodeDesignators[CubeFace::RIGHT_NODE] = GlobalNodeTableT::NODE_001;
 				locs[CubeFace::BOTTOM_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::BOTTOM_NODE] = GlobalNodeTableT::NODE_100;
 				break;
-			}
 			case CubeFaceDesignator::FACE_YZ:
-			{
 				locs[CubeFace::TOP_NODE] = Vector3i(m_x,m_y,m_z+1);		nodeDesignators[CubeFace::TOP_NODE] = GlobalNodeTableT::NODE_010;
 				locs[CubeFace::LEFT_NODE] = Vector3i(m_x,m_y,m_z);		nodeDesignators[CubeFace::LEFT_NODE] = GlobalNodeTableT::NODE_001;
 				locs[CubeFace::MIDDLE_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::MIDDLE_NODE] = GlobalNodeTableT::NODE_011;
 				locs[CubeFace::RIGHT_NODE] = Vector3i(m_x,m_y+1,m_z);	nodeDesignators[CubeFace::RIGHT_NODE] = GlobalNodeTableT::NODE_001;
 				locs[CubeFace::BOTTOM_NODE] = Vector3i(m_x,m_y,m_z);	nodeDesignators[CubeFace::BOTTOM_NODE] = GlobalNodeTableT::NODE_010;
 				break;
-			}
+			default:
+				throw Exception("Invalid face designator");		// this should never happen
 		}
 
 		// Lookup the global node indices.
