@@ -22,7 +22,7 @@ public:
 	/**
 	@brief	An enum representing the possible face node locations.
 	*/
-	enum FaceNodeDesignator
+	enum NodeDesignator
 	{
 		TOP_NODE,
 		LEFT_NODE,
@@ -35,6 +35,21 @@ public:
 private:
 	static const int UNUSED = -1;
 	static const int USED = -2;
+
+	//#################### NESTED CLASSES ####################
+public:
+	/**
+	@brief	A struct representing cube face edges (i.e. edges between nodes on the cube face).
+	*/
+	struct Edge
+	{
+		NodeDesignator u;
+		NodeDesignator v;
+
+		Edge(NodeDesignator u_, NodeDesignator v_)
+		:	u(u_), v(v_)
+		{}
+	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -52,37 +67,37 @@ public:
 	/**
 	@brief	Returns the global node index of the specified local node.
 
-	@param[in]	n	The face node designator of the local node
+	@param[in]	n	The node designator of the local node
 	@return	The global node index of the local node, if any, or an unspecified value < 0 otherwise
 	*/
-	int global_node_index(FaceNodeDesignator n) const;
+	int global_node_index(NodeDesignator n) const;
 
 	/**
 	@brief	Returns whether or not the specified local node is in use.
 
-	@param[in]	n	The face node designator of the local node
+	@param[in]	n	The node designator of the local node
 	@return	true, if it is in use, or false otherwise
 	*/
-	bool is_used(FaceNodeDesignator n) const;
+	bool is_used(NodeDesignator n) const;
 
 	/**
 	@brief	Sets the global node index of the specified local node.
 
-	@param[in]	n		The face node designator of the local node
+	@param[in]	n		The node designator of the local node
 	@param[in]	index	The global node index to assign to it
 	@post
 		-	global_node_index(n) == index
 	*/
-	void set_global_node_index(FaceNodeDesignator n, int index);
+	void set_global_node_index(NodeDesignator n, int index);
 
 	/**
 	@brief	Marks the specified local node as used, without setting its global node index yet.
 
-	@param[in]	n	The face designator of the local node
+	@param[in]	n	The designator of the local node
 	@post
 		-	is_used(n) == true
 	*/
-	void set_used(FaceNodeDesignator n);
+	void set_used(NodeDesignator n);
 };
 
 }
