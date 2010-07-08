@@ -248,7 +248,7 @@ private:
 		// Lookup the global node indices.
 		for(int i=0; i<CubeFace::POTENTIAL_NODE_COUNT; ++i)
 		{
-			CubeFace::FaceNodeDesignator n = CubeFace::FaceNodeDesignator(i);
+			CubeFace::FaceNodeDesignator n = static_cast<CubeFace::FaceNodeDesignator>(i);
 			if(cubeFace.is_used(n))
 			{
 				int globalNodeIndex = m_data->global_node_table().find_index(locs[i], nodeDesignators[i]);
@@ -292,8 +292,8 @@ private:
 		}
 
 		// Run through the edges and fill in the adjacent node entries in the global nodes.
-		// Note that the edge endpoints have *local* indices, so they need to be mapped
-		// to global indices before being stored in the global nodes.
+		// Note that the edge endpoints are *local* indices, so they need to be mapped to
+		// global indices before being stored in the global nodes.
 		for(std::list<EdgeT>::const_iterator it=edges.begin(), iend=edges.end(); it!=iend; ++it)
 		{
 			int u = cubeFace.global_node_index(it->u);
