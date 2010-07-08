@@ -24,7 +24,7 @@ main = do
   t3 <- timeSince t2
   putStrLn "Doing Waterfall"
   let bs = bounds ar
-  let trees = (take 6  $ iterate (waterfall)$ edge)
+  let trees = (take 6 $ tail  $ iterate (waterfall)$ edge)
 
   t4 <- (timeSince t3)
   putStrLn "Converting output"

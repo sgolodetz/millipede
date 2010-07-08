@@ -3,7 +3,8 @@
 module Waterfall(waterfall, mkNode,Tree(Node),Edge,Mergeable(union,unions),getRegion,getEdges,getWeight,size) where
 
 import Data.Tree (Tree(..),Forest)
-
+import qualified Data.Foldable as F
+import Debug.Trace
 
 
 -- mergeChildren applied to an edge returns the edge after merging;
@@ -20,8 +21,29 @@ class Mergeable a where
 -- and then proceeds to call the main mergeChildren function.
 
 
-waterfall :: Mergeable a => Edge a -> Edge a
-waterfall = fst.mergeChildren
+waterfall :: (Mergeable a,Show a) => Edge a -> Edge a
+waterfall t = let (a,f) = g t e in Node (a,232323) f
+  where
+    e = unions[]
+
+
+g :: Mergeable a => Tree (a,Int) -> a -> (a,Forest (a,Int))
+g (Node (r1,w1) []) r2 = (union r1 r2,[])
+g (Node (r1,w1) es) r2
+  | w1 > w2 =  (r2 , [Node (r4,w1) (ds)])
+  | otherwise = (r5,fs)
+  where
+  (Node (r3,w2) cs , es') = findMin (\t1 t2 -> compare (getWeight t1) (getWeight t2))es
+  (r4,ds) = combine (cs ++ es') (union r1 r3) w1
+  (r5,fs) = combine es  (union r2 r1) w1
+
+combine :: Mergeable a => Forest (a,Int) -> a -> Int -> (a,Forest (a,Int))
+combine [] a n = (a,[])
+combine (t:ts) a n =
+  let (b,bs) = g t a in
+  let (c,cs) = combine ts b n in
+  (c, cs ++ bs)
+
 
 -- f was the initial mergeChildren function (now known as mergeChildren)
 --
