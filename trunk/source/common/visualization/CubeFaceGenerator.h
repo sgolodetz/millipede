@@ -75,34 +75,6 @@ private:
 	}
 
 	/**
-	@brief	Determines the global positions of the four face vertices.
-
-	@return	A std::vector containing the face vertex positions
-	*/
-	std::vector<Vector3i> determine_face_vertex_positions() const
-	{
-		std::vector<Vector3i> locs(4);
-		switch(m_faceDesignator)
-		{
-			case CubeFaceDesignator::FACE_XY:
-				locs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y+1,m_z);		locs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x+1,m_y+1,m_z);
-				locs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		locs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z);
-				break;
-			case CubeFaceDesignator::FACE_XZ:
-				locs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z+1);		locs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z+1);
-				locs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		locs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x+1,m_y,m_z);
-				break;
-			case CubeFaceDesignator::FACE_YZ:
-				locs[CubeFace::TOP_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z+1);		locs[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(m_x,m_y+1,m_z+1);
-				locs[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(m_x,m_y,m_z);		locs[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(m_x,m_y+1,m_z);
-				break;
-			default:
-				throw Exception("Invalid face designator");		// this should never happen
-		}
-		return locs;
-	}
-
-	/**
 	@brief	Determines the global positions of the face nodes.
 
 	@return	A std::vector containing the positions (in a format suitable for looking up the nodes in the global node table)
@@ -261,10 +233,10 @@ private:
 	{
 		m_labelling = m_data->labelling();
 
-		std::vector<Vector3i> vertexPositions = determine_face_vertex_positions();
+		std::vector<Vector3i> vertexPositions = m_data->cube_table().face_vertices(m_x, m_y, m_z, m_faceDesignator);
 
 		std::vector<Label> vertexLabels(4);
-		for(int i=0; i<4; ++i) vertexLabels[i] = label(vertexPositions[i]);
+		for(int i=0; i<4; ++i) vertexLabels[i] = m_data->label(vertexPositions[i]);
 
 		m_edges = edges_on_face(vertexLabels);
 		if(m_edges.size() == 0) return;			// if there aren't any edges, this cube face is irrelevant to the mesh
@@ -334,18 +306,6 @@ private:
 				}
 			}
 		}
-	}
-
-	/**
-	@brief	Returns the label of the specified position in the volume.
-
-	@param[in]	pos		A position in the volume
-	@return	As described
-	*/
-	Label label(const Vector3i& pos) const
-	{
-		itk::Index<3> index = {{pos.x, pos.y, pos.z}};
-		return m_labelling->GetPixel(index);
 	}
 
 	/**

@@ -33,6 +33,27 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	/**
+	@brief	Returns the positions of the eight vertices of cube (x,y,z).
+
+	@param[in]	x	The x position of the cube in the volume
+	@param[in]	y	The y position of the cube in the volume
+	@param[in]	z	The z position of the cube in the volume
+	@return	A std::vector containing the eight vertices
+	*/
+	static std::vector<Vector3i> cube_vertices(int x, int y, int z);
+
+	/**
+	@brief	Returns the positions of the four vertices of the specified face in cube (x,y,z).
+
+	@param[in]	x	The x position of the cube in the volume
+	@param[in]	y	The y position of the cube in the volume
+	@param[in]	z	The z position of the cube in the volume
+	@param[in]	f	The cube face designator
+	@return	A std::vector containing the four vertices (in the order top-left, top-right, bottom-left, bottom-right)
+	*/
+	static std::vector<Vector3i> face_vertices(int x, int y, int z, CubeFaceDesignator::Enum f);
+
+	/**
 	@brief	Looks up the node (if any) at the centre of cube (x,y,z).
 
 	@param[in]	x	The x position of the cube in the volume

@@ -52,6 +52,12 @@ public:
 		return m_globalNodeTable;
 	}
 
+	Label label(const Vector3i& pos) const
+	{
+		itk::Index<3> index = {{pos.x, pos.y, pos.z}};
+		return m_labellingHook.get()->GetPixel(index);
+	}
+
 	LabelImagePointer labelling() const
 	{
 		return m_labellingHook.get();

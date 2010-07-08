@@ -5,9 +5,49 @@
 
 #include "CubeTable.h"
 
+#include <common/exceptions/Exception.h>
+
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
+std::vector<Vector3i> CubeTable::cube_vertices(int x, int y, int z)
+{
+	std::vector<Vector3i> verts;
+	verts.reserve(8);
+	verts.push_back(Vector3i(x,y,z));
+	verts.push_back(Vector3i(x+1,y,z));
+	verts.push_back(Vector3i(x,y+1,z));
+	verts.push_back(Vector3i(x+1,y+1,z));
+	verts.push_back(Vector3i(x,y,z+1));
+	verts.push_back(Vector3i(x+1,y,z+1));
+	verts.push_back(Vector3i(x,y+1,z+1));
+	verts.push_back(Vector3i(x+1,y+1,z+1));
+	return verts;
+}
+
+std::vector<Vector3i> CubeTable::face_vertices(int x, int y, int z, CubeFaceDesignator::Enum f)
+{
+	std::vector<Vector3i> verts(4);
+	switch(f)
+	{
+		case CubeFaceDesignator::FACE_XY:
+			verts[CubeFace::TOP_LEFT_VERTEX] = Vector3i(x,y+1,z);	verts[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(x+1,y+1,z);
+			verts[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(x,y,z);	verts[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(x+1,y,z);
+			break;
+		case CubeFaceDesignator::FACE_XZ:
+			verts[CubeFace::TOP_LEFT_VERTEX] = Vector3i(x,y,z+1);	verts[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(x+1,y,z+1);
+			verts[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(x,y,z);	verts[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(x+1,y,z);
+			break;
+		case CubeFaceDesignator::FACE_YZ:
+			verts[CubeFace::TOP_LEFT_VERTEX] = Vector3i(x,y,z+1);	verts[CubeFace::TOP_RIGHT_VERTEX] = Vector3i(x,y+1,z+1);
+			verts[CubeFace::BOTTOM_LEFT_VERTEX] = Vector3i(x,y,z);	verts[CubeFace::BOTTOM_RIGHT_VERTEX] = Vector3i(x,y+1,z);
+			break;
+		default:
+			throw Exception("Invalid face designator");		// this should never happen
+	}
+	return verts;
+}
+
 boost::optional<int> CubeTable::lookup_cube_centre_node(int x, int y, int z) const
 {
 	std::map<Vector3i,int>::const_iterator it = m_cubeCentreNodes.find(Vector3i(x,y,z));
