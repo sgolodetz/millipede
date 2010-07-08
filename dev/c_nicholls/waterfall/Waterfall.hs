@@ -1,14 +1,16 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE  FlexibleInstances #-}
-module Waterfall(waterfall, mkNode,Node(Node),Edge(Edge),mkEdge,Mergeable(union,unions),getRegion,getEdges,getNode,getWeight,size) where
+module Waterfall(waterfall, mkNode,Tree(Node),Edge,Mergeable(union,unions),getRegion,getEdges,getWeight,size) where
 
-data Node a = Node a [Edge a]
-data Edge a = Edge Int (Node a)
+import Data.Tree (Tree(..),Forest)
+
 
 
 -- mergeChildren applied to an edge returns the edge after merging;
 -- the boolean value indicates whether or not the edge contained
 -- a regional minimum amongst its children.
+
+type Edge a = Tree (a,Int)
 
 class Mergeable a where
   union :: a -> a -> a
@@ -18,9 +20,8 @@ class Mergeable a where
 -- and then proceeds to call the main mergeChildren function.
 
 
-waterfall :: Mergeable a => Node a -> Node a
-waterfall (Node r []) = Node r []
-waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (1 + maximum (map getWeight es)) (Node r es))
+waterfall :: Mergeable a => Edge a -> Edge a
+waterfall = fst.mergeChildren
 
 -- f was the initial mergeChildren function (now known as mergeChildren)
 --
@@ -42,8 +43,8 @@ waterfall (Node r es) = (getNode.fst.mergeChildren) (Edge  (1 + maximum (map get
 {-# SECIALIZE mergeChildren :: Edge (Set a) -> (Edge (Set a),Bool)#-}
 {-# SECIALIZE mergeChildren :: Edge (Heap a) -> (Edge (Heap a),Bool)#-}
 mergeChildren :: (Mergeable a )=> Edge a -> (Edge a,Bool)
-mergeChildren n@(Edge _ (Node _ [])) = (n,False)
-mergeChildren (Edge w (Node r es) )
+mergeChildren n@(Node _ []) = (n,False)
+mergeChildren (Node (r,w) es)
   | (b && w'<=w) = (join r ((e,False):es') w, True  )
   | otherwise    = (join r ((e,b)    :es') w, (w'<w))
   where
@@ -104,7 +105,7 @@ findMin _ [] = error "The impossible happened"
 join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
 join r es w | r `seq` es `seq` w `seq` False = undefined
 join r ebs w =
-   (Edge w (Node newr es))
+   (Node (newr,w) es)
    where
      (rs, es) = extractEdgeRegions ebs [] []
      newr = unions (r:rs)
@@ -117,7 +118,7 @@ extractEdgeRegions :: [(Edge a,Bool)] ->[a] ->  [Edge a] -> ([a],[Edge a]) -- ##
 extractEdgeRegions xs as rs  | xs `seq` as `seq` rs `seq` False = undefined
 extractEdgeRegions [] as rs = (as,rs)
 extractEdgeRegions ((e,True):es) as rs = extractEdgeRegions es as (e:rs)
-extractEdgeRegions ((Edge _ n,False):es) as rs = extractEdgeRegions es (getRegion n : as) (getEdges n ++ rs)
+extractEdgeRegions ((Node (r,_) cs,False):es) as rs = extractEdgeRegions es (r : as) ( cs ++ rs)
 
 
 
@@ -127,29 +128,24 @@ extractEdgeRegions ((Edge _ n,False):es) as rs = extractEdgeRegions es (getRegio
 -- Returns a comparison operator that can then be used in sort.
 
 cmpEdge :: (Edge a,Bool) -> (Edge a,Bool) -> Ordering
-cmpEdge ((Edge w1 _),b1) ((Edge w2 _),b2)
+cmpEdge ((Node (_,w1) _),b1) ((Node (_,w2) _),b2)
   | w1 == w2 = compare b2 b1
   | otherwise = compare w1 w2
 
 
--- The node that en edge points to
-
-getNode :: Edge a -> Node a
-getNode (Edge _ n) = n
-
 -- The weight of an edge
 
-getWeight :: Edge a -> Int
-getWeight (Edge w _) = w
+getWeight :: Tree (a,Int) -> Int
+getWeight (Node (_,w) _) = w
 
 -- The region in a node
 
-getRegion :: Node a -> a
+getRegion :: Tree a -> a
 getRegion (Node r _) = r
 
 -- The list of edges originating from a node
 
-getEdges :: Node a-> [Edge a]
+getEdges :: Tree a-> Forest a
 getEdges (Node _ es) = es
 
 -- The children nodes of a node
@@ -159,14 +155,8 @@ getEdges (Node _ es) = es
 
 -- Make a node from a region and some edges
 
-mkNode :: Mergeable a =>a -> [Edge a]->  Node a
+mkNode :: a -> Forest a ->  Tree a
 mkNode a es = Node a es
-
--- Make an edge of given weight, which points to a node
-
-mkEdge :: Mergeable a => Node a -> Int -> Edge a
-mkEdge n v = Edge v n
-
 
 instance Mergeable [Char] where
   union a b  = a ++ b
@@ -210,17 +200,8 @@ or if
 -}
 
 
-instance  Show (Node a) where
-  show t = show' 1 (Edge 0 t) ++"\n"
-
-show' :: Int -> Edge a -> [Char]
-show' _ (Edge k (Node _ [])) = show k++"->"++ show "!"
-show' n (Edge k (Node _ ts)) = show k++ " -> " ++ show "!"   ++ (concat$map (( ("\n"++(f  n "    "))++).(show' (n+1))) ts)
-  where
-    f 0 _ = ""
-    f x t = t ++ f (x-1) t
 
 
 
-size :: Node a -> Int
-size (Node _ es) =  1+ sum (map (size.getNode) es)
+size :: Tree a -> Int
+size (Node _ es) =  1+ sum (map size es)

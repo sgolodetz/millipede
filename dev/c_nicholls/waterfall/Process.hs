@@ -15,7 +15,7 @@ import qualified Data.Set  as S
 import Data.Array.IO
 import Data.Array.Unboxed       (IArray,  UArray, amap, bounds,  (!)  )
 import Data.Word                ( Word16)
-import Waterfall(Node,mkNode,Edge,mkEdge,Mergeable(union,unions),getRegion,getEdges,getNode)
+import Waterfall(Tree,mkNode,Edge,Mergeable(union,unions),getRegion,getEdges)
 import PGM(arrayToFile)
 
 
@@ -47,12 +47,12 @@ neighbours' arr  (a,b) (x,y) (p:ps) =
 
 
 ---- IO Array Functions ----
-fillIn :: Node (S.Set (Int,Point)) -> IOUArray Point Int -> IO (IOUArray Point Int)
+fillIn :: Edge (S.Set (Int,Point)) -> IOUArray Point Int -> IO (IOUArray Point Int)
 fillIn node ar = do
-  {let rs' = S.toList (getRegion node)
+  {let rs' = S.toList (fst (getRegion node))
   ;let x = avg rs'
   ;mapM (\v -> writeArray ar (snd v) x) rs'
-  ;ar' <- foldR (fillIn.getNode) ar (getEdges node)
+  ;ar' <- foldR (fillIn) ar (getEdges node)
   ;return $!  ar'
   }
 
@@ -63,7 +63,7 @@ arrayToNode arr miss (n,(Voxel v p))  = do
   ;let ls' = remove miss ls
   ;let ls'' = remove p ls'
   ;es <- mapM  (arrayToNode arr p) ls''
-  ;return $! mkEdge (mkNode(S.fromList [(v,p)]) es) n
+  ;return $!  (mkNode (S.fromList [(v,p)],n) es)
   }
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
@@ -132,7 +132,7 @@ filter' br ls (x@(_,(_,(Voxel _ d))):xs) = do
   }
 
 ---  Main  -------------
-output :: (Point, Point) -> Node (S.Set (Int,Point)) -> IO (UArray Point Word16)
+output :: (Point, Point) -> Edge (S.Set (Int,Point)) -> IO (UArray Point Word16)
 output bound tree = do
   {arr <- newArray bound 0 :: IO (IOUArray Point Int)
   ;arrr <- fillIn tree arr
