@@ -15,9 +15,8 @@ import qualified Data.Set  as S
 import Data.Array.IO
 import Data.Array.Unboxed       (IArray,  UArray, amap, bounds,  (!)  )
 import Data.Word                ( Word16)
-import Waterfall(Tree,mkNode,Edge,Mergeable(union,unions),getRegion,getEdges)
+import Waterfall(mkNode,Edge,Mergeable(union,unions),getRegion,getEdges)
 import PGM(arrayToFile)
-
 
 type Adjacency  = (Int,(Voxel,Voxel))
 type Point = (Int,Int)

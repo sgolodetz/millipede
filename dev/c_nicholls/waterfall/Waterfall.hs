@@ -1,12 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE  FlexibleInstances #-}
-module Waterfall(waterfall, mkNode,Tree(Node),Edge,Mergeable(union,unions),getRegion,getEdges,getWeight,size) where
+module Waterfall(waterfall, mkNode,Edge,Mergeable(union,unions),getRegion,getEdges) where
 
 import Data.Tree (Tree(..),Forest)
-import qualified Data.Foldable as F
-import Debug.Trace
-
-
+--import qualified Data.Foldable as F
 -- mergeChildren applied to an edge returns the edge after merging;
 -- the boolean value indicates whether or not the edge contained
 -- a regional minimum amongst its children.
@@ -22,137 +19,39 @@ class Mergeable a where
 
 
 waterfall :: (Mergeable a,Show a) => Edge a -> Edge a
-waterfall t = let (a,f) = g t e in Node (a,232323) f
+waterfall t =   g t (e,232323) []
   where
     e = unions[]
+{-
+f :: (Mergeable b,Show b) => (b,Int) ->Tree (b,Int) ->  Tree (b,Int)
+f (a,n) (Node (b,n2) es)  | trace (shows a.shows n .shows " ". shows b .shows n2.shows  " ".shows es $ "") False = undefined
+f (a,n) (Node (b,n2) es)
+  | n <= n2 = (Node (union a b,n) es)
+  | otherwise = Node (a,n) [Node (union b c,n2) (cs++ es')]
+  where
+  (Node (c,n3) cs , es') = findMin (\t1 t2 -> compare (getWeight t1) (getWeight t2))es
+-}
 
-
-g :: Mergeable a => Tree (a,Int) -> a -> (a,Forest (a,Int))
-g (Node (r1,w1) []) r2 = (union r1 r2,[])
-g (Node (r1,w1) es) r2
-  | w1 > w2 =  (r2 , [Node (r4,w1) (ds)])
-  | otherwise = (r5,fs)
+g :: Mergeable c => Tree (c,Int) -> (c,Int) -> Forest (c,Int) -> Tree (c,Int)
+g (Node (r1,w1) es) (r2,w0) k
+  | null es || w1 <= w2 = combine es  ((union r2 r1),w0) k
+  | otherwise  =  Node (r2,w0)  ((combine (cs ++ es') ((union r1 r3),w1)[]) : k)
   where
   (Node (r3,w2) cs , es') = findMin (\t1 t2 -> compare (getWeight t1) (getWeight t2))es
-  (r4,ds) = combine (cs ++ es') (union r1 r3) w1
-  (r5,fs) = combine es  (union r2 r1) w1
 
-combine :: Mergeable a => Forest (a,Int) -> a -> Int -> (a,Forest (a,Int))
-combine [] a n = (a,[])
-combine (t:ts) a n =
-  let (b,bs) = g t a in
-  let (c,cs) = combine ts b n in
-  (c, cs ++ bs)
+combine :: Mergeable a => Forest (a,Int) -> (a, Int) -> Forest (a,Int) -> Tree (a,Int)
+combine [] x k = Node x k
+combine (t:ts) x k =
+  let Node y bs =  g t x k in
+  combine ts y bs
 
 
--- f was the initial mergeChildren function (now known as mergeChildren)
---
--- f :: Mergeable a => Edge a -> (Edge a,Bool)
--- f n@(Edge w (Node r [])) = (n,False)
--- f (Edge w (Node r es) ) =
---   let ((e,b):es') = sortBy cmpEdge (map f es) in
---   let w' = getWeight e in
---     case (b==True && (w'<=w)) of
---     True   ->  (join r ((e,False): es') w, True)
---     False  ->  (join r ((e,b): es')  w, flag (w'>=w))
-
-
--- mergeChildren walks the tree bottom-up and labels each edge
--- with True or False depending on whether the child has been joined
--- with a regional minimum below it (see also long explanation below)
---
--- it also calls the join function when regions need merging.
-{-# SECIALIZE mergeChildren :: Edge (Set a) -> (Edge (Set a),Bool)#-}
-{-# SECIALIZE mergeChildren :: Edge (Heap a) -> (Edge (Heap a),Bool)#-}
-mergeChildren :: (Mergeable a )=> Edge a -> (Edge a,Bool)
-mergeChildren n@(Node _ []) = (n,False)
-mergeChildren (Node (r,w) es)
-  | (b && w'<=w) = (join r ((e,False):es') w, True  )
-  | otherwise    = (join r ((e,b)    :es') w, (w'<w))
-  where
-    ((e,b),es') =   findMin cmpEdge (map mergeChildren es)
-    w' = getWeight e
-
-{-
-It would be nice to have the signature of findMin as
-
->findMin :: Ord a => [a] -> (a,[a])
-
-rather than refer to an ordering function, but we cannot make
-(Edge a, Bool) an instasnce of the Ord class without a being in the EQ
-class, which it needn't be.
--}
 
 findMin :: (a -> a -> Ordering) ->  [a] -> (a,[a])
 findMin cmp  (z:zs) = foldr (\x (e,es)-> case (cmp x e) of
   LT -> (x,e:es)
   _ -> (e,x:es)) (z,[]) zs
 findMin _ [] = error "The impossible happened"
-
-
--- Initial join function
--- (should recurse only once because the tree is built bottom-up)
---
--- join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
--- join r [] w = Edge w (Node r [])
--- join r ((Edge v n,b):es) w
---  | b   =        Edge w' (Node r' ((Edge v n ):es'))
---  | otherwise  = Edge w' (Node r''  es'')
---   where
---     r'' = (union r' (getRegion n))
---     es'' = (es' ++ getEdges n)
---     Edge w' (Node r' es') = join r es w
-
-
-
--- join function, with fold instead of recursion
---
--- r is the region in the current node;
--- w is the weight of the edge into the current node;
--- ebs are the (bool-labelled) edges from the current node to its children;
---
--- select the False-labelled edges, find the nodes at the end of them and
--- merge r into the regions of those nodes; this gives a bigger region, newr;
---
--- take the children (edges) of those nodes, into es, and make them
--- children of the current node (whose region was r);
---
--- the newly-created node has an edge of (unchanged) weight w coming into it,
--- and is made of the new region, newr;
--- as edges it has all the old True-labelled edges, as well as the edges
--- of the children who have merged into r.
-
-
-
-join ::  Mergeable a=> a -> [(Edge a,Bool)] -> Int -> Edge a
-join r es w | r `seq` es `seq` w `seq` False = undefined
-join r ebs w =
-   (Node (newr,w) es)
-   where
-     (rs, es) = extractEdgeRegions ebs [] []
-     newr = unions (r:rs)
-
--- Prepare for absorbing the regions in the children of a node
--- by putting the region of the current node(s) in a list (as),
--- and the regions of the children in a list (bs).
-
-extractEdgeRegions :: [(Edge a,Bool)] ->[a] ->  [Edge a] -> ([a],[Edge a]) -- ##
-extractEdgeRegions xs as rs  | xs `seq` as `seq` rs `seq` False = undefined
-extractEdgeRegions [] as rs = (as,rs)
-extractEdgeRegions ((e,True):es) as rs = extractEdgeRegions es as (e:rs)
-extractEdgeRegions ((Node (r,_) cs,False):es) as rs = extractEdgeRegions es (r : as) ( cs ++ rs)
-
-
-
--- Auxiliary functions
-
--- Compare the weights of two edges.
--- Returns a comparison operator that can then be used in sort.
-
-cmpEdge :: (Edge a,Bool) -> (Edge a,Bool) -> Ordering
-cmpEdge ((Node (_,w1) _),b1) ((Node (_,w2) _),b2)
-  | w1 == w2 = compare b2 b1
-  | otherwise = compare w1 w2
 
 
 -- The weight of an edge
@@ -183,47 +82,6 @@ mkNode a es = Node a es
 instance Mergeable [Char] where
   union a b  = a ++ b
   unions = foldr union ""
----- Stuff for testing ----------
-
-
-  {- f (a.k.a. mergeChildren):
-
-To combine all the correct edges: From a given Node, with weight w
-leading to it, we first apply f to each of its chlidren to get the
-correctly merged sub-Nodes along with a boolean value representing
-whether or not that child has been merged with a regional minimum (RM)
-below it.
-
-If the Node is a leaf, then we're done. It is not merged with anything
-below it.
-
-If none of the children where merged with a RM then it is safe to
-merge with all the children since this won't bring two RM together. If
-w is greater than any of the weights leading to the children then our
-Node has been merged with a RM.
-
-Assume that some of the children merged with a RM. We still want to
-merge with every child that did not merge with a RM since doing so
-will not join any RM but we may also want to merge with one of the
-children that did since it may have greatest claim over the current
-Node. A child will have this claim if the weight leading to it is less
-than the weights of all other edges leading to the curretn Node.
-
-The Node we're at merged with a RM if it
-
- - merged with one of its children that had merged
-
-or if
-
- - any of its children that did not merge with a RM formed a RM
- themselves.  This relies on the same condition as before: that w is
- not smaller than the weight of any edge leading away from the Node.
-
--}
 
 
 
-
-
-size :: Tree a -> Int
-size (Node _ es) =  1+ sum (map size es)
