@@ -86,25 +86,25 @@ public:
 			switch(nodeDesignator)
 			{
 			case NODE_001:
-				m_masterArray->push_back(make_node(loc.get<0>(), loc.get<1>(), loc.get<2>() + 0.5));
+				m_masterArray->push_back(make_node(loc.x, loc.y, loc.z + 0.5));
 				break;
 			case NODE_010:
-				m_masterArray->push_back(make_node(loc.get<0>(), loc.get<1>() + 0.5, loc.get<2>()));
+				m_masterArray->push_back(make_node(loc.x, loc.y + 0.5, loc.z));
 				break;
 			case NODE_011:
-				m_masterArray->push_back(make_node(loc.get<0>(), loc.get<1>() + 0.5, loc.get<2>() + 0.5));
+				m_masterArray->push_back(make_node(loc.x, loc.y + 0.5, loc.z + 0.5));
 				break;
 			case NODE_100:
-				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>(), loc.get<2>()));
+				m_masterArray->push_back(make_node(loc.x + 0.5, loc.y, loc.z));
 				break;
 			case NODE_101:
-				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>(), loc.get<2>() + 0.5));
+				m_masterArray->push_back(make_node(loc.x + 0.5, loc.y, loc.z + 0.5));
 				break;
 			case NODE_110:
-				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>() + 0.5, loc.get<2>()));
+				m_masterArray->push_back(make_node(loc.x + 0.5, loc.y + 0.5, loc.z));
 				break;
 			case NODE_111:
-				m_masterArray->push_back(make_node(loc.get<0>() + 0.5, loc.get<1>() + 0.5, loc.get<2>() + 0.5));
+				m_masterArray->push_back(make_node(loc.x + 0.5, loc.y + 0.5, loc.z + 0.5));
 				break;
 			default:
 				// This will never happen: nodeDesignator != NODE_DESIGNATOR_COUNT

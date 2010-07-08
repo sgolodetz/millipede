@@ -302,7 +302,7 @@ private:
 
 	Label label(const Vector3i& loc) const
 	{
-		itk::Index<3> index = {{loc.get<0>(), loc.get<1>(), loc.get<2>()}};
+		itk::Index<3> index = {{loc.x, loc.y, loc.z}};
 		return m_labelling->GetPixel(index);
 	}
 };

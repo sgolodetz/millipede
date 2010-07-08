@@ -11,7 +11,7 @@
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <common/util/Vectors.h>
+#include <common/vectors/Vector3.h>
 #include "CubeFace.h"
 #include "CubeFaceDesignator.h"
 

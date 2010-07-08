@@ -252,7 +252,11 @@ util/GridUtil.h
 util/ITKImageUtil.h
 util/NullType.h
 util/NumericUtil.h
-util/Vectors.h
+)
+
+##
+SET(vectors_headers
+vectors/Vector3.h
 )
 
 ##
@@ -317,6 +321,7 @@ ${segmentation_watershed_headers}
 ${slices_headers}
 ${textures_headers}
 ${util_headers}
+${vectors_headers}
 ${visualization_headers}
 )
 
@@ -402,6 +407,9 @@ SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
+
+##
+SOURCE_GROUP(vectors\\.h FILES ${vectors_headers})
 
 ##
 SOURCE_GROUP(visualization\\.cpp FILES ${visualization_sources})
