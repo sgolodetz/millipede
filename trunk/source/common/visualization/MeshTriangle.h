@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_MESHTRIANGLE
 #define H_MILLIPEDE_MESHTRIANGLE
 
-#include <common/vectors/Vector3.h>
+#include <common/math/Vector3.h>
 
 namespace mp {
 

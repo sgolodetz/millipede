@@ -142,6 +142,16 @@ listeners/CompositeListenerBase.h
 )
 
 ##
+SET(math_sources
+math/MathConstants.cpp
+)
+
+SET(math_headers
+math/MathConstants.h
+math/Vector3.h
+)
+
+##
 SET(partitionforests_base_sources
 partitionforests/base/PFNodeID.cpp
 )
@@ -260,11 +270,6 @@ util/NumericUtil.h
 )
 
 ##
-SET(vectors_headers
-vectors/Vector3.h
-)
-
-##
 SET(visualization_sources
 visualization/CubeFace.cpp
 visualization/CubeFaceDesignator.cpp
@@ -303,6 +308,7 @@ ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
 ${jobs_sources}
+${math_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
 ${segmentation_sources}
@@ -324,6 +330,7 @@ ${io_sections_headers}
 ${io_util_headers}
 ${jobs_headers}
 ${listeners_headers}
+${math_headers}
 ${partitionforests_base_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
@@ -333,7 +340,6 @@ ${segmentation_watershed_headers}
 ${slices_headers}
 ${textures_headers}
 ${util_headers}
-${vectors_headers}
 ${visualization_headers}
 )
 
@@ -389,15 +395,19 @@ SOURCE_GROUP(jobs\\.h FILES ${jobs_headers})
 SOURCE_GROUP(listeners\\.h FILES ${listeners_headers})
 
 ##
+SOURCE_GROUP(math\\.cpp FILES ${math_sources})
+SOURCE_GROUP(math\\.h FILES ${math_headers})
+
+##
+SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
+
+##
 SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
 SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
 
 ##
 SOURCE_GROUP(partitionforests\\images\\.cpp FILES ${partitionforests_images_sources})
 SOURCE_GROUP(partitionforests\\images\\.h FILES ${partitionforests_images_headers})
-
-##
-SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
 
 ##
 SOURCE_GROUP(segmentation\\.cpp FILES ${segmentation_sources})
@@ -420,9 +430,6 @@ SOURCE_GROUP(textures\\.h FILES ${textures_headers})
 ##
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
-
-##
-SOURCE_GROUP(vectors\\.h FILES ${vectors_headers})
 
 ##
 SOURCE_GROUP(visualization\\.cpp FILES ${visualization_sources})

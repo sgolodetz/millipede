@@ -12,7 +12,7 @@
 
 #include <boost/optional.hpp>
 
-#include <common/vectors/Vector3.h>
+#include <common/math/Vector3.h>
 #include "CubeFace.h"
 #include "CubeFaceDesignator.h"
 
