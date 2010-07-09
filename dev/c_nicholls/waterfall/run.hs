@@ -19,7 +19,7 @@ main = do
 
   t2 <- timeSince t1
   putStrLn "Making Tree"
-  t <- arrayToNode es (-1,-1) (1000000000,(Voxel 0 (0,0)))
+  Edge 1000000000 t <- arrayToNode es (-1,-1) (1000000000,(Voxel 0 (0,0)))
 
   t3 <- timeSince t2
   putStrLn "Doing Waterfall"
@@ -28,7 +28,7 @@ main = do
 
   t4 <- (timeSince t3)
   putStrLn "Converting output"
-  ars <- mapM (output bs) trees
+  ars <- mapM (output bs) ( map (Edge 1000000000) trees)
 
   t5 <- timeSince t4
   save path 1 (ars)
