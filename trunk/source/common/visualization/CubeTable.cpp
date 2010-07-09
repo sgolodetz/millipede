@@ -48,11 +48,11 @@ std::vector<Vector3i> CubeTable::face_vertices(int x, int y, int z, CubeFaceDesi
 	return verts;
 }
 
-boost::optional<int> CubeTable::lookup_cube_centre_node(int x, int y, int z) const
+int CubeTable::lookup_cube_centre_node(int x, int y, int z) const
 {
 	std::map<Vector3i,int>::const_iterator it = m_cubeCentreNodes.find(Vector3i(x,y,z));
 	if(it != m_cubeCentreNodes.end()) return it->second;
-	else return boost::none;
+	else return -1;
 }
 
 boost::optional<const CubeFace&> CubeTable::lookup_cube_face(int x, int y, int z, CubeFaceDesignator::Enum f) const
@@ -88,8 +88,8 @@ std::set<int> CubeTable::lookup_cube_nodes(int x, int y, int z) const
 		}
 	}
 
-	boost::optional<int> cubeCentreNode = lookup_cube_centre_node(x,y,z);
-	if(cubeCentreNode) nodeSet.insert(*cubeCentreNode);
+	int cubeCentreNode = lookup_cube_centre_node(x,y,z);
+	if(cubeCentreNode != -1) nodeSet.insert(cubeCentreNode);
 
 	return nodeSet;
 }

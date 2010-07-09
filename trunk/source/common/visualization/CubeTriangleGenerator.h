@@ -12,6 +12,8 @@
 
 #include <common/adts/Edge.h>
 #include <common/jobs/SimpleJob.h>
+#include "FanTriangulator.h"
+#include "SchroederTriangulator.h"
 
 namespace mp {
 
@@ -62,13 +64,16 @@ private:
 		TypedNodeLoopList typedNodeLoops = find_typed_node_loops();
 
 		// Triangulate them according to their type.
-		// TODO
+		std::list<MeshTriangle> triangles = triangulate_typed_node_loops(typedNodeLoops);
 
 		// Make sure each triangle is pointing consistently away from the lower of the two labels it separates.
 		// (Note that the "away from" is arbitrary: the important thing is the consistency.)
 		// TODO
 
 		// Ensure that the adjacent node sets for each global node reflect the new edges which have been added during triangulation.
+		// TODO
+
+		// Splice the triangles onto the global triangle list.
 		// TODO
 	}
 
@@ -122,13 +127,11 @@ private:
 		std::vector<Label> labels = extract_labels(localNodeMap.find(startIndex)->second);
 
 		// Find the node loop using the trail-following algorithm described above.
-		int cubeCentreIndex = -1;
-		boost::optional<int> optionalCubeCentreIndex = m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z);
-		if(optionalCubeCentreIndex) cubeCentreIndex = *optionalCubeCentreIndex;
-
 		std::vector<int> nodeLoop;
 		int curIndex = startIndex;
 		TriangulateFlag flag = TRIANGULATE_SCHROEDER;
+		int cubeCentreIndex = m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z);
+
 		do
 		{
 			nodeLoop.push_back(curIndex);
@@ -219,6 +222,32 @@ private:
 		}
 
 		return typedNodeLoops;
+	}
+
+	std::list<MeshTriangle> triangulate_typed_node_loops(const TypedNodeLoopList& typedNodeLoops)
+	{
+		std::list<MeshTriangle> triangles;
+
+		FanTriangulator<Label> fanTriangulator(m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z));
+		SchroederTriangulator<Label> schroederTriangulator(m_data->global_node_table());
+
+		for(TypedNodeLoopList::const_iterator it=typedNodeLoops.begin(), iend=typedNodeLoops.end(); it!=iend; ++it)
+		{
+			const NodeLoop& nodeLoop = it->first;
+			TriangulateFlag flag = it->second;
+			if(flag == TRIANGULATE_FAN)
+			{
+				std::list<MeshTriangle> result = fanTriangulator.triangulate(nodeLoop);
+				triangles.splice(triangles.end(), result);
+			}
+			else	// flag == TRIANGULATE_SCHROEDER
+			{
+				std::list<MeshTriangle> result = schroederTriangulator.triangulate(nodeLoop);
+				triangles.splice(triangles.end(), result);
+			}
+		}
+
+		return triangles;
 	}
 };
 

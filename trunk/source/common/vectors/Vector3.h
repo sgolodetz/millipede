@@ -26,6 +26,12 @@ struct Vector3
 
 //#################### GLOBAL OPERATORS ####################
 template <typename T>
+Vector3<T> operator-(const Vector3<T>& v)
+{
+	return Vector3<T>(-v.x, -v.y, -v.z);
+}
+
+template <typename T>
 bool operator<(const Vector3<T>& lhs, const Vector3<T>& rhs)
 {
 	return	lhs.x < rhs.x ||

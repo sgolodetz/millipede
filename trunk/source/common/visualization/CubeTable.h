@@ -59,9 +59,9 @@ public:
 	@param[in]	x	The x position of the cube in the volume
 	@param[in]	y	The y position of the cube in the volume
 	@param[in]	z	The z position of the cube in the volume
-	@return	The index of the node (if any) in the global node table, or boost::none otherwise
+	@return	The index of the node (if any) in the global node table, or -1 otherwise
 	*/
-	boost::optional<int> lookup_cube_centre_node(int x, int y, int z) const;
+	int lookup_cube_centre_node(int x, int y, int z) const;
 
 	/**
 	@brief	Looks up the cube face (if any) specified by (x,y,z,f).

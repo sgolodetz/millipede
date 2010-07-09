@@ -279,11 +279,13 @@ visualization/CubeFaceGenerator.h
 visualization/CubeInternalGenerator.h
 visualization/CubeTable.h
 visualization/CubeTriangleGenerator.h
+visualization/FanTriangulator.h
 visualization/GlobalNodeTable.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
 visualization/MeshNode.h
 visualization/MeshTriangle.h
+visualization/SchroederTriangulator.h
 visualization/SourcedLabel.h
 )
 
