@@ -8,6 +8,7 @@
 
 #include <cmath>
 
+#include <common/exceptions/Exception.h>
 #include "MathConstants.h"
 #include "NumericUtil.h"
 
@@ -67,6 +68,19 @@ struct Vector3
 	}
 
 	//#################### PUBLIC METHODS ####################
+	static double angle_between(const Vector3& lhs, const Vector3& rhs)
+	{
+		if(lhs.length_squared() < MathConstants::SMALL_EPSILON || rhs.length_squared() < MathConstants::SMALL_EPSILON)
+		{
+			throw Exception("Unable to determine angle between vectors: at least one of the vectors is too close to the zero vector");
+		}
+
+		double cosAngle = lhs.dot(rhs) / (lhs.length() * rhs.length());
+		if(cosAngle < -1.0) cosAngle = -1.0;
+		if(cosAngle > 1.0) cosAngle = 1.0;
+		return acos(cosAngle);
+	}
+
 	Vector3 cross(const Vector3& rhs) const
 	{
 		return Vector3(y*rhs.z - z*rhs.y,
