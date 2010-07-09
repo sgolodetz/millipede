@@ -80,7 +80,7 @@ private:
 			default:	// > 2 face-centre nodes
 			{
 				// Create a cube-centre node, assign it all the labels of the cube, and join it to all the face centres.
-				int cubeCentreNode = globalNodeTable.find_index(GlobalNodeTableT::NodePosition(Vector3i(m_x, m_y, m_z), GlobalNodeTableT::OFFSET_111));
+				int cubeCentreNode = globalNodeTable.find_index(typename GlobalNodeTableT::NodePosition(Vector3i(m_x, m_y, m_z), GlobalNodeTableT::OFFSET_111));
 				cubeTable.set_cube_centre_node(m_x, m_y, m_z, cubeCentreNode);
 
 				MeshNodeT& c = globalNodeTable(cubeCentreNode);

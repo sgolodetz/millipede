@@ -28,7 +28,7 @@ struct MeshNode
 
 	bool has_label(Label label) const
 	{
-		for(std::set<SourcedLabel<Label> >::const_iterator it=sourcedLabels.begin(), iend=sourcedLabels.end(); it!=iend; ++it)
+		for(typename std::set<SourcedLabel<Label> >::const_iterator it=sourcedLabels.begin(), iend=sourcedLabels.end(); it!=iend; ++it)
 		{
 			if(it->label == label)
 			{

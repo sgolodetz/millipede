@@ -81,7 +81,7 @@ private:
 	{
 		std::vector<Label> labels;
 		labels.reserve(n.sourcedLabels.size());
-		for(std::set<SourcedLabel<Label> >::const_iterator it=n.sourcedLabels.begin(), iend=n.sourcedLabels.end(); it!=iend; ++it)
+		for(typename std::set<SourcedLabel<Label> >::const_iterator it=n.sourcedLabels.begin(), iend=n.sourcedLabels.end(); it!=iend; ++it)
 		{
 			labels.push_back(it->label);
 		}
@@ -92,7 +92,7 @@ private:
 	{
 		// Step 1:	Find a start node with exactly two labels and a remaining edge. If no such node exists, we've found all the loops.
 		int startIndex = -1;
-		for(std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
+		for(typename std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
 		{
 			const MeshNodeT& n = it->second;
 			if(n.sourcedLabels.size() == 2 && !n.adjacentNodes.empty())
@@ -112,7 +112,7 @@ private:
 
 		// Create a 'used' map of the (undirected) edges to store which edges we've already seen.
 		std::map<Edge,bool,UndirectedEdgePredicate> used;
-		for(std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
+		for(typename std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
 		{
 			const int u = it->first;
 			const MeshNodeT& n = it->second;
@@ -207,7 +207,7 @@ private:
 		std::map<int,MeshNodeT> localNodeMap;
 		for(std::set<int>::const_iterator it=nodeSet.begin(), iend=nodeSet.end(); it!=iend; ++it)
 		{
-			std::map<int,MeshNodeT>::iterator loc = localNodeMap.insert(std::make_pair(*it, globalNodeTable(*it))).first;
+			typename std::map<int,MeshNodeT>::iterator loc = localNodeMap.insert(std::make_pair(*it, globalNodeTable(*it))).first;
 			MeshNodeT& n = loc->second;
 			std::set<int> relevantNodes;
 			std::set_intersection(n.adjacentNodes.begin(), n.adjacentNodes.end(), nodeSet.begin(), nodeSet.end(), std::inserter(relevantNodes, relevantNodes.begin()));
@@ -231,7 +231,7 @@ private:
 		FanTriangulator<Label> fanTriangulator(m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z));
 		SchroederTriangulator<Label> schroederTriangulator(m_data->global_node_table());
 
-		for(TypedNodeLoopList::const_iterator it=typedNodeLoops.begin(), iend=typedNodeLoops.end(); it!=iend; ++it)
+		for(typename TypedNodeLoopList::const_iterator it=typedNodeLoops.begin(), iend=typedNodeLoops.end(); it!=iend; ++it)
 		{
 			const NodeLoop& nodeLoop = it->first;
 			TriangulateFlag flag = it->second;

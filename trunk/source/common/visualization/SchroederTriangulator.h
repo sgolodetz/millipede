@@ -84,6 +84,9 @@ private:
 				case PlaneClassification::FRONT:
 					++frontCount;
 					break;
+				default:
+					// STRADDLE can't happen (it's a point!), but this keeps the compiler happier.
+					break;
 			}
 			if(backCount && frontCount) return PlaneClassification::STRADDLE;
 		}
