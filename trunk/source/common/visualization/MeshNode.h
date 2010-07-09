@@ -25,6 +25,18 @@ struct MeshNode
 	explicit MeshNode(const Vector3d& position_)
 	:	position(position_), valid(true)
 	{}
+
+	bool has_label(Label label) const
+	{
+		for(std::set<SourcedLabel<Label> >::const_iterator it=sourcedLabels.begin(), iend=sourcedLabels.end(); it!=iend; ++it)
+		{
+			if(it->label == label)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 };
 
 }

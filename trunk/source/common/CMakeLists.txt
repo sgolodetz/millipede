@@ -5,9 +5,14 @@
 ##########################################
 
 ##
+SET(adts_sources
+adts/Edge.cpp
+)
+
 SET(adts_headers
 adts/AdjacencyGraph.h
 adts/DisjointSetForest.h
+adts/Edge.h
 adts/Map.h
 adts/PriorityQueue.h
 adts/RootedMST.h
@@ -287,6 +292,7 @@ visualization/SourcedLabel.h
 #################################################################
 
 SET(sources
+${adts_sources}
 ${commands_sources}
 ${dicom_directories_sources}
 ${dicom_util_sources}
@@ -338,6 +344,7 @@ ${io_util_templates}
 #############################
 
 ##
+SOURCE_GROUP(adts\\.cpp FILES ${adts_sources})
 SOURCE_GROUP(adts\\.h FILES ${adts_headers})
 
 ##

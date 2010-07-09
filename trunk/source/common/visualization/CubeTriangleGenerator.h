@@ -10,6 +10,7 @@
 #include <list>
 #include <utility>
 
+#include <common/adts/Edge.h>
 #include <common/jobs/SimpleJob.h>
 
 namespace mp {
@@ -21,8 +22,8 @@ class CubeTriangleGenerator : public SimpleJob
 private:
 	enum TriangulateFlag
 	{
-		FAN_TRIANGULATE,		///< a node loop with this flag should be triangulated using the fan method
-		SCHROEDER_TRIANGULATE,	///< a node loop with this flag should be triangulated using the Schroeder method
+		TRIANGULATE_FAN,		///< a node loop with this flag should be triangulated using the fan method
+		TRIANGULATE_SCHROEDER,	///< a node loop with this flag should be triangulated using the Schroeder method
 	};
 
 	//#################### TYPEDEFS ####################
@@ -71,10 +72,123 @@ private:
 		// TODO
 	}
 
+	static std::vector<Label> extract_labels(const MeshNodeT& n)
+	{
+		std::vector<Label> labels;
+		labels.reserve(n.sourcedLabels.size());
+		for(std::set<SourcedLabel<Label> >::const_iterator it=n.sourcedLabels.begin(), iend=n.sourcedLabels.end(); it!=iend; ++it)
+		{
+			labels.push_back(it->label);
+		}
+		return labels;
+	}
+
 	boost::optional<TypedNodeLoop> find_typed_node_loop(std::map<int,MeshNodeT>& localNodeMap) const
 	{
-		// NYI
-		return boost::none;
+		// Step 1:	Find a start node with exactly two labels and a remaining edge. If no such node exists, we've found all the loops.
+		int startIndex = -1;
+		for(std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
+		{
+			const MeshNodeT& n = it->second;
+			if(n.sourcedLabels.size() == 2 && !n.adjacentNodes.empty())
+			{
+				startIndex = it->first;
+				break;
+			}
+		}
+
+		if(startIndex == -1) return boost::none;
+
+		// Step 2:	Follow the trail laid by the labels - at each step, follow an unused edge to an adjacent node with at
+		//			least the two labels of the start node. If no such adjacent node exists, back up and try another route.
+		//			If one of the nodes is the cube centre node, make a note and carry on - we'll need to triangulate this
+		//			loop using a fan approach. Terminate when we reach the start node again. The way M3C works guarantees
+		//			that there is a loop back to each valid start node, so termination is guaranteed.
+
+		// Create a 'used' map of the (undirected) edges to store which edges we've already seen.
+		std::map<Edge,bool,UndirectedEdgePredicate> used;
+		for(std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
+		{
+			const int u = it->first;
+			const MeshNodeT& n = it->second;
+			for(std::set<int>::const_iterator jt=n.adjacentNodes.begin(), jend=n.adjacentNodes.end(); jt!=jend; ++jt)
+			{
+				const int v = *jt;
+				used.insert(std::make_pair(Edge(u,v), false));
+			}
+		}
+
+		// Make a note of the two labels every node in the loop must have.
+		std::vector<Label> labels = extract_labels(localNodeMap.find(startIndex)->second);
+
+		// Find the node loop using the trail-following algorithm described above.
+		int cubeCentreIndex = -1;
+		boost::optional<int> optionalCubeCentreIndex = m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z);
+		if(optionalCubeCentreIndex) cubeCentreIndex = *optionalCubeCentreIndex;
+
+		std::vector<int> nodeLoop;
+		int curIndex = startIndex;
+		TriangulateFlag flag = TRIANGULATE_SCHROEDER;
+		do
+		{
+			nodeLoop.push_back(curIndex);
+			if(curIndex == cubeCentreIndex) flag = TRIANGULATE_FAN;
+
+			const MeshNodeT& curNode = localNodeMap.find(curIndex)->second;
+			int adjIndex = -1;
+			for(std::set<int>::const_iterator it=curNode.adjacentNodes.begin(), iend=curNode.adjacentNodes.end(); it!=iend; ++it)
+			{
+				const MeshNodeT& adjNode = localNodeMap.find(*it)->second;
+
+				// If the edge has not yet been used, and the adjacent node has at least the two labels of the start node, traverse the edge.
+				if(!used[Edge(curIndex, *it)] && adjNode.has_label(labels[0]) && adjNode.has_label(labels[1]))
+				{
+					adjIndex = *it;
+					break;
+				}
+			}
+
+			if(adjIndex != -1)
+			{
+				used[Edge(curIndex, adjIndex)] = true;
+				curIndex = adjIndex;
+			}
+			else
+			{
+				// If we couldn't find an adjacent node with the right labels, backtrack and try another route.
+				// Note that there's no danger of setting the current index back to the start index here: the first
+				// step will always be a valid one.
+				nodeLoop.pop_back();
+				if(!nodeLoop.empty())
+				{
+					curIndex = nodeLoop.back();
+					nodeLoop.pop_back();
+				}
+				else
+				{
+					throw Exception("Something went wrong: couldn't find an adjacent node with the right labels.");
+				}
+			}
+		} while(curIndex != startIndex);
+
+		// Step 3:	Remove edges from further consideration in future loops if at least one of their endpoints has only two labels.
+		for(int i=0, nodeCount = static_cast<int>(nodeLoop.size()); i<nodeCount; ++i)
+		{
+			int j = (i+1)%nodeCount;
+			int curIndex = nodeLoop[i];
+			int adjIndex = nodeLoop[j];
+			MeshNodeT& curNode = localNodeMap.find(curIndex)->second;
+			MeshNodeT& adjNode = localNodeMap.find(adjIndex)->second;
+
+			// Remove the edge iff one of its endpoints has only two labels.
+			if(curNode.sourcedLabels.size() == 2 || adjNode.sourcedLabels.size() == 2)
+			{
+				curNode.adjacentNodes.erase(adjIndex);
+				adjNode.adjacentNodes.erase(curIndex);
+			}
+		}
+
+		return std::make_pair(nodeLoop, flag);
 	}
 
 	TypedNodeLoopList find_typed_node_loops() const
