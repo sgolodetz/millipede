@@ -22,7 +22,7 @@ The nodes and edges added depend on the number of face-centre nodes.
 
 It is not possible for there to be a single face-centre node, so that case is explicitly excluded.
 
-@tparam	Label	The type of label to be used
+@tparam	Label	The type of label stored at the cube vertices and in the nodes
 */
 template <typename Label>
 class CubeInternalGenerator : public SimpleJob
