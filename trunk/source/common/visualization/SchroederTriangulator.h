@@ -10,6 +10,7 @@
 
 #include "GlobalNodeTable.h"
 #include "MeshTriangle.h"
+#include "MeshUtil.h"
 
 namespace mp {
 
@@ -76,6 +77,8 @@ private:
 
 	Split split_node_loop(const NodeLoop& nodeLoop) const
 	{
+		Vector3d avgPlaneNormal = MeshUtil::calculate_average_plane(nodeLoop, m_globalNodeTable).normal();
+
 		// NYI
 		throw 23;
 	}

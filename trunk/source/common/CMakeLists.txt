@@ -144,11 +144,13 @@ listeners/CompositeListenerBase.h
 ##
 SET(math_sources
 math/MathConstants.cpp
+math/Plane.cpp
 )
 
 SET(math_headers
 math/MathConstants.h
 math/NumericUtil.h
+math/Plane.h
 math/Vector3.h
 )
 
@@ -290,6 +292,7 @@ visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
 visualization/MeshNode.h
 visualization/MeshTriangle.h
+visualization/MeshUtil.h
 visualization/SchroederTriangulator.h
 visualization/SourcedLabel.h
 )
