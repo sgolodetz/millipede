@@ -8,8 +8,8 @@
 
 #include <cmath>
 
-#include <common/util/NumericUtil.h>
 #include "MathConstants.h"
+#include "NumericUtil.h"
 
 namespace mp {
 

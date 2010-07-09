@@ -148,6 +148,7 @@ math/MathConstants.cpp
 
 SET(math_headers
 math/MathConstants.h
+math/NumericUtil.h
 math/Vector3.h
 )
 
@@ -266,7 +267,6 @@ util/EnumUtil.h
 util/GridUtil.h
 util/ITKImageUtil.h
 util/NullType.h
-util/NumericUtil.h
 )
 
 ##
