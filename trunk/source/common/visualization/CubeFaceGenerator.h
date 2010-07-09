@@ -45,12 +45,26 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
+	/**
+	@brief	Constructs a CubeFaceGenerator job to work on the specified cube face.
+
+	@param[in]	data			The mesh building data shared by all sub-jobs of MeshBuilder
+	@param[in]	x				The x position of the cube in the volume
+	@param[in]	y				The y position of the cube in the volume
+	@param[in]	z				The z position of the cube in the volume
+	@param[in]	faceDesignator	The cube face designator
+	*/
 	CubeFaceGenerator(const MeshBuildingData_Ptr& data, int x, int y, int z, CubeFaceDesignator::Enum faceDesignator)
 	:	m_data(data), m_faceDesignator(faceDesignator), m_x(x), m_y(y), m_z(z)
 	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
+	/**
+	@brief	Returns the length of the job.
+
+	@return	As described
+	*/
 	int length() const
 	{
 		return 1;
@@ -227,7 +241,7 @@ private:
 	}
 
 	/**
-	@brief	Executes the CubeFaceGenerator job.
+	@brief	Executes the job.
 	*/
 	void execute_impl()
 	{

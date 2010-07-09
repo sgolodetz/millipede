@@ -98,8 +98,7 @@ public:
 	to get the real position. In particular, this means that ((1,0,0),OFFSET_011)'s position is
 	(1,0.5,0.5).
 
-	@param[in]	base	The base part of the node's position
-	@param[in]	offset	The offset part of the node's position
+	@param[in]	pos		The position of the node
 	@return	As described
 	*/
 	int find_index(const NodePosition& pos)

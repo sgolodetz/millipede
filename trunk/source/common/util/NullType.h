@@ -8,6 +8,10 @@
 
 namespace mp {
 
+/**
+@brief	NullType is an empty type that is occasionally useful as a template argument (for instance when a class template
+		provides the option to specify some auxiliary data and there's no use for that in a given bit of code).
+*/
 struct NullType {};
 
 }

@@ -11,6 +11,12 @@
 
 namespace mp {
 
+/**
+@brief	An OSSWrapper wraps a std::ostringstream, making it easier to construct strings on-the-fly.
+		This is particularly useful when constructing exception arguments.
+
+Example Usage: throw Exception(OSSWrapper() << "This number is invalid: " << n);
+*/
 class OSSWrapper
 {
 	//#################### PRIVATE VARIABLES ####################
