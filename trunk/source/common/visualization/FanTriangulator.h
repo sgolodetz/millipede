@@ -33,9 +33,28 @@ public:
 public:
 	std::list<MeshTriangleT> triangulate(const NodeLoopT& nodeLoop) const
 	{
+		/*
+		Examples:
+
+		(0-1-2-3-4, 0) or (1-2-3-4-0, 0) or (3-4-0-1-2, 0) -> (012, 023, 034)
+
+		Algorithm:
+
+		Consider consecutive pairs of nodes, e.g. (0-1), (1-2), (2-3), (3-4), (4-0).
+		In each case, if neither node is the anchor index, add a triangle.
+		*/
+
 		std::list<MeshTriangleT> triangles;
 
-		// NYI
+		for(int i=0, size=nodeLoop.size(); i<size; ++i)
+		{
+			int j = (i+1) % size;
+			if(nodeLoop.index(i) != m_anchorIndex && nodeLoop.index(j) != m_anchorIndex)
+			{
+				triangles.push_back(MeshTriangleT(m_anchorIndex, nodeLoop.index(i), nodeLoop.index(j), nodeLoop.labels()));
+			}
+		}
+
 		return triangles;
 	}
 };
