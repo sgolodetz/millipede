@@ -12,16 +12,35 @@
 namespace mp {
 
 template <typename Label>
-struct NodeLoop
+class NodeLoop
 {
-	//#################### PUBLIC VARIABLES ####################
-	std::vector<int> indices;
-	std::set<Label> labels;
+	//#################### PRIVATE VARIABLES ####################
+private:
+	std::vector<int> m_indices;
+	std::set<Label> m_labels;
 
 	//#################### CONSTRUCTORS ####################
-	NodeLoop(const std::vector<int>& indices_, const std::set<Label>& labels_)
-	:	indices(indices_), labels(labels_)
+public:
+	NodeLoop(const std::vector<int>& indices, const std::set<Label>& labels)
+	:	m_indices(indices), m_labels(labels)
 	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	int index(int n) const
+	{
+		return m_indices[n];
+	}
+
+	const std::set<Label>& labels() const
+	{
+		return m_labels;
+	}
+
+	int size() const
+	{
+		return static_cast<int>(m_indices.size());
+	}
 };
 
 }

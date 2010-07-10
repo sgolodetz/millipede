@@ -47,11 +47,10 @@ public:
 	{
 		std::list<MeshTriangleT> triangles;
 
-		size_t nodeCount = nodeLoop.indices.size();
-		if(nodeCount == 3)
+		if(nodeLoop.size() == 3)
 		{
 			// If there are only three nodes, there's only one possible triangulation (bar winding order, which is dealt with elsewhere).
-			triangles.push_back(MeshTriangleT(nodeLoop.indices[0], nodeLoop.indices[1], nodeLoop.indices[2], nodeLoop.labels));
+			triangles.push_back(MeshTriangleT(nodeLoop.index(0), nodeLoop.index(1), nodeLoop.index(2), nodeLoop.labels()));
 		}
 		else
 		{
@@ -73,9 +72,9 @@ private:
 	{
 		int backCount = 0, frontCount = 0;
 
-		for(size_t i=0, size=nodeLoop.indices.size(); i<size; ++i)
+		for(int i=0, size=nodeLoop.size(); i<size; ++i)
 		{
-			switch(plane.classify_point(m_globalNodeTable(nodeLoop.indices[i]).position()))
+			switch(plane.classify_point(m_globalNodeTable(nodeLoop.index(i)).position()))
 			{
 				case PlaneClassification::BACK:
 					++backCount;
@@ -109,17 +108,17 @@ private:
 	*/
 	static Split construct_split(const NodeLoopT& nodeLoop, int e0, int e1)
 	{
-		int nodeCount = static_cast<int>(nodeLoop.indices.size());
+		int nodeCount = nodeLoop.size();
 
 		std::vector<int> half1;
-		for(int i=e0; i!=e1; i=(i+1)%nodeCount) half1.push_back(nodeLoop.indices[i]);
-		half1.push_back(nodeLoop.indices[e1]);
+		for(int i=e0; i!=e1; i=(i+1)%nodeCount) half1.push_back(nodeLoop.index(i));
+		half1.push_back(nodeLoop.index(e1));
 
 		std::vector<int> half2;
-		for(int i=e1; i!=e0; i=(i+1)%nodeCount) half2.push_back(nodeLoop.indices[i]);
-		half2.push_back(nodeLoop.indices[e0]);
+		for(int i=e1; i!=e0; i=(i+1)%nodeCount) half2.push_back(nodeLoop.index(i));
+		half2.push_back(nodeLoop.index(e0));
 
-		return Split(NodeLoopT(half1, nodeLoop.labels), NodeLoopT(half2, nodeLoop.labels));
+		return Split(NodeLoopT(half1, nodeLoop.labels()), NodeLoopT(half2, nodeLoop.labels()));
 	}
 
 	std::pair<bool,double> evaluate_split(const NodeLoopT& nodeLoop, int e0, int e1, const Split& split, const Vector3d& avgPlaneNormal) const
@@ -129,8 +128,8 @@ private:
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// We need to obtain two vectors lying in the plane: one is the split line, the other is the average plane normal.
-		const Vector3d& u = m_globalNodeTable(nodeLoop.indices[e0]).position();
-		const Vector3d& v = m_globalNodeTable(nodeLoop.indices[e1]).position();
+		const Vector3d& u = m_globalNodeTable(nodeLoop.index(e0)).position();
+		const Vector3d& v = m_globalNodeTable(nodeLoop.index(e1)).position();
 		Vector3d splitLine = v - u;
 
 		// These two vectors can be used to calculate the split plane normal (provided they're not parallel, which is unlikely
@@ -157,9 +156,9 @@ private:
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		double minDistance = INT_MAX;
-		for(int i=0, size=nodeLoop.indices.size(); i<size; ++i)
+		for(int i=0, size=nodeLoop.size(); i<size; ++i)
 		{
-			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop.indices[i]).position());
+			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop.index(i)).position());
 			if(distance > MathConstants::SMALL_EPSILON && distance < minDistance) minDistance = distance;
 		}
 
@@ -173,7 +172,7 @@ private:
 		boost::optional<Split> bestSplit;
 		double bestMetric = 0;	// metric values are guaranteed to be +ve and we take the split with the largest metric value
 
-		int nodeCount = static_cast<int>(nodeLoop.indices.size());
+		int nodeCount = nodeLoop.size();
 
 		for(int i=0; i<nodeCount-2; ++i)
 		{

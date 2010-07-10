@@ -25,13 +25,13 @@ namespace MeshUtil {
 template <typename Label>
 Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeTable<Label>& globalNodeTable)
 {
-	int nodeCount = static_cast<int>(nodeLoop.indices.size());
+	int nodeCount = nodeLoop.size();
 
 	// Calculate the imaginary average node.
 	Vector3d centre;
 	for(int i=0; i<nodeCount; ++i)
 	{
-		centre += globalNodeTable(nodeLoop.indices[i]).position();
+		centre += globalNodeTable(nodeLoop.index(i)).position();
 	}
 	centre /= nodeCount;
 
@@ -40,8 +40,8 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeT
 	for(int i=0; i<nodeCount; ++i)
 	{
 		int j = (i+1)%nodeCount;
-		const Vector3d& u = globalNodeTable(nodeLoop.indices[i]).position();
-		const Vector3d& v = globalNodeTable(nodeLoop.indices[j]).position();
+		const Vector3d& u = globalNodeTable(nodeLoop.index(i)).position();
+		const Vector3d& v = globalNodeTable(nodeLoop.index(j)).position();
 		Vector3d n = (u-centre).cross(v-centre);
 		double area = n.length() / 2;	// the area of the triangle centre-u-v
 		n.normalize();
