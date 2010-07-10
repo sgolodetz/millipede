@@ -6,7 +6,8 @@
 #ifndef H_MILLIPEDE_NODELOOP
 #define H_MILLIPEDE_NODELOOP
 
-#include <utility>
+#include <set>
+#include <vector>
 
 namespace mp {
 
@@ -15,10 +16,10 @@ struct NodeLoop
 {
 	//#################### PUBLIC VARIABLES ####################
 	std::vector<int> indices;
-	std::pair<Label,Label> labels;
+	std::set<Label> labels;
 
 	//#################### CONSTRUCTORS ####################
-	NodeLoop(const std::vector<int>& indices_, const std::pair<Label,Label>& labels_)
+	NodeLoop(const std::vector<int>& indices_, const std::set<Label>& labels_)
 	:	indices(indices_), labels(labels_)
 	{}
 };

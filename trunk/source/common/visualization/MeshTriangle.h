@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_MESHTRIANGLE
 #define H_MILLIPEDE_MESHTRIANGLE
 
-#include <utility>
+#include <set>
 
 #include <common/math/Vector3.h>
 
@@ -17,12 +17,12 @@ class MeshTriangle
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	int m_indices[3];					///< indices into the global node table
-	std::pair<Label,Label> m_labels;	///< the labels separated by the triangle
+	int m_indices[3];			///< indices into the global node table
+	std::set<Label> m_labels;	///< the labels of the triangle
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MeshTriangle(int index0, int index1, int index2, const std::pair<Label,Label>& labels)
+	MeshTriangle(int index0, int index1, int index2, const std::set<Label>& labels)
 	:	m_labels(labels)
 	{
 		m_indices[0] = index0;
@@ -42,7 +42,7 @@ public:
 		return m_indices[i];
 	}
 
-	const std::pair<Label,Label>& labels() const
+	const std::set<Label>& labels() const
 	{
 		return m_labels;
 	}

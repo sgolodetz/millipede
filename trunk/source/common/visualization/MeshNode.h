@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_MESHNODE
 #define H_MILLIPEDE_MESHNODE
 
+#include <algorithm>
 #include <set>
 
 #include <common/exceptions/Exception.h>
@@ -63,16 +64,10 @@ public:
 		throw Exception("The mesh node does not contain the specified label");
 	}
 
-	bool has_label(Label label) const
+	bool has_labels(const std::set<Label>& otherLabels) const
 	{
-		for(typename std::set<SourcedLabel<Label> >::const_iterator it=m_sourcedLabels.begin(), iend=m_sourcedLabels.end(); it!=iend; ++it)
-		{
-			if(it->label == label)
-			{
-				return true;
-			}
-		}
-		return false;
+		std::set<Label> ourLabels = labels();
+		return std::includes(ourLabels.begin(), ourLabels.end(), otherLabels.begin(), otherLabels.end());
 	}
 
 	int label_count() const
@@ -80,13 +75,12 @@ public:
 		return static_cast<int>(m_sourcedLabels.size());
 	}
 
-	std::vector<Label> labels() const
+	std::set<Label> labels() const
 	{
-		std::vector<Label> ret;
-		ret.reserve(m_sourcedLabels.size());
+		std::set<Label> ret;
 		for(typename std::set<SourcedLabel<Label> >::const_iterator it=m_sourcedLabels.begin(), iend=m_sourcedLabels.end(); it!=iend; ++it)
 		{
-			ret.push_back(it->label);
+			ret.insert(it->label);
 		}
 		return ret;
 	}

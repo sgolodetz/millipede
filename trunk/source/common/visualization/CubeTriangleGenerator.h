@@ -78,7 +78,8 @@ private:
 		{
 			// Find the smaller of the two labels for this triangle.
 			const MeshTriangleT& tri = *it;
-			Label smallerLabel = tri.labels().first;
+			assert(tri.labels().size() == 2);
+			Label smallerLabel = *tri.labels().begin();
 
 			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
 			const MeshNodeT& node = m_data->global_node_table()(tri.index(0));
@@ -149,7 +150,7 @@ private:
 
 		// Make a note of the two labels every node in the loop must have.
 		const MeshNodeT& startNode = localNodeMap.find(startIndex)->second;
-		std::vector<Label> labels = startNode.labels();
+		std::set<Label> startLabels = startNode.labels();
 
 		// Find the node loop using the trail-following algorithm described above.
 		std::vector<int> nodeIndices;
@@ -169,7 +170,7 @@ private:
 				const MeshNodeT& adjNode = localNodeMap.find(*it)->second;
 
 				// If the edge has not yet been used, and the adjacent node has at least the two labels of the start node, traverse the edge.
-				if(!used[Edge(curIndex, *it)] && adjNode.has_label(labels[0]) && adjNode.has_label(labels[1]))
+				if(!used[Edge(curIndex, *it)] && adjNode.has_labels(startLabels))
 				{
 					adjIndex = *it;
 					break;
@@ -216,9 +217,7 @@ private:
 			}
 		}
 
-		Label smallerLabel = labels[0] < labels[1] ? labels[0] : labels[1];
-		Label largerLabel = labels[0] > labels[1] ? labels[0] : labels[1];
-		return std::make_pair(NodeLoopT(nodeIndices, std::make_pair(smallerLabel, largerLabel)), flag);
+		return std::make_pair(NodeLoopT(nodeIndices, startLabels), flag);
 	}
 
 	TypedNodeLoopList find_typed_node_loops() const
