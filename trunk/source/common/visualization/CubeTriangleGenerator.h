@@ -61,6 +61,17 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	Vector3d calculate_normal(const MeshTriangleT& tri) const
+	{
+		Vector3d p[3];
+		for(int i=0; i<3; ++i) p[i] = m_data->global_node_table()(tri.index(i)).position;
+		Vector3d a = p[1] - p[0];
+		Vector3d b = p[2] - p[0];
+		Vector3d normal = a.cross(b);
+		if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
+		return normal;
+	}
+
 	void ensure_consistent_triangle_orientation(std::list<MeshTriangleT>& triangles)
 	{
 		for(typename std::list<MeshTriangleT>::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
@@ -70,7 +81,7 @@ private:
 			Label smallerLabel = tri.labels().first;
 
 			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
-			Vector3d source;
+			boost::optional<Vector3d> source;
 			const MeshNodeT& node = m_data->global_node_table()(tri.index(0));
 			for(typename std::set<SourcedLabel<Label> >::const_iterator jt=node.sourcedLabels.begin(), jend=node.sourcedLabels.end(); it!=iend; ++it)
 			{
@@ -80,10 +91,11 @@ private:
 					break;
 				}
 			}
+			assert(source);
 
 			// Classify the source against the triangle's plane, and flip the triangle's winding if it's not pointing away from the source.
-			Plane plane(tri.normal(), node.position);
-			if(plane.classify_point(source) == PlaneClassification::FRONT)
+			Plane plane(calculate_normal(tri), node.position);
+			if(plane.classify_point(*source) == PlaneClassification::FRONT)
 			{
 				it->flip_winding();
 			}

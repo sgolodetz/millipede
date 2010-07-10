@@ -51,7 +51,7 @@ public:
 		if(nodeCount == 3)
 		{
 			// If there are only three nodes, there's only one possible triangulation (bar winding order, which is dealt with elsewhere).
-			triangles.push_back(make_triangle(nodeLoop.indices[0], nodeLoop.indices[1], nodeLoop.indices[2], nodeLoop.labels));
+			triangles.push_back(MeshTriangleT(nodeLoop.indices[0], nodeLoop.indices[1], nodeLoop.indices[2], nodeLoop.labels));
 		}
 		else
 		{
@@ -164,18 +164,6 @@ private:
 		}
 
 		return std::make_pair(true, minDistance / splitLine.length());
-	}
-
-	MeshTriangleT make_triangle(int index0, int index1, int index2, const std::pair<Label,Label>& labels) const
-	{
-		int indices[3] = {index0,index1,index2};
-		Vector3d p[3];
-		for(int i=0; i<3; ++i) p[i] = m_globalNodeTable(indices[i]).position;
-		Vector3d a = p[1] - p[0];
-		Vector3d b = p[2] - p[0];
-		Vector3d normal = a.cross(b);
-		if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
-		return MeshTriangleT(index0, index1, index2, normal, labels);
 	}
 
 	Split split_node_loop(const NodeLoopT& nodeLoop) const

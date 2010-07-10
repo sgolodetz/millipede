@@ -19,12 +19,11 @@ class MeshTriangle
 private:
 	int m_indices[3];					///< indices into the global node table
 	std::pair<Label,Label> m_labels;	///< the labels separated by the triangle
-	Vector3d m_normal;					///< the normal of the triangle
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MeshTriangle(int index0, int index1, int index2, const Vector3d& normal, const std::pair<Label,Label>& labels)
-	:	m_labels(labels), m_normal(normal)
+	MeshTriangle(int index0, int index1, int index2, const std::pair<Label,Label>& labels)
+	:	m_labels(labels)
 	{
 		m_indices[0] = index0;
 		m_indices[1] = index1;
@@ -36,7 +35,6 @@ public:
 	void flip_winding()
 	{
 		std::swap(m_indices[0], m_indices[1]);
-		m_normal = -m_normal;
 	}
 
 	int index(int i) const
@@ -47,11 +45,6 @@ public:
 	const std::pair<Label,Label>& labels() const
 	{
 		return m_labels;
-	}
-
-	const Vector3d& normal() const
-	{
-		return m_normal;
 	}
 };
 
