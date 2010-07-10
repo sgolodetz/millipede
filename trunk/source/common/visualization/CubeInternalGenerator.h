@@ -73,8 +73,8 @@ private:
 				// Add an edge joining the two face-centre nodes.
 				MeshNodeT& fc0 = globalNodeTable(faceCentreNodes[0]);
 				MeshNodeT& fc1 = globalNodeTable(faceCentreNodes[1]);
-				fc0.adjacentNodes.insert(faceCentreNodes[1]);
-				fc1.adjacentNodes.insert(faceCentreNodes[0]);
+				fc0.add_adjacent_node(faceCentreNodes[1]);
+				fc1.add_adjacent_node(faceCentreNodes[0]);
 				break;
 			}
 			default:	// > 2 face-centre nodes
@@ -88,14 +88,14 @@ private:
 				for(int i=0; i<8; ++i)
 				{
 					Label vertexLabel = m_data->label(vertexPositions[i]);
-					c.sourcedLabels.insert(make_sourced_label(vertexLabel, vertexPositions[i]));
+					c.add_sourced_label(vertexLabel, vertexPositions[i]);
 				}
 
 				for(size_t i=0, size=faceCentreNodes.size(); i<size; ++i)
 				{
 					MeshNodeT& fc = globalNodeTable(faceCentreNodes[i]);
-					c.adjacentNodes.insert(faceCentreNodes[i]);
-					fc.adjacentNodes.insert(cubeCentreNode);
+					c.add_adjacent_node(faceCentreNodes[i]);
+					fc.add_adjacent_node(cubeCentreNode);
 				}
 				break;
 			}

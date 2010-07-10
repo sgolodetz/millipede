@@ -75,7 +75,7 @@ private:
 
 		for(size_t i=0, size=nodeLoop.indices.size(); i<size; ++i)
 		{
-			switch(plane.classify_point(m_globalNodeTable(nodeLoop.indices[i]).position))
+			switch(plane.classify_point(m_globalNodeTable(nodeLoop.indices[i]).position()))
 			{
 				case PlaneClassification::BACK:
 					++backCount;
@@ -129,8 +129,8 @@ private:
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// We need to obtain two vectors lying in the plane: one is the split line, the other is the average plane normal.
-		const Vector3d& u = m_globalNodeTable(nodeLoop.indices[e0]).position;
-		const Vector3d& v = m_globalNodeTable(nodeLoop.indices[e1]).position;
+		const Vector3d& u = m_globalNodeTable(nodeLoop.indices[e0]).position();
+		const Vector3d& v = m_globalNodeTable(nodeLoop.indices[e1]).position();
 		Vector3d splitLine = v - u;
 
 		// These two vectors can be used to calculate the split plane normal (provided they're not parallel, which is unlikely
@@ -159,7 +159,7 @@ private:
 		double minDistance = INT_MAX;
 		for(int i=0, size=nodeLoop.indices.size(); i<size; ++i)
 		{
-			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop.indices[i]).position);
+			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop.indices[i]).position());
 			if(distance > MathConstants::SMALL_EPSILON && distance < minDistance) minDistance = distance;
 		}
 

@@ -275,8 +275,8 @@ private:
 		{
 			int u = m_cubeFace.global_node_index(it->u);
 			int v = m_cubeFace.global_node_index(it->v);
-			globalNodeTable(u).adjacentNodes.insert(v);
-			globalNodeTable(v).adjacentNodes.insert(u);
+			globalNodeTable(u).add_adjacent_node(v);
+			globalNodeTable(v).add_adjacent_node(u);
 		}
 	}
 
@@ -316,7 +316,7 @@ private:
 				const std::vector<CubeFace::VertexDesignator>& labelSources = label_sources(n);
 				for(std::vector<CubeFace::VertexDesignator>::const_iterator it=labelSources.begin(), iend=labelSources.end(); it!=iend; ++it)
 				{
-					node.sourcedLabels.insert(make_sourced_label(vertexLabels[*it], vertexPositions[*it]));
+					node.add_sourced_label(vertexLabels[*it], vertexPositions[*it]);
 				}
 			}
 		}

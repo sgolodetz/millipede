@@ -64,7 +64,7 @@ private:
 	Vector3d calculate_normal(const MeshTriangleT& tri) const
 	{
 		Vector3d p[3];
-		for(int i=0; i<3; ++i) p[i] = m_data->global_node_table()(tri.index(i)).position;
+		for(int i=0; i<3; ++i) p[i] = m_data->global_node_table()(tri.index(i)).position();
 		Vector3d a = p[1] - p[0];
 		Vector3d b = p[2] - p[0];
 		Vector3d normal = a.cross(b);
@@ -82,10 +82,10 @@ private:
 
 			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
 			const MeshNodeT& node = m_data->global_node_table()(tri.index(0));
-			Vector3d smallerLabelSource = node.find_source_of_label(smallerLabel);
+			Vector3d smallerLabelSource = Vector3d(node.find_source_of_label(smallerLabel));
 
 			// Classify the source against the triangle's plane, and flip the triangle's winding if it's not pointing away from the source.
-			Plane plane(calculate_normal(tri), node.position);
+			Plane plane(calculate_normal(tri), node.position());
 			if(plane.classify_point(smallerLabelSource) == PlaneClassification::FRONT)
 			{
 				it->flip_winding();
@@ -112,17 +112,6 @@ private:
 		// TODO
 	}
 
-	static std::vector<Label> extract_labels(const MeshNodeT& n)
-	{
-		std::vector<Label> labels;
-		labels.reserve(n.sourcedLabels.size());
-		for(typename std::set<SourcedLabel<Label> >::const_iterator it=n.sourcedLabels.begin(), iend=n.sourcedLabels.end(); it!=iend; ++it)
-		{
-			labels.push_back(it->label);
-		}
-		return labels;
-	}
-
 	boost::optional<TypedNodeLoop> find_typed_node_loop(std::map<int,MeshNodeT>& localNodeMap) const
 	{
 		// Step 1:	Find a start node with exactly two labels and a remaining edge. If no such node exists, we've found all the loops.
@@ -130,7 +119,7 @@ private:
 		for(typename std::map<int,MeshNodeT>::const_iterator it=localNodeMap.begin(), iend=localNodeMap.end(); it!=iend; ++it)
 		{
 			const MeshNodeT& n = it->second;
-			if(n.sourcedLabels.size() == 2 && !n.adjacentNodes.empty())
+			if(n.label_count() == 2 && n.adjacent_node_count() != 0)
 			{
 				startIndex = it->first;
 				break;
@@ -151,7 +140,7 @@ private:
 		{
 			const int u = it->first;
 			const MeshNodeT& n = it->second;
-			for(std::set<int>::const_iterator jt=n.adjacentNodes.begin(), jend=n.adjacentNodes.end(); jt!=jend; ++jt)
+			for(std::set<int>::const_iterator jt=n.adjacent_nodes().begin(), jend=n.adjacent_nodes().end(); jt!=jend; ++jt)
 			{
 				const int v = *jt;
 				used.insert(std::make_pair(Edge(u,v), false));
@@ -159,7 +148,8 @@ private:
 		}
 
 		// Make a note of the two labels every node in the loop must have.
-		std::vector<Label> labels = extract_labels(localNodeMap.find(startIndex)->second);
+		const MeshNodeT& startNode = localNodeMap.find(startIndex)->second;
+		std::vector<Label> labels = startNode.labels();
 
 		// Find the node loop using the trail-following algorithm described above.
 		std::vector<int> nodeIndices;
@@ -174,7 +164,7 @@ private:
 
 			const MeshNodeT& curNode = localNodeMap.find(curIndex)->second;
 			int adjIndex = -1;
-			for(std::set<int>::const_iterator it=curNode.adjacentNodes.begin(), iend=curNode.adjacentNodes.end(); it!=iend; ++it)
+			for(std::set<int>::const_iterator it=curNode.adjacent_nodes().begin(), iend=curNode.adjacent_nodes().end(); it!=iend; ++it)
 			{
 				const MeshNodeT& adjNode = localNodeMap.find(*it)->second;
 
@@ -219,10 +209,10 @@ private:
 			MeshNodeT& adjNode = localNodeMap.find(adjIndex)->second;
 
 			// Remove the edge iff one of its endpoints has only two labels.
-			if(curNode.sourcedLabels.size() == 2 || adjNode.sourcedLabels.size() == 2)
+			if(curNode.label_count() == 2 || adjNode.label_count() == 2)
 			{
-				curNode.adjacentNodes.erase(adjIndex);
-				adjNode.adjacentNodes.erase(curIndex);
+				curNode.remove_adjacent_node(adjIndex);
+				adjNode.remove_adjacent_node(curIndex);
 			}
 		}
 
@@ -247,8 +237,8 @@ private:
 			typename std::map<int,MeshNodeT>::iterator loc = localNodeMap.insert(std::make_pair(*it, globalNodeTable(*it))).first;
 			MeshNodeT& n = loc->second;
 			std::set<int> relevantNodes;
-			std::set_intersection(n.adjacentNodes.begin(), n.adjacentNodes.end(), nodeSet.begin(), nodeSet.end(), std::inserter(relevantNodes, relevantNodes.begin()));
-			n.adjacentNodes = relevantNodes;
+			std::set_intersection(n.adjacent_nodes().begin(), n.adjacent_nodes().end(), nodeSet.begin(), nodeSet.end(), std::inserter(relevantNodes, relevantNodes.begin()));
+			n.set_adjacent_nodes(relevantNodes);
 		}
 
 		// Iteratively try to find a typed node loop from the local node map until we've got them all.

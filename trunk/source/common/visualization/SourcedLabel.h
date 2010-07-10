@@ -29,13 +29,6 @@ struct SourcedLabel
 	}
 };
 
-//#################### TEMPLATE FUNCTIONS ####################
-template <typename Label>
-SourcedLabel<Label> make_sourced_label(Label label, const Vector3i& source)
-{
-	return SourcedLabel<Label>(label, source);
-}
-
 }
 
 #endif

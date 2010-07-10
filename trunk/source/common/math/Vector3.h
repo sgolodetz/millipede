@@ -52,7 +52,7 @@ struct Vector3
 	@param[in]	rhs		The other vector
 	*/
 	template <typename U>
-	Vector3(const Vector3<U>& rhs)
+	explicit Vector3(const Vector3<U>& rhs)
 	:	x(rhs.x), y(rhs.y), z(rhs.z)
 	{}
 

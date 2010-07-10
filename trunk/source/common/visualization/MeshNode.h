@@ -14,22 +14,46 @@
 namespace mp {
 
 template <typename Label>
-struct MeshNode
+class MeshNode
 {
-	//#################### PUBLIC VARIABLES ####################
-	std::set<int> adjacentNodes;
-	Vector3d position;
-	std::set<SourcedLabel<Label> > sourcedLabels;
-	bool valid;
+	//#################### PRIVATE VARIABLES ####################
+private:
+	std::set<int> m_adjacentNodes;
+	Vector3d m_position;
+	std::set<SourcedLabel<Label> > m_sourcedLabels;
+	bool m_valid;
 
 	//#################### CONSTRUCTORS ####################
-	explicit MeshNode(const Vector3d& position_)
-	:	position(position_), valid(true)
+public:
+	explicit MeshNode(const Vector3d& position)
+	:	m_position(position), m_valid(true)
 	{}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	void add_adjacent_node(int n)
+	{
+		m_adjacentNodes.insert(n);
+	}
+
+	void add_sourced_label(Label label, const Vector3i& source)
+	{
+		m_sourcedLabels.insert(SourcedLabel<Label>(label, source));
+	}
+
+	int adjacent_node_count() const
+	{
+		return static_cast<int>(m_adjacentNodes.size());
+	}
+
+	const std::set<int>& adjacent_nodes() const
+	{
+		return m_adjacentNodes;
+	}
 
 	const Vector3i& find_source_of_label(Label label) const
 	{
-		for(typename std::set<SourcedLabel<Label> >::const_iterator it=sourcedLabels.begin(), iend=sourcedLabels.end(); it!=iend; ++it)
+		for(typename std::set<SourcedLabel<Label> >::const_iterator it=m_sourcedLabels.begin(), iend=m_sourcedLabels.end(); it!=iend; ++it)
 		{
 			if(it->label == label)
 			{
@@ -41,7 +65,7 @@ struct MeshNode
 
 	bool has_label(Label label) const
 	{
-		for(typename std::set<SourcedLabel<Label> >::const_iterator it=sourcedLabels.begin(), iend=sourcedLabels.end(); it!=iend; ++it)
+		for(typename std::set<SourcedLabel<Label> >::const_iterator it=m_sourcedLabels.begin(), iend=m_sourcedLabels.end(); it!=iend; ++it)
 		{
 			if(it->label == label)
 			{
@@ -49,6 +73,42 @@ struct MeshNode
 			}
 		}
 		return false;
+	}
+
+	int label_count() const
+	{
+		return static_cast<int>(m_sourcedLabels.size());
+	}
+
+	std::vector<Label> labels() const
+	{
+		std::vector<Label> ret;
+		ret.reserve(m_sourcedLabels.size());
+		for(typename std::set<SourcedLabel<Label> >::const_iterator it=m_sourcedLabels.begin(), iend=m_sourcedLabels.end(); it!=iend; ++it)
+		{
+			ret.push_back(it->label);
+		}
+		return ret;
+	}
+
+	const Vector3d& position() const
+	{
+		return m_position;
+	}
+
+	void remove_adjacent_node(int n)
+	{
+		m_adjacentNodes.erase(n);
+	}
+
+	void set_adjacent_nodes(const std::set<int>& adjacentNodes)
+	{
+		m_adjacentNodes = adjacentNodes;
+	}
+
+	const std::set<SourcedLabel<Label> >& sourced_labels() const
+	{
+		return m_sourcedLabels;
 	}
 };
 
