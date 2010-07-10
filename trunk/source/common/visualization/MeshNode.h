@@ -8,6 +8,7 @@
 
 #include <set>
 
+#include <common/exceptions/Exception.h>
 #include "SourcedLabel.h"
 
 namespace mp {
@@ -25,6 +26,18 @@ struct MeshNode
 	explicit MeshNode(const Vector3d& position_)
 	:	position(position_), valid(true)
 	{}
+
+	const Vector3i& find_source_of_label(Label label) const
+	{
+		for(typename std::set<SourcedLabel<Label> >::const_iterator it=sourcedLabels.begin(), iend=sourcedLabels.end(); it!=iend; ++it)
+		{
+			if(it->label == label)
+			{
+				return it->source;
+			}
+		}
+		throw Exception("The mesh node does not contain the specified label");
+	}
 
 	bool has_label(Label label) const
 	{

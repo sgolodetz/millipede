@@ -81,21 +81,12 @@ private:
 			Label smallerLabel = tri.labels().first;
 
 			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
-			boost::optional<Vector3d> source;
 			const MeshNodeT& node = m_data->global_node_table()(tri.index(0));
-			for(typename std::set<SourcedLabel<Label> >::const_iterator jt=node.sourcedLabels.begin(), jend=node.sourcedLabels.end(); it!=iend; ++it)
-			{
-				if(jt->label == smallerLabel)
-				{
-					source = jt->source;
-					break;
-				}
-			}
-			assert(source);
+			Vector3d smallerLabelSource = node.find_source_of_label(smallerLabel);
 
 			// Classify the source against the triangle's plane, and flip the triangle's winding if it's not pointing away from the source.
 			Plane plane(calculate_normal(tri), node.position);
-			if(plane.classify_point(*source) == PlaneClassification::FRONT)
+			if(plane.classify_point(smallerLabelSource) == PlaneClassification::FRONT)
 			{
 				it->flip_winding();
 			}
