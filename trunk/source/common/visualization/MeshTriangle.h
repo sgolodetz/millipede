@@ -6,26 +6,53 @@
 #ifndef H_MILLIPEDE_MESHTRIANGLE
 #define H_MILLIPEDE_MESHTRIANGLE
 
+#include <utility>
+
 #include <common/math/Vector3.h>
 
 namespace mp {
 
+template <typename Label>
 class MeshTriangle
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	int m_indices[3];	///< indices into the global node table
-	Vector3d m_normal;	///< the normal of the triangle (assuming ccw on front face)
+	int m_indices[3];					///< indices into the global node table
+	std::pair<Label,Label> m_labels;	///< the labels separated by the triangle
+	Vector3d m_normal;					///< the normal of the triangle
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MeshTriangle(int index0, int index1, int index2, const Vector3d& normal);
+	MeshTriangle(int index0, int index1, int index2, const Vector3d& normal, const std::pair<Label,Label>& labels)
+	:	m_labels(labels), m_normal(normal)
+	{
+		m_indices[0] = index0;
+		m_indices[1] = index1;
+		m_indices[2] = index2;
+	}
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void flip_winding();
-	int index(int i) const;
-	const Vector3d& normal() const;
+	void flip_winding()
+	{
+		std::swap(m_indices[0], m_indices[1]);
+		m_normal = -m_normal;
+	}
+
+	int index(int i) const
+	{
+		return m_indices[i];
+	}
+
+	const std::pair<Label,Label>& labels() const
+	{
+		return m_labels;
+	}
+
+	const Vector3d& normal() const
+	{
+		return m_normal;
+	}
 };
 
 }

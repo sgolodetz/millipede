@@ -7,12 +7,14 @@
 #define H_MILLIPEDE_CUBETRIANGLEGENERATOR
 
 #include <algorithm>
+#include <cassert>
 #include <list>
 #include <utility>
 
 #include <common/adts/Edge.h>
 #include <common/jobs/SimpleJob.h>
 #include "FanTriangulator.h"
+#include "NodeLoop.h"
 #include "SchroederTriangulator.h"
 
 namespace mp {
@@ -34,8 +36,9 @@ private:
 	typedef MeshBuildingData<Label> MeshBuildingDataT;
 	typedef boost::shared_ptr<MeshBuildingDataT> MeshBuildingData_Ptr;
 	typedef MeshNode<Label> MeshNodeT;
-	typedef std::vector<int> NodeLoop;
-	typedef std::pair<NodeLoop,TriangulateFlag> TypedNodeLoop;
+	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef NodeLoop<Label> NodeLoopT;
+	typedef std::pair<NodeLoopT,TriangulateFlag> TypedNodeLoop;
 	typedef std::list<TypedNodeLoop> TypedNodeLoopList;
 
 	//#################### PRIVATE VARIABLES ####################
@@ -58,17 +61,46 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void ensure_consistent_triangle_orientation(std::list<MeshTriangleT>& triangles)
+	{
+		for(typename std::list<MeshTriangleT>::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
+		{
+			// Find the smaller of the two labels for this triangle.
+			const MeshTriangleT& tri = *it;
+			Label smallerLabel = tri.labels().first;
+
+			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
+			Vector3d source;
+			const MeshNodeT& node = m_data->global_node_table()(tri.index(0));
+			for(typename std::set<SourcedLabel<Label> >::const_iterator jt=node.sourcedLabels.begin(), jend=node.sourcedLabels.end(); it!=iend; ++it)
+			{
+				if(jt->label == smallerLabel)
+				{
+					source = jt->source;
+					break;
+				}
+			}
+
+			// Classify the source against the triangle's plane, and flip the triangle's winding if it's not pointing away from the source.
+			Plane plane(tri.normal(), node.position);
+			if(plane.classify_point(source) == PlaneClassification::FRONT)
+			{
+				it->flip_winding();
+			}
+		}
+	}
+
 	void execute_impl()
 	{
 		// Find the typed node loops.
 		TypedNodeLoopList typedNodeLoops = find_typed_node_loops();
 
 		// Triangulate them according to their type.
-		std::list<MeshTriangle> triangles = triangulate_typed_node_loops(typedNodeLoops);
+		std::list<MeshTriangleT> triangles = triangulate_typed_node_loops(typedNodeLoops);
 
 		// Make sure each triangle is pointing consistently away from the lower of the two labels it separates.
 		// (Note that the "away from" is arbitrary: the important thing is the consistency.)
-		// TODO
+		ensure_consistent_triangle_orientation(triangles);
 
 		// Ensure that the adjacent node sets for each global node reflect the new edges which have been added during triangulation.
 		// TODO
@@ -127,14 +159,14 @@ private:
 		std::vector<Label> labels = extract_labels(localNodeMap.find(startIndex)->second);
 
 		// Find the node loop using the trail-following algorithm described above.
-		std::vector<int> nodeLoop;
+		std::vector<int> nodeIndices;
 		int curIndex = startIndex;
 		TriangulateFlag flag = TRIANGULATE_SCHROEDER;
 		int cubeCentreIndex = m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z);
 
 		do
 		{
-			nodeLoop.push_back(curIndex);
+			nodeIndices.push_back(curIndex);
 			if(curIndex == cubeCentreIndex) flag = TRIANGULATE_FAN;
 
 			const MeshNodeT& curNode = localNodeMap.find(curIndex)->second;
@@ -161,11 +193,11 @@ private:
 				// If we couldn't find an adjacent node with the right labels, backtrack and try another route.
 				// Note that there's no danger of setting the current index back to the start index here: the first
 				// step will always be a valid one.
-				nodeLoop.pop_back();
-				if(!nodeLoop.empty())
+				nodeIndices.pop_back();
+				if(!nodeIndices.empty())
 				{
-					curIndex = nodeLoop.back();
-					nodeLoop.pop_back();
+					curIndex = nodeIndices.back();
+					nodeIndices.pop_back();
 				}
 				else
 				{
@@ -175,11 +207,11 @@ private:
 		} while(curIndex != startIndex);
 
 		// Step 3:	Remove edges from further consideration in future loops if at least one of their endpoints has only two labels.
-		for(int i=0, nodeCount = static_cast<int>(nodeLoop.size()); i<nodeCount; ++i)
+		for(int i=0, nodeCount = static_cast<int>(nodeIndices.size()); i<nodeCount; ++i)
 		{
 			int j = (i+1)%nodeCount;
-			int curIndex = nodeLoop[i];
-			int adjIndex = nodeLoop[j];
+			int curIndex = nodeIndices[i];
+			int adjIndex = nodeIndices[j];
 			MeshNodeT& curNode = localNodeMap.find(curIndex)->second;
 			MeshNodeT& adjNode = localNodeMap.find(adjIndex)->second;
 
@@ -191,7 +223,9 @@ private:
 			}
 		}
 
-		return std::make_pair(nodeLoop, flag);
+		Label smallerLabel = labels[0] < labels[1] ? labels[0] : labels[1];
+		Label largerLabel = labels[0] > labels[1] ? labels[0] : labels[1];
+		return std::make_pair(NodeLoopT(nodeIndices, std::make_pair(smallerLabel, largerLabel)), flag);
 	}
 
 	TypedNodeLoopList find_typed_node_loops() const
@@ -216,7 +250,7 @@ private:
 
 		// Iteratively try to find a typed node loop from the local node map until we've got them all.
 		boost::optional<TypedNodeLoop> typedNodeLoop;
-		while((typedNodeLoop = find_typed_node_loop(localNodeMap)) != boost::none)
+		while((typedNodeLoop = find_typed_node_loop(localNodeMap)))
 		{
 			typedNodeLoops.push_back(*typedNodeLoop);
 		}
@@ -224,25 +258,25 @@ private:
 		return typedNodeLoops;
 	}
 
-	std::list<MeshTriangle> triangulate_typed_node_loops(const TypedNodeLoopList& typedNodeLoops)
+	std::list<MeshTriangleT> triangulate_typed_node_loops(const TypedNodeLoopList& typedNodeLoops)
 	{
-		std::list<MeshTriangle> triangles;
+		std::list<MeshTriangleT> triangles;
 
 		FanTriangulator<Label> fanTriangulator(m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z));
 		SchroederTriangulator<Label> schroederTriangulator(m_data->global_node_table());
 
 		for(typename TypedNodeLoopList::const_iterator it=typedNodeLoops.begin(), iend=typedNodeLoops.end(); it!=iend; ++it)
 		{
-			const NodeLoop& nodeLoop = it->first;
+			const NodeLoopT& nodeLoop = it->first;
 			TriangulateFlag flag = it->second;
 			if(flag == TRIANGULATE_FAN)
 			{
-				std::list<MeshTriangle> result = fanTriangulator.triangulate(nodeLoop);
+				std::list<MeshTriangleT> result = fanTriangulator.triangulate(nodeLoop);
 				triangles.splice(triangles.end(), result);
 			}
 			else	// flag == TRIANGULATE_SCHROEDER
 			{
-				std::list<MeshTriangle> result = schroederTriangulator.triangulate(nodeLoop);
+				std::list<MeshTriangleT> result = schroederTriangulator.triangulate(nodeLoop);
 				triangles.splice(triangles.end(), result);
 			}
 		}

@@ -46,6 +46,16 @@ struct Vector3
 	:	x(x_), y(y_), z(z_)
 	{}
 
+	/**
+	@brief	Copy constructs a vector from a vector with a different component type.
+
+	@param[in]	rhs		The other vector
+	*/
+	template <typename U>
+	Vector3(const Vector3<U>& rhs)
+	:	x(rhs.x), y(rhs.y), z(rhs.z)
+	{}
+
 	//#################### PUBLIC OPERATORS ####################
 	/**
 	@brief	Adds the vector rhs to this vector.

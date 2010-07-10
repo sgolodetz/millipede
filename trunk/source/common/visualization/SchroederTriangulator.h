@@ -27,8 +27,9 @@ class SchroederTriangulator
 	//#################### TYPEDEFS ####################
 private:
 	typedef GlobalNodeTable<Label> GlobalNodeTableT;
-	typedef std::vector<int> NodeLoop;
-	typedef std::pair<NodeLoop,NodeLoop> Split;
+	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef NodeLoop<Label> NodeLoopT;
+	typedef std::pair<NodeLoopT,NodeLoopT> Split;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -42,21 +43,21 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	std::list<MeshTriangle> triangulate(const NodeLoop& nodeLoop) const
+	std::list<MeshTriangleT> triangulate(const NodeLoopT& nodeLoop) const
 	{
-		std::list<MeshTriangle> triangles;
+		std::list<MeshTriangleT> triangles;
 
-		size_t nodeCount = nodeLoop.size();
+		size_t nodeCount = nodeLoop.indices.size();
 		if(nodeCount == 3)
 		{
 			// If there are only three nodes, there's only one possible triangulation (bar winding order, which is dealt with elsewhere).
-			triangles.push_back(make_triangle(nodeLoop[0], nodeLoop[1], nodeLoop[2]));
+			triangles.push_back(make_triangle(nodeLoop.indices[0], nodeLoop.indices[1], nodeLoop.indices[2], nodeLoop.labels));
 		}
 		else
 		{
 			Split loopHalves = split_node_loop(nodeLoop);
 
-			std::list<MeshTriangle> result = triangulate(loopHalves.first);
+			std::list<MeshTriangleT> result = triangulate(loopHalves.first);
 			triangles.splice(triangles.end(), result);
 
 			result = triangulate(loopHalves.second);
@@ -68,13 +69,13 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	PlaneClassification::Enum classify_node_loop_against_plane(const NodeLoop& nodeLoop, const Plane& plane) const
+	PlaneClassification::Enum classify_node_loop_against_plane(const NodeLoopT& nodeLoop, const Plane& plane) const
 	{
 		int backCount = 0, frontCount = 0;
 
-		for(size_t i=0, size=nodeLoop.size(); i<size; ++i)
+		for(size_t i=0, size=nodeLoop.indices.size(); i<size; ++i)
 		{
-			switch(plane.classify_point(m_globalNodeTable(nodeLoop[i]).position))
+			switch(plane.classify_point(m_globalNodeTable(nodeLoop.indices[i]).position))
 			{
 				case PlaneClassification::BACK:
 					++backCount;
@@ -106,30 +107,30 @@ private:
 	@param[in]	e1			The second endpoint of the split line
 	@return	The constructed split (namely a pair of node loops representing the two halves)
 	*/
-	static Split construct_split(const NodeLoop& nodeLoop, int e0, int e1)
+	static Split construct_split(const NodeLoopT& nodeLoop, int e0, int e1)
 	{
-		Split split;
+		int nodeCount = static_cast<int>(nodeLoop.indices.size());
 
-		int nodeCount = static_cast<int>(nodeLoop.size());
+		std::vector<int> half1;
+		for(int i=e0; i!=e1; i=(i+1)%nodeCount) half1.push_back(nodeLoop.indices[i]);
+		half1.push_back(nodeLoop.indices[e1]);
 
-		for(int i=e0; i!=e1; i=(i+1)%nodeCount) split.first.push_back(nodeLoop[i]);
-		split.first.push_back(nodeLoop[e1]);
+		std::vector<int> half2;
+		for(int i=e1; i!=e0; i=(i+1)%nodeCount) half2.push_back(nodeLoop.indices[i]);
+		half2.push_back(nodeLoop.indices[e0]);
 
-		for(int i=e1; i!=e0; i=(i+1)%nodeCount) split.second.push_back(nodeLoop[i]);
-		split.second.push_back(nodeLoop[e0]);
-
-		return split;
+		return Split(NodeLoopT(half1, nodeLoop.labels), NodeLoopT(half2, nodeLoop.labels));
 	}
 
-	std::pair<bool,double> evaluate_split(const NodeLoop& nodeLoop, int e0, int e1, const Split& split, const Vector3d& avgPlaneNormal) const
+	std::pair<bool,double> evaluate_split(const NodeLoopT& nodeLoop, int e0, int e1, const Split& split, const Vector3d& avgPlaneNormal) const
 	{
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		// Step 1:	Construct the split plane.
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// We need to obtain two vectors lying in the plane: one is the split line, the other is the average plane normal.
-		const Vector3d& u = m_globalNodeTable(nodeLoop[e0]).position;
-		const Vector3d& v = m_globalNodeTable(nodeLoop[e1]).position;
+		const Vector3d& u = m_globalNodeTable(nodeLoop.indices[e0]).position;
+		const Vector3d& v = m_globalNodeTable(nodeLoop.indices[e1]).position;
 		Vector3d splitLine = v - u;
 
 		// These two vectors can be used to calculate the split plane normal (provided they're not parallel, which is unlikely
@@ -156,16 +157,16 @@ private:
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		double minDistance = INT_MAX;
-		for(int i=0, size=nodeLoop.size(); i<size; ++i)
+		for(int i=0, size=nodeLoop.indices.size(); i<size; ++i)
 		{
-			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop[i]).position);
+			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop.indices[i]).position);
 			if(distance > MathConstants::SMALL_EPSILON && distance < minDistance) minDistance = distance;
 		}
 
 		return std::make_pair(true, minDistance / splitLine.length());
 	}
 
-	MeshTriangle make_triangle(int index0, int index1, int index2) const
+	MeshTriangleT make_triangle(int index0, int index1, int index2, const std::pair<Label,Label>& labels) const
 	{
 		int indices[3] = {index0,index1,index2};
 		Vector3d p[3];
@@ -174,18 +175,17 @@ private:
 		Vector3d b = p[2] - p[0];
 		Vector3d normal = a.cross(b);
 		if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
-		return MeshTriangle(index0, index1, index2, normal);
+		return MeshTriangleT(index0, index1, index2, normal, labels);
 	}
 
-	Split split_node_loop(const NodeLoop& nodeLoop) const
+	Split split_node_loop(const NodeLoopT& nodeLoop) const
 	{
 		Vector3d avgPlaneNormal = MeshUtil::calculate_average_plane(nodeLoop, m_globalNodeTable).normal();
 
-		bool splitFound = false;
-		Split bestSplit;
+		boost::optional<Split> bestSplit;
 		double bestMetric = 0;	// metric values are guaranteed to be +ve and we take the split with the largest metric value
 
-		int nodeCount = static_cast<int>(nodeLoop.size());
+		int nodeCount = static_cast<int>(nodeLoop.indices.size());
 
 		for(int i=0; i<nodeCount-2; ++i)
 		{
@@ -197,14 +197,13 @@ private:
 				std::pair<bool,double> result = evaluate_split(nodeLoop, i, j, split, avgPlaneNormal);
 				if(result.first && result.second > bestMetric)
 				{
-					splitFound = true;
 					bestSplit = split;
 					bestMetric = result.second;
 				}
 			}
 		}
 
-		if(splitFound) return bestSplit;
+		if(bestSplit) return *bestSplit;
 		else throw Exception("Unable to find an appropriate split line");
 	}
 };

@@ -23,7 +23,8 @@ public:
 	typedef GlobalNodeTable<Label> GlobalNodeTableT;
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
-	typedef std::list<MeshTriangle> MeshTriangleList;
+	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef std::list<MeshTriangleT> MeshTriangleList;
 	typedef boost::shared_ptr<MeshTriangleList> MeshTriangleList_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################

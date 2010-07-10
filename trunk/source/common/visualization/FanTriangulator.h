@@ -7,12 +7,18 @@
 #define H_MILLIPEDE_FANTRIANGULATOR
 
 #include "MeshTriangle.h"
+#include "NodeLoop.h"
 
 namespace mp {
 
 template <typename Label>
 class FanTriangulator
 {
+	//#################### TYPEDEFS ####################
+private:
+	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef NodeLoop<Label> NodeLoopT;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_anchorIndex;
@@ -25,9 +31,9 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	std::list<MeshTriangle> triangulate(const std::vector<int>& nodeLoop) const
+	std::list<MeshTriangleT> triangulate(const NodeLoopT& nodeLoop) const
 	{
-		std::list<MeshTriangle> triangles;
+		std::list<MeshTriangleT> triangles;
 
 		// NYI
 		return triangles;

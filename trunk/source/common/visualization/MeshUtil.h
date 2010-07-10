@@ -8,6 +8,7 @@
 
 #include <common/math/Plane.h>
 #include "GlobalNodeTable.h"
+#include "NodeLoop.h"
 
 namespace mp {
 
@@ -22,15 +23,15 @@ namespace MeshUtil {
 @return	The average plane
 */
 template <typename Label>
-Plane calculate_average_plane(const std::vector<int>& nodeLoop, const GlobalNodeTable<Label>& globalNodeTable)
+Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeTable<Label>& globalNodeTable)
 {
-	int nodeCount = static_cast<int>(nodeLoop.size());
+	int nodeCount = static_cast<int>(nodeLoop.indices.size());
 
 	// Calculate the imaginary average node.
 	Vector3d centre;
 	for(int i=0; i<nodeCount; ++i)
 	{
-		centre += globalNodeTable(nodeLoop[i]).position;
+		centre += globalNodeTable(nodeLoop.indices[i]).position;
 	}
 	centre /= nodeCount;
 
@@ -39,8 +40,8 @@ Plane calculate_average_plane(const std::vector<int>& nodeLoop, const GlobalNode
 	for(int i=0; i<nodeCount; ++i)
 	{
 		int j = (i+1)%nodeCount;
-		const Vector3d& u = globalNodeTable(nodeLoop[i]).position;
-		const Vector3d& v = globalNodeTable(nodeLoop[j]).position;
+		const Vector3d& u = globalNodeTable(nodeLoop.indices[i]).position;
+		const Vector3d& v = globalNodeTable(nodeLoop.indices[j]).position;
 		Vector3d n = (u-centre).cross(v-centre);
 		double area = n.length() / 2;	// the area of the triangle centre-u-v
 		n.normalize();
