@@ -8,6 +8,7 @@
 
 #include <common/math/Plane.h>
 #include "GlobalNodeTable.h"
+#include "MeshTriangle.h"
 #include "NodeLoop.h"
 
 namespace mp {
@@ -69,6 +70,46 @@ Vector3d calculate_normal(const MeshTriangle<Label>& tri, const GlobalNodeTable<
 	Vector3d normal = a.cross(b);
 	if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
 	return normal;
+}
+
+/**
+@brief	Classifies a node loop against a plane.
+
+@param[in]	nodeLoop			The node loop to be classified
+@param[in]	plane				The plane against which to classify it
+@param[in]	globalNodeTable		The global node table that stores the actual nodes
+@return	A PlaneClassification::Enum containing the result of the classification
+*/
+template <typename Label>
+PlaneClassification::Enum classify_node_loop_against_plane(const NodeLoop<Label>& nodeLoop, const Plane& plane,
+														   const GlobalNodeTable<Label>& globalNodeTable)
+{
+	int backCount = 0, frontCount = 0;
+
+	for(int i=0, size=nodeLoop.size(); i<size; ++i)
+	{
+		switch(plane.classify_point(globalNodeTable(nodeLoop.index(i)).position()))
+		{
+			case PlaneClassification::BACK:
+				++backCount;
+				break;
+			case PlaneClassification::COPLANAR:
+				break;
+			case PlaneClassification::FRONT:
+				++frontCount;
+				break;
+			default:
+				// STRADDLE can't happen (it's a point!), but this keeps the compiler happier.
+				break;
+		}
+		if(backCount && frontCount) return PlaneClassification::STRADDLE;
+	}
+
+	// If we get here, the node loop doesn't straddle the plane (we'd have returned via the early-out above).
+	// Thus either one, or neither, of backCount and frontCount can be non-zero here.
+	if(backCount) return PlaneClassification::BACK;
+	else if(frontCount) return PlaneClassification::FRONT;
+	else return PlaneClassification::COPLANAR;
 }
 
 }

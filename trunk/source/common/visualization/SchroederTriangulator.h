@@ -68,36 +68,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	PlaneClassification::Enum classify_node_loop_against_plane(const NodeLoopT& nodeLoop, const Plane& plane) const
-	{
-		int backCount = 0, frontCount = 0;
-
-		for(int i=0, size=nodeLoop.size(); i<size; ++i)
-		{
-			switch(plane.classify_point(m_globalNodeTable(nodeLoop.index(i)).position()))
-			{
-				case PlaneClassification::BACK:
-					++backCount;
-					break;
-				case PlaneClassification::COPLANAR:
-					break;
-				case PlaneClassification::FRONT:
-					++frontCount;
-					break;
-				default:
-					// STRADDLE can't happen (it's a point!), but this keeps the compiler happier.
-					break;
-			}
-			if(backCount && frontCount) return PlaneClassification::STRADDLE;
-		}
-
-		// If we get here, the node loop doesn't straddle the plane (we'd have returned via the early-out above).
-		// Thus either one, or neither, of backCount and frontCount can be non-zero here.
-		if(backCount) return PlaneClassification::BACK;
-		else if(frontCount) return PlaneClassification::FRONT;
-		else return PlaneClassification::COPLANAR;
-	}
-
 	/**
 	@brief	Constructs a split of the specified node loop into two halves.
 
@@ -146,9 +116,9 @@ private:
 		// Step 2:	Check that the two half-polygons are separated by the split plane.
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		PlaneClassification::Enum cp0 = classify_node_loop_against_plane(split.first, splitPlane);
+		PlaneClassification::Enum cp0 = MeshUtil::classify_node_loop_against_plane(split.first, splitPlane, m_globalNodeTable);
 		if(cp0 == PlaneClassification::COPLANAR || cp0 == PlaneClassification::STRADDLE) return std::make_pair(false, 0);
-		PlaneClassification::Enum cp1 = classify_node_loop_against_plane(split.second, splitPlane);
+		PlaneClassification::Enum cp1 = MeshUtil::classify_node_loop_against_plane(split.second, splitPlane, m_globalNodeTable);
 		if(cp1 == PlaneClassification::COPLANAR || cp1 == PlaneClassification::STRADDLE || cp1 == cp0) return std::make_pair(false, 0);
 
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
