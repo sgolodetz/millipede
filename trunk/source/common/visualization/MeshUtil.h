@@ -19,7 +19,7 @@ namespace MeshUtil {
 		an imaginary average node at the centre of the node loop.
 
 @param[in]	nodeLoop			The node loop whose average plane should be calculated
-@param[in]	globalNodeTable		The global node table used throughout the mesh building process
+@param[in]	globalNodeTable		The global node table that stores the actual nodes
 @return	The average plane
 */
 template <typename Label>
@@ -50,6 +50,25 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeT
 	avgPlaneNormal.normalize();
 
 	return Plane(avgPlaneNormal, centre);
+}
+
+/**
+@brief	Calculates the normal of the specified mesh triangle. Counter-clockwise winding order is assumed.
+
+@param[in]	tri					The mesh triangle whose normal is to be calculated
+@param[in]	globalNodeTable		The global node table that stores the actual nodes
+@return	The normal
+*/
+template <typename Label>
+Vector3d calculate_normal(const MeshTriangle<Label>& tri, const GlobalNodeTable<Label>& globalNodeTable)
+{
+	Vector3d p[3];
+	for(int i=0; i<3; ++i) p[i] = globalNodeTable(tri.index(i)).position();
+	Vector3d a = p[1] - p[0];
+	Vector3d b = p[2] - p[0];
+	Vector3d normal = a.cross(b);
+	if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
+	return normal;
 }
 
 }

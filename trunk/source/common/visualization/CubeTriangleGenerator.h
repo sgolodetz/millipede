@@ -61,19 +61,10 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	Vector3d calculate_normal(const MeshTriangleT& tri) const
-	{
-		Vector3d p[3];
-		for(int i=0; i<3; ++i) p[i] = m_data->global_node_table()(tri.index(i)).position();
-		Vector3d a = p[1] - p[0];
-		Vector3d b = p[2] - p[0];
-		Vector3d normal = a.cross(b);
-		if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
-		return normal;
-	}
-
 	void ensure_consistent_triangle_orientation(std::list<MeshTriangleT>& triangles)
 	{
+		const GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
+
 		for(typename std::list<MeshTriangleT>::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
 		{
 			// Find the smaller of the two labels for this triangle.
@@ -82,11 +73,11 @@ private:
 			Label smallerLabel = *tri.labels().begin();
 
 			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
-			const MeshNodeT& node = m_data->global_node_table()(tri.index(0));
+			const MeshNodeT& node = globalNodeTable(tri.index(0));
 			Vector3d smallerLabelSource = Vector3d(node.find_source_of_label(smallerLabel));
 
 			// Classify the source against the triangle's plane, and flip the triangle's winding if it's not pointing away from the source.
-			Plane plane(calculate_normal(tri), node.position());
+			Plane plane(MeshUtil::calculate_normal(tri, globalNodeTable), node.position());
 			if(plane.classify_point(smallerLabelSource) == PlaneClassification::FRONT)
 			{
 				it->flip_winding();
