@@ -63,6 +63,14 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	/**
+	@brief	Make sure each triangle is pointing consistently away from the lower of the two labels it separates.
+
+	Note that the "away from" is somewhat arbitrary: the important thing is the consistency, so that the triangles
+	can be sensibly used later.
+
+	@param[in,out]	triangles	The triangles that have been generated
+	*/
 	void ensure_consistent_triangle_orientation(MeshTriangleList& triangles)
 	{
 		const GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
@@ -87,20 +95,15 @@ private:
 		}
 	}
 
+	/**
+	@brief	Executes the job.
+	*/
 	void execute_impl()
 	{
-		// Find the typed node loops.
 		TypedNodeLoopList typedNodeLoops = find_typed_node_loops();
-
-		// Triangulate them according to their type.
 		MeshTriangleList triangles = triangulate_typed_node_loops(typedNodeLoops);
-
-		// Make sure each triangle is pointing consistently away from the lower of the two labels it separates.
-		// (Note that the "away from" is arbitrary: the important thing is the consistency.)
 		ensure_consistent_triangle_orientation(triangles);
-
-		// Ensure that the adjacent node sets for each global node reflect the new edges which have been added during triangulation.
-		fill_in_adjacent_nodes(triangles);
+		fill_in_adjacent_nodes_from(triangles);
 
 		// Splice the triangles onto the global triangle list.
 		m_triangles.splice(m_triangles.end(), triangles);
@@ -111,7 +114,7 @@ private:
 
 	@param[in]	triangles	The triangles that have been generated
 	*/
-	void fill_in_adjacent_nodes(const MeshTriangleList& triangles)
+	void fill_in_adjacent_nodes_from(const MeshTriangleList& triangles)
 	{
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
 
