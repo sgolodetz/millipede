@@ -37,6 +37,7 @@ private:
 	typedef boost::shared_ptr<MeshBuildingDataT> MeshBuildingData_Ptr;
 	typedef MeshNode<Label> MeshNodeT;
 	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef std::list<MeshTriangleT> MeshTriangleList;
 	typedef NodeLoop<Label> NodeLoopT;
 	typedef std::pair<NodeLoopT,TriangulateFlag> TypedNodeLoop;
 	typedef std::list<TypedNodeLoop> TypedNodeLoopList;
@@ -44,12 +45,13 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	MeshBuildingData_Ptr m_data;
+	MeshTriangleList& m_triangles;
 	int m_x, m_y, m_z;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	CubeTriangleGenerator(const MeshBuildingData_Ptr& data, int x, int y, int z)
-	:	m_data(data), m_x(x), m_y(y), m_z(z)
+	:	m_data(data), m_triangles(*data->triangles()), m_x(x), m_y(y), m_z(z)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -61,11 +63,11 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void ensure_consistent_triangle_orientation(std::list<MeshTriangleT>& triangles)
+	void ensure_consistent_triangle_orientation(MeshTriangleList& triangles)
 	{
 		const GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
 
-		for(typename std::list<MeshTriangleT>::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
+		for(typename MeshTriangleList::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
 		{
 			// Find the smaller of the two labels for this triangle.
 			const MeshTriangleT& tri = *it;
@@ -91,17 +93,39 @@ private:
 		TypedNodeLoopList typedNodeLoops = find_typed_node_loops();
 
 		// Triangulate them according to their type.
-		std::list<MeshTriangleT> triangles = triangulate_typed_node_loops(typedNodeLoops);
+		MeshTriangleList triangles = triangulate_typed_node_loops(typedNodeLoops);
 
 		// Make sure each triangle is pointing consistently away from the lower of the two labels it separates.
 		// (Note that the "away from" is arbitrary: the important thing is the consistency.)
 		ensure_consistent_triangle_orientation(triangles);
 
 		// Ensure that the adjacent node sets for each global node reflect the new edges which have been added during triangulation.
-		// TODO
+		fill_in_adjacent_nodes(triangles);
 
 		// Splice the triangles onto the global triangle list.
-		// TODO
+		m_triangles.splice(m_triangles.end(), triangles);
+	}
+
+	/**
+	@brief	Ensure that the adjacent node sets for each node reflect the new edges which have been added during triangulation.
+
+	@param[in]	triangles	The triangles that have been generated
+	*/
+	void fill_in_adjacent_nodes(const MeshTriangleList& triangles)
+	{
+		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
+
+		for(typename MeshTriangleList::const_iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
+		{
+			const MeshTriangleT& tri = *it;
+			int i0 = tri.index(0), i1 = tri.index(1), i2 = tri.index(2);
+			MeshNodeT& n0 = globalNodeTable(i0);
+			MeshNodeT& n1 = globalNodeTable(i1);
+			MeshNodeT& n2 = globalNodeTable(i2);
+			n0.add_adjacent_node(i1);		n0.add_adjacent_node(i2);
+			n1.add_adjacent_node(i0);		n1.add_adjacent_node(i2);
+			n2.add_adjacent_node(i0);		n2.add_adjacent_node(i1);
+		}
 	}
 
 	boost::optional<TypedNodeLoop> find_typed_node_loop(std::map<int,MeshNodeT>& localNodeMap) const
@@ -241,9 +265,9 @@ private:
 		return typedNodeLoops;
 	}
 
-	std::list<MeshTriangleT> triangulate_typed_node_loops(const TypedNodeLoopList& typedNodeLoops)
+	MeshTriangleList triangulate_typed_node_loops(const TypedNodeLoopList& typedNodeLoops)
 	{
-		std::list<MeshTriangleT> triangles;
+		MeshTriangleList triangles;
 
 		FanTriangulator<Label> fanTriangulator(m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z));
 		SchroederTriangulator<Label> schroederTriangulator(m_data->global_node_table());
@@ -254,12 +278,12 @@ private:
 			TriangulateFlag flag = it->second;
 			if(flag == TRIANGULATE_FAN)
 			{
-				std::list<MeshTriangleT> result = fanTriangulator.triangulate(nodeLoop);
+				MeshTriangleList result = fanTriangulator.triangulate(nodeLoop);
 				triangles.splice(triangles.end(), result);
 			}
 			else	// flag == TRIANGULATE_SCHROEDER
 			{
-				std::list<MeshTriangleT> result = schroederTriangulator.triangulate(nodeLoop);
+				MeshTriangleList result = schroederTriangulator.triangulate(nodeLoop);
 				triangles.splice(triangles.end(), result);
 			}
 		}
