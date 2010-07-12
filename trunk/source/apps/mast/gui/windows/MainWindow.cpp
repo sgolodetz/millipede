@@ -16,7 +16,7 @@
 #include <common/io/files/VolumeChoiceFile.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
-#include <mast/gui/windows/PartitionWindow.h>
+#include <mast/gui/windows/SegmentationWindow.h>
 #include <mast/util/StringConversion.h>
 
 namespace {
@@ -84,8 +84,8 @@ void MainWindow::load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVol
 
 		// Create a window for the user to interact with the new model.
 		std::string caption = "MAST Segmentation - " + loader->volume_choice().description() + " - Untitled";
-		PartitionWindow *partitionWindow = new PartitionWindow(this, caption, model);
-		partitionWindow->Show(true);
+		SegmentationWindow *segmentationWindow = new SegmentationWindow(this, caption, model);
+		segmentationWindow->Show(true);
 	}
 }
 

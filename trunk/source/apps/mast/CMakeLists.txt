@@ -85,13 +85,13 @@ gui/overlays/PartitionOverlayManager.h
 ##
 SET(gui_windows_sources
 gui/windows/MainWindow.cpp
-gui/windows/PartitionWindow.cpp
+gui/windows/SegmentationWindow.cpp
 gui/windows/VisualizationWindow.cpp
 )
 
 SET(gui_windows_headers
 gui/windows/MainWindow.h
-gui/windows/PartitionWindow.h
+gui/windows/SegmentationWindow.h
 gui/windows/VisualizationWindow.h
 )
 

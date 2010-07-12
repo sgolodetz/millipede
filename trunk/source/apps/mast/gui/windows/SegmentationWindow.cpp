@@ -1,9 +1,9 @@
 /***
- * millipede: PartitionWindow.cpp
+ * millipede: SegmentationWindow.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "PartitionWindow.h"
+#include "SegmentationWindow.h"
 
 #include <wx/menu.h>
 #include <wx/sizer.h>
@@ -53,7 +53,7 @@ enum
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context)
+SegmentationWindow::SegmentationWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context)
 :	wxFrame(parent, wxID_ANY, string_to_wxString(title)), m_commandManager(new UndoableCommandManager), m_model(model)
 {
 	setup_menus();
@@ -61,32 +61,32 @@ PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, con
 }
 
 //#################### PUBLIC METHODS ####################
-wxGLContext *PartitionWindow::get_context() const
+wxGLContext *SegmentationWindow::get_context() const
 {
 	return m_view->get_context();
 }
 
 //#################### PRIVATE METHODS ####################
-void PartitionWindow::connect_special_menu_items()
+void SegmentationWindow::connect_special_menu_items()
 {
 	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
 	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 	{
 		{
 			int id = (MENUID_FEATURES_TOGGLE_BASE+1) + i;
-			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuFeatureToggle));
-			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateNonEmptySelectionNeeder));
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeatureToggle));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateNonEmptySelectionNeeder));
 		}
 
 		{
 			int id = (MENUID_SELECTION_SELECTMARKED_BASE+1) + i;
-			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PartitionWindow::OnMenuSelectionSelectMarked));
-			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(PartitionWindow::OnUpdateMenuSelectionSelectMarked));
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuSelectionSelectMarked));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateMenuSelectionSelectMarked));
 		}
 	}
 }
 
-void PartitionWindow::setup_gui(wxGLContext *context)
+void SegmentationWindow::setup_gui(wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
 
@@ -106,7 +106,7 @@ void PartitionWindow::setup_gui(wxGLContext *context)
 	CenterOnScreen();
 }
 
-void PartitionWindow::setup_menus()
+void SegmentationWindow::setup_menus()
 {
 	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
 
@@ -223,131 +223,131 @@ void PartitionWindow::setup_menus()
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnMenuActionsClearHistory(wxCommandEvent&)
+void SegmentationWindow::OnMenuActionsClearHistory(wxCommandEvent&)
 {
 	m_commandManager->clear_history();
 }
 
-void PartitionWindow::OnMenuActionsRedo(wxCommandEvent&)
+void SegmentationWindow::OnMenuActionsRedo(wxCommandEvent&)
 {
 	m_commandManager->redo();
 }
 
-void PartitionWindow::OnMenuActionsUndo(wxCommandEvent&)
+void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 {
 	m_commandManager->undo();
 }
 
-void PartitionWindow::OnMenuFeatureToggle(wxCommandEvent& e)
+void SegmentationWindow::OnMenuFeatureToggle(wxCommandEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURES_TOGGLE_BASE+1));
 	m_model->multi_feature_selection()->toggle_selection(m_model->selection(), feature);
 }
 
-void PartitionWindow::OnMenuFileExit(wxCommandEvent&)
+void SegmentationWindow::OnMenuFileExit(wxCommandEvent&)
 {
 	Close();
 }
 
-void PartitionWindow::OnMenuNavigationCentreCamera(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationCentreCamera(wxCommandEvent&)
 {
 	m_view->camera()->centre();
 }
 
-void PartitionWindow::OnMenuNavigationFitToView(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationFitToView(wxCommandEvent&)
 {
 	m_view->fit_image_to_view();
 }
 
-void PartitionWindow::OnMenuNavigationGotoSlice(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationGotoSlice(wxCommandEvent&)
 {
 	m_view->goto_slice();
 }
 
-void PartitionWindow::OnMenuNavigationNextLayer(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationNextLayer(wxCommandEvent&)
 {
 	m_view->camera()->goto_next_layer();
 }
 
-void PartitionWindow::OnMenuNavigationNextSlice(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationNextSlice(wxCommandEvent&)
 {
 	m_view->camera()->goto_next_slice();
 }
 
-void PartitionWindow::OnMenuNavigationPanDown(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationPanDown(wxCommandEvent&)
 {
 	m_view->camera()->pan_down();
 }
 
-void PartitionWindow::OnMenuNavigationPanLeft(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationPanLeft(wxCommandEvent&)
 {
 	m_view->camera()->pan_left();
 }
 
-void PartitionWindow::OnMenuNavigationPanRight(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationPanRight(wxCommandEvent&)
 {
 	m_view->camera()->pan_right();
 }
 
-void PartitionWindow::OnMenuNavigationPanUp(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationPanUp(wxCommandEvent&)
 {
 	m_view->camera()->pan_up();
 }
 
-void PartitionWindow::OnMenuNavigationPreviousLayer(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationPreviousLayer(wxCommandEvent&)
 {
 	m_view->camera()->goto_previous_layer();
 }
 
-void PartitionWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationPreviousSlice(wxCommandEvent&)
 {
 	m_view->camera()->goto_previous_slice();
 }
 
-void PartitionWindow::OnMenuNavigationZoomIn(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationZoomIn(wxCommandEvent&)
 {
 	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() + 1);
 }
 
-void PartitionWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
+void SegmentationWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
 {
 	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() - 1);
 }
 
-void PartitionWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
+void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
 	m_model->segment_volume(this);
 }
 
-void PartitionWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
+void SegmentationWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 {
 	m_model->selection()->clear();
 }
 
-void PartitionWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
+void SegmentationWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
 	m_model->selection()->replace_with_selection(m_model->multi_feature_selection()->selection(feature));
 }
 
-void PartitionWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
+void SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 {
 	FeatureVolumesDialog dialog(this, PartitionModel_CPtr(m_model));
 	dialog.ShowModal();
 }
 
-void PartitionWindow::OnMenuToolsVisualizeIn3D(wxCommandEvent&)
+void SegmentationWindow::OnMenuToolsVisualizeIn3D(wxCommandEvent&)
 {
 	m_model->visualize_in_3d(this);
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-void PartitionWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuActionsClearHistory(wxUpdateUIEvent& e)
 {
 	e.Enable(m_commandManager->can_undo() || m_commandManager->can_redo());
 }
 
-void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
 {
 	if(m_commandManager->can_redo())
 	{
@@ -361,7 +361,7 @@ void PartitionWindow::OnUpdateMenuActionsRedo(wxUpdateUIEvent& e)
 	}
 }
 
-void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
 {
 	if(m_commandManager->can_undo())
 	{
@@ -375,78 +375,78 @@ void PartitionWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
 	}
 }
 
-void PartitionWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->camera()->has_next_layer());
 }
 
-void PartitionWindow::OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->camera()->has_next_slice());
 }
 
-void PartitionWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->camera()->has_previous_layer());
 }
 
-void PartitionWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->camera()->has_previous_slice());
 }
 
-void PartitionWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
 	e.Enable(m_model->multi_feature_selection() && !m_model->multi_feature_selection()->selection(feature)->empty());
 }
 
-void PartitionWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
 {
 	e.Enable(m_model->volume_ipf());
 }
 
-void PartitionWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)
 {
 	e.Enable(m_model->selection() && !m_model->selection()->empty());
 }
 
 //#################### EVENT TABLE ####################
-BEGIN_EVENT_TABLE(PartitionWindow, wxFrame)
+BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-	EVT_MENU(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnMenuActionsClearHistory)
-	EVT_MENU(MENUID_ACTIONS_REDO, PartitionWindow::OnMenuActionsRedo)
-	EVT_MENU(MENUID_ACTIONS_UNDO, PartitionWindow::OnMenuActionsUndo)
-	EVT_MENU(MENUID_FILE_EXIT, PartitionWindow::OnMenuFileExit)
-	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, PartitionWindow::OnMenuNavigationCentreCamera)
-	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, PartitionWindow::OnMenuNavigationFitToView)
-	EVT_MENU(MENUID_NAVIGATION_GOTOSLICE, PartitionWindow::OnMenuNavigationGotoSlice)
-	EVT_MENU(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnMenuNavigationNextLayer)
-	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnMenuNavigationNextSlice)
-	EVT_MENU(MENUID_NAVIGATION_PANDOWN, PartitionWindow::OnMenuNavigationPanDown)
-	EVT_MENU(MENUID_NAVIGATION_PANLEFT, PartitionWindow::OnMenuNavigationPanLeft)
-	EVT_MENU(MENUID_NAVIGATION_PANRIGHT, PartitionWindow::OnMenuNavigationPanRight)
-	EVT_MENU(MENUID_NAVIGATION_PANUP, PartitionWindow::OnMenuNavigationPanUp)
-	EVT_MENU(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnMenuNavigationPreviousLayer)
-	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnMenuNavigationPreviousSlice)
-	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, PartitionWindow::OnMenuNavigationZoomIn)
-	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, PartitionWindow::OnMenuNavigationZoomOut)
-	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, PartitionWindow::OnMenuSegmentationSegmentVolume)
-	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnMenuSelectionClearSelection)
-	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, PartitionWindow::OnMenuToolsQuantifyFeatureVolumes)
-	EVT_MENU(MENUID_TOOLS_VISUALIZEIN3D, PartitionWindow::OnMenuToolsVisualizeIn3D)
+	EVT_MENU(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnMenuActionsClearHistory)
+	EVT_MENU(MENUID_ACTIONS_REDO, SegmentationWindow::OnMenuActionsRedo)
+	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
+	EVT_MENU(MENUID_FILE_EXIT, SegmentationWindow::OnMenuFileExit)
+	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, SegmentationWindow::OnMenuNavigationCentreCamera)
+	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, SegmentationWindow::OnMenuNavigationFitToView)
+	EVT_MENU(MENUID_NAVIGATION_GOTOSLICE, SegmentationWindow::OnMenuNavigationGotoSlice)
+	EVT_MENU(MENUID_NAVIGATION_NEXTLAYER, SegmentationWindow::OnMenuNavigationNextLayer)
+	EVT_MENU(MENUID_NAVIGATION_NEXTSLICE, SegmentationWindow::OnMenuNavigationNextSlice)
+	EVT_MENU(MENUID_NAVIGATION_PANDOWN, SegmentationWindow::OnMenuNavigationPanDown)
+	EVT_MENU(MENUID_NAVIGATION_PANLEFT, SegmentationWindow::OnMenuNavigationPanLeft)
+	EVT_MENU(MENUID_NAVIGATION_PANRIGHT, SegmentationWindow::OnMenuNavigationPanRight)
+	EVT_MENU(MENUID_NAVIGATION_PANUP, SegmentationWindow::OnMenuNavigationPanUp)
+	EVT_MENU(MENUID_NAVIGATION_PREVIOUSLAYER, SegmentationWindow::OnMenuNavigationPreviousLayer)
+	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, SegmentationWindow::OnMenuNavigationPreviousSlice)
+	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, SegmentationWindow::OnMenuNavigationZoomIn)
+	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnMenuNavigationZoomOut)
+	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
+	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
+	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes)
+	EVT_MENU(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnMenuToolsVisualizeIn3D)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
-	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, PartitionWindow::OnUpdateMenuActionsClearHistory)
-	EVT_UPDATE_UI(MENUID_ACTIONS_REDO, PartitionWindow::OnUpdateMenuActionsRedo)
-	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, PartitionWindow::OnUpdateMenuActionsUndo)
-	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTLAYER, PartitionWindow::OnUpdateMenuNavigationNextLayer)
-	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, PartitionWindow::OnUpdateMenuNavigationNextSlice)
-	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, PartitionWindow::OnUpdateMenuNavigationPreviousLayer)
-	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, PartitionWindow::OnUpdateMenuNavigationPreviousSlice)
-	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, PartitionWindow::OnUpdateNonEmptySelectionNeeder)
-	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, PartitionWindow::OnUpdateForestNeeder)
-	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, PartitionWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnUpdateMenuActionsClearHistory)
+	EVT_UPDATE_UI(MENUID_ACTIONS_REDO, SegmentationWindow::OnUpdateMenuActionsRedo)
+	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, SegmentationWindow::OnUpdateMenuActionsUndo)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTLAYER, SegmentationWindow::OnUpdateMenuNavigationNextLayer)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, SegmentationWindow::OnUpdateMenuNavigationNextSlice)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, SegmentationWindow::OnUpdateMenuNavigationPreviousLayer)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, SegmentationWindow::OnUpdateMenuNavigationPreviousSlice)
+	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
+	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnUpdateForestNeeder)
 END_EVENT_TABLE()
 
 }

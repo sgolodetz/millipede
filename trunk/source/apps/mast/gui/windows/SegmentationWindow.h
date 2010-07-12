@@ -1,10 +1,10 @@
 /***
- * millipede: PartitionWindow.h
+ * millipede: SegmentationWindow.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_PARTITIONWINDOW
-#define H_MILLIPEDE_PARTITIONWINDOW
+#ifndef H_MILLIPEDE_SEGMENTATIONWINDOW
+#define H_MILLIPEDE_SEGMENTATIONWINDOW
 
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
@@ -20,7 +20,7 @@ namespace mp {
 typedef boost::shared_ptr<class ICommandManager> ICommandManager_Ptr;
 class PartitionView;
 
-class PartitionWindow : public wxFrame
+class SegmentationWindow : public wxFrame
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -40,7 +40,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	PartitionWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context = NULL);
+	SegmentationWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context = NULL);
 
 	//#################### PUBLIC METHODS ####################
 public:
