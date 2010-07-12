@@ -1,6 +1,6 @@
 VolumeChoice
 {
-	DICOMDIR = D:\Users\Stuart\Documents\Visual Studio 2008\Projects\millipede\CL000001\DICOMDIR
+	DICOMDIR = ../../../../../CL000001/DICOMDIR
 	Patient = BT
 	Study = DCMTKSTUDY000000 (CT Chest/Abdo/Pelvis/ , 1.2.840.113619.2.181.90581590670.16768.1193129590502.2)
 	Series = 2
