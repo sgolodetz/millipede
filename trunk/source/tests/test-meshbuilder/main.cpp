@@ -5,14 +5,21 @@
 
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/util/ITKImageUtil.h>
+#include <common/visualization/LaplacianSmoother.h>
 #include <common/visualization/MeshBuilder.h>
 using namespace mp;
 
-int main()
+//#################### TYPEDEFS ####################
+typedef int Label;
+typedef LaplacianSmoother<Label> LaplacianSmootherT;
+typedef Mesh<Label> MeshT;
+typedef boost::shared_ptr<MeshT> Mesh_Ptr;
+typedef MeshBuilder<Label> MeshBuilderT;
+typedef boost::shared_ptr<MeshBuilderT> MeshBuilder_Ptr;
+
+//#################### FUNCTIONS ####################
+void test_simple()
 {
-	typedef int Label;
-	typedef MeshBuilder<Label> MeshBuilderT;
-	typedef boost::shared_ptr<MeshBuilderT> MeshBuilder_Ptr;
 #if 1
 	Label pixels[] = {
 		0,0,0,
@@ -35,9 +42,38 @@ int main()
 	MeshBuilder_Ptr builder(new MeshBuilderT(labelling->GetLargestPossibleRegion().GetSize(), labelling));
 	Job::execute_managed(builder);
 
-	typedef Mesh<Label> MeshT;
-	typedef boost::shared_ptr<MeshT> Mesh_Ptr;
 	Mesh_Ptr mesh = builder->get_mesh();
+}
 
+void test_full()
+{
+	Label pixels[] = {
+		0,0,0,
+		0,0,0,
+
+		1,1,0,
+		1,1,0
+	};
+	MeshBuilderT::LabelImagePointer labelling = ITKImageUtil::make_filled_image<Label>(3, 2, 2, pixels);
+
+	CompositeJob_Ptr job(new CompositeJob);
+
+	MeshBuilderT *builder = new MeshBuilderT(labelling->GetLargestPossibleRegion().GetSize(), labelling);
+	LaplacianSmootherT *smoother = new LaplacianSmootherT(0.5, 6);
+
+	smoother->set_mesh_hook(builder->get_mesh_hook());
+	DataHook<Mesh_Ptr> meshHook = smoother->get_mesh_hook();
+
+	job->add_subjob(builder);
+	job->add_subjob(smoother);
+	Job::execute_managed(job);
+
+	Mesh_Ptr mesh = meshHook.get();
+}
+
+int main()
+{
+	test_simple();
+	test_full();
 	return 0;
 }

@@ -287,6 +287,7 @@ visualization/CubeTable.h
 visualization/CubeTriangleGenerator.h
 visualization/FanTriangulator.h
 visualization/GlobalNodeTable.h
+visualization/LaplacianSmoother.h
 visualization/Mesh.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
