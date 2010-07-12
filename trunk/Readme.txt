@@ -12,7 +12,9 @@ svn co <repository root>/trunk millipede
 
 ***
 
+============================
 Step 1: Build the libraries.
+============================
 
 millipede has dependencies on a number of external libraries, which must themselves be built before trying to build millipede. The setup files for the relevant versions of these libraries can be found under 'millipede/libraries/setup', and there are detailed instructions for how to build each library in a file called 'Instructions.txt' in each library's subdirectory.
 
@@ -33,11 +35,15 @@ export LIBRARY_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/lib
 The issue is essentially that Xcode doesn't install gcc in the usual places by default, so you need to specify the places where it does install it explicitly.
 *
 
+===============================
 Step 2: Build millipede itself.
+===============================
 
 The actual millipede project is built using CMake.
 
-On Windows:
+----------
+On Windows
+----------
 
 a) Use the CMake GUI. Set the source directory to millipede/source, and the build directory to a sibling of source called 'build' (this doesn't need to exist yet). The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and build called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, you may or may not want to build the tests, and you'll need to set the location of the wxWidgets configuration executable, which for the release version is at
 
@@ -51,7 +57,9 @@ To run any applications or test programs, just run them from the Visual Studio I
 
 c) If you want a separate debug build (very useful, if you want to avoid a full rebuild every time you switch solution configurations), repeat (a) using 'build-debug' and 'install-debug' directories, setting the relevant paths to point to the debug builds of the various libraries. For example, the ITK build path would be set to millipede/libraries/ITK-3.14.0/build-debug in this instance. Then open millipede.sln in the build-debug directory, check that its solution configuration is set to Debug, and build the ALL_BUILD project as in (b).
 
-On Linux:
+--------
+On Linux
+--------
 
 a) Make a subdirectory of millipede called build (this will be a sibling of the source directory) and change to it.
 b) Run "ccmake ../source" and set the options as you would for Windows above.
@@ -68,7 +76,9 @@ millipede/install/bin/tests/{testname}/bin
 
 respectively. For the debug version (i.e. after running "make install" in the build-debug directory), the built programs will be at the corresponding locations in the install-debug directory tree.
 
-On Mac OS X:
+-----------
+On Mac OS X
+-----------
 
 - Do the same as for Linux, but set CMAKE_OSX_SYSROOT appropriately in ccmake. On my system, it was "/Developer/SDKs/MacOSX10.5.sdk" (without quotes).
 
