@@ -136,7 +136,7 @@ wxPanel *VolumeChooserDialog::create_basic_page(wxWindow *parent)
 
 	// Set up the tree control.
 	m_tree = new wxTreeCtrl(panel, wxID_ANY, wxDefaultPosition, wxSize(400,300), wxTR_HAS_BUTTONS|wxTR_SINGLE);
-	sizer->Add(m_tree, 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(m_tree, 0, wxALIGN_CENTRE_HORIZONTAL);
 	wxTreeItemId rootID = m_tree->AddRoot(wxT("DICOMDIR"));
 
 	// Add the DICOMDIR data to the tree control.

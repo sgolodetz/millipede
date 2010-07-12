@@ -9,6 +9,7 @@
 #include <string>
 
 #include <wx/frame.h>
+#include <wx/glcanvas.h>
 
 namespace mp {
 
@@ -20,7 +21,7 @@ class VisualizationWindow : public wxFrame
 {
 	//#################### CONSTRUCTORS ####################
 public:
-	VisualizationWindow(wxWindow *parent, const std::string& title);
+	VisualizationWindow(wxWindow *parent, const std::string& title, wxGLContext *context = NULL);
 
 	// TODO
 };

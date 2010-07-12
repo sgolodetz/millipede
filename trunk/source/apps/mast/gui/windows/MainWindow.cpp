@@ -122,7 +122,7 @@ void MainWindow::setup_gui()
 		wxFont font = button->GetFont();
 		font.SetPointSize(14);
 		button->SetFont(font);
-		panelSizer->Add(button, 0, wxALIGN_CENTER_HORIZONTAL);
+		panelSizer->Add(button, 0, wxALIGN_CENTRE_HORIZONTAL);
 	}
 
 	// Middle right, bottom left, bottom and bottom right

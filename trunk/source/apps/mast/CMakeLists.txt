@@ -46,6 +46,15 @@ gui/components/partitionview/PartitionView.h
 )
 
 ##
+SET(gui_components_meshview_sources
+gui/components/meshview/MeshView.cpp
+)
+
+SET(gui_components_meshview_headers
+gui/components/meshview/MeshView.h
+)
+
+##
 SET(gui_components_selectionview_headers
 gui/components/selectionview/SelectionView.h
 )
@@ -116,6 +125,7 @@ util/StringConversion.h
 SET(sources
 ${mast_sources}
 ${gui_components_canvas_sources}
+${gui_components_meshview_sources}
 ${gui_components_partitionview_sources}
 ${gui_dialogs_sources}
 ${gui_overlays_sources}
@@ -126,6 +136,7 @@ ${util_sources}
 SET(headers
 ${mast_headers}
 ${gui_components_canvas_headers}
+${gui_components_meshview_headers}
 ${gui_components_partitionview_headers}
 ${gui_components_selectionview_headers}
 ${gui_dialogs_headers}
@@ -149,6 +160,10 @@ SOURCE_GROUP(.h FILES ${mast_headers})
 ##
 SOURCE_GROUP(gui\\components\\canvas\\.cpp FILES ${gui_components_canvas_sources})
 SOURCE_GROUP(gui\\components\\canvas\\.h FILES ${gui_components_canvas_headers})
+
+##
+SOURCE_GROUP(gui\\components\\meshview\\.cpp FILES ${gui_components_meshview_sources})
+SOURCE_GROUP(gui\\components\\meshview\\.h FILES ${gui_components_meshview_headers})
 
 ##
 SOURCE_GROUP(gui\\components\\partitionview\\.cpp FILES ${gui_components_partitionview_sources})

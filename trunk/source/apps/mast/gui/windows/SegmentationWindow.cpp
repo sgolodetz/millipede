@@ -96,11 +96,11 @@ void SegmentationWindow::setup_gui(wxGLContext *context)
 	Show();
 
 	m_view = new PartitionView(this, m_model, m_commandManager, context);
-	sizer->Add(m_view, 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(m_view, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	sizer->AddSpacer(10);
 
-	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this, m_model), 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this, m_model), 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	sizer->Fit(this);
 	CenterOnScreen();
@@ -338,7 +338,7 @@ void SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuToolsVisualizeIn3D(wxCommandEvent&)
 {
-	m_model->visualize_in_3d(this);
+	m_model->visualize_in_3d(this, get_context());
 }
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~

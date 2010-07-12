@@ -24,6 +24,9 @@
 #include <mast/gui/dialogs/VisualizeIn3DDialog.h>
 #include <mast/gui/windows/VisualizationWindow.h>
 
+//#################### FORWARD DECLARATIONS ####################
+class wxGLContext;
+
 namespace mp {
 
 template <typename LeafLayer, typename BranchLayer, typename Feature>
@@ -189,7 +192,7 @@ public:
 		m_listeners.forest_changed();
 	}
 
-	void visualize_in_3d(wxWindow *parent)
+	void visualize_in_3d(wxWindow *parent, wxGLContext *context)
 	{
 		// Display a visualize in 3D dialog to allow the user to choose how the visualization process should work.
 		VisualizeIn3DDialog dialog(parent);
@@ -198,7 +201,7 @@ public:
 		// TODO
 
 		std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
-		VisualizationWindow *visualizationWindow = new VisualizationWindow(parent, caption);
+		VisualizationWindow *visualizationWindow = new VisualizationWindow(parent, caption, context);
 		visualizationWindow->Show(true);
 	}
 

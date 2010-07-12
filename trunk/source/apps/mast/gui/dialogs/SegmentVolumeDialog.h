@@ -141,7 +141,7 @@ protected:
 		strings[SEGTYPE_CUSTOM] = wxT("Segment using C&ustomised Sub-Volume Size");
 		m_segmentationType = new wxRadioBox(panel, RADIOBOXID_SEGMENTATIONTYPE, wxT("Segmentation Type"), wxDefaultPosition, wxDefaultSize, SEGTYPE_COUNT, strings, 1, wxRA_SPECIFY_COLS);
 		m_segmentationType->SetSelection(SEGTYPE_3D);
-		sizer->Add(m_segmentationType, 0, wxALIGN_CENTER_HORIZONTAL);
+		sizer->Add(m_segmentationType, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		sizer->AddSpacer(10);
 

@@ -47,7 +47,7 @@ public:
 
 		m_list->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
 		m_list->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
-		sizer->Add(m_list, 0, wxALIGN_CENTER_HORIZONTAL);
+		sizer->Add(m_list, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Add an OK button.
 		wxButton *okButton = new wxButton(this, wxID_OK, wxT("OK"));

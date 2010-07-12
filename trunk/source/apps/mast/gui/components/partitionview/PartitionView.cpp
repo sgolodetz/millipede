@@ -408,14 +408,14 @@ void PartitionView::setup_gui(wxGLContext *context)
 	};
 
 	// Top left
-	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
+	sizer->Add(new wxPanel(this));
 
 	// Top middle
-	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
+	sizer->Add(new wxPanel(this));
 
 	// Top right
 	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume..."));
-	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTER_HORIZONTAL);
+	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	// Middle left
 	m_dicomCanvas = new DICOMCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
@@ -426,18 +426,18 @@ void PartitionView::setup_gui(wxGLContext *context)
 	wxBoxSizer *middleSizer = new wxBoxSizer(wxVERTICAL);
 	middle->SetSizer(middleSizer);
 		wxButton *viewXYButton = new wxButton(middle, BUTTONID_VIEW_XY, wxT("View X-Y (usually Axial)"));
-		middleSizer->Add(viewXYButton, 0, wxALIGN_CENTER_HORIZONTAL);
+		middleSizer->Add(viewXYButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		wxButton *viewXZButton = new wxButton(middle, BUTTONID_VIEW_XZ, wxT("View X-Z (usually Coronal)"));
-		middleSizer->Add(viewXZButton, 0, wxALIGN_CENTER_HORIZONTAL);
+		middleSizer->Add(viewXZButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		wxButton *viewYZButton = new wxButton(middle, BUTTONID_VIEW_YZ, wxT("View Y-Z (usually Sagittal)"));
-		middleSizer->Add(viewYZButton, 0, wxALIGN_CENTER_HORIZONTAL);
+		middleSizer->Add(viewYZButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		middleSizer->AddSpacer(10);
 
 		wxButton *visualizeIn3DButton = new wxButton(middle, BUTTONID_VISUALIZE_IN_3D, wxT("Visualize in 3D..."));
-		middleSizer->Add(visualizeIn3DButton, 0, wxALIGN_CENTER_HORIZONTAL);
+		middleSizer->Add(visualizeIn3DButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		middleSizer->AddSpacer(20);
 
@@ -445,25 +445,25 @@ void PartitionView::setup_gui(wxGLContext *context)
 		wxFlexGridSizer *locationControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		locationControls->SetSizer(locationControlsSizer);
 			wxStaticText *xText = new wxStaticText(locationControls, wxID_ANY, wxT("X: "));
-			locationControlsSizer->Add(xText, 0, wxALIGN_CENTER_VERTICAL);
+			locationControlsSizer->Add(xText, 0, wxALIGN_CENTRE_VERTICAL);
 			m_xSlider = new wxSlider(locationControls, SLIDERID_X, volume_choice().minX + m_camera->slice_location().x, volume_choice().minX, volume_choice().maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			locationControlsSizer->Add(m_xSlider, 0, wxALIGN_CENTER);
+			locationControlsSizer->Add(m_xSlider, 0, wxALIGN_CENTRE);
 
 			wxStaticText *yText = new wxStaticText(locationControls, wxID_ANY, wxT("Y: "));
-			locationControlsSizer->Add(yText, 0, wxALIGN_CENTER_VERTICAL);
+			locationControlsSizer->Add(yText, 0, wxALIGN_CENTRE_VERTICAL);
 			m_ySlider = new wxSlider(locationControls, SLIDERID_Y, volume_choice().minY + m_camera->slice_location().y, volume_choice().minY, volume_choice().maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			locationControlsSizer->Add(m_ySlider, 0, wxALIGN_CENTER);
+			locationControlsSizer->Add(m_ySlider, 0, wxALIGN_CENTRE);
 
 			wxStaticText *zText = new wxStaticText(locationControls, wxID_ANY, wxT("Z: "));
-			locationControlsSizer->Add(zText, 0, wxALIGN_CENTER_VERTICAL);
+			locationControlsSizer->Add(zText, 0, wxALIGN_CENTRE_VERTICAL);
 			m_zSlider = new wxSlider(locationControls, SLIDERID_Z, volume_choice().minZ+1 + m_camera->slice_location().z, volume_choice().minZ+1, volume_choice().maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			locationControlsSizer->Add(m_zSlider, 0, wxALIGN_CENTER);
+			locationControlsSizer->Add(m_zSlider, 0, wxALIGN_CENTRE);
 
 			wxStaticText *zoomText = new wxStaticText(locationControls, wxID_ANY, wxT("Zoom: "));
-			locationControlsSizer->Add(zoomText, 0, wxALIGN_CENTER_VERTICAL);
+			locationControlsSizer->Add(zoomText, 0, wxALIGN_CENTRE_VERTICAL);
 			m_zoomSlider = new wxSlider(locationControls, SLIDERID_ZOOM, m_camera->zoom_level(), m_camera->min_zoom_level(), m_camera->max_zoom_level(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-			locationControlsSizer->Add(m_zoomSlider, 0, wxALIGN_CENTER);
-		middleSizer->Add(locationControls, 0, wxALIGN_CENTER_HORIZONTAL);
+			locationControlsSizer->Add(m_zoomSlider, 0, wxALIGN_CENTRE);
+		middleSizer->Add(locationControls, 0, wxALIGN_CENTRE_HORIZONTAL);
 	sizer->Add(middle);
 
 	// Middle right
@@ -471,20 +471,20 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(m_partitionCanvas);
 
 	// Bottom left
-	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
+	sizer->Add(new wxPanel(this));
 
 	// Bottom middle
-	sizer->Add(new wxStaticText(this, wxID_ANY, ""));
+	sizer->Add(new wxPanel(this));
 
 	// Bottom right
 	wxPanel *bottomRight = new wxPanel(this);
 	wxFlexGridSizer *bottomRightSizer = new wxFlexGridSizer(0, 2, 0, 0);
 	bottomRight->SetSizer(bottomRightSizer);
 		wxStaticText *layerText = new wxStaticText(bottomRight, wxID_ANY, wxT("Layer: "));
-		bottomRightSizer->Add(layerText, 0, wxALIGN_CENTER_VERTICAL);
+		bottomRightSizer->Add(layerText, 0, wxALIGN_CENTRE_VERTICAL);
 		m_layerSlider = new wxSlider(bottomRight, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
-		bottomRightSizer->Add(m_layerSlider, 0, wxALIGN_CENTER);
-	sizer->Add(bottomRight, 0, wxALIGN_CENTER_HORIZONTAL);
+		bottomRightSizer->Add(m_layerSlider, 0, wxALIGN_CENTRE);
+	sizer->Add(bottomRight, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	sizer->Fit(this);
 }
@@ -540,7 +540,7 @@ void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 
 void PartitionView::OnButtonVisualizeIn3D(wxCommandEvent&)
 {
-	m_model->visualize_in_3d(this);
+	m_model->visualize_in_3d(this, get_context());
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
