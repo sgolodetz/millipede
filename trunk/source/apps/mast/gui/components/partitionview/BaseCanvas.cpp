@@ -26,7 +26,7 @@ void BaseCanvas::fit_image_to_canvas()
 	zoom_to_fit();
 }
 
-void BaseCanvas::render(wxPaintDC& dc) const
+void BaseCanvas::render(wxPaintDC&) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -91,8 +91,10 @@ void BaseCanvas::setup(PartitionView *partitionView)
 
 	SetCurrent();
 
+	// Set up the viewport.
 	int width, height;
 	GetSize(&width, &height);
+	glViewport(0, 0, width, height);
 
 	// Enable back-face culling.
 	glCullFace(GL_BACK);
@@ -107,13 +109,12 @@ void BaseCanvas::setup(PartitionView *partitionView)
 	glAlphaFunc(GL_NOTEQUAL, 0);
 	glEnable(GL_ALPHA_TEST);
 
-	glClearColor(0, 0, 0, 0);
+	// Set up the clear colour.
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	glViewport(0, 0, width, height);
-
+	// Set up the projection matrix.
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	glOrtho(0, width, height, 0, 0.0, 2048.0);
 }
 

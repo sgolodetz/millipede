@@ -48,7 +48,7 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	void fit_image_to_canvas();
-	void render(wxPaintDC& dc) const;
+	void render(wxPaintDC&) const;
 	void setup(PartitionView *partitionView);
 	void zoom_to_fit();
 

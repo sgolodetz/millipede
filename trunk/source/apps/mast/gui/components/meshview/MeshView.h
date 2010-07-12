@@ -11,8 +11,15 @@
 
 namespace mp {
 
+//#################### FORWARD DECLARATIONS ####################
+class MeshCanvas;
+
 class MeshView : public wxPanel
 {
+	//#################### PRIVATE VARIABLES ####################
+private:
+	MeshCanvas *m_canvas;
+
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit MeshView(wxWindow *parent, wxGLContext *context = NULL);

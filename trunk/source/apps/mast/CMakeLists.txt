@@ -47,10 +47,12 @@ gui/components/partitionview/PartitionView.h
 
 ##
 SET(gui_components_meshview_sources
+gui/components/meshview/MeshCanvas.cpp
 gui/components/meshview/MeshView.cpp
 )
 
 SET(gui_components_meshview_headers
+gui/components/meshview/MeshCanvas.h
 gui/components/meshview/MeshView.h
 )
 

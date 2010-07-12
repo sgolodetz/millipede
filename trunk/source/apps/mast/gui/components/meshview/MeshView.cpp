@@ -11,6 +11,8 @@
 #include <wx/slider.h>
 #include <wx/stattext.h>
 
+#include "MeshCanvas.h"
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -18,8 +20,7 @@ MeshView::MeshView(wxWindow *parent, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100))
 {
 	setup_gui(context);
-
-	// TODO: Setup mesh canvas.
+	m_canvas->setup();
 }
 
 //#################### PRIVATE METHODS ####################
@@ -31,6 +32,15 @@ void MeshView::setup_gui(wxGLContext *context)
 
 	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 5, 5);
 	SetSizer(sizer);
+
+	int attribList[] =
+	{
+		WX_GL_RGBA,
+		WX_GL_DEPTH_SIZE,
+		16,
+		WX_GL_DOUBLEBUFFER,
+		0
+	};
 
 	// Top left
 	sizer->Add(new wxPanel(this));
@@ -51,10 +61,8 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(featureControls, 0, wxALIGN_CENTRE|wxLEFT, BORDER_SIZE);
 
 	// Middle
-	// TODO: Replace this with the mesh canvas.
-	wxPanel *meshCanvas = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(512,512));
-	meshCanvas->SetBackgroundColour(wxColour(0,0,0));
-	sizer->Add(meshCanvas, 0, wxALL, BORDER_SIZE);
+	m_canvas = new MeshCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(512,512));
+	sizer->Add(m_canvas, 0, wxALL, BORDER_SIZE);
 
 	// Middle right
 	// TODO: Get the slider ranges right.
