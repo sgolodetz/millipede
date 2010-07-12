@@ -22,7 +22,7 @@ The nodes and edges added depend on the number of face-centre nodes.
 
 It is not possible for there to be a single face-centre node, so that case is explicitly excluded.
 
-@tparam	Label	The type of label stored at the cube vertices and in the nodes
+@tparam	Label	The type of label stored at the cube vertices and in the mesh nodes
 */
 template <typename Label>
 class CubeInternalGenerator : public SimpleJob
@@ -41,12 +41,25 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
+	/**
+	@brief	Constructs a CubeInternalGenerator job to work on the specified cube.
+
+	@param[in]	data			The mesh building data shared by all sub-jobs of MeshBuilder
+	@param[in]	x				The x position of the cube in the volume
+	@param[in]	y				The y position of the cube in the volume
+	@param[in]	z				The z position of the cube in the volume
+	*/
 	CubeInternalGenerator(const MeshBuildingData_Ptr& data, int x, int y, int z)
 	:	m_data(data), m_x(x), m_y(y), m_z(z)
 	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
+	/**
+	@brief	Returns the length of the job.
+
+	@return	As described
+	*/
 	int length() const
 	{
 		return 1;
@@ -54,6 +67,9 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	/**
+	@brief	Executes the job.
+	*/
 	void execute_impl()
 	{
 		CubeTable& cubeTable = m_data->cube_table();

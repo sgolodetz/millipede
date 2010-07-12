@@ -11,6 +11,12 @@
 
 namespace mp {
 
+/**
+@brief	A FanTriangulator triangulates non-planar node loops as a triangle fan emanating from an anchor node.
+		It is only appropriate when a suitable anchor node is available.
+
+@tparam	Label	The type of label stored in the mesh nodes
+*/
 template <typename Label>
 class FanTriangulator
 {

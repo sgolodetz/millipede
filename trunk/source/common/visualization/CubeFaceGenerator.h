@@ -19,7 +19,7 @@ namespace mp {
 		and generates global nodes and edges (stored implicitly in the nodes) accordingly. It also builds
 		a map from local to global nodes and stores this against the face in the cube table.
 
-@tparam	Label			The type of label stored at the cube vertices and in the nodes
+@tparam	Label			The type of label stored at the cube vertices and in the mesh nodes
 @tparam	PriorityPred	A predicate type defining an ordering over the labels for resolving conflicts that arise during the algorithm
 */
 template <typename Label, typename PriorityPred>

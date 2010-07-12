@@ -19,7 +19,7 @@ namespace mp {
 @brief	A SchroederTriangulator triangulates non-planar node loops using the recursive, divide-and-conquer approach
 		described in "Decimation of Triangle Meshes", Schroeder et al., 1992.
 
-@tparam	Label	The type of label stored in the nodes
+@tparam	Label	The type of label stored in the mesh nodes
 */
 template <typename Label>
 class SchroederTriangulator

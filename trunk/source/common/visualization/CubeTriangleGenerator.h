@@ -19,6 +19,12 @@
 
 namespace mp {
 
+/**
+@brief	A CubeTriangleGenerator finds node loops in a given cube and triangulates them,
+		ensuring that the resulting triangles are oriented consistently as it does so.
+
+@tparam	Label	The type of label stored at the cube vertices and in the mesh nodes
+*/
 template <typename Label>
 class CubeTriangleGenerator : public SimpleJob
 {
@@ -50,12 +56,25 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
+	/**
+	@brief	Constructs a CubeTriangleGenerator job to work on the specified cube.
+
+	@param[in]	data			The mesh building data shared by all sub-jobs of MeshBuilder
+	@param[in]	x				The x position of the cube in the volume
+	@param[in]	y				The y position of the cube in the volume
+	@param[in]	z				The z position of the cube in the volume
+	*/
 	CubeTriangleGenerator(const MeshBuildingData_Ptr& data, int x, int y, int z)
 	:	m_data(data), m_triangles(*data->triangles()), m_x(x), m_y(y), m_z(z)
 	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
+	/**
+	@brief	Returns the length of the job.
+
+	@return	As described
+	*/
 	int length() const
 	{
 		return 1;
@@ -110,7 +129,7 @@ private:
 	}
 
 	/**
-	@brief	Ensure that the adjacent node sets for each node reflect the new edges which have been added during triangulation.
+	@brief	Ensures that the adjacent node sets for each node reflect the new edges which have been added during triangulation.
 
 	@param[in]	triangles	The triangles that have been generated
 	*/
@@ -131,6 +150,15 @@ private:
 		}
 	}
 
+	/**
+	@brief	Finds a typed node loop from the remaining nodes and (implicit) edges in the local node map, if possible.
+
+	Note that some (implicit) edges in the local node map will be removed as each node loop is found. This is essential,
+	as find_typed_node_loops() - i.e. the caller of this method - would not otherwise terminate.
+
+	@param[in,out]	localNodeMap	A map containing the nodes within this cube
+	@return	The typed node loop found, if any, or boost::none otherwise
+	*/
 	boost::optional<TypedNodeLoop> find_typed_node_loop(std::map<int,MeshNodeT>& localNodeMap) const
 	{
 		// Step 1:	Find a start node with exactly two labels and a remaining edge. If no such node exists, we've found all the loops.
@@ -238,6 +266,11 @@ private:
 		return std::make_pair(NodeLoopT(nodeIndices, startLabels), flag);
 	}
 
+	/**
+	@brief	Finds all the typed node loops in the cube.
+
+	@return	The typed node loops as a std::list
+	*/
 	TypedNodeLoopList find_typed_node_loops() const
 	{
 		TypedNodeLoopList typedNodeLoops;
@@ -268,6 +301,15 @@ private:
 		return typedNodeLoops;
 	}
 
+	/**
+	@brief	Triangulates the typed node loops according to type.
+
+	Node loops that go through the cube centre node (if any) will be triangulated using the
+	fan approach. All other node loops will be triangulated using the Schroeder method.
+
+	@param[in]	typedNodeLoops	The typed node loops
+	@return	A std::list of the mesh triangles resulting from triangulating all the node loops
+	*/
 	MeshTriangleList triangulate_typed_node_loops(const TypedNodeLoopList& typedNodeLoops)
 	{
 		MeshTriangleList triangles;
