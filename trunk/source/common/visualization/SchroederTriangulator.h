@@ -116,9 +116,9 @@ private:
 		// Step 2:	Check that the two half-polygons are separated by the split plane.
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		PlaneClassification::Enum cp0 = MeshUtil::classify_node_loop_against_plane(split.first, splitPlane, m_globalNodeTable);
+		PlaneClassification::Enum cp0 = MeshUtil::classify_node_loop_against_plane(split.first, splitPlane, *m_globalNodeTable.master_array());
 		if(cp0 == PlaneClassification::COPLANAR || cp0 == PlaneClassification::STRADDLE) return std::make_pair(false, 0);
-		PlaneClassification::Enum cp1 = MeshUtil::classify_node_loop_against_plane(split.second, splitPlane, m_globalNodeTable);
+		PlaneClassification::Enum cp1 = MeshUtil::classify_node_loop_against_plane(split.second, splitPlane, *m_globalNodeTable.master_array());
 		if(cp1 == PlaneClassification::COPLANAR || cp1 == PlaneClassification::STRADDLE || cp1 == cp0) return std::make_pair(false, 0);
 
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,7 +137,7 @@ private:
 
 	Split split_node_loop(const NodeLoopT& nodeLoop) const
 	{
-		Vector3d avgPlaneNormal = MeshUtil::calculate_average_plane(nodeLoop, m_globalNodeTable).normal();
+		Vector3d avgPlaneNormal = MeshUtil::calculate_average_plane(nodeLoop, *m_globalNodeTable.master_array()).normal();
 
 		boost::optional<Split> bestSplit;
 		double bestMetric = 0;	// metric values are guaranteed to be +ve and we take the split with the largest metric value

@@ -34,5 +34,10 @@ int main()
 #endif
 	MeshBuilder_Ptr builder(new MeshBuilderT(labelling->GetLargestPossibleRegion().GetSize(), labelling));
 	Job::execute_managed(builder);
+
+	typedef Mesh<Label> MeshT;
+	typedef boost::shared_ptr<MeshT> Mesh_Ptr;
+	Mesh_Ptr mesh = builder->get_mesh();
+
 	return 0;
 }

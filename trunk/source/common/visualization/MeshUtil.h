@@ -7,7 +7,7 @@
 #define H_MILLIPEDE_MESHUTIL
 
 #include <common/math/Plane.h>
-#include "GlobalNodeTable.h"
+#include "MeshNode.h"
 #include "MeshTriangle.h"
 #include "NodeLoop.h"
 
@@ -19,12 +19,12 @@ namespace MeshUtil {
 @brief	Determine an "average plane" for the node loop specified. This is most easily defined in terms of
 		an imaginary average node at the centre of the node loop.
 
-@param[in]	nodeLoop			The node loop whose average plane should be calculated
-@param[in]	globalNodeTable		The global node table that stores the actual nodes
+@param[in]	nodeLoop	The node loop whose average plane should be calculated
+@param[in]	nodes		The master array containing the actual nodes referred to by the node loop
 @return	The average plane
 */
 template <typename Label>
-Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeTable<Label>& globalNodeTable)
+Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const std::vector<MeshNode<Label> >& nodes)
 {
 	int nodeCount = nodeLoop.size();
 
@@ -32,7 +32,7 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeT
 	Vector3d centre;
 	for(int i=0; i<nodeCount; ++i)
 	{
-		centre += globalNodeTable(nodeLoop.index(i)).position();
+		centre += nodes[nodeLoop.index(i)].position();
 	}
 	centre /= nodeCount;
 
@@ -41,8 +41,8 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeT
 	for(int i=0; i<nodeCount; ++i)
 	{
 		int j = (i+1)%nodeCount;
-		const Vector3d& u = globalNodeTable(nodeLoop.index(i)).position();
-		const Vector3d& v = globalNodeTable(nodeLoop.index(j)).position();
+		const Vector3d& u = nodes[nodeLoop.index(i)].position();
+		const Vector3d& v = nodes[nodeLoop.index(j)].position();
 		Vector3d n = (u-centre).cross(v-centre);
 		double area = n.length() / 2;	// the area of the triangle centre-u-v
 		n.normalize();
@@ -56,15 +56,15 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const GlobalNodeT
 /**
 @brief	Calculates the normal of the specified mesh triangle. Counter-clockwise winding order is assumed.
 
-@param[in]	tri					The mesh triangle whose normal is to be calculated
-@param[in]	globalNodeTable		The global node table that stores the actual nodes
+@param[in]	tri		The mesh triangle whose normal is to be calculated
+@param[in]	nodes	The master array containing the actual nodes referred to by the mesh triangle
 @return	The normal
 */
 template <typename Label>
-Vector3d calculate_normal(const MeshTriangle<Label>& tri, const GlobalNodeTable<Label>& globalNodeTable)
+Vector3d calculate_normal(const MeshTriangle<Label>& tri, const std::vector<MeshNode<Label> >& nodes)
 {
 	Vector3d p[3];
-	for(int i=0; i<3; ++i) p[i] = globalNodeTable(tri.index(i)).position();
+	for(int i=0; i<3; ++i) p[i] = nodes[tri.index(i)].position();
 	Vector3d a = p[1] - p[0];
 	Vector3d b = p[2] - p[0];
 	Vector3d normal = a.cross(b);
@@ -75,20 +75,20 @@ Vector3d calculate_normal(const MeshTriangle<Label>& tri, const GlobalNodeTable<
 /**
 @brief	Classifies a node loop against a plane.
 
-@param[in]	nodeLoop			The node loop to be classified
-@param[in]	plane				The plane against which to classify it
-@param[in]	globalNodeTable		The global node table that stores the actual nodes
+@param[in]	nodeLoop	The node loop to be classified
+@param[in]	plane		The plane against which to classify it
+@param[in]	nodes		The master array containing the actual nodes referred to by the node loop
 @return	A PlaneClassification::Enum containing the result of the classification
 */
 template <typename Label>
 PlaneClassification::Enum classify_node_loop_against_plane(const NodeLoop<Label>& nodeLoop, const Plane& plane,
-														   const GlobalNodeTable<Label>& globalNodeTable)
+														   const std::vector<MeshNode<Label> >& nodes)
 {
 	int backCount = 0, frontCount = 0;
 
 	for(int i=0, size=nodeLoop.size(); i<size; ++i)
 	{
-		switch(plane.classify_point(globalNodeTable(nodeLoop.index(i)).position()))
+		switch(plane.classify_point(nodes[nodeLoop.index(i)].position()))
 		{
 			case PlaneClassification::BACK:
 				++backCount;

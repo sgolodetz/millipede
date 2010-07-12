@@ -57,6 +57,7 @@ private:
 	typedef MeshNode<Label> MeshNodeT;
 	typedef std::vector<MeshNodeT> MeshNodeVector;
 	typedef boost::shared_ptr<MeshNodeVector> MeshNodeVector_Ptr;
+	typedef boost::shared_ptr<const MeshNodeVector> MeshNodeVector_CPtr;
 	typedef std::map<Vector3i,int> Subtable;
 	typedef Subtable::iterator SubtableIter;
 
@@ -152,6 +153,11 @@ public:
 	}
 
 	const MeshNodeVector_Ptr& master_array()
+	{
+		return m_masterArray;
+	}
+
+	MeshNodeVector_CPtr master_array() const
 	{
 		return m_masterArray;
 	}

@@ -14,6 +14,7 @@
 #include "CubeFaceGenerator.h"
 #include "CubeInternalGenerator.h"
 #include "CubeTriangleGenerator.h"
+#include "Mesh.h"
 
 namespace mp {
 
@@ -31,12 +32,36 @@ public:
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
 private:
+	typedef Mesh<Label> MeshT;
+	typedef boost::shared_ptr<MeshT> Mesh_Ptr;
 	typedef MeshBuildingData<Label> MeshBuildingDataT;
 	typedef boost::shared_ptr<MeshBuildingDataT> MeshBuildingData_Ptr;
+
+	//#################### JOBS ####################
+private:
+	struct CreateMeshJob : SimpleJob
+	{
+		MeshBuilder *base;
+
+		explicit CreateMeshJob(MeshBuilder *base_)
+		:	base(base_)
+		{}
+
+		void execute_impl()
+		{
+			base->m_meshHook.set(Mesh_Ptr(new MeshT(base->m_data->global_node_table().master_array(), base->m_data->triangles())));
+		}
+
+		int length() const
+		{
+			return 1;
+		}
+	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	MeshBuildingData_Ptr m_data;
+	DataHook<Mesh_Ptr> m_meshHook;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -89,11 +114,22 @@ public:
 					add_subjob(new CubeTriangleGenerator<Label>(m_data, x, y, z));
 				}
 
-		// TODO
+		// Add the CreateMesh sub-job.
+		add_subjob(new CreateMeshJob(this));
 	}
 
 	//#################### PUBLIC METHODS ####################
 public:
+	const Mesh_Ptr& get_mesh() const
+	{
+		return m_meshHook.get();
+	}
+
+	const DataHook<Mesh_Ptr>& get_mesh_hook() const
+	{
+		return m_meshHook;
+	}
+
 	void set_labelling(const LabelImagePointer& labelling)
 	{
 		m_data->set_labelling(labelling);
