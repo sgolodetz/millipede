@@ -382,6 +382,7 @@ private:
 			{
 				// Find a lowest neighbour and make this point's arrow point to it.
 				Index lowestNeighbour;
+				lowestNeighbour.Fill(-1);	// this is redundant, but keeps the compiler happy
 				LowerCompletePixelType lowestNeighbourValue = std::numeric_limits<LowerCompletePixelType>::max();
 				for(typename ConstShapedNeighbourhoodIteratorType::ConstIterator jt=it.Begin(), jend=it.End(); jt!=jend; ++jt)
 				{

@@ -1,5 +1,5 @@
 GDCM 1.2.5 Setup Instructions
-Last Updated by Stuart Golodetz on 26/06/10
+Last Updated by Stuart Golodetz on 11/07/10
 -------------------------------------------
 
 1. Create a gdcm-1.2.5 subdirectory in the libraries directory.
@@ -10,7 +10,7 @@ Last Updated by Stuart Golodetz on 26/06/10
 
 	a) Just extract it using something like the shareware version of WinRAR.
 
-	On Linux:
+	On Linux or Mac OS X:
 
 	a) Change to the libraries/gdcm-1.2.5 directory.
 	b) Run "tar xzf ../setup/gdcm-1.2.5/gdcm-1.2.5.tar.gz".
@@ -37,7 +37,11 @@ GDCM_BUILD_SHARED_LIBS	OFF
 	c) Run "make".
 	d) If desired, you can create a separate debug build tree by repeating steps (a)-(c) using different directory names and CMAKE_BUILD_TYPE set to 'Debug'. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug', then do the same as before.
 
-5. On Linux only, you may additionally need to run "make install". This will put all the shared object files (dynamic libraries) in gdcm-1.2.5/install (or gdcm-1.2.5/install-debug, for the debug build). These may need to be copied to /usr/lib/ so that executables can find them.
+	On Mac OS X:
+
+	- Do the same as for Linux, but set CMAKE_OSX_SYSROOT appropriately in ccmake. On my system, it was "/Developer/SDKs/MacOSX10.5.sdk" (without quotes).
+
+5. On non-Windows platforms, you may additionally need to run "make install". This will put all the shared object files (dynamic libraries) in gdcm-1.2.5/install (or gdcm-1.2.5/install-debug, for the debug build). These may need to be copied to /usr/lib/ so that executables can find them.
 
 ***
 Troubleshooting Note:

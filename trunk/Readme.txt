@@ -1,5 +1,5 @@
 millipede Readme
-Last Updated by Stuart Golodetz on 26/06/10
+Last Updated by Stuart Golodetz on 11/07/10
 -------------------------------------------
 
 ##################
@@ -19,6 +19,19 @@ millipede has dependencies on a number of external libraries, which must themsel
 The instructions explain how to build a library X so that it ends up in 'millipede/libraries/X'. More sophisticated users may of course want to build it elsewhere. This is generally possible, but it is unfortunately difficult to provide general instructions that will work in all cases. If you want to do something special that is not covered in the instructions, it is recommended that you contact me directly.
 
 There is currently (as of the date shown at the top of the document) no interdependency between the different libraries used, so they can be built in any order.
+
+*
+Important Note:
+
+There may be some work needed to get gcc working correctly on Mac OS X, especially if you haven't been coding from the Terminal before. In my case (YMMV), this involved adding the file ~/.profile, containing:
+
+export PATH=$PATH:/Developer/usr/bin
+export C_INCLUDE_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/include
+export CPLUS_INCLUDE_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/include:/Developer/SDKs/MacOSX10.5.sdk/usr/include/c++/4.0.0:/Developer/SDKs/MacOSX10.5.sdk/usr/include/c++/4.0.0/i686-apple-darwin8:/Developer/SDKs/MacOSX10.5.sdk/usr/X11/include
+export LIBRARY_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/lib
+
+The issue is essentially that Xcode doesn't install gcc in the usual places by default, so you need to specify the places where it does install it explicitly.
+*
 
 Step 2: Build millipede itself.
 
@@ -54,6 +67,10 @@ and
 millipede/install/bin/tests/{testname}/bin
 
 respectively. For the debug version (i.e. after running "make install" in the build-debug directory), the built programs will be at the corresponding locations in the install-debug directory tree.
+
+On Mac OS X:
+
+- Do the same as for Linux, but set CMAKE_OSX_SYSROOT appropriately in ccmake. On my system, it was "/Developer/SDKs/MacOSX10.5.sdk" (without quotes).
 
 ##############
 USING BRANCHES
