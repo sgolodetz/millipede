@@ -22,6 +22,7 @@
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/dialogs/VisualizeIn3DDialog.h>
+#include <mast/gui/windows/VisualizationWindow.h>
 
 namespace mp {
 
@@ -195,6 +196,10 @@ public:
 		dialog.ShowModal();
 
 		// TODO
+
+		std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
+		VisualizationWindow *visualizationWindow = new VisualizationWindow(parent, caption);
+		visualizationWindow->Show(true);
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()

@@ -83,7 +83,7 @@ void MainWindow::load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVol
 		PartitionModel_Ptr model(new PartitionModelT(loader->volume(), loader->volume_choice()));
 
 		// Create a window for the user to interact with the new model.
-		std::string caption = "MAST - " + loader->volume_choice().description() + " - Untitled";
+		std::string caption = "MAST Segmentation - " + loader->volume_choice().description() + " - Untitled";
 		PartitionWindow *partitionWindow = new PartitionWindow(this, caption, model);
 		partitionWindow->Show(true);
 	}

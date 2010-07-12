@@ -54,7 +54,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 PartitionWindow::PartitionWindow(wxWindow *parent, const std::string& title, const PartitionModel_Ptr& model, wxGLContext *context)
-:	wxFrame(parent, -1, string_to_wxString(title)), m_commandManager(new UndoableCommandManager), m_model(model)
+:	wxFrame(parent, wxID_ANY, string_to_wxString(title)), m_commandManager(new UndoableCommandManager), m_model(model)
 {
 	setup_menus();
 	setup_gui(context);
