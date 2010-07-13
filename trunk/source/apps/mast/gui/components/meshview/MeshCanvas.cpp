@@ -28,7 +28,7 @@ void MeshCanvas::render(wxPaintDC&) const
 #if 0
 	gluLookAt(5,-10,5, 0,0,0, 0,0,1);
 #else
-	gluLookAt(16,0,50, 16,16,0, 0,1,0);
+	gluLookAt(16,32,-50, 16,16,0, 0,0,-1);
 #endif
 
 	glBegin(GL_LINES);
