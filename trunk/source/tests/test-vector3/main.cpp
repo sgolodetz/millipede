@@ -146,6 +146,26 @@ BOOST_AUTO_TEST_CASE(cross_test)
 		BOOST_CHECK_CLOSE(Vector3d::angle_between(djXdk, di), 0.0, 0.0001);
 		BOOST_CHECK_CLOSE(Vector3d::angle_between(dkXdi, dj), 0.0, 0.0001);
 		BOOST_CHECK_CLOSE(Vector3d::angle_between(dkXdj, -di), 0.0, 0.0001);
+
+	Vector3d dv(3.0, 4.0, 0.0), dw(-1.0, 1.0, 0.0);
+	Vector3d dvXdw = dv.cross(dw);
+		BOOST_CHECK_CLOSE(dvXdw.length(), dv.length() * dw.length() * sin(Vector3d::angle_between(dv, dw)), 0.0001);
+		BOOST_CHECK_CLOSE(Vector3d::angle_between(dvXdw, Vector3d(0,0,1)), 0.0, 0.0001);
+}
+
+// TODO: distance, distance_squared
+
+BOOST_AUTO_TEST_CASE(dot_test)
+{
+	Vector3d dv(3.0, 4.0, 5.0), dw(-1.0, 2.0, -3.0);
+	double dvDOTdw = dv.dot(dw), dwDOTdv = dw.dot(dv);
+		BOOST_CHECK_CLOSE(dvDOTdw, -10.0, 0.0001);
+		BOOST_CHECK_EQUAL(dvDOTdw, dwDOTdv);
+
+	Vector3i iv(-23, 9, 84), iw(24, -12, 18);
+	int ivDOTiw = iv.dot(iw), iwDOTiv = iw.dot(iv);
+		BOOST_CHECK_EQUAL(ivDOTiw, 852);
+		BOOST_CHECK_EQUAL(ivDOTiw, iwDOTiv);
 }
 
 // TODO
