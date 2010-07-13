@@ -31,12 +31,16 @@ private:
 private:
 	DataHook<LabelImagePointer> m_labellingHook;
 	VolumeIPFMultiFeatureSelection_CPtr m_multiFeatureSelection;
+	int m_voxelCount;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit LabelImageCreator(const VolumeIPFMultiFeatureSelection_CPtr& multiFeatureSelection)
 	:	m_multiFeatureSelection(multiFeatureSelection)
-	{}
+	{
+		itk::Size<3> volumeSize = multiFeatureSelection->volume_ipf()->volume_size();
+		m_voxelCount = volumeSize[0] * volumeSize[1] * volumeSize[2];
+	}
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -47,7 +51,7 @@ public:
 
 	int length() const
 	{
-		return 1;
+		return m_voxelCount + 1;
 	}
 
 	//#################### PRIVATE METHODS ####################
@@ -74,9 +78,12 @@ private:
 					// Assume that (a) features can be mapped straightforwardly to ints and (b) the first feature is the most important.
 					int value = !features.empty() ? features[0] + 1 : 0;
 					labelling->SetPixel(index, value);
+
+					increment_progress();
 				}
 
 		m_labellingHook.set(labelling);
+		increment_progress();
 	}
 };
 

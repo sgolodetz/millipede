@@ -8,8 +8,6 @@
 
 #include <functional>
 
-#include <itkImage.h>
-
 #include <common/jobs/CompositeJob.h>
 #include "CubeFaceGenerator.h"
 #include "CubeInternalGenerator.h"
@@ -39,6 +37,99 @@ private:
 
 	//#################### JOBS ####################
 private:
+	template <typename Spawnee>
+	struct ForEachCubeFaceJobSpawner : SimpleJob
+	{
+		MeshBuildingData_Ptr data;
+		int xSize, ySize, zSize;
+		int xDim[3], yDim[3], zDim[3];
+
+		mutable boost::mutex mut;
+		boost::shared_ptr<Spawnee> spawnee;
+		int spawneeCount;
+
+		ForEachCubeFaceJobSpawner(const MeshBuildingData_Ptr& data_, int xSize_, int ySize_, int zSize_)
+		:	data(data_), xSize(xSize_), ySize(ySize_), zSize(zSize_)
+		{
+			xDim[CubeFaceDesignator::FACE_XY] = xSize;		xDim[CubeFaceDesignator::FACE_XZ] = xSize;		xDim[CubeFaceDesignator::FACE_YZ] = xSize+1;
+			yDim[CubeFaceDesignator::FACE_XY] = ySize;		yDim[CubeFaceDesignator::FACE_XZ] = ySize+1;	yDim[CubeFaceDesignator::FACE_YZ] = ySize;
+			zDim[CubeFaceDesignator::FACE_XY] = zSize+1;	zDim[CubeFaceDesignator::FACE_XZ] = zSize;		zDim[CubeFaceDesignator::FACE_YZ] = zSize;
+
+			spawneeCount = 0;
+			for(CubeFaceDesignator::Enum f=enum_begin<CubeFaceDesignator::Enum>(), end=enum_end<CubeFaceDesignator::Enum>(); f!=end; ++f)
+			{
+				spawneeCount += xDim[f] * yDim[f] * zDim[f];
+			}
+		}
+
+		void execute_impl()
+		{
+			for(CubeFaceDesignator::Enum f=enum_begin<CubeFaceDesignator::Enum>(), end=enum_end<CubeFaceDesignator::Enum>(); f!=end; ++f)
+				for(int x=0; x<xDim[f]; ++x)
+					for(int y=0; y<yDim[f]; ++y)
+						for(int z=0; z<zDim[f]; ++z)
+						{
+							{
+								boost::mutex::scoped_lock lock(mut);
+								spawnee.reset(new Spawnee(data, x, y, z, f));
+							}
+							spawnee->execute();
+							increment_progress();
+						}
+		}
+
+		int length() const
+		{
+			return spawneeCount;
+		}
+
+		std::string status() const
+		{
+			boost::mutex::scoped_lock lock(mut);
+			return spawnee ? spawnee->status() : "";
+		}
+	};
+
+	template <typename Spawnee>
+	struct ForEachCubeJobSpawner : SimpleJob
+	{
+		MeshBuildingData_Ptr data;
+		int xSize, ySize, zSize;
+
+		mutable boost::mutex mut;
+		boost::shared_ptr<Spawnee> spawnee;
+
+		ForEachCubeJobSpawner(const MeshBuildingData_Ptr& data_, int xSize_, int ySize_, int zSize_)
+		:	data(data_), xSize(xSize_), ySize(ySize_), zSize(zSize_)
+		{}
+
+		void execute_impl()
+		{
+			for(int z=0; z<zSize; ++z)
+				for(int y=0; y<ySize; ++y)
+					for(int x=0; x<xSize; ++x)
+					{
+						{
+							boost::mutex::scoped_lock lock(mut);
+							spawnee.reset(new Spawnee(data, x, y, z));
+						}
+						spawnee->execute();
+						increment_progress();
+					}
+		}
+
+		int length() const
+		{
+			return xSize * ySize * zSize;
+		}
+
+		std::string status() const
+		{
+			boost::mutex::scoped_lock lock(mut);
+			return spawnee ? spawnee->status() : "";
+		}
+	};
+
 	struct CreateMeshJob : SimpleJob
 	{
 		MeshBuilder *base;
@@ -84,36 +175,16 @@ public:
 	{
 		if(labelling) set_labelling(*labelling);
 
-		// Add the CubeFaceGenerator sub-jobs.
 		int xSize = volumeSize[0] - 1, ySize = volumeSize[1] - 1, zSize = volumeSize[2] - 1;
-		int xDim[3], yDim[3], zDim[3];
-		xDim[CubeFaceDesignator::FACE_XY] = xSize;		xDim[CubeFaceDesignator::FACE_XZ] = xSize;		xDim[CubeFaceDesignator::FACE_YZ] = xSize+1;
-		yDim[CubeFaceDesignator::FACE_XY] = ySize;		yDim[CubeFaceDesignator::FACE_XZ] = ySize+1;	yDim[CubeFaceDesignator::FACE_YZ] = ySize;
-		zDim[CubeFaceDesignator::FACE_XY] = zSize+1;	zDim[CubeFaceDesignator::FACE_XZ] = zSize;		zDim[CubeFaceDesignator::FACE_YZ] = zSize;
 
-		for(CubeFaceDesignator::Enum f=enum_begin<CubeFaceDesignator::Enum>(), end=enum_end<CubeFaceDesignator::Enum>(); f!=end; ++f)
-			for(int x=0; x<xDim[f]; ++x)
-				for(int y=0; y<yDim[f]; ++y)
-					for(int z=0; z<zDim[f]; ++z)
-					{
-						add_subjob(new CubeFaceGenerator<Label,PriorityPred>(m_data, x, y, z, f));
-					}
+		// Add the spawner for the CubeFaceGenerator sub-jobs.
+		add_subjob(new ForEachCubeFaceJobSpawner<CubeFaceGenerator<Label,PriorityPred> >(m_data, xSize, ySize, zSize));
 
-		// Add the CubeInternalGenerator sub-jobs.
-		for(int x=0; x<xSize; ++x)
-			for(int y=0; y<ySize; ++y)
-				for(int z=0; z<zSize; ++z)
-				{
-					add_subjob(new CubeInternalGenerator<Label>(m_data, x, y, z));
-				}
+		// Add the spawner for the CubeInternalGenerator sub-jobs.
+		add_subjob(new ForEachCubeJobSpawner<CubeInternalGenerator<Label> >(m_data, xSize, ySize, zSize));
 
-		// Add the CubeTriangleGenerator sub-jobs.
-		for(int x=0; x<xSize; ++x)
-			for(int y=0; y<ySize; ++y)
-				for(int z=0; z<zSize; ++z)
-				{
-					add_subjob(new CubeTriangleGenerator<Label>(m_data, x, y, z));
-				}
+		// Add the spawner for the CubeTriangleGenerator sub-jobs.
+		add_subjob(new ForEachCubeJobSpawner<CubeTriangleGenerator<Label> >(m_data, xSize, ySize, zSize));
 
 		// Add the CreateMesh sub-job.
 		add_subjob(new CreateMeshJob(this));
