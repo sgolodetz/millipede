@@ -49,6 +49,7 @@ private:
 
 		void execute_impl()
 		{
+			set_status("Creating mesh...");
 			base->m_meshHook.set(Mesh_Ptr(new MeshT(base->m_data->global_node_table().master_array(), base->m_data->triangles())));
 		}
 

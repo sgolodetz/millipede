@@ -13,12 +13,14 @@
 #include <common/commands/UndoableCommandManager.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
+#include <common/partitionforests/images/LabelImageCreator.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/partitionforests/images/VolumeIPFSelection.h>
 #include <common/segmentation/DICOMLowestLayersBuilder.h>
 #include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/util/ITKImageUtil.h>
+#include <common/visualization/MeshBuilder.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/dialogs/VisualizeIn3DDialog.h>
@@ -198,10 +200,28 @@ public:
 		VisualizeIn3DDialog dialog(parent);
 		dialog.ShowModal();
 
-		// TODO
+		if(true)	// TODO
+		{
+			CompositeJob_Ptr job(new CompositeJob);
 
-		std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
-		new VisualizationWindow(parent, caption, context);	// this isn't a memory leak - wxWidgets cleans up the window internally
+			typedef LabelImageCreator<LeafLayer,BranchLayer,Feature> LabelImageCreatorT;
+			LabelImageCreatorT *labelImageCreator = new LabelImageCreatorT(m_multiFeatureSelection);
+
+			MeshBuilder<int> *meshBuilder = new MeshBuilder<int>(m_volumeIPF->volume_size());
+			meshBuilder->set_labelling_hook(labelImageCreator->get_labelling_hook());
+
+			// TODO
+
+			job->add_subjob(labelImageCreator);
+			job->add_subjob(meshBuilder);
+			// TODO
+
+			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
+			{
+				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
+				new VisualizationWindow(parent, caption, context);	// this isn't a memory leak - wxWidgets cleans up the window internally
+			}
+		}
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()

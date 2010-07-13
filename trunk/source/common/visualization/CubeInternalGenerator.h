@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_CUBEINTERNALGENERATOR
 #define H_MILLIPEDE_CUBEINTERNALGENERATOR
 
+#include <common/io/util/OSSWrapper.h>
 #include <common/jobs/SimpleJob.h>
 #include "MeshBuildingData.h"
 
@@ -72,6 +73,8 @@ private:
 	*/
 	void execute_impl()
 	{
+		set_status(OSSWrapper() << "Generating internals of cube (" << m_x << ',' << m_y << ',' << m_z << ')');
+
 		CubeTable& cubeTable = m_data->cube_table();
 		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
 

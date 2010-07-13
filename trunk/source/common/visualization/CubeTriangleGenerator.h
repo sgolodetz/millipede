@@ -12,6 +12,7 @@
 #include <utility>
 
 #include <common/adts/Edge.h>
+#include <common/io/util/OSSWrapper.h>
 #include <common/jobs/SimpleJob.h>
 #include "FanTriangulator.h"
 #include "NodeLoop.h"
@@ -119,6 +120,8 @@ private:
 	*/
 	void execute_impl()
 	{
+		set_status(OSSWrapper() << "Generating triangles for cube (" << m_x << ',' << m_y << ',' << m_z << ')');
+
 		TypedNodeLoopList typedNodeLoops = find_typed_node_loops();
 		MeshTriangleList triangles = triangulate_typed_node_loops(typedNodeLoops);
 		ensure_consistent_triangle_orientation(triangles);

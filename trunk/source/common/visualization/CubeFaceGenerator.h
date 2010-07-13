@@ -9,6 +9,7 @@
 #include <set>
 
 #include <common/exceptions/Exception.h>
+#include <common/io/util/OSSWrapper.h>
 #include <common/jobs/SimpleJob.h>
 #include "MeshBuildingData.h"
 
@@ -245,6 +246,8 @@ private:
 	*/
 	void execute_impl()
 	{
+		set_status(OSSWrapper() << "Generating cube face (" << m_x << ',' << m_y << ',' << m_z << ',' << m_faceDesignator << ')');
+
 		m_labelling = m_data->labelling();
 
 		std::vector<Vector3i> vertexPositions = m_data->cube_table().face_vertices(m_x, m_y, m_z, m_faceDesignator);

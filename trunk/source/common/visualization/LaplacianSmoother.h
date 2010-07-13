@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_LAPLACIANSMOOTHER
 #define H_MILLIPEDE_LAPLACIANSMOOTHER
 
+#include <common/io/util/OSSWrapper.h>
 #include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
 #include "Mesh.h"
@@ -67,6 +68,7 @@ private:
 		Mesh_Ptr mesh = m_meshHook.get();
 		for(int i=0; i<m_iterations; ++i)
 		{
+			set_status(OSSWrapper() << "Smoothing mesh (" << i << ")...");
 			iterate(mesh);
 		}
 	}

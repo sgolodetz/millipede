@@ -186,6 +186,7 @@ partitionforests/images/DICOMPixelProperties.h
 partitionforests/images/DICOMRegionProperties.h
 partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
+partitionforests/images/LabelImageCreator.h
 partitionforests/images/MosaicImageCreator.h
 partitionforests/images/SimpleImageBranchLayer.h
 partitionforests/images/SimpleImageLeafLayer.h
