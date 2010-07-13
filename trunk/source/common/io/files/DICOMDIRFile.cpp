@@ -31,6 +31,8 @@ DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 	// Load in the DICOMDIR.
 	gdcm::DicomDir dicomdir;
 	dicomdir.SetFileName(filename);
+
+	// MEMORY LEAK: The gdcm library leaks memory here (there's nothing obvious I can do about it besides document it unfortunately).
 	if(!dicomdir.Load())
 	{
 		throw Exception("Failed to load DICOM directory from: " + filename);
