@@ -277,6 +277,7 @@ SET(visualization_sources
 visualization/CubeFace.cpp
 visualization/CubeFaceDesignator.cpp
 visualization/CubeTable.cpp
+visualization/MeshRenderer.cpp
 visualization/VisualizationOptions.cpp
 )
 
@@ -294,6 +295,7 @@ visualization/Mesh.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
 visualization/MeshNode.h
+visualization/MeshRenderer.h
 visualization/MeshTriangle.h
 visualization/MeshUtil.h
 visualization/NodeLoop.h

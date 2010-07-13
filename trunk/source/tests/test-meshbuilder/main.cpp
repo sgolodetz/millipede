@@ -7,6 +7,7 @@
 #include <common/util/ITKImageUtil.h>
 #include <common/visualization/LaplacianSmoother.h>
 #include <common/visualization/MeshBuilder.h>
+#include <common/visualization/MeshRenderer.h>
 using namespace mp;
 
 //#################### TYPEDEFS ####################
@@ -43,6 +44,7 @@ void test_simple()
 	Job::execute_managed(builder);
 
 	Mesh_Ptr mesh = builder->get_mesh();
+	MeshRenderer renderer(mesh);
 }
 
 void test_full()

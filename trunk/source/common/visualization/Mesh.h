@@ -43,12 +43,22 @@ public:
 public:
 	MeshNodeVector& nodes()
 	{
-		return m_nodes;
+		return *m_nodes;
+	}
+
+	const MeshNodeVector& nodes() const
+	{
+		return *m_nodes;
 	}
 
 	MeshTriangleList& triangles()
 	{
-		return m_triangles;
+		return *m_triangles;
+	}
+
+	const MeshTriangleList& triangles() const
+	{
+		return *m_triangles;
 	}
 };
 

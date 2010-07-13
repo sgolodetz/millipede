@@ -54,7 +54,7 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const std::vector
 }
 
 /**
-@brief	Calculates the normal of the specified mesh triangle. Counter-clockwise winding order is assumed.
+@brief	Calculates the *unit* normal of the specified mesh triangle. Counter-clockwise winding order is assumed.
 
 @param[in]	tri		The mesh triangle whose normal is to be calculated
 @param[in]	nodes	The master array containing the actual nodes referred to by the mesh triangle
@@ -63,13 +63,26 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const std::vector
 template <typename Label>
 Vector3d calculate_normal(const MeshTriangle<Label>& tri, const std::vector<MeshNode<Label> >& nodes)
 {
+	Vector3d normal = calculate_unnormalized_normal(tri, nodes);
+	if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
+	return normal;
+}
+
+/**
+@brief	Calculates the *unnormalized* normal of the specified mesh triangle. Counter-clockwise winding order is assumed.
+
+@param[in]	tri		The mesh triangle whose normal is to be calculated
+@param[in]	nodes	The master array containing the actual nodes referred to by the mesh triangle
+@return	The normal
+*/
+template <typename Label>
+Vector3d calculate_unnormalized_normal(const MeshTriangle<Label>& tri, const std::vector<MeshNode<Label> >& nodes)
+{
 	Vector3d p[3];
 	for(int i=0; i<3; ++i) p[i] = nodes[tri.index(i)].position();
 	Vector3d a = p[1] - p[0];
 	Vector3d b = p[2] - p[0];
-	Vector3d normal = a.cross(b);
-	if(normal.length() >= MathConstants::SMALL_EPSILON) normal.normalize();
-	return normal;
+	return a.cross(b);
 }
 
 /**
