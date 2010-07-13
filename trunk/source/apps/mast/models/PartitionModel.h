@@ -201,7 +201,7 @@ public:
 		// TODO
 
 		std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
-		VisualizationWindow *visualizationWindow = new VisualizationWindow(parent, caption, context);
+		new VisualizationWindow(parent, caption, context);	// this isn't a memory leak - wxWidgets cleans up the window internally
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()
