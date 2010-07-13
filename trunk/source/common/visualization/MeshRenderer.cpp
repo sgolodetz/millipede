@@ -17,14 +17,14 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 	const std::vector<MeshNodeT>& nodes = mesh->nodes();
 	const std::list<MeshTriangleT>& triangles = mesh->triangles();
 
-	// Step 1:	Set up the arrays for each label used.
+	// Step 1:	Set up the submesh for each label used.
 	for(std::vector<MeshNodeT>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{
 		std::set<int> labels = it->labels();
 		for(std::set<int>::const_iterator jt=labels.begin(), jend=labels.end(); jt!=jend; ++jt)
 		{
-			GLArrays_Ptr& arrays = m_arraysMap[*jt];
-			if(!arrays) arrays.reset(new GLArrays);
+			Submesh_Ptr& submesh = m_submeshes[*jt];
+			if(!submesh) submesh.reset(new Submesh);
 		}
 	}
 
@@ -37,17 +37,17 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 		std::set<int> labels = nodes[i].labels();
 		for(std::set<int>::const_iterator jt=labels.begin(), jend=labels.end(); jt!=jend; ++jt)
 		{
-			GLArrays& arrays = *m_arraysMap[*jt];
-			clonedNodeIndices[i].insert(std::make_pair(*jt, arrays.vertexArray.size() / 3));
+			Submesh& submesh = *m_submeshes[*jt];
+			clonedNodeIndices[i].insert(std::make_pair(*jt, submesh.vertexArray.size() / 3));
 
-			arrays.vertexArray.push_back(pos.x);
-			arrays.vertexArray.push_back(pos.y);
-			arrays.vertexArray.push_back(pos.z);
+			submesh.vertexArray.push_back(pos.x);
+			submesh.vertexArray.push_back(pos.y);
+			submesh.vertexArray.push_back(pos.z);
 		}
 	}
 
 	// Step 3:	Prepare the normal array for each label.
-	for(std::map<int,GLArrays_Ptr>::const_iterator it=m_arraysMap.begin(), iend=m_arraysMap.end(); it!=iend; ++it)
+	for(std::map<int,Submesh_Ptr>::const_iterator it=m_submeshes.begin(), iend=m_submeshes.end(); it!=iend; ++it)
 	{
 		it->second->normalArray.resize(it->second->vertexArray.size());
 	}
@@ -57,7 +57,7 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 	{
 		int indices[3] = {it->index(0), it->index(1), it->index(2)};
 
-		// The length of this is twice the triangle's area: 
+		// The length of this is twice the triangle's area.
 		Vector3d normal = MeshUtil::calculate_unnormalized_normal(*it, nodes);
 
 		const std::set<int>& labelSet = it->labels();
@@ -74,40 +74,40 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 				clones[k] = clonedNodeIndices[indices[k]][label];
 			}
 
-			GLArrays& arrays = *m_arraysMap[label];
+			Submesh& submesh = *m_submeshes[label];
 			if(j == 0)	// the winding stored in the triangle is correct for the first label...
 			{
-				arrays.indexArray.push_back(clones[0]);
-				arrays.indexArray.push_back(clones[1]);
-				arrays.indexArray.push_back(clones[2]);
+				submesh.indexArray.push_back(clones[0]);
+				submesh.indexArray.push_back(clones[1]);
+				submesh.indexArray.push_back(clones[2]);
 
 				for(int k=0; k<3; ++k)
 				{
 					int normalOffset = clones[k] * 3;
-					arrays.normalArray[normalOffset]   += normal.x;
-					arrays.normalArray[normalOffset+1] += normal.y;
-					arrays.normalArray[normalOffset+2] += normal.z;
+					submesh.normalArray[normalOffset]   += normal.x;
+					submesh.normalArray[normalOffset+1] += normal.y;
+					submesh.normalArray[normalOffset+2] += normal.z;
 				}
 			}
 			else		// ...but reversed for the second label
 			{
-				arrays.indexArray.push_back(clones[1]);
-				arrays.indexArray.push_back(clones[0]);
-				arrays.indexArray.push_back(clones[2]);
+				submesh.indexArray.push_back(clones[1]);
+				submesh.indexArray.push_back(clones[0]);
+				submesh.indexArray.push_back(clones[2]);
 
 				for(int k=0; k<3; ++k)
 				{
 					int normalOffset = clones[k] * 3;
-					arrays.normalArray[normalOffset]   -= normal.x;
-					arrays.normalArray[normalOffset+1] -= normal.y;
-					arrays.normalArray[normalOffset+2] -= normal.z;
+					submesh.normalArray[normalOffset]   -= normal.x;
+					submesh.normalArray[normalOffset+1] -= normal.y;
+					submesh.normalArray[normalOffset+2] -= normal.z;
 				}
 			}
 		}
 	}
 
 	// Step 5:	Normalize all the normals in all the normal arrays (except for those which are too close to zero to normalize).
-	for(std::map<int,GLArrays_Ptr>::const_iterator it=m_arraysMap.begin(), iend=m_arraysMap.end(); it!=iend; ++it)
+	for(std::map<int,Submesh_Ptr>::const_iterator it=m_submeshes.begin(), iend=m_submeshes.end(); it!=iend; ++it)
 	{
 		std::vector<double>& normalArray = it->second->normalArray;
 		for(size_t j=0, size=normalArray.size(); j<size; j+=3)
@@ -127,7 +127,23 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 //#################### PUBLIC METHODS ####################
 void MeshRenderer::render() const
 {
-	// TODO
+	// TEMPORARY: This should be replaced with a colour mapping passed in by the caller.
+	std::vector<RGBA32> colours;
+	colours.push_back(ITKImageUtil::make_rgba32(255, 0, 0, 255));
+	colours.push_back(ITKImageUtil::make_rgba32(0, 255, 0, 255));
+	colours.push_back(ITKImageUtil::make_rgba32(0, 0, 255, 255));
+	colours.push_back(ITKImageUtil::make_rgba32(255, 255, 0, 255));
+	colours.push_back(ITKImageUtil::make_rgba32(255, 0, 255, 255));
+	colours.push_back(ITKImageUtil::make_rgba32(0, 255, 255, 255));
+	int n = 0;
+	for(std::map<int,Submesh_Ptr>::const_iterator it=m_submeshes.begin(), iend=m_submeshes.end(); it!=iend; ++it)
+	{
+		if(it->second->enabled)
+		{
+			render_submesh_wireframe(*it->second, colours[n]);
+		}
+		n = (n+1) % colours.size();
+	}
 }
 
 void MeshRenderer::set_wireframe(bool wireframe)
@@ -136,9 +152,27 @@ void MeshRenderer::set_wireframe(bool wireframe)
 }
 
 //#################### PRIVATE METHODS ####################
-void MeshRenderer::render_wireframe() const
+void MeshRenderer::render_submesh_wireframe(const Submesh& submesh, const RGBA32& colour) const
 {
-	// TODO
+	if(submesh.indexArray.empty() || submesh.vertexArray.empty())
+	{
+		// This should never actually happen - I'm just playing it safe.
+		return;
+	}
+
+	glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT);
+	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	glVertexPointer(3, GL_DOUBLE, 0, &submesh.vertexArray[0]);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColor4ub(colour[0], colour[1], colour[2], colour[3]);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(submesh.indexArray.size()), GL_UNSIGNED_INT, &submesh.indexArray[0]);
+
+	glPopClientAttrib();
+	glPopAttrib();
 }
 
 }

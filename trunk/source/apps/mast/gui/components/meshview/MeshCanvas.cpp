@@ -7,11 +7,14 @@
 
 #include <GL/glu.h>
 
+#include <common/visualization/MeshRenderer.h>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshCanvas::MeshCanvas(wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-:	Canvas(parent, context, attribList, id, pos, size, style)
+MeshCanvas::MeshCanvas(const MeshRenderer_Ptr& meshRenderer, wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos,
+					   const wxSize& size, long style)
+:	Canvas(parent, context, attribList, id, pos, size, style), m_meshRenderer(meshRenderer)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -22,7 +25,11 @@ void MeshCanvas::render(wxPaintDC&) const
 	// TEMPORARY: Just to demonstrate that the canvas is working.
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+#if 0
 	gluLookAt(5,-10,5, 0,0,0, 0,0,1);
+#else
+	gluLookAt(16,0,50, 16,16,0, 0,1,0);
+#endif
 
 	glBegin(GL_LINES);
 		glColor3d(1,0,0);
@@ -37,6 +44,8 @@ void MeshCanvas::render(wxPaintDC&) const
 		glVertex3d(0,0,0);
 		glVertex3d(0,0,1);
 	glEnd();
+
+	m_meshRenderer->render();
 }
 
 void MeshCanvas::setup()

@@ -21,6 +21,7 @@
 #include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/util/ITKImageUtil.h>
 #include <common/visualization/MeshBuilder.h>
+#include <common/visualization/MeshRenderer.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/dialogs/VisualizeIn3DDialog.h>
@@ -206,7 +207,7 @@ public:
 			typedef LabelImageCreator<LeafLayer,BranchLayer,Feature> LabelImageCreatorT;
 			LabelImageCreatorT *labelImageCreator = new LabelImageCreatorT(m_multiFeatureSelection);
 
-			MeshBuilder<int> *meshBuilder = new MeshBuilder<int>(m_volumeIPF->volume_size());
+			MeshBuilder<int> *meshBuilder = new MeshBuilder<int>(labelImageCreator->labelling_size());
 			meshBuilder->set_labelling_hook(labelImageCreator->get_labelling_hook());
 
 			// TODO
@@ -217,8 +218,9 @@ public:
 
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{
+				MeshRenderer_Ptr meshRenderer(new MeshRenderer(meshBuilder->get_mesh()));
 				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
-				new VisualizationWindow(parent, caption, context);	// this isn't a memory leak - wxWidgets cleans up the window internally
+				new VisualizationWindow(parent, caption, meshRenderer, context);	// this isn't a memory leak - wxWidgets cleans up the window internally
 			}
 		}
 	}

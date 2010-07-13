@@ -65,9 +65,9 @@ itk::Index<3> make_index(long x, long y, long z)
 	return ret;
 }
 
-itk::RGBAPixel<unsigned char> make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+RGBA32 make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-	itk::RGBAPixel<unsigned char> p;
+	RGBA32 p;
 	p[0] = r, p[1] = g, p[2] = b, p[3] = a;
 	return p;
 }

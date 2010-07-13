@@ -24,6 +24,7 @@ SOURCE_GROUP(.cpp FILES ${sources})
 
 INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/UseOpenGL.cmake)
 
 ###############################
 # Specify the necessary paths #
@@ -44,6 +45,7 @@ INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 TARGET_LINK_LIBRARIES(${targetname} common)
 INCLUDE(${millipede_SOURCE_DIR}/LinkBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/LinkOpenGL.cmake)
 
 #############################
 # Specify things to install #

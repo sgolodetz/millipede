@@ -13,7 +13,7 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-VisualizationWindow::VisualizationWindow(wxWindow *parent, const std::string& title, wxGLContext *context)
+VisualizationWindow::VisualizationWindow(wxWindow *parent, const std::string& title, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context)
 :	wxFrame(parent, wxID_ANY, string_to_wxString(title))
 {
 	SetBackgroundColour(wxColour(240,240,240));
@@ -23,7 +23,7 @@ VisualizationWindow::VisualizationWindow(wxWindow *parent, const std::string& ti
 
 	Show();
 
-	MeshView *view = new MeshView(this, context);
+	MeshView *view = new MeshView(this, meshRenderer, context);
 	sizer->Add(view, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	sizer->Fit(this);

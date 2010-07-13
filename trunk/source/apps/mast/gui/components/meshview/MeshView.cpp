@@ -16,8 +16,8 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshView::MeshView(wxWindow *parent, wxGLContext *context)
-:	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100))
+MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context)
+:	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)), m_meshRenderer(meshRenderer)
 {
 	setup_gui(context);
 	m_canvas->setup();
@@ -61,7 +61,7 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(featureControls, 0, wxALIGN_CENTRE|wxLEFT, BORDER_SIZE);
 
 	// Middle
-	m_canvas = new MeshCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(512,512));
+	m_canvas = new MeshCanvas(m_meshRenderer, this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(512,512));
 	sizer->Add(m_canvas, 0, wxALL, BORDER_SIZE);
 
 	// Middle right
