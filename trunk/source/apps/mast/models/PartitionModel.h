@@ -202,7 +202,6 @@ public:
 
 		std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
 		VisualizationWindow *visualizationWindow = new VisualizationWindow(parent, caption, context);
-		visualizationWindow->Show(true);
 	}
 
 	const VolumeIPF_Ptr& volume_ipf()

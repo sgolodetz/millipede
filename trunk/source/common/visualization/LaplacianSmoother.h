@@ -65,7 +65,14 @@ private:
 	void execute_impl()
 	{
 		Mesh_Ptr mesh = m_meshHook.get();
+		for(int i=0; i<m_iterations; ++i)
+		{
+			iterate(mesh);
+		}
+	}
 
+	void iterate(const Mesh_Ptr& mesh)
+	{
 		// TODO
 	}
 };

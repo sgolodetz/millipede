@@ -12,9 +12,11 @@
 
 #include <wx/frame.h>
 
+//#################### FORWARD DECLARATIONS ####################
+class wxGLContext;
+
 namespace mp {
 
-//#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<const class DICOMDirectory> DICOMDirectory_CPtr;
 struct DICOMVolumeChoice;
 
@@ -22,6 +24,7 @@ class MainWindow : public wxFrame
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
+	wxGLContext *m_context;
 	wxMenuBar *m_menuBar;
 
 	//#################### CONSTRUCTORS ####################

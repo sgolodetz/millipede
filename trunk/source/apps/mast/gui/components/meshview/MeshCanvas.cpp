@@ -18,7 +18,25 @@ MeshCanvas::MeshCanvas(wxWindow *parent, wxGLContext *context, int *attribList, 
 void MeshCanvas::render(wxPaintDC&) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// TODO
+
+	// TEMPORARY: Just to demonstrate that the canvas is working.
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(5,-10,5, 0,0,0, 0,0,1);
+
+	glBegin(GL_LINES);
+		glColor3d(1,0,0);
+		glVertex3d(0,0,0);
+		glVertex3d(1,0,0);
+
+		glColor3d(0,1,0);
+		glVertex3d(0,0,0);
+		glVertex3d(0,1,0);
+
+		glColor3d(0,0,1);
+		glVertex3d(0,0,0);
+		glVertex3d(0,0,1);
+	glEnd();
 }
 
 void MeshCanvas::setup()
