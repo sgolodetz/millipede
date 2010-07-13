@@ -6,7 +6,11 @@
 #ifndef H_MILLIPEDE_VISUALIZEIN3DDIALOG
 #define H_MILLIPEDE_VISUALIZEIN3DDIALOG
 
+#include <boost/optional.hpp>
+
 #include <wx/dialog.h>
+
+#include <common/visualization/VisualizationOptions.h>
 
 //#################### FORWARD DECLARATIONS ####################
 class wxCheckBox;
@@ -20,12 +24,25 @@ private:
 	wxCheckBox *m_laplacianSmoothingCheckBox;
 	wxCheckBox *m_meshDecimationCheckBox;
 
+	boost::optional<VisualizationOptions> m_visualizationOptions;
+
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit VisualizeIn3DDialog(wxWindow *parent);
 
+	//#################### PUBLIC METHODS ####################
+public:
+	const boost::optional<VisualizationOptions>& visualization_options() const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	bool construct_visualization_options();
+
 	//#################### EVENT HANDLERS ####################
 public:
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonOK(wxCommandEvent&);
+
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateLaplacianSmoothingOption(wxUpdateUIEvent& e);
 	void OnUpdateMeshDecimationOption(wxUpdateUIEvent& e);

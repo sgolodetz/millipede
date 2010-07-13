@@ -199,8 +199,7 @@ public:
 		// Display a visualize in 3D dialog to allow the user to choose how the visualization process should work.
 		VisualizeIn3DDialog dialog(parent);
 		dialog.ShowModal();
-
-		if(true)	// TODO
+		if(dialog.visualization_options())
 		{
 			CompositeJob_Ptr job(new CompositeJob);
 

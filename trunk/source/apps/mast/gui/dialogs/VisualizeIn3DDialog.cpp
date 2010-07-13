@@ -110,7 +110,30 @@ VisualizeIn3DDialog::VisualizeIn3DDialog(wxWindow *parent)
 	CentreOnParent();
 }
 
+//#################### PUBLIC METHODS ####################
+const boost::optional<VisualizationOptions>& VisualizeIn3DDialog::visualization_options() const
+{
+	return m_visualizationOptions;
+}
+
+//#################### PRIVATE METHODS ####################
+bool VisualizeIn3DDialog::construct_visualization_options()
+{
+	// TODO: Extract the proper values from the controls.
+	m_visualizationOptions = VisualizationOptions(6, 0.5, 85);
+	return true;
+}
+
 //#################### EVENT HANDLERS ####################
+
+//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+void VisualizeIn3DDialog::OnButtonOK(wxCommandEvent&)
+{
+	if(construct_visualization_options())
+	{
+		Close();
+	}
+}
 
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void VisualizeIn3DDialog::OnUpdateLaplacianSmoothingOption(wxUpdateUIEvent& e)
@@ -125,6 +148,9 @@ void VisualizeIn3DDialog::OnUpdateMeshDecimationOption(wxUpdateUIEvent& e)
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(VisualizeIn3DDialog, wxDialog)
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(wxID_OK, VisualizeIn3DDialog::OnButtonOK)
+
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(SPINID_ITERATIONS, VisualizeIn3DDialog::OnUpdateLaplacianSmoothingOption)
 	EVT_UPDATE_UI(SPINID_REDUCTIONTARGET, VisualizeIn3DDialog::OnUpdateMeshDecimationOption)
