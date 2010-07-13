@@ -22,7 +22,7 @@ class LabelImageCreator : public SimpleJob
 private:
 	typedef itk::Image<int,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
-	typedef typename VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
 	typedef boost::shared_ptr<const VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_CPtr;
