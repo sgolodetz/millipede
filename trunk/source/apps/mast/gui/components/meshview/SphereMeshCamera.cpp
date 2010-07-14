@@ -119,7 +119,6 @@ void SphereMeshCamera::set_inclination(int inclination)
 
 void SphereMeshCamera::use_as_view() const
 {
-	Vector3d at = Vector3d(m_centre);
 	Vector3d up(0,0,-1);
 
 	double A = m_azimuth * MathConstants::PI/180;
@@ -129,9 +128,8 @@ void SphereMeshCamera::use_as_view() const
 	double cosA = cos(A), sinA = sin(A), cosI = cos(I), sinI = sin(I);
 	Vector3d eye(sinA*cosI, cosA*cosI, -sinI);
 	eye *= m_distance;
-	eye += at;
 
-	gluLookAt(eye.x, eye.y, eye.z, at.x, at.y, at.z, up.x, up.y, up.z);
+	gluLookAt(eye.x, eye.y, eye.z, 0.0, 0.0, 0.0, up.x, up.y, up.z);
 }
 
 //#################### PRIVATE METHODS ####################

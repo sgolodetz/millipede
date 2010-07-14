@@ -8,8 +8,8 @@
 #include <GL/glu.h>
 
 #include <common/visualization/MeshRenderer.h>
-#include "MeshCamera.h"
 #include "MeshView.h"
+#include "SphereMeshCamera.h"
 
 namespace mp {
 
@@ -42,6 +42,13 @@ void MeshCanvas::render(wxPaintDC&) const
 		glVertex3d(0,0,0);
 		glVertex3d(0,0,1);
 	glEnd();
+
+	// Translate the mesh so that the camera centre is at the origin, and then scale it in each of the {x,y,z} directions as necessary.
+	// (Note that the order of the transformations appears back to front - this is normal with OpenGL.)
+	const itk::Vector<double,3>& meshScale = m_meshView->m_meshScale;
+	glScaled(meshScale[0], meshScale[1], meshScale[2]);
+	const Vector3i& cameraCentre = m_meshView->m_sphereCamera->centre();
+	glTranslated(-cameraCentre.x, -cameraCentre.y, -cameraCentre.z);
 
 	// Render the mesh itself.
 	m_meshView->m_meshRenderer->render();

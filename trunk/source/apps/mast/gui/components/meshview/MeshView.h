@@ -8,6 +8,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <itkVector.h>
+
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
 
@@ -33,6 +35,7 @@ private:
 	MeshCamera_Ptr m_camera;
 	MeshCanvas *m_canvas;
 	MeshRenderer_Ptr m_meshRenderer;
+	itk::Vector<double,3> m_meshScale;
 	SphereMeshCamera_Ptr m_sphereCamera;
 
 	wxSlider *m_azimuthSlider;
@@ -44,7 +47,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context = NULL);
+	explicit MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, const itk::Vector<double,3>& meshScale, wxGLContext *context = NULL);
 
 	//#################### PRIVATE METHODS ####################
 private:

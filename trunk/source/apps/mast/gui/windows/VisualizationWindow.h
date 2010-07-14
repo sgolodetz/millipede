@@ -10,6 +10,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <itkVector.h>
+
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 
@@ -26,7 +28,7 @@ class VisualizationWindow : public wxFrame
 {
 	//#################### CONSTRUCTORS ####################
 public:
-	VisualizationWindow(wxWindow *parent, const std::string& title, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context = NULL);
+	VisualizationWindow(wxWindow *parent, const std::string& title, const MeshRenderer_Ptr& meshRenderer, const itk::Vector<double,3>& meshScale, wxGLContext *context = NULL);
 };
 
 }

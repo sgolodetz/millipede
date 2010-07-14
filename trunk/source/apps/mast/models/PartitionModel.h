@@ -220,7 +220,9 @@ public:
 			{
 				MeshRenderer_Ptr meshRenderer(new MeshRenderer(meshBuilder->get_mesh()));
 				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
-				new VisualizationWindow(parent, caption, meshRenderer, context);	// this isn't a memory leak - wxWidgets cleans up the window internally
+
+				// Note: This isn't a memory leak - wxWidgets cleans up the window internally.
+				new VisualizationWindow(parent, caption, meshRenderer, m_dicomVolume->spacing(), context);
 			}
 		}
 	}
