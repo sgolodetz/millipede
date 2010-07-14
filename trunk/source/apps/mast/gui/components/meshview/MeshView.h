@@ -31,6 +31,10 @@ private:
 	MeshRenderer_Ptr m_meshRenderer;
 	SphereMeshCamera_Ptr m_sphereCamera;
 
+	wxSlider *m_azimuthSlider;
+	wxSlider *m_distanceSlider;
+	wxSlider *m_inclinationSlider;
+
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context = NULL);
@@ -38,6 +42,15 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void setup_gui(wxGLContext *context);
+
+	//#################### EVENT HANDLERS ####################
+public:
+	void OnSliderAzimuth(wxScrollEvent&);
+	void OnSliderDistance(wxScrollEvent&);
+	void OnSliderInclination(wxScrollEvent&);
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
 
 }

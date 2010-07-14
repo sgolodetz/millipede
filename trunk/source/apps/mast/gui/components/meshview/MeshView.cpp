@@ -14,6 +14,19 @@
 #include "MeshCanvas.h"
 #include "SphereMeshCamera.h"
 
+namespace {
+
+//#################### LOCAL CONSTANTS ####################
+enum
+{
+	ID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	SLIDERID_AZIMUTH,
+	SLIDERID_DISTANCE,
+	SLIDERID_INCLINATION,
+};
+
+}
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -121,17 +134,47 @@ void MeshView::setup_gui(wxGLContext *context)
 		wxFlexGridSizer *eyeControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		eyeControls->SetSizer(eyeControlsSizer);
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Distance:")), 0, wxALIGN_CENTRE_VERTICAL);
-			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, m_sphereCamera->distance(), m_sphereCamera->min_distance(), m_sphereCamera->max_distance(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			m_distanceSlider = new wxSlider(eyeControls, SLIDERID_DISTANCE, m_sphereCamera->distance(), m_sphereCamera->min_distance(), m_sphereCamera->max_distance(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			eyeControlsSizer->Add(m_distanceSlider);
 
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Azimuth:")), 0, wxALIGN_CENTRE_VERTICAL);
-			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, -179, 180, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			m_azimuthSlider = new wxSlider(eyeControls, SLIDERID_AZIMUTH, m_sphereCamera->azimuth(), -179, 180, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			eyeControlsSizer->Add(m_azimuthSlider);
 
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Inclination:")), 0, wxALIGN_CENTRE_VERTICAL);
-			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, -89, 89, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			m_inclinationSlider = new wxSlider(eyeControls, SLIDERID_INCLINATION, m_sphereCamera->inclination(), -89, 89, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			eyeControlsSizer->Add(m_inclinationSlider);
 		cameraControlsSizer->Add(eyeControls);
 	sizer->Add(cameraControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxBOTTOM, BORDER_SIZE);
 
 	sizer->Fit(this);
 }
+
+//#################### EVENT HANDLERS ####################
+void MeshView::OnSliderAzimuth(wxScrollEvent&)
+{
+	m_sphereCamera->set_azimuth(m_azimuthSlider->GetValue());
+	m_canvas->Refresh();	// TEMPORARY
+}
+
+void MeshView::OnSliderDistance(wxScrollEvent&)
+{
+	m_sphereCamera->set_distance(m_distanceSlider->GetValue());
+	m_canvas->Refresh();	// TEMPORARY
+}
+
+void MeshView::OnSliderInclination(wxScrollEvent&)
+{
+	m_sphereCamera->set_inclination(m_inclinationSlider->GetValue());
+	m_canvas->Refresh();	// TEMPORARY
+}
+
+//#################### EVENT TABLE ####################
+BEGIN_EVENT_TABLE(MeshView, wxPanel)
+	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
+	EVT_COMMAND_SCROLL(SLIDERID_AZIMUTH, MeshView::OnSliderAzimuth)
+	EVT_COMMAND_SCROLL(SLIDERID_DISTANCE, MeshView::OnSliderDistance)
+	EVT_COMMAND_SCROLL(SLIDERID_INCLINATION, MeshView::OnSliderInclination)
+END_EVENT_TABLE()
 
 }
