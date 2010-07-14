@@ -125,32 +125,9 @@ private:
 		TypedNodeLoopList typedNodeLoops = find_typed_node_loops();
 		MeshTriangleList triangles = triangulate_typed_node_loops(typedNodeLoops);
 		ensure_consistent_triangle_orientation(triangles);
-		fill_in_adjacent_nodes_from(triangles);
 
 		// Splice the triangles onto the global triangle list.
 		m_triangles.splice(m_triangles.end(), triangles);
-	}
-
-	/**
-	@brief	Ensures that the adjacent node sets for each node reflect the new edges which have been added during triangulation.
-
-	@param[in]	triangles	The triangles that have been generated
-	*/
-	void fill_in_adjacent_nodes_from(const MeshTriangleList& triangles)
-	{
-		GlobalNodeTableT& globalNodeTable = m_data->global_node_table();
-
-		for(typename MeshTriangleList::const_iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
-		{
-			const MeshTriangleT& tri = *it;
-			int i0 = tri.index(0), i1 = tri.index(1), i2 = tri.index(2);
-			MeshNodeT& n0 = globalNodeTable(i0);
-			MeshNodeT& n1 = globalNodeTable(i1);
-			MeshNodeT& n2 = globalNodeTable(i2);
-			n0.add_adjacent_node(i1);		n0.add_adjacent_node(i2);
-			n1.add_adjacent_node(i0);		n1.add_adjacent_node(i2);
-			n2.add_adjacent_node(i0);		n2.add_adjacent_node(i1);
-		}
 	}
 
 	/**

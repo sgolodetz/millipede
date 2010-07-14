@@ -30,10 +30,14 @@ public:
 	typedef itk::Image<Label,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
 private:
+	typedef GlobalNodeTable<Label> GlobalNodeTableT;
 	typedef Mesh<Label> MeshT;
 	typedef boost::shared_ptr<MeshT> Mesh_Ptr;
 	typedef MeshBuildingData<Label> MeshBuildingDataT;
 	typedef boost::shared_ptr<MeshBuildingDataT> MeshBuildingData_Ptr;
+	typedef MeshNode<Label> MeshNodeT;
+	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef std::list<MeshTriangleT> MeshTriangleList;
 
 	//#################### JOBS ####################
 private:
@@ -74,6 +78,8 @@ private:
 								spawnee.reset(new Spawnee(data, x, y, z, f));
 							}
 							spawnee->execute();
+
+							if(is_aborted()) return;
 							increment_progress();
 						}
 		}
@@ -114,6 +120,8 @@ private:
 							spawnee.reset(new Spawnee(data, x, y, z));
 						}
 						spawnee->execute();
+
+						if(is_aborted()) return;
 						increment_progress();
 					}
 		}
@@ -127,6 +135,43 @@ private:
 		{
 			boost::mutex::scoped_lock lock(mut);
 			return spawnee ? spawnee->status() : "";
+		}
+	};
+
+	/**
+	@brief	The AddTriangleEdgesJob ensures that the adjacent node sets for each node reflect the new edges which have been added during triangulation.
+	*/
+	struct AddTriangleEdgesJob : SimpleJob
+	{
+		MeshBuilder *base;
+
+		explicit AddTriangleEdgesJob(MeshBuilder *base_)
+		:	base(base_)
+		{}
+
+		void execute_impl()
+		{
+			set_status("Adding triangle edges...");
+
+			GlobalNodeTable<Label>& globalNodeTable = base->m_data->global_node_table();
+			const MeshTriangleList& triangles = *base->m_data->triangles();
+
+			for(typename MeshTriangleList::const_iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
+			{
+				const MeshTriangleT& tri = *it;
+				int i0 = tri.index(0), i1 = tri.index(1), i2 = tri.index(2);
+				MeshNodeT& n0 = globalNodeTable(i0);
+				MeshNodeT& n1 = globalNodeTable(i1);
+				MeshNodeT& n2 = globalNodeTable(i2);
+				n0.add_adjacent_node(i1);		n0.add_adjacent_node(i2);
+				n1.add_adjacent_node(i0);		n1.add_adjacent_node(i2);
+				n2.add_adjacent_node(i0);		n2.add_adjacent_node(i1);
+			}
+		}
+
+		int length() const
+		{
+			return 1;
 		}
 	};
 
@@ -186,7 +231,10 @@ public:
 		// Add the spawner for the CubeTriangleGenerator sub-jobs.
 		add_subjob(new ForEachCubeJobSpawner<CubeTriangleGenerator<Label> >(m_data, xSize, ySize, zSize));
 
-		// Add the CreateMesh sub-job.
+		// Add the AddTriangleEdgesJob sub-job.
+		add_subjob(new AddTriangleEdgesJob(this));
+
+		// Add the CreateMeshJob sub-job.
 		add_subjob(new CreateMeshJob(this));
 	}
 
