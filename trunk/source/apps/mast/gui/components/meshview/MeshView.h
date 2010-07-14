@@ -24,6 +24,10 @@ class MeshView : public wxPanel
 	//#################### FRIENDS ####################
 	friend class MeshCanvas;
 
+	//#################### LISTENERS ####################
+private:
+	struct CameraListener;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	MeshCamera_Ptr m_camera;

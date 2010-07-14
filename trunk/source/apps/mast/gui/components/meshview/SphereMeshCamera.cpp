@@ -70,13 +70,23 @@ void SphereMeshCamera::set_azimuth(int azimuth)
 	if(azimuth < -179)		azimuth = -179;
 	else if(azimuth > 180)	azimuth = 180;
 	m_azimuth = azimuth;
+	camera_changed();
 }
 
 void SphereMeshCamera::set_centre(const Vector3i& centre)
 {
-	set_centre_x(centre.x);
-	set_centre_y(centre.y);
-	set_centre_z(centre.z);
+	m_centre = centre;
+
+	if(m_centre.x < m_minCentre.x)		m_centre.x = m_minCentre.x;
+	else if(m_centre.x > m_maxCentre.x)	m_centre.x = m_maxCentre.x;
+
+	if(m_centre.y < m_minCentre.y)		m_centre.y = m_minCentre.y;
+	else if(m_centre.y > m_maxCentre.y)	m_centre.y = m_maxCentre.y;
+
+	if(m_centre.z < m_minCentre.z)		m_centre.z = m_minCentre.z;
+	else if(m_centre.z > m_maxCentre.z)	m_centre.z = m_maxCentre.z;
+
+	camera_changed();
 }
 
 void SphereMeshCamera::set_centre_range(const Vector3i& minCentre, const Vector3i& maxCentre)
@@ -85,32 +95,12 @@ void SphereMeshCamera::set_centre_range(const Vector3i& minCentre, const Vector3
 	set_centre(m_centre);		// enforce the new centre constraints
 }
 
-void SphereMeshCamera::set_centre_x(int centreX)
-{
-	if(centreX < m_minCentre.x)			centreX = m_minCentre.x;
-	else if(centreX > m_maxCentre.x)	centreX = m_maxCentre.x;
-	m_centre.x = centreX;
-}
-
-void SphereMeshCamera::set_centre_y(int centreY)
-{
-	if(centreY < m_minCentre.y)			centreY = m_minCentre.y;
-	else if(centreY > m_maxCentre.y)	centreY = m_maxCentre.y;
-	m_centre.y = centreY;
-}
-
-void SphereMeshCamera::set_centre_z(int centreZ)
-{
-	if(centreZ < m_minCentre.z)			centreZ = m_minCentre.z;
-	else if(centreZ > m_maxCentre.z)	centreZ = m_maxCentre.z;
-	m_centre.z = centreZ;
-}
-
 void SphereMeshCamera::set_distance(unsigned int distance)
 {
 	if(distance < m_minDistance)		distance = m_minDistance;
 	else if(distance > m_maxDistance)	distance = m_maxDistance;
 	m_distance = distance;
+	camera_changed();
 }
 
 void SphereMeshCamera::set_distance_range(unsigned int minDistance, unsigned int maxDistance)
@@ -124,6 +114,7 @@ void SphereMeshCamera::set_inclination(int inclination)
 	if(inclination < -89)		inclination = -89;
 	else if(inclination > 89)	inclination = 89;
 	m_inclination = inclination;
+	camera_changed();
 }
 
 void SphereMeshCamera::use_as_view() const

@@ -29,6 +29,21 @@ enum
 
 namespace mp {
 
+//#################### LISTENERS ####################
+struct MeshView::CameraListener : MeshCamera::Listener
+{
+	MeshView *base;
+
+	explicit CameraListener(MeshView *base_)
+	:	base(base_)
+	{}
+
+	void camera_changed()
+	{
+		base->m_canvas->Refresh();
+	}
+};
+
 //#################### CONSTRUCTORS ####################
 MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)), m_meshRenderer(meshRenderer)
@@ -36,10 +51,13 @@ MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLC
 	m_sphereCamera.reset(new SphereMeshCamera(Vector3i(16,16,0), 30, Vector3i(0,0,0), Vector3i(32,32,32), 1, 50));
 	m_camera = m_sphereCamera;
 
+	// TEMPORARY
 	m_sphereCamera->set_inclination(35);
 
 	setup_gui(context);
 	m_canvas->setup();
+
+	m_camera->add_shared_listener(boost::shared_ptr<CameraListener>(new CameraListener(this)));
 }
 
 //#################### PRIVATE METHODS ####################
@@ -111,7 +129,6 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(new wxPanel(this));
 
 	// Bottom middle
-	// TODO: Get the slider ranges right.
 	wxPanel *cameraControls = new wxPanel(this);
 	wxBoxSizer *cameraControlsSizer = new wxBoxSizer(wxHORIZONTAL);
 	cameraControls->SetSizer(cameraControlsSizer);
@@ -154,19 +171,16 @@ void MeshView::setup_gui(wxGLContext *context)
 void MeshView::OnSliderAzimuth(wxScrollEvent&)
 {
 	m_sphereCamera->set_azimuth(m_azimuthSlider->GetValue());
-	m_canvas->Refresh();	// TEMPORARY
 }
 
 void MeshView::OnSliderDistance(wxScrollEvent&)
 {
 	m_sphereCamera->set_distance(m_distanceSlider->GetValue());
-	m_canvas->Refresh();	// TEMPORARY
 }
 
 void MeshView::OnSliderInclination(wxScrollEvent&)
 {
 	m_sphereCamera->set_inclination(m_inclinationSlider->GetValue());
-	m_canvas->Refresh();	// TEMPORARY
 }
 
 //#################### EVENT TABLE ####################

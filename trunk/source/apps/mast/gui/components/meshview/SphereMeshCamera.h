@@ -42,9 +42,6 @@ public:
 	void set_azimuth(int azimuth);
 	void set_centre(const Vector3i& centre);
 	void set_centre_range(const Vector3i& minCentre, const Vector3i& maxCentre);
-	void set_centre_x(int centreX);
-	void set_centre_y(int centreY);
-	void set_centre_z(int centreZ);
 	void set_distance(unsigned int distance);
 	void set_distance_range(unsigned int minDistance, unsigned int maxDistance);
 	void set_inclination(int inclination);
