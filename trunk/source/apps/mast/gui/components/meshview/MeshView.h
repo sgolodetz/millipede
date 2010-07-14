@@ -36,6 +36,9 @@ private:
 	SphereMeshCamera_Ptr m_sphereCamera;
 
 	wxSlider *m_azimuthSlider;
+	wxSlider *m_centreXSlider;
+	wxSlider *m_centreYSlider;
+	wxSlider *m_centreZSlider;
 	wxSlider *m_distanceSlider;
 	wxSlider *m_inclinationSlider;
 
@@ -50,6 +53,9 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	void OnSliderAzimuth(wxScrollEvent&);
+	void OnSliderCentreX(wxScrollEvent&);
+	void OnSliderCentreY(wxScrollEvent&);
+	void OnSliderCentreZ(wxScrollEvent&);
 	void OnSliderDistance(wxScrollEvent&);
 	void OnSliderInclination(wxScrollEvent&);
 
