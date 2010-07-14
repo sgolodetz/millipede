@@ -12,6 +12,7 @@
 #include <wx/stattext.h>
 
 #include "MeshCanvas.h"
+#include "SphereMeshCamera.h"
 
 namespace mp {
 
@@ -19,6 +20,11 @@ namespace mp {
 MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)), m_meshRenderer(meshRenderer)
 {
+	m_sphereCamera.reset(new SphereMeshCamera(Vector3i(16,16,0), 30, Vector3i(0,0,0), Vector3i(32,32,32), 1, 50));
+	m_camera = m_sphereCamera;
+
+	m_sphereCamera->set_inclination(35);
+
 	setup_gui(context);
 	m_canvas->setup();
 }
@@ -61,7 +67,7 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(featureControls, 0, wxALIGN_CENTRE|wxLEFT, BORDER_SIZE);
 
 	// Middle
-	m_canvas = new MeshCanvas(m_meshRenderer, this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(512,512));
+	m_canvas = new MeshCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(512,512));
 	sizer->Add(m_canvas, 0, wxALL, BORDER_SIZE);
 
 	// Middle right
@@ -100,13 +106,13 @@ void MeshView::setup_gui(wxGLContext *context)
 		wxFlexGridSizer *centreControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		centreControls->SetSizer(centreControlsSizer);
 			centreControlsSizer->Add(new wxStaticText(centreControls, wxID_ANY, wxT("Centre X:")), 0, wxALIGN_CENTRE_VERTICAL);
-			centreControlsSizer->Add(new wxSlider(centreControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			centreControlsSizer->Add(new wxSlider(centreControls, wxID_ANY, m_sphereCamera->centre().x, m_sphereCamera->min_centre().x, m_sphereCamera->max_centre().x, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
 
 			centreControlsSizer->Add(new wxStaticText(centreControls, wxID_ANY, wxT("Centre Y:")), 0, wxALIGN_CENTRE_VERTICAL);
-			centreControlsSizer->Add(new wxSlider(centreControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			centreControlsSizer->Add(new wxSlider(centreControls, wxID_ANY, m_sphereCamera->centre().y, m_sphereCamera->min_centre().y, m_sphereCamera->max_centre().y, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
 
 			centreControlsSizer->Add(new wxStaticText(centreControls, wxID_ANY, wxT("Centre Z:")), 0, wxALIGN_CENTRE_VERTICAL);
-			centreControlsSizer->Add(new wxSlider(centreControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			centreControlsSizer->Add(new wxSlider(centreControls, wxID_ANY, m_sphereCamera->centre().z, m_sphereCamera->min_centre().z, m_sphereCamera->max_centre().z, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
 		cameraControlsSizer->Add(centreControls);
 
 		cameraControlsSizer->AddSpacer(30);
@@ -115,13 +121,13 @@ void MeshView::setup_gui(wxGLContext *context)
 		wxFlexGridSizer *eyeControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		eyeControls->SetSizer(eyeControlsSizer);
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Distance:")), 0, wxALIGN_CENTRE_VERTICAL);
-			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, m_sphereCamera->distance(), m_sphereCamera->min_distance(), m_sphereCamera->max_distance(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
 
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Azimuth:")), 0, wxALIGN_CENTRE_VERTICAL);
-			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, 0, 359, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, -179, 180, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
 
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Inclination:")), 0, wxALIGN_CENTRE_VERTICAL);
-			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+			eyeControlsSizer->Add(new wxSlider(eyeControls, wxID_ANY, 0, -89, 89, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
 		cameraControlsSizer->Add(eyeControls);
 	sizer->Add(cameraControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxBOTTOM, BORDER_SIZE);
 

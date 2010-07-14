@@ -8,13 +8,15 @@
 #include <GL/glu.h>
 
 #include <common/visualization/MeshRenderer.h>
+#include "MeshCamera.h"
+#include "MeshView.h"
 
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshCanvas::MeshCanvas(const MeshRenderer_Ptr& meshRenderer, wxWindow *parent, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos,
+MeshCanvas::MeshCanvas(MeshView *meshView, wxGLContext *context, int *attribList, wxWindowID id, const wxPoint& pos,
 					   const wxSize& size, long style)
-:	Canvas(parent, context, attribList, id, pos, size, style), m_meshRenderer(meshRenderer)
+:	Canvas(meshView, context, attribList, id, pos, size, style), m_meshView(meshView)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -24,11 +26,7 @@ void MeshCanvas::render(wxPaintDC&) const
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-#if 0
-	gluLookAt(5,-10,5, 0,0,0, 0,0,1);
-#else
-	gluLookAt(16,32,-50, 16,16,0, 0,0,-1);
-#endif
+	m_meshView->m_camera->use_as_view();
 
 	// Render a set of axes at the origin.
 	glBegin(GL_LINES);
@@ -46,7 +44,7 @@ void MeshCanvas::render(wxPaintDC&) const
 	glEnd();
 
 	// Render the mesh itself.
-	m_meshRenderer->render();
+	m_meshView->m_meshRenderer->render();
 }
 
 void MeshCanvas::setup()

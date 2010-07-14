@@ -15,14 +15,21 @@ namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 class MeshCanvas;
+typedef boost::shared_ptr<class MeshCamera> MeshCamera_Ptr;
 typedef boost::shared_ptr<class MeshRenderer> MeshRenderer_Ptr;
+typedef boost::shared_ptr<class SphereMeshCamera> SphereMeshCamera_Ptr;
 
 class MeshView : public wxPanel
 {
+	//#################### FRIENDS ####################
+	friend class MeshCanvas;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
+	MeshCamera_Ptr m_camera;
 	MeshCanvas *m_canvas;
 	MeshRenderer_Ptr m_meshRenderer;
+	SphereMeshCamera_Ptr m_sphereCamera;
 
 	//#################### CONSTRUCTORS ####################
 public:
