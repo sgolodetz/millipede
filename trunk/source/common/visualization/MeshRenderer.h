@@ -55,6 +55,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void render_submesh_solid(const Submesh& submesh, const RGBA32& colour) const;
 	void render_submesh_wireframe(const Submesh& submesh, const RGBA32& colour) const;
 };
 

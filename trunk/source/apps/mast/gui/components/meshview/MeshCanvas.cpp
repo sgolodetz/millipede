@@ -22,7 +22,6 @@ void MeshCanvas::render(wxPaintDC&) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// TEMPORARY: Just to demonstrate that the canvas is working.
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 #if 0
@@ -31,6 +30,7 @@ void MeshCanvas::render(wxPaintDC&) const
 	gluLookAt(16,32,-50, 16,16,0, 0,0,-1);
 #endif
 
+	// Render a set of axes at the origin.
 	glBegin(GL_LINES);
 		glColor3d(1,0,0);
 		glVertex3d(0,0,0);
@@ -45,6 +45,7 @@ void MeshCanvas::render(wxPaintDC&) const
 		glVertex3d(0,0,1);
 	glEnd();
 
+	// Render the mesh itself.
 	m_meshRenderer->render();
 }
 

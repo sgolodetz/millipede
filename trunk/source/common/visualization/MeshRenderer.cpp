@@ -12,7 +12,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
-:	m_wireframe(true)
+:	m_wireframe(false)
 {
 	const std::vector<MeshNodeT>& nodes = mesh->nodes();
 	const std::list<MeshTriangleT>& triangles = mesh->triangles();
@@ -140,7 +140,8 @@ void MeshRenderer::render() const
 	{
 		if(it->second->enabled)
 		{
-			render_submesh_wireframe(*it->second, colours[n]);
+			if(m_wireframe)	render_submesh_wireframe(*it->second, colours[n]);
+			else			render_submesh_solid(*it->second, colours[n]);
 		}
 		n = (n+1) % colours.size();
 	}
@@ -152,6 +153,43 @@ void MeshRenderer::set_wireframe(bool wireframe)
 }
 
 //#################### PRIVATE METHODS ####################
+void MeshRenderer::render_submesh_solid(const Submesh& submesh, const RGBA32& colour) const
+{
+	if(submesh.indexArray.empty() || submesh.vertexArray.empty())
+	{
+		// This should never actually happen - I'm just playing it safe.
+		return;
+	}
+
+	glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT);
+	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+
+	glVertexPointer(3, GL_DOUBLE, 0, &submesh.vertexArray[0]);
+	glNormalPointer(GL_DOUBLE, 0, &submesh.normalArray[0]);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+	// TODO: Allow the user to specify the lighting.
+	glEnable(GL_LIGHTING);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
+
+	float noAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float whiteDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float position[] = {1.0f, 1.0f, 0.0f, 0.0f};		// actually specifies the direction for a directional light like this one
+   
+	glLightfv(GL_LIGHT0, GL_AMBIENT, noAmbient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glEnable(GL_LIGHT0);
+
+	glColor4ub(colour[0], colour[1], colour[2], colour[3]);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(submesh.indexArray.size()), GL_UNSIGNED_INT, &submesh.indexArray[0]);
+
+	glPopClientAttrib();
+	glPopAttrib();
+}
+
 void MeshRenderer::render_submesh_wireframe(const Submesh& submesh, const RGBA32& colour) const
 {
 	if(submesh.indexArray.empty() || submesh.vertexArray.empty())
