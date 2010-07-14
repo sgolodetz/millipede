@@ -120,7 +120,7 @@ const boost::optional<VisualizationOptions>& VisualizeIn3DDialog::visualization_
 bool VisualizeIn3DDialog::construct_visualization_options()
 {
 	// TODO: Extract the proper values from the controls.
-	m_visualizationOptions = VisualizationOptions(6, 0.5, 85);
+	m_visualizationOptions = VisualizationOptions(m_laplacianSmoothingCheckBox->IsChecked(), 6, 0.5, m_meshDecimationCheckBox->IsChecked(), 85);
 	return true;
 }
 

@@ -43,7 +43,7 @@ void MeshCanvas::render(wxPaintDC&) const
 		glVertex3d(0,0,1);
 	glEnd();
 
-	// Translate the mesh so that the camera centre is at the origin, and then scale it in each of the {x,y,z} directions as necessary.
+	// Translate the mesh so that the sphere camera's centre is at the origin, and then scale it in each of the {x,y,z} directions as necessary.
 	// (Note that the order of the transformations appears back to front - this is normal with OpenGL.)
 	const itk::Vector<double,3>& meshScale = m_meshView->m_meshScale;
 	glScaled(meshScale[0], meshScale[1], meshScale[2]);

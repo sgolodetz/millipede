@@ -20,6 +20,7 @@
 #include <common/segmentation/DICOMLowestLayersBuilder.h>
 #include <common/segmentation/VolumeIPFBuilder.h>
 #include <common/util/ITKImageUtil.h>
+#include <common/visualization/LaplacianSmoother.h>
 #include <common/visualization/MeshBuilder.h>
 #include <common/visualization/MeshRenderer.h>
 #include <mast/gui/dialogs/DialogUtil.h>
@@ -202,22 +203,31 @@ public:
 		dialog.ShowModal();
 		if(dialog.visualization_options())
 		{
+			VisualizationOptions options = *dialog.visualization_options();
+
 			CompositeJob_Ptr job(new CompositeJob);
 
 			typedef LabelImageCreator<LeafLayer,BranchLayer,Feature> LabelImageCreatorT;
 			LabelImageCreatorT *labelImageCreator = new LabelImageCreatorT(m_multiFeatureSelection);
+			job->add_subjob(labelImageCreator);
 
 			MeshBuilder<int> *meshBuilder = new MeshBuilder<int>(labelImageCreator->labelling_size());
 			meshBuilder->set_labelling_hook(labelImageCreator->get_labelling_hook());
-
-			// TODO
-
-			job->add_subjob(labelImageCreator);
 			job->add_subjob(meshBuilder);
-			// TODO
+
+			if(options.laplacianSmoothingEnabled)
+			{
+				LaplacianSmoother<int> *laplacianSmoother = new LaplacianSmoother<int>(options.laplacianSmoothingLambda, options.laplacianSmoothingIterations);
+				laplacianSmoother->set_mesh_hook(meshBuilder->get_mesh_hook());
+				job->add_subjob(laplacianSmoother);
+			}
+
+			// TODO: Mesh decimation.
 
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{
+				// Note:	The mesh in the builder is *shared* with the smoother and decimator (if used), so the mesh we're passing in here
+				//			will have been properly smoothed and decimated where applicable.
 				MeshRenderer_Ptr meshRenderer(new MeshRenderer(meshBuilder->get_mesh()));
 				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
 

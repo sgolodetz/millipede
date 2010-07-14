@@ -6,12 +6,27 @@
 #ifndef H_MILLIPEDE_MESHUTIL
 #define H_MILLIPEDE_MESHUTIL
 
+#include <algorithm>
+
+#include <boost/optional.hpp>
+
 #include <common/math/Plane.h>
 #include "MeshNode.h"
 #include "MeshTriangle.h"
 #include "NodeLoop.h"
 
 namespace mp {
+
+namespace MeshNodeType {
+
+enum Enum
+{
+	SIMPLE,
+	EDGE,
+	CORNER,
+};
+
+}
 
 namespace MeshUtil {
 
@@ -83,6 +98,56 @@ Vector3d calculate_unnormalized_normal(const MeshTriangle<Label>& tri, const std
 	Vector3d a = p[1] - p[0];
 	Vector3d b = p[2] - p[0];
 	return a.cross(b);
+}
+
+/**
+@brief	Determines the type of a mesh node.
+
+@param[in]	i						The index of the node to be classified
+@param[in]	nodes					The master array containing the actual nodes
+@param[out]	laplacianNeighbours		The neighbours of this node to be used for Laplacian smoothing
+@return	The type of the mesh node
+*/
+template <typename Label>
+MeshNodeType::Enum classify_node(int i, const std::vector<MeshNode<Label> >& nodes, boost::optional<std::set<int>&> laplacianNeighbours)
+{
+	MeshNodeType::Enum nodeType = MeshNodeType::SIMPLE;
+
+	if(nodes[i].label_count() == 2)
+	{
+		// This is a simple node.
+		if(laplacianNeighbours)
+		{
+			*laplacianNeighbours = nodes[i].adjacent_nodes();
+		}
+	}
+	else
+	{
+		// Count the number of adjacent nodes with at least the same labels as this one.
+		// Iff it's equal to two, this is an edge node. Otherwise, it's a corner.
+		int edgeCriterion = 0;
+		std::set<int> labels = nodes[i].labels();
+		const std::set<int>& adjacentNodes = nodes[i].adjacent_nodes();
+		for(std::set<int>::const_iterator jt=adjacentNodes.begin(), jend=adjacentNodes.end(); jt!=jend; ++jt)
+		{
+			std::set<int> adjacentLabels = nodes[*jt].labels();
+			std::set<int> commonLabels;
+			std::set_intersection(labels.begin(), labels.end(), adjacentLabels.begin(), adjacentLabels.end(), std::inserter(commonLabels, commonLabels.begin()));
+			if(commonLabels.size() == labels.size())
+			{
+				++edgeCriterion;
+				if(laplacianNeighbours)
+				{
+					laplacianNeighbours->insert(*jt);
+				}
+			}
+		}
+
+		if(edgeCriterion == 2) nodeType = MeshNodeType::EDGE;
+		else nodeType = MeshNodeType::CORNER;
+	}
+
+	return nodeType;
 }
 
 /**

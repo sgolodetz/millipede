@@ -10,6 +10,7 @@
 #include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
 #include "Mesh.h"
+#include "MeshUtil.h"
 
 namespace mp {
 
@@ -20,6 +21,8 @@ class LaplacianSmoother : public SimpleJob
 private:
 	typedef Mesh<Label> MeshT;
 	typedef boost::shared_ptr<MeshT> Mesh_Ptr;
+	typedef MeshNode<Label> MeshNodeT;
+	typedef std::vector<MeshNodeT> MeshNodeVector;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -68,14 +71,50 @@ private:
 		Mesh_Ptr mesh = m_meshHook.get();
 		for(int i=0; i<m_iterations; ++i)
 		{
-			set_status(OSSWrapper() << "Smoothing mesh (" << i << ")...");
+			set_status(OSSWrapper() << "Smoothing mesh (iteration " << i << ")...");
 			iterate(mesh);
 		}
 	}
 
 	void iterate(const Mesh_Ptr& mesh)
 	{
-		// TODO
+		MeshNodeVector& nodes = mesh->nodes();
+		int nodeCount = static_cast<int>(nodes.size());
+
+		// Calculate the new node positions. Note that they have to be stored separately since we need
+		// the old node positions in order to calculate them.
+		std::vector<Vector3d> newPositions(nodeCount);
+		for(int i=0; i<nodeCount; ++i)
+		{
+			newPositions[i] = nodes[i].position();
+
+			std::set<int> neighbours;								// holds the neighbours which might affect a node (depends on the node type)
+			switch(MeshUtil::classify_node(i, nodes, neighbours))	// the type of node affects how the node is allowed to move
+			{
+				case MeshNodeType::SIMPLE:
+				case MeshNodeType::EDGE:
+				{
+					for(std::set<int>::const_iterator jt=neighbours.begin(), jend=neighbours.end(); jt!=jend; ++jt)
+					{
+						Vector3d offset = nodes[*jt].position() - nodes[i].position();
+						offset *= m_lambda / neighbours.size();
+						newPositions[i] += offset;
+					}
+					break;
+				}
+				case MeshNodeType::CORNER:
+				{
+					// Corner nodes are topologically important and must stay fixed.
+					break;
+				}
+			}
+		}
+
+		// Copy them across to the mesh.
+		for(int i=0; i<nodeCount; ++i)
+		{
+			nodes[i].set_position(newPositions[i]);
+		}
 	}
 };
 

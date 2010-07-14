@@ -100,6 +100,11 @@ public:
 		m_adjacentNodes = adjacentNodes;
 	}
 
+	void set_position(const Vector3d& position)
+	{
+		m_position = position;
+	}
+
 	const std::set<SourcedLabel<Label> >& sourced_labels() const
 	{
 		return m_sourcedLabels;
