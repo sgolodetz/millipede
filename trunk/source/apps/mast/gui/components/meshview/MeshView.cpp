@@ -11,6 +11,7 @@
 #include <wx/slider.h>
 #include <wx/stattext.h>
 
+#include <common/visualization/MeshRenderer.h>
 #include "MeshCanvas.h"
 #include "SphereMeshCamera.h"
 
@@ -59,12 +60,7 @@ struct MeshView::CameraListener : MeshCamera::Listener
 MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)), m_meshRenderer(meshRenderer)
 {
-	m_sphereCamera.reset(new SphereMeshCamera(Vector3i(16,16,0), 30, Vector3i(0,0,0), Vector3i(32,32,32), 1, 50));
-	m_camera = m_sphereCamera;
-
-	// TEMPORARY
-	m_sphereCamera->set_inclination(35);
-
+	setup_camera();
 	setup_gui(context);
 	m_canvas->setup();
 
@@ -72,6 +68,36 @@ MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, wxGLC
 }
 
 //#################### PRIVATE METHODS ####################
+void MeshView::setup_camera()
+{
+	Vector3i centre, minCentre, maxCentre;
+	int distance, azimuth, inclination, minDistance, maxDistance;
+
+	if(!m_meshRenderer->mesh_is_empty())
+	{
+		Vector3d lowerBound = m_meshRenderer->mesh_lower_bound(), upperBound = m_meshRenderer->mesh_upper_bound();
+		centre = Vector3i((lowerBound + upperBound) / 2);
+		distance = (NumericUtil::round_to_nearest<int>(upperBound.y) - centre.y) * 2;
+		minCentre = Vector3i(lowerBound);
+		maxCentre = Vector3i(upperBound);
+	}
+	else
+	{
+		centre = Vector3i(0,0,0);
+		distance = 30;
+		minCentre = Vector3i(-10,-10,-10);
+		maxCentre = Vector3i(10,10,10);
+	}
+
+	azimuth = 0;
+	inclination = 0;
+	minDistance = 5;
+	maxDistance = 512;
+
+	m_sphereCamera.reset(new SphereMeshCamera(centre, distance, azimuth, inclination, minCentre, maxCentre, minDistance, maxDistance));
+	m_camera = m_sphereCamera;
+}
+
 void MeshView::setup_gui(wxGLContext *context)
 {
 	const int BORDER_SIZE = 15;

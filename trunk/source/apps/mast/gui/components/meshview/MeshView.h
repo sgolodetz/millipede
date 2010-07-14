@@ -48,6 +48,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void setup_camera();
 	void setup_gui(wxGLContext *context);
 
 	//#################### EVENT HANDLERS ####################

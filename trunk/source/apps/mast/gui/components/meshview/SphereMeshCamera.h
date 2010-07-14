@@ -27,7 +27,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SphereMeshCamera(const Vector3i& centre, unsigned int distance, const Vector3i& minCentre, const Vector3i& maxCentre, unsigned int minDistance, unsigned int maxDistance);
+	SphereMeshCamera(const Vector3i& centre, unsigned int distance, int azimuth, int inclination, const Vector3i& minCentre, const Vector3i& maxCentre, unsigned int minDistance, unsigned int maxDistance);
 
 	//#################### PUBLIC METHODS ####################
 public:

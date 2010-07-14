@@ -29,10 +29,17 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 	}
 
 	// Step 2:	Clone each node for each of its labels, and store the clones in the relevant arrays (keeping a track of where they go).
+	//			Calculate the mesh bounds while we're doing this (it's a convenient place to do it).
+	m_meshLowerBound = Vector3d(INT_MAX, INT_MAX, INT_MAX);
+	m_meshUpperBound = Vector3d(INT_MIN, INT_MIN, INT_MIN);
+
 	std::vector<std::map<int,int> > clonedNodeIndices(nodes.size());
 	for(size_t i=0, size=nodes.size(); i<size; ++i)
 	{
 		const Vector3d& pos = nodes[i].position();
+		m_meshLowerBound.x = std::min(m_meshLowerBound.x, pos.x);	m_meshUpperBound.x = std::max(m_meshUpperBound.x, pos.x);
+		m_meshLowerBound.y = std::min(m_meshLowerBound.y, pos.y);	m_meshUpperBound.y = std::max(m_meshUpperBound.y, pos.y);
+		m_meshLowerBound.z = std::min(m_meshLowerBound.z, pos.z);	m_meshUpperBound.z = std::max(m_meshUpperBound.z, pos.z);
 
 		std::set<int> labels = nodes[i].labels();
 		for(std::set<int>::const_iterator jt=labels.begin(), jend=labels.end(); jt!=jend; ++jt)
@@ -125,6 +132,21 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 }
 
 //#################### PUBLIC METHODS ####################
+bool MeshRenderer::mesh_is_empty() const
+{
+	return m_submeshes.empty();
+}
+
+const Vector3d& MeshRenderer::mesh_lower_bound() const
+{
+	return m_meshLowerBound;
+}
+
+const Vector3d& MeshRenderer::mesh_upper_bound() const
+{
+	return m_meshUpperBound;
+}
+
 void MeshRenderer::render() const
 {
 	// TEMPORARY: This should be replaced with a colour mapping passed in by the caller.

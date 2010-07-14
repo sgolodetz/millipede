@@ -53,7 +53,9 @@ struct Vector3
 	*/
 	template <typename U>
 	explicit Vector3(const Vector3<U>& rhs)
-	:	x(rhs.x), y(rhs.y), z(rhs.z)
+	:	x(NumericUtil::round_to_nearest<T>(rhs.x)),
+		y(NumericUtil::round_to_nearest<T>(rhs.y)),
+		z(NumericUtil::round_to_nearest<T>(rhs.z))
 	{}
 
 	//#################### PUBLIC OPERATORS ####################

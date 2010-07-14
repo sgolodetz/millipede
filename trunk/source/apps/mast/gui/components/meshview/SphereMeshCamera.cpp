@@ -13,11 +13,11 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-SphereMeshCamera::SphereMeshCamera(const Vector3i& centre, unsigned int distance,
-								   const Vector3i& minCentre, const Vector3i& maxCentre,
-								   unsigned int minDistance, unsigned int maxDistance)
-:	m_azimuth(0), m_inclination(0)
+SphereMeshCamera::SphereMeshCamera(const Vector3i& centre, unsigned int distance, int azimuth, int inclination,
+								   const Vector3i& minCentre, const Vector3i& maxCentre, unsigned int minDistance, unsigned int maxDistance)
 {
+	set_azimuth(azimuth);
+	set_inclination(inclination);
 	set_centre_range_impl(minCentre, maxCentre);
 	set_centre(centre);
 	set_distance_range_impl(minDistance, maxDistance);

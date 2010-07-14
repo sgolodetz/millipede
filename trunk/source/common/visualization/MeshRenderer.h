@@ -41,6 +41,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	Vector3d m_meshLowerBound, m_meshUpperBound;
 	std::map<int,Submesh_Ptr> m_submeshes;
 	bool m_wireframe;
 
@@ -50,6 +51,9 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	bool mesh_is_empty() const;
+	const Vector3d& mesh_lower_bound() const;
+	const Vector3d& mesh_upper_bound() const;
 	void render() const;
 	void set_wireframe(bool wireframe);
 
