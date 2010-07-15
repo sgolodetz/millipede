@@ -54,9 +54,19 @@ public:
 private:
 	void add_new_triangles(MeshTriangleList& tris, const Mesh_Ptr& mesh)
 	{
-		// Update the adjacent triangles map to reflect the new triangles we're adding.
+		MeshNodeVector& nodes = mesh->nodes();
 		for(typename MeshTriangleList::const_iterator it=tris.begin(), iend=tris.end(); it!=iend; ++it)
 		{
+			// Add any new edges introduced by this triangle.
+			int i0 = it->index(0), i1 = it->index(1), i2 = it->index(2);
+			MeshNodeT& n0 = nodes[i0];
+			MeshNodeT& n1 = nodes[i1];
+			MeshNodeT& n2 = nodes[i2];
+			n0.add_adjacent_node(i1);	n0.add_adjacent_node(i2);
+			n1.add_adjacent_node(i0);	n1.add_adjacent_node(i2);
+			n2.add_adjacent_node(i0);	n2.add_adjacent_node(i1);
+
+			// Update the adjacent triangles map.
 			for(int j=0; j<3; ++j)
 			{
 				m_adjacentTriangleMap[it->index(j)].insert(*it);
@@ -148,29 +158,7 @@ private:
 				MeshNodeT& n = nodes[index];
 				trisRemoved += n.adjacent_node_count() - triCount;
 
-				// Invalidate the node and remove references to it from the surrounding nodes.
-				n.invalidate();
-				for(std::set<int>::const_iterator it=n.adjacent_nodes().begin(), iend=n.adjacent_nodes().end(); it!=iend; ++it)
-				{
-					nodes[*it].remove_adjacent_node(index);
-				}
-
-				// Remove the triangles which were surrounding the now invalidated node.
-				remove_old_adjacent_triangles(index, mesh);
-
-				// Add any new edges introduced by the retriangulation.
-				for(typename MeshTriangleList::const_iterator it=tris.begin(), iend=tris.end(); it!=iend; ++it)
-				{
-					int i0 = it->index(0), i1 = it->index(1), i2 = it->index(2);
-					MeshNodeT& n0 = nodes[i0];
-					MeshNodeT& n1 = nodes[i1];
-					MeshNodeT& n2 = nodes[i2];
-					n0.add_adjacent_node(i1);	n0.add_adjacent_node(i2);
-					n1.add_adjacent_node(i0);	n1.add_adjacent_node(i2);
-					n2.add_adjacent_node(i0);	n2.add_adjacent_node(i1);
-				}
-
-				// Add the new triangles to the mesh.
+				remove_decimated_node(index, mesh);
 				add_new_triangles(tris, mesh);
 
 				// Recalculate the metrics for the surrounding nodes and update their keys in the priority queue.
@@ -233,11 +221,20 @@ private:
 		}
 	}
 
-	void remove_old_adjacent_triangles(int n, const Mesh_Ptr& mesh)
+	void remove_decimated_node(int index, const Mesh_Ptr& mesh)
 	{
-		// Remove the old adjacent triangles around node n from the adjacent triangles map (but leave them in the main list,
-		// as it's too costly to remove them at this stage and we can do it at the end).
-		MeshTriangleSet adjacentTriangles = m_adjacentTriangleMap.find(n)->second;
+		// Invalidate the node and remove references to it from the surrounding nodes.
+		MeshNodeVector& nodes = mesh->nodes();
+		MeshNodeT& n = nodes[index];
+		n.invalidate();
+		for(std::set<int>::const_iterator it=n.adjacent_nodes().begin(), iend=n.adjacent_nodes().end(); it!=iend; ++it)
+		{
+			nodes[*it].remove_adjacent_node(index);
+		}
+
+		// Remove the old adjacent triangles around the decimated node from the adjacent triangles map (but leave them
+		// in the main list, as it's too costly to remove them at this stage and we can do it at the end).
+		MeshTriangleSet adjacentTriangles = m_adjacentTriangleMap.find(index)->second;
 		for(typename MeshTriangleSet::const_iterator it=adjacentTriangles.begin(), iend=adjacentTriangles.end(); it!=iend; ++it)
 		{
 			for(int j=0; j<3; ++j)
