@@ -21,6 +21,7 @@ namespace {
 enum
 {
 	ID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	CHECKBOXID_WIREFRAME,
 	SLIDERID_AZIMUTH,
 	SLIDERID_CENTRE_X,
 	SLIDERID_CENTRE_Y,
@@ -120,8 +121,8 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(new wxPanel(this));
 
 	// Top middle
-	wxButton *updateButton = new wxButton(this, wxID_ANY, wxT("Update Mesh..."));
-	sizer->Add(updateButton, 0, wxALIGN_CENTRE_HORIZONTAL|wxTOP, BORDER_SIZE);
+	wxCheckBox *wireframeCheckBox = new wxCheckBox(this, CHECKBOXID_WIREFRAME, wxT("Enable Wireframe"));
+	sizer->Add(wireframeCheckBox, 0, wxALIGN_CENTRE_HORIZONTAL|wxTOP, BORDER_SIZE);
 
 	// Top right
 	sizer->Add(new wxPanel(this));
@@ -208,6 +209,15 @@ void MeshView::setup_gui(wxGLContext *context)
 }
 
 //#################### EVENT HANDLERS ####################
+
+//~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+void MeshView::OnCheckBoxWireframe(wxCommandEvent& e)
+{
+	m_meshRenderer->set_wireframe(e.IsChecked());
+	m_canvas->Refresh();
+}
+
+//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void MeshView::OnSliderAzimuth(wxScrollEvent&)
 {
 	m_sphereCamera->set_azimuth(m_azimuthSlider->GetValue());
@@ -246,6 +256,9 @@ void MeshView::OnSliderInclination(wxScrollEvent&)
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(MeshView, wxPanel)
+	//~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+	EVT_CHECKBOX(CHECKBOXID_WIREFRAME, MeshView::OnCheckBoxWireframe)
+
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	EVT_COMMAND_SCROLL(SLIDERID_AZIMUTH, MeshView::OnSliderAzimuth)
 	EVT_COMMAND_SCROLL(SLIDERID_CENTRE_X, MeshView::OnSliderCentreX)

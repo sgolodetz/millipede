@@ -58,6 +58,10 @@ private:
 
 	//#################### EVENT HANDLERS ####################
 public:
+	//~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+	void OnCheckBoxWireframe(wxCommandEvent& e);
+
+	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	void OnSliderAzimuth(wxScrollEvent&);
 	void OnSliderCentreX(wxScrollEvent&);
 	void OnSliderCentreY(wxScrollEvent&);
