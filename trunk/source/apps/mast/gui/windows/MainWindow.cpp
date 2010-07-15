@@ -47,7 +47,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 MainWindow::MainWindow(const std::string& title)
-:	wxFrame(NULL, wxID_ANY, string_to_wxString(title)), m_context(NULL)
+:	wxFrame(NULL, wxID_ANY, string_to_wxString(title))
 {
 	setup_menus();
 	setup_gui();
@@ -84,8 +84,7 @@ void MainWindow::load_volume(const DICOMDirectory_CPtr& dicomdir, const DICOMVol
 
 		// Create a window for the user to interact with the new model.
 		std::string caption = "MAST Segmentation - " + loader->volume_choice().description() + " - Untitled";
-		SegmentationWindow *segmentationWindow = new SegmentationWindow(this, caption, model, m_context);
-		if(m_context == NULL) m_context = segmentationWindow->get_context();
+		new SegmentationWindow(this, caption, model);
 	}
 }
 

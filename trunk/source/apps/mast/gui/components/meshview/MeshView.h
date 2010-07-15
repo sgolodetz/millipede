@@ -13,9 +13,11 @@
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
 
+//#################### FORWARD DECLARATIONS ####################
+class wxSlider;
+
 namespace mp {
 
-//#################### FORWARD DECLARATIONS ####################
 class MeshCanvas;
 typedef boost::shared_ptr<class MeshCamera> MeshCamera_Ptr;
 typedef boost::shared_ptr<class MeshRenderer> MeshRenderer_Ptr;
