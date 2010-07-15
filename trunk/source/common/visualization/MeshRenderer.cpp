@@ -11,9 +11,11 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
-:	m_wireframe(false)
+MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh, const boost::optional<std::map<std::string,int> >& submeshNameMap)
+:	m_wireframeEnabled(false)
 {
+	if(submeshNameMap) m_submeshNameMap = *submeshNameMap;
+
 	const std::vector<MeshNodeT>& nodes = mesh->nodes();
 	const std::list<MeshTriangleT>& triangles = mesh->triangles();
 
@@ -132,6 +134,15 @@ MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh)
 }
 
 //#################### PUBLIC METHODS ####################
+bool MeshRenderer::has_submesh(const std::string& submeshName) const
+{
+	std::map<std::string,int>::const_iterator it = m_submeshNameMap.find(submeshName);
+	if(it == m_submeshNameMap.end()) return false;
+
+	std::map<int,Submesh_Ptr>::const_iterator jt = m_submeshes.find(it->second);
+	return jt != m_submeshes.end();
+}
+
 bool MeshRenderer::mesh_is_empty() const
 {
 	return m_submeshes.empty();
@@ -162,16 +173,49 @@ void MeshRenderer::render() const
 	{
 		if(it->second->enabled)
 		{
-			if(m_wireframe)	render_submesh_wireframe(*it->second, colours[n]);
-			else			render_submesh_solid(*it->second, colours[n]);
+			if(m_wireframeEnabled)	render_submesh_wireframe(*it->second, colours[n]);
+			else					render_submesh_solid(*it->second, colours[n]);
 		}
 		n = (n+1) % colours.size();
 	}
 }
 
-void MeshRenderer::set_wireframe(bool wireframe)
+void MeshRenderer::set_submesh_enabled(const std::string& submeshName, bool submeshEnabled)
 {
-	m_wireframe = wireframe;
+	std::map<std::string,int>::const_iterator it = m_submeshNameMap.find(submeshName);
+	if(it == m_submeshNameMap.end()) return;
+
+	std::map<int,Submesh_Ptr>::const_iterator jt = m_submeshes.find(it->second);
+	if(jt == m_submeshes.end()) return;
+
+	jt->second->enabled = submeshEnabled;
+}
+
+void MeshRenderer::set_wireframe_enabled(bool wireframeEnabled)
+{
+	m_wireframeEnabled = wireframeEnabled;
+}
+
+bool MeshRenderer::submesh_enabled(const std::string& submeshName) const
+{
+	std::map<std::string,int>::const_iterator it = m_submeshNameMap.find(submeshName);
+	if(it == m_submeshNameMap.end()) return false;
+
+	std::map<int,Submesh_Ptr>::const_iterator jt = m_submeshes.find(it->second);
+	if(jt == m_submeshes.end()) return false;
+
+	return jt->second->enabled;
+}
+
+std::vector<std::string> MeshRenderer::submesh_names() const
+{
+	std::vector<std::string> names;
+	names.reserve(m_submeshNameMap.size());
+	for(std::map<std::string,int>::const_iterator it=m_submeshNameMap.begin(), iend=m_submeshNameMap.end(); it!=iend; ++it)
+	{
+		names.push_back(it->first);
+	}
+	return names;
 }
 
 //#################### PRIVATE METHODS ####################

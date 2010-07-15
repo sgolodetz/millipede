@@ -226,12 +226,21 @@ public:
 
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{
+				std::vector<Feature> features = enum_values<Feature>();
+				std::map<std::string,int> submeshNameMap;
+				submeshNameMap.insert(std::make_pair("Internals", 0));
+				for(int i=0, size=static_cast<int>(features.size()); i<size; ++i)
+				{
+					submeshNameMap.insert(std::make_pair(feature_name(features[i]), feature_to_int(i)));
+				}
+
 				// Note:	The mesh in the builder is *shared* with the smoother and decimator (if used), so the mesh we're passing in here
 				//			will have been properly smoothed and decimated where applicable.
-				MeshRenderer_Ptr meshRenderer(new MeshRenderer(meshBuilder->get_mesh()));
-				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
+				MeshRenderer_Ptr meshRenderer(new MeshRenderer(meshBuilder->get_mesh(), submeshNameMap));
+				meshRenderer->set_submesh_enabled("Internals", false);
 
-				// Note: This isn't a memory leak - wxWidgets cleans up the window internally.
+				// Note: There isn't a memory leak - wxWidgets cleans up the window internally.
+				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
 				new VisualizationWindow(parent, caption, meshRenderer, m_dicomVolume->spacing(), context);
 			}
 		}

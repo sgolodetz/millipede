@@ -15,6 +15,13 @@
 
 namespace mp {
 
+template <typename Feature>
+int feature_to_int(const Feature& feature)
+{
+	// Note: This obviously won't work for all feature types, but it will be fine for enums.
+	return feature + 1;
+}
+
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class LabelImageCreator : public SimpleJob
 {
@@ -86,7 +93,7 @@ private:
 						std::vector<Feature> features = m_multiFeatureSelection->features_of(n);
 
 						// Assume that (a) features can be mapped straightforwardly to ints and (b) the first feature is the most important.
-						int value = !features.empty() ? features[0] + 1 : 0;
+						int value = !features.empty() ? feature_to_int(features[0]) : 0;
 						labelling->SetPixel(index, value);
 					}
 					else

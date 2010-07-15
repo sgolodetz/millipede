@@ -59,6 +59,7 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+	void OnCheckBoxSubmesh(wxCommandEvent& e);
 	void OnCheckBoxWireframe(wxCommandEvent& e);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~

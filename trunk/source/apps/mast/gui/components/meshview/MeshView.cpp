@@ -12,6 +12,7 @@
 #include <wx/stattext.h>
 
 #include <common/visualization/MeshRenderer.h>
+#include <mast/util/StringConversion.h>
 #include "MeshCanvas.h"
 #include "SphereMeshCamera.h"
 
@@ -21,6 +22,7 @@ namespace {
 enum
 {
 	ID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	CHECKBOXID_SUBMESH,
 	CHECKBOXID_WIREFRAME,
 	SLIDERID_AZIMUTH,
 	SLIDERID_CENTRE_X,
@@ -128,12 +130,21 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(new wxPanel(this));
 
 	// Middle left
-	// TODO: Add checkboxes for all the features (via enumeration, not hard-coding!).
-	wxPanel *featureControls = new wxPanel(this);
-	wxBoxSizer *featureControlsSizer = new wxBoxSizer(wxVERTICAL);
-	featureControls->SetSizer(featureControlsSizer);
-		featureControlsSizer->Add(new wxCheckBox(featureControls, wxID_ANY, wxT("Kidney")));
-	sizer->Add(featureControls, 0, wxALIGN_CENTRE|wxLEFT, BORDER_SIZE);
+	wxPanel *submeshControls = new wxPanel(this);
+	wxGridSizer *submeshControlsSizer = new wxGridSizer(0, 1, 5, 0);
+	submeshControls->SetSizer(submeshControlsSizer);
+		std::vector<std::string> submeshNames = m_meshRenderer->submesh_names();
+		for(std::vector<std::string>::const_iterator it=submeshNames.begin(), iend=submeshNames.end(); it!=iend; ++it)
+		{
+			if(m_meshRenderer->has_submesh(*it))
+			{
+				wxCheckBox *submeshControl = new wxCheckBox(submeshControls, CHECKBOXID_SUBMESH, string_to_wxString(*it));
+				submeshControl->SetValue(m_meshRenderer->submesh_enabled(*it));
+				submeshControlsSizer->Add(submeshControl);
+			}
+		}
+		Connect(CHECKBOXID_SUBMESH, wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MeshView::OnCheckBoxSubmesh));
+	sizer->Add(submeshControls, 0, wxALIGN_CENTRE|wxLEFT, BORDER_SIZE);
 
 	// Middle
 	m_canvas = new MeshCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(512,512));
@@ -211,9 +222,16 @@ void MeshView::setup_gui(wxGLContext *context)
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+void MeshView::OnCheckBoxSubmesh(wxCommandEvent& e)
+{
+	wxCheckBox *submeshControl = static_cast<wxCheckBox*>(e.GetEventObject());
+	m_meshRenderer->set_submesh_enabled(wxString_to_string(submeshControl->GetLabel()), e.IsChecked());
+	m_canvas->Refresh();
+}
+
 void MeshView::OnCheckBoxWireframe(wxCommandEvent& e)
 {
-	m_meshRenderer->set_wireframe(e.IsChecked());
+	m_meshRenderer->set_wireframe_enabled(e.IsChecked());
 	m_canvas->Refresh();
 }
 

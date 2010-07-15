@@ -7,6 +7,9 @@
 #define H_MILLIPEDE_MESHRENDERER
 
 #include <map>
+#include <string>
+
+#include <boost/optional.hpp>
 
 #include <common/ogl/WrappedGL.h>
 #include <common/util/ITKImageUtil.h>
@@ -42,20 +45,25 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	Vector3d m_meshLowerBound, m_meshUpperBound;
+	std::map<std::string,int> m_submeshNameMap;
 	std::map<int,Submesh_Ptr> m_submeshes;
-	bool m_wireframe;
+	bool m_wireframeEnabled;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit MeshRenderer(const Mesh_CPtr& mesh);
+	explicit MeshRenderer(const Mesh_CPtr& mesh, const boost::optional<std::map<std::string,int> >& submeshNameMap = boost::none);
 
 	//#################### PUBLIC METHODS ####################
 public:
+	bool has_submesh(const std::string& submeshName) const;
 	bool mesh_is_empty() const;
 	const Vector3d& mesh_lower_bound() const;
 	const Vector3d& mesh_upper_bound() const;
 	void render() const;
-	void set_wireframe(bool wireframe);
+	void set_submesh_enabled(const std::string& submeshName, bool submeshEnabled);
+	void set_wireframe_enabled(bool wireframeEnabled);
+	bool submesh_enabled(const std::string& submeshName) const;
+	std::vector<std::string> submesh_names() const;
 
 	//#################### PRIVATE METHODS ####################
 private:
