@@ -5,8 +5,13 @@
 
 #include "VisualizeIn3DDialog.h"
 
+#include <boost/lexical_cast.hpp>
+using boost::bad_lexical_cast;
+using boost::lexical_cast;
+
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/spinctrl.h>
@@ -62,12 +67,12 @@ VisualizeIn3DDialog::VisualizeIn3DDialog(wxWindow *parent)
 	laplacianPanel->SetSizer(laplacianSizer);
 
 	laplacianSizer->Add(new wxStaticText(laplacianPanel, wxID_ANY, wxT("Relaxation Factor:")));
-	wxTextCtrl *relaxationFactor = new wxTextCtrl(laplacianPanel, TEXTID_RELAXATIONFACTOR, wxT("0.5"));
-	laplacianSizer->Add(relaxationFactor);
+	m_laplacianSmoothingRelaxationFactor = new wxTextCtrl(laplacianPanel, TEXTID_RELAXATIONFACTOR, wxT("0.5"));
+	laplacianSizer->Add(m_laplacianSmoothingRelaxationFactor);
 
 	laplacianSizer->Add(new wxStaticText(laplacianPanel, wxID_ANY, wxT("Iterations:")));
-	wxSpinCtrl *iterations = new wxSpinCtrl(laplacianPanel, SPINID_ITERATIONS, wxT("6"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 20, 6);
-	laplacianSizer->Add(iterations);
+	m_laplacianSmoothingIterations = new wxSpinCtrl(laplacianPanel, SPINID_ITERATIONS, wxT("6"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 20, 6);
+	laplacianSizer->Add(m_laplacianSmoothingIterations);
 
 	sizer->AddSpacer(10);
 
@@ -89,8 +94,8 @@ VisualizeIn3DDialog::VisualizeIn3DDialog(wxWindow *parent)
 	meshDecimationPanel->SetSizer(meshDecimationSizer);
 
 	meshDecimationSizer->Add(new wxStaticText(meshDecimationPanel, wxID_ANY, wxT("Reduction Target (%):")));
-	wxSpinCtrl *reductionTarget = new wxSpinCtrl(meshDecimationPanel, SPINID_REDUCTIONTARGET, wxT("85"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 99, 85);
-	meshDecimationSizer->Add(reductionTarget);
+	m_meshDecimationReductionTarget = new wxSpinCtrl(meshDecimationPanel, SPINID_REDUCTIONTARGET, wxT("85"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 99, 85);
+	meshDecimationSizer->Add(m_meshDecimationReductionTarget);
 
 	sizer->AddSpacer(10);
 
@@ -119,8 +124,22 @@ const boost::optional<VisualizationOptions>& VisualizeIn3DDialog::visualization_
 //#################### PRIVATE METHODS ####################
 bool VisualizeIn3DDialog::construct_visualization_options()
 {
-	// TODO: Extract the proper values from the controls.
-	m_visualizationOptions = VisualizationOptions(m_laplacianSmoothingCheckBox->IsChecked(), 6, 0.5, m_meshDecimationCheckBox->IsChecked(), 85);
+	double laplacianSmoothingRelaxationFactor;
+	try
+	{
+		laplacianSmoothingRelaxationFactor = lexical_cast<double>(m_laplacianSmoothingRelaxationFactor->GetValue());
+	}
+	catch(bad_lexical_cast&)
+	{
+		wxMessageBox(wxT("Error: The Laplacian smoothing relaxation factor must be a decimal number."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+		return false;
+	}
+
+	m_visualizationOptions = VisualizationOptions(m_laplacianSmoothingCheckBox->IsChecked(),
+												  m_laplacianSmoothingIterations->GetValue(),
+												  laplacianSmoothingRelaxationFactor,
+												  m_meshDecimationCheckBox->IsChecked(),
+												  m_meshDecimationReductionTarget->GetValue());
 	return true;
 }
 

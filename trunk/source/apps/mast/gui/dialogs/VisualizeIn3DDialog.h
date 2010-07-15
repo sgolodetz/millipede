@@ -14,6 +14,8 @@
 
 //#################### FORWARD DECLARATIONS ####################
 class wxCheckBox;
+class wxSpinCtrl;
+class wxTextCtrl;
 
 namespace mp {
 
@@ -22,7 +24,11 @@ class VisualizeIn3DDialog : public wxDialog
 	//#################### PRIVATE VARIABLES ####################
 private:
 	wxCheckBox *m_laplacianSmoothingCheckBox;
+	wxSpinCtrl *m_laplacianSmoothingIterations;
+	wxTextCtrl *m_laplacianSmoothingRelaxationFactor;
+
 	wxCheckBox *m_meshDecimationCheckBox;
+	wxSpinCtrl *m_meshDecimationReductionTarget;
 
 	boost::optional<VisualizationOptions> m_visualizationOptions;
 
