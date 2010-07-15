@@ -37,6 +37,20 @@ namespace mp {
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionModel
 {
+	//#################### TYPEDEFS ####################
+public:
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
+	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
+	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
+
+	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
+	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
+	typedef boost::shared_ptr<const VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_CPtr;
+
+	typedef VolumeIPFSelection<LeafLayer,BranchLayer> VolumeIPFSelectionT;
+	typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
+	typedef boost::shared_ptr<const VolumeIPFSelectionT> VolumeIPFSelection_CPtr;
+
 	//#################### LISTENERS ####################
 public:
 	struct Listener
@@ -54,19 +68,31 @@ private:
 		}
 	};
 
-	//#################### TYPEDEFS ####################
-public:
-	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
-	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
-	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
+	//#################### JOBS ####################
+private:
+	struct CreateMeshRendererJob : SimpleJob
+	{
+		typedef boost::shared_ptr<Mesh<int> > Mesh_Ptr;
 
-	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
-	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
-	typedef boost::shared_ptr<const VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_CPtr;
+		MeshRenderer_Ptr& meshRenderer;
+		DataHook<Mesh_Ptr> meshHook;
+		std::map<std::string,int> submeshNameMap;
 
-	typedef VolumeIPFSelection<LeafLayer,BranchLayer> VolumeIPFSelectionT;
-	typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
-	typedef boost::shared_ptr<const VolumeIPFSelectionT> VolumeIPFSelection_CPtr;
+		CreateMeshRendererJob(MeshRenderer_Ptr& meshRenderer_, const DataHook<Mesh_Ptr>& meshHook_, const std::map<std::string,int>& submeshNameMap_)
+		:	meshRenderer(meshRenderer_), meshHook(meshHook_), submeshNameMap(submeshNameMap_)
+		{}
+
+		void execute_impl()
+		{
+			set_status("Creating mesh renderer...");
+			meshRenderer.reset(new MeshRenderer(meshHook.get(), submeshNameMap));
+		}
+
+		int length() const
+		{
+			return 100;		// creating the mesh renderer can take substantial time for a large mesh
+		}
+	};
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -202,20 +228,25 @@ public:
 		// Display a visualize in 3D dialog to allow the user to choose how the visualization process should work.
 		VisualizeIn3DDialog dialog(parent);
 		dialog.ShowModal();
+
+		// If the user wants to visualize the model, construct the mesh and display it in a separate window.
 		if(dialog.visualization_options())
 		{
 			VisualizationOptions options = *dialog.visualization_options();
 
 			CompositeJob_Ptr job(new CompositeJob);
 
+			// Set up label image creation.
 			typedef LabelImageCreator<LeafLayer,BranchLayer,Feature> LabelImageCreatorT;
 			LabelImageCreatorT *labelImageCreator = new LabelImageCreatorT(m_multiFeatureSelection);
 			job->add_subjob(labelImageCreator);
 
+			// Set up mesh building.
 			MeshBuilder<int> *meshBuilder = new MeshBuilder<int>(labelImageCreator->labelling_size());
 			meshBuilder->set_labelling_hook(labelImageCreator->get_labelling_hook());
 			job->add_subjob(meshBuilder);
 
+			// Set up Laplacian smoothing if desired.
 			if(options.laplacianSmoothingEnabled)
 			{
 				LaplacianSmoother<int> *laplacianSmoother = new LaplacianSmoother<int>(options.laplacianSmoothingLambda, options.laplacianSmoothingIterations);
@@ -223,6 +254,7 @@ public:
 				job->add_subjob(laplacianSmoother);
 			}
 
+			// Set up mesh decimation if desired.
 			if(options.meshDecimationEnabled)
 			{
 				MeshDecimator<int> *meshDecimator = new MeshDecimator<int>(options.meshDecimationReductionTarget);
@@ -230,23 +262,25 @@ public:
 				job->add_subjob(meshDecimator);
 			}
 
+			// Set up the CreateMeshRendererJob.
+			MeshRenderer_Ptr meshRenderer;
+			std::vector<Feature> features = enum_values<Feature>();
+			std::map<std::string,int> submeshNameMap;
+			submeshNameMap.insert(std::make_pair("Internals", 0));
+			for(int i=0, size=static_cast<int>(features.size()); i<size; ++i)
+			{
+				submeshNameMap.insert(std::make_pair(feature_name(features[i]), feature_to_int(i)));
+			}
+
+			// Note: The mesh in the builder is *shared* with the smoother and decimator (if used), so this mesh hook is the right one.
+			job->add_subjob(new CreateMeshRendererJob(meshRenderer, meshBuilder->get_mesh_hook(), submeshNameMap));
+
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{
-				std::vector<Feature> features = enum_values<Feature>();
-				std::map<std::string,int> submeshNameMap;
-				submeshNameMap.insert(std::make_pair("Internals", 0));
-				for(int i=0, size=static_cast<int>(features.size()); i<size; ++i)
-				{
-					submeshNameMap.insert(std::make_pair(feature_name(features[i]), feature_to_int(i)));
-				}
-
-				// Note:	The mesh in the builder is *shared* with the smoother and decimator (if used), so the mesh we're passing in here
-				//			will have been properly smoothed and decimated where applicable.
-				MeshRenderer_Ptr meshRenderer(new MeshRenderer(meshBuilder->get_mesh(), submeshNameMap));
 				meshRenderer->set_submesh_enabled("Internals", false);
-
-				// Note: There isn't a memory leak - wxWidgets cleans up the window internally.
 				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
+
+				// Note: There isn't a memory leak here - wxWidgets cleans up the window internally.
 				new VisualizationWindow(parent, caption, meshRenderer, m_dicomVolume->spacing(), context);
 			}
 		}

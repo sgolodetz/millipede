@@ -47,7 +47,7 @@ public:
 public:
 	int length() const
 	{
-		return 1;
+		return m_reductionTarget;	// we can't know the actual size of the mesh in advance, so this is as good a value to return here as any
 	}
 
 	//#################### PRIVATE METHODS ####################
