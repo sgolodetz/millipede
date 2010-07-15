@@ -81,7 +81,7 @@ private:
 					if(index[0] != 0 && index[1] != 0 && index[2] != 0 &&
 					   index[0] != size[0]-1 && index[1] != size[1]-1 && index[2] != size[2]-1)
 					{
-						itk::Index<3> position = {{index[0]-1, index[1]-1, index[2]-1}};
+						itk::Index<3> position = {{index[0]-1, (size[1]-2) - index[1], index[2]-1}};	// note the flipped y axis
 						PFNodeID n(0, volumeIPF->leaf_of_position(position));
 						std::vector<Feature> features = m_multiFeatureSelection->features_of(n);
 
