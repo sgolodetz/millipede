@@ -82,7 +82,7 @@ private:
 	{
 		const MeshNodeVector& nodes = mesh->nodes();
 		MeshTriangleList& triangles = mesh->triangles();
-		for(typename MeshTriangleList::const_iterator it=triangles.begin(), iend=triangles.end(); it!=iend; /* no-op */)
+		for(typename MeshTriangleList::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; /* no-op */)
 		{
 			int i0 = it->index(0), i1 = it->index(1), i2 = it->index(2);
 			if(!nodes[i0].valid() || !nodes[i1].valid() || !nodes[i2].valid())
@@ -135,9 +135,9 @@ private:
 
 	void execute_impl()
 	{
-		set_status("Decimating mesh...");
+		this->set_status("Decimating mesh...");
 
-		Mesh_Ptr mesh = get_mesh();
+		Mesh_Ptr mesh = this->get_mesh();
 		construct_adjacent_triangle_map(mesh);
 
 		PriQ pq;
@@ -148,7 +148,7 @@ private:
 
 		while(!pq.empty() && trisRemoved < trisToRemove)
 		{
-			PriQ::Element e = pq.top();
+			typename PriQ::Element e = pq.top();
 			pq.pop();
 			MeshTriangleList tris = e.data()->decimate();
 
@@ -168,7 +168,7 @@ private:
 				{
 					if(pq.contains(*it))
 					{
-						PriQ::Element& adj = pq.element(*it);
+						typename PriQ::Element& adj = pq.element(*it);
 						adj.data()->calculate_details();
 						if(adj.data()->valid()) pq.update_key(*it, adj.data()->metric());
 						else pq.erase(*it);

@@ -44,10 +44,10 @@ public:
 private:
 	void execute_impl()
 	{
-		Mesh_Ptr mesh = get_mesh();
+		Mesh_Ptr mesh = this->get_mesh();
 		for(int i=0; i<m_iterations; ++i)
 		{
-			set_status(OSSWrapper() << "Smoothing mesh (iteration " << i << ")...");
+			this->set_status(OSSWrapper() << "Smoothing mesh (iteration " << i << ")...");
 			iterate(mesh);
 		}
 	}

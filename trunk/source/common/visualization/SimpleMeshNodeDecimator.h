@@ -44,7 +44,7 @@ private:
 		NodeLoopT nodeLoop;		// the loop of nodes surrounding the node in the mesh
 
 		Details(const NodeLoopT& nodeLoop_, double metric_)
-		:	nodeLoop(nodeLoop_), metric(metric_)
+		:	metric(metric_), nodeLoop(nodeLoop_)
 		{}
 	};
 
@@ -121,7 +121,7 @@ private:
 
 		for(std::set<int>::const_iterator it=nodes[m_i].adjacent_nodes().begin(), iend=nodes[m_i].adjacent_nodes().end(); it!=iend; ++it)
 		{
-			std::map<int,AdjacentPair>::iterator jt = table.insert(std::make_pair(*it, AdjacentPair())).first;
+			typename std::map<int,AdjacentPair>::iterator jt = table.insert(std::make_pair(*it, AdjacentPair())).first;
 			std::set_intersection(nodes[*it].adjacent_nodes().begin(), nodes[*it].adjacent_nodes().end(),
 								  nodes[m_i].adjacent_nodes().begin(), nodes[m_i].adjacent_nodes().end(),
 								  std::inserter(jt->second.adjacentNodes, jt->second.adjacentNodes.begin()));
@@ -137,7 +137,7 @@ private:
 
 		// Walk through the table, building up the loop as we go.
 		std::vector<int> nodeIndices;
-		std::map<int,AdjacentPair>::iterator it = table.begin();
+		typename std::map<int,AdjacentPair>::iterator it = table.begin();
 		while(!it->second.adjacentNodes.empty())
 		{
 			const int& cur = it->first;
