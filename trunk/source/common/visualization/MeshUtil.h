@@ -109,7 +109,7 @@ Vector3d calculate_unnormalized_normal(const MeshTriangle<Label>& tri, const std
 @return	The type of the mesh node
 */
 template <typename Label>
-MeshNodeType::Enum classify_node(int i, const std::vector<MeshNode<Label> >& nodes, boost::optional<std::set<int>&> laplacianNeighbours)
+MeshNodeType::Enum classify_node(int i, const std::vector<MeshNode<Label> >& nodes, const boost::optional<std::set<int>&>& laplacianNeighbours = boost::none)
 {
 	MeshNodeType::Enum nodeType = MeshNodeType::SIMPLE;
 

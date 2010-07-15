@@ -294,12 +294,16 @@ visualization/LaplacianSmoother.h
 visualization/Mesh.h
 visualization/MeshBuilder.h
 visualization/MeshBuildingData.h
+visualization/MeshDecimator.h
 visualization/MeshNode.h
+visualization/MeshNodeDecimator.h
 visualization/MeshRenderer.h
+visualization/MeshTransformer.h
 visualization/MeshTriangle.h
 visualization/MeshUtil.h
 visualization/NodeLoop.h
 visualization/SchroederTriangulator.h
+visualization/SimpleMeshNodeDecimator.h
 visualization/SourcedLabel.h
 visualization/VisualizationOptions.h
 )
