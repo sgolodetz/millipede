@@ -63,14 +63,14 @@ VisualizeIn3DDialog::VisualizeIn3DDialog(wxWindow *parent)
 
 	wxPanel *laplacianPanel = new wxPanel(this);
 	laplacianSmoothingOptions->Add(laplacianPanel);
-	wxGridSizer *laplacianSizer = new wxGridSizer(0, 2, 0, 0);
+	wxGridSizer *laplacianSizer = new wxGridSizer(0, 2, 5, 5);
 	laplacianPanel->SetSizer(laplacianSizer);
 
-	laplacianSizer->Add(new wxStaticText(laplacianPanel, wxID_ANY, wxT("Relaxation Factor:")));
+	laplacianSizer->Add(new wxStaticText(laplacianPanel, wxID_ANY, wxT("Relaxation Factor (0-1):")), 0, wxALIGN_CENTRE_VERTICAL);
 	m_laplacianSmoothingRelaxationFactor = new wxTextCtrl(laplacianPanel, TEXTID_RELAXATIONFACTOR, wxT("0.5"));
 	laplacianSizer->Add(m_laplacianSmoothingRelaxationFactor);
 
-	laplacianSizer->Add(new wxStaticText(laplacianPanel, wxID_ANY, wxT("Iterations:")));
+	laplacianSizer->Add(new wxStaticText(laplacianPanel, wxID_ANY, wxT("Iterations:")), 0, wxALIGN_CENTRE_VERTICAL);
 	m_laplacianSmoothingIterations = new wxSpinCtrl(laplacianPanel, SPINID_ITERATIONS, wxT("6"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 20, 6);
 	laplacianSizer->Add(m_laplacianSmoothingIterations);
 
@@ -90,10 +90,10 @@ VisualizeIn3DDialog::VisualizeIn3DDialog(wxWindow *parent)
 
 	wxPanel *meshDecimationPanel = new wxPanel(this);
 	meshDecimationOptions->Add(meshDecimationPanel);
-	wxGridSizer *meshDecimationSizer = new wxGridSizer(0, 2, 0, 0);
+	wxGridSizer *meshDecimationSizer = new wxGridSizer(0, 2, 5, 5);
 	meshDecimationPanel->SetSizer(meshDecimationSizer);
 
-	meshDecimationSizer->Add(new wxStaticText(meshDecimationPanel, wxID_ANY, wxT("Reduction Target (%):")));
+	meshDecimationSizer->Add(new wxStaticText(meshDecimationPanel, wxID_ANY, wxT("Reduction Target (%):")), 0, wxALIGN_CENTRE_VERTICAL);
 	m_meshDecimationReductionTarget = new wxSpinCtrl(meshDecimationPanel, SPINID_REDUCTIONTARGET, wxT("85"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 99, 85);
 	meshDecimationSizer->Add(m_meshDecimationReductionTarget);
 
@@ -124,10 +124,10 @@ const boost::optional<VisualizationOptions>& VisualizeIn3DDialog::visualization_
 //#################### PRIVATE METHODS ####################
 bool VisualizeIn3DDialog::construct_visualization_options()
 {
-	double laplacianSmoothingRelaxationFactor;
+	double lambda;
 	try
 	{
-		laplacianSmoothingRelaxationFactor = lexical_cast<double>(m_laplacianSmoothingRelaxationFactor->GetValue());
+		lambda = lexical_cast<double>(m_laplacianSmoothingRelaxationFactor->GetValue());
 	}
 	catch(bad_lexical_cast&)
 	{
@@ -135,9 +135,15 @@ bool VisualizeIn3DDialog::construct_visualization_options()
 		return false;
 	}
 
+	if(lambda < 0 || lambda > 1)
+	{
+		wxMessageBox(wxT("Error: The Laplacian smoothing relaxation factor must be between 0 and 1."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+		return false;
+	}
+
 	m_visualizationOptions = VisualizationOptions(m_laplacianSmoothingCheckBox->IsChecked(),
 												  m_laplacianSmoothingIterations->GetValue(),
-												  laplacianSmoothingRelaxationFactor,
+												  lambda,
 												  m_meshDecimationCheckBox->IsChecked(),
 												  m_meshDecimationReductionTarget->GetValue());
 	return true;
