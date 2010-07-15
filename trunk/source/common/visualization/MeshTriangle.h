@@ -46,6 +46,11 @@ public:
 	{
 		return m_labels;
 	}
+
+	void set_index(int i, int index)
+	{
+		m_indices[i] = index;
+	}
 };
 
 }

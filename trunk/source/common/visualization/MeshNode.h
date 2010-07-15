@@ -70,6 +70,11 @@ public:
 		return std::includes(ourLabels.begin(), ourLabels.end(), otherLabels.begin(), otherLabels.end());
 	}
 
+	void invalidate()
+	{
+		m_valid = false;
+	}
+
 	int label_count() const
 	{
 		return static_cast<int>(m_sourcedLabels.size());
@@ -108,6 +113,11 @@ public:
 	const std::set<SourcedLabel<Label> >& sourced_labels() const
 	{
 		return m_sourcedLabels;
+	}
+
+	bool valid() const
+	{
+		return m_valid;
 	}
 };
 

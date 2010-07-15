@@ -295,7 +295,7 @@ private:
 		MeshTriangleList triangles;
 
 		FanTriangulator<Label> fanTriangulator(m_data->cube_table().lookup_cube_centre_node(m_x, m_y, m_z));
-		SchroederTriangulator<Label> schroederTriangulator(m_data->global_node_table());
+		SchroederTriangulator<Label> schroederTriangulator(*m_data->global_node_table().master_array());
 
 		for(typename TypedNodeLoopList::const_iterator it=typedNodeLoops.begin(), iend=typedNodeLoops.end(); it!=iend; ++it)
 		{

@@ -9,7 +9,7 @@
 #include <cassert>
 #include <list>
 
-#include "GlobalNodeTable.h"
+#include "MeshNode.h"
 #include "MeshTriangle.h"
 #include "MeshUtil.h"
 
@@ -26,19 +26,20 @@ class SchroederTriangulator
 {
 	//#################### TYPEDEFS ####################
 private:
-	typedef GlobalNodeTable<Label> GlobalNodeTableT;
+	typedef MeshNode<Label> MeshNodeT;
+	typedef std::vector<MeshNodeT> MeshNodeVector;
 	typedef MeshTriangle<Label> MeshTriangleT;
 	typedef NodeLoop<Label> NodeLoopT;
 	typedef std::pair<NodeLoopT,NodeLoopT> Split;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	const GlobalNodeTableT& m_globalNodeTable;
+	const MeshNodeVector& m_nodes;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit SchroederTriangulator(const GlobalNodeTableT& globalNodeTable)
-	:	m_globalNodeTable(globalNodeTable)
+	explicit SchroederTriangulator(const MeshNodeVector& nodes)
+	:	m_nodes(nodes)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -98,8 +99,8 @@ private:
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		// We need to obtain two vectors lying in the plane: one is the split line, the other is the average plane normal.
-		const Vector3d& u = m_globalNodeTable(nodeLoop.index(e0)).position();
-		const Vector3d& v = m_globalNodeTable(nodeLoop.index(e1)).position();
+		const Vector3d& u = m_nodes[nodeLoop.index(e0)].position();
+		const Vector3d& v = m_nodes[nodeLoop.index(e1)].position();
 		Vector3d splitLine = v - u;
 
 		// These two vectors can be used to calculate the split plane normal (provided they're not parallel, which is unlikely
@@ -116,9 +117,9 @@ private:
 		// Step 2:	Check that the two half-polygons are separated by the split plane.
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		PlaneClassification::Enum cp0 = MeshUtil::classify_node_loop_against_plane(split.first, splitPlane, *m_globalNodeTable.master_array());
+		PlaneClassification::Enum cp0 = MeshUtil::classify_node_loop_against_plane(split.first, splitPlane, m_nodes);
 		if(cp0 == PlaneClassification::COPLANAR || cp0 == PlaneClassification::STRADDLE) return std::make_pair(false, 0);
-		PlaneClassification::Enum cp1 = MeshUtil::classify_node_loop_against_plane(split.second, splitPlane, *m_globalNodeTable.master_array());
+		PlaneClassification::Enum cp1 = MeshUtil::classify_node_loop_against_plane(split.second, splitPlane, m_nodes);
 		if(cp1 == PlaneClassification::COPLANAR || cp1 == PlaneClassification::STRADDLE || cp1 == cp0) return std::make_pair(false, 0);
 
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,7 +129,7 @@ private:
 		double minDistance = INT_MAX;
 		for(int i=0, size=nodeLoop.size(); i<size; ++i)
 		{
-			double distance = splitPlane.distance_to_point(m_globalNodeTable(nodeLoop.index(i)).position());
+			double distance = splitPlane.distance_to_point(m_nodes[nodeLoop.index(i)].position());
 			if(distance > MathConstants::SMALL_EPSILON && distance < minDistance) minDistance = distance;
 		}
 
@@ -137,7 +138,7 @@ private:
 
 	Split split_node_loop(const NodeLoopT& nodeLoop) const
 	{
-		Vector3d avgPlaneNormal = MeshUtil::calculate_average_plane(nodeLoop, *m_globalNodeTable.master_array()).normal();
+		Vector3d avgPlaneNormal = MeshUtil::calculate_average_plane(nodeLoop, m_nodes).normal();
 
 		boost::optional<Split> bestSplit;
 		double bestMetric = 0;	// metric values are guaranteed to be +ve and we take the split with the largest metric value

@@ -13,6 +13,7 @@
 #include "MeshNodeDecimator.h"
 #include "MeshUtil.h"
 #include "NodeLoop.h"
+#include "SchroederTriangulator.h"
 
 namespace mp {
 
@@ -26,6 +27,7 @@ private:
 	typedef MeshNode<Label> MeshNodeT;
 	typedef std::vector<MeshNodeT> MeshNodeVector;
 	typedef MeshTriangle<Label> MeshTriangleT;
+	typedef std::list<MeshTriangleT> MeshTriangleList;
 	typedef std::vector<MeshTriangleT> MeshTriangleVector;
 	typedef NodeLoop<Label> NodeLoopT;
 
@@ -77,6 +79,25 @@ public:
 		Plane averagePlane = MeshUtil::calculate_average_plane(*nodeLoop, nodes);
 		double metric = averagePlane.distance_to_point(nodes[m_i].position());
 		m_details = Details(*nodeLoop, metric);
+	}
+
+	MeshTriangleList decimate() const
+	{
+		SchroederTriangulator<Label> triangulator(m_mesh->nodes());
+		try
+		{
+			return triangulator.triangulate(m_details->nodeLoop);
+		}
+		catch(Exception&)
+		{
+			// The decimation of this node could not be completed.
+			return MeshTriangleList();
+		}
+	}
+
+	int index() const
+	{
+		return m_i;
 	}
 
 	double metric() const
