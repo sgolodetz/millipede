@@ -135,6 +135,8 @@ private:
 
 	void execute_impl()
 	{
+		set_status("Decimating mesh...");
+
 		Mesh_Ptr mesh = get_mesh();
 		construct_adjacent_triangle_map(mesh);
 
