@@ -22,6 +22,7 @@
 #include <common/util/ITKImageUtil.h>
 #include <common/visualization/LaplacianSmoother.h>
 #include <common/visualization/MeshBuilder.h>
+#include <common/visualization/MeshDecimator.h>
 #include <common/visualization/MeshRenderer.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
@@ -222,7 +223,12 @@ public:
 				job->add_subjob(laplacianSmoother);
 			}
 
-			// TODO: Mesh decimation.
+			if(options.meshDecimationEnabled)
+			{
+				MeshDecimator<int> *meshDecimator = new MeshDecimator<int>(options.meshDecimationReductionTarget);
+				meshDecimator->set_mesh_hook(meshBuilder->get_mesh_hook());
+				job->add_subjob(meshDecimator);
+			}
 
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{

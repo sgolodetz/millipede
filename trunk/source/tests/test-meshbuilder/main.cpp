@@ -77,7 +77,7 @@ void test_smoothing()
 
 void test_decimation()
 {
-#if 1
+#if 0
 	Label pixels[] = {
 		1,1,1,1,
 		1,1,1,1,
