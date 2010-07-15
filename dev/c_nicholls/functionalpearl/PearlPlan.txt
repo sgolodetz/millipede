@@ -1,0 +1,39 @@
+1 Intro (as per stud conf paper)
+
+2 Aim: to illustrate a simple recursive solution to the segmentation problem
+
+3 Approaches
+
+ 3A Conventionally - it is "very imperative"
+
+ construct MST and consume it from any side
+
+ include refs
+
+ high-level description of waterfall (space permitting)
+
+ 3B FP approach
+
+ single recursive pass (fairly opaque but no special cases for the detail)
+
+
+4 How it works
+
+ MST (only briefly)
+
+ Eliding edges - cases 1 to x
+
+5 Correctness?
+
+(note that there is arbitrary choice about edges of same weight)
+
+
+6 Results
+
+7 Conclusions
+
+ - can be done in pure FP style
+ - clearer to write/code
+ - shorter code and simpler data structures
+
+
