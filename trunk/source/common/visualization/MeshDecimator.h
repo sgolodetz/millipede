@@ -26,10 +26,11 @@ private:
 	typedef std::vector<MeshNodeT> MeshNodeVector;
 	typedef MeshTriangle<Label> MeshTriangleT;
 	typedef std::list<MeshTriangleT> MeshTriangleList;
+	typedef std::set<MeshTriangleT> MeshTriangleSet;
 	typedef PriorityQueue<int, double, MeshNodeDecimator_Ptr> PriQ;
 	typedef SimpleMeshNodeDecimator<Label> SimpleMeshNodeDecimatorT;
 
-	typedef std::map<int,std::vector<MeshTriangleT> > AdjacentTriangleMap;
+	typedef std::map<int,std::set<MeshTriangleT> > AdjacentTriangleMap;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -51,7 +52,23 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void clean_triangle_list(const Mesh_Ptr& mesh) const
+	void add_new_triangles(MeshTriangleList& tris, const Mesh_Ptr& mesh)
+	{
+		// Update the adjacent triangles map to reflect the new triangles we're adding.
+		for(typename MeshTriangleList::const_iterator it=tris.begin(), iend=tris.end(); it!=iend; ++it)
+		{
+			for(int j=0; j<3; ++j)
+			{
+				m_adjacentTriangleMap[it->index(j)].insert(*it);
+			}
+		}
+
+		// Splice the new triangles onto the end of the main triangle list.
+		MeshTriangleList& meshTriangles = mesh->triangles();
+		meshTriangles.splice(meshTriangles.end(), tris);
+	}
+
+	void clean_main_triangle_list(const Mesh_Ptr& mesh) const
 	{
 		const MeshNodeVector& nodes = mesh->nodes();
 		MeshTriangleList& triangles = mesh->triangles();
@@ -73,7 +90,7 @@ private:
 		{
 			for(int j=0; j<3; ++j)
 			{
-				m_adjacentTriangleMap[it->index(j)].push_back(*it);
+				m_adjacentTriangleMap[it->index(j)].insert(*it);
 			}
 		}
 	}
@@ -138,6 +155,9 @@ private:
 					nodes[*it].remove_adjacent_node(index);
 				}
 
+				// Remove the triangles which were surrounding the now invalidated node.
+				remove_old_adjacent_triangles(index, mesh);
+
 				// Add any new edges introduced by the retriangulation.
 				for(typename MeshTriangleList::const_iterator it=tris.begin(), iend=tris.end(); it!=iend; ++it)
 				{
@@ -150,9 +170,8 @@ private:
 					n2.add_adjacent_node(i0);	n2.add_adjacent_node(i1);
 				}
 
-				// Splice the new triangles onto the end of the triangle list.
-				MeshTriangleList& meshTriangles = mesh->triangles();
-				meshTriangles.splice(meshTriangles.end(), tris);
+				// Add the new triangles to the mesh.
+				add_new_triangles(tris, mesh);
 
 				// Recalculate the metrics for the surrounding nodes and update their keys in the priority queue.
 				for(std::set<int>::const_iterator it=n.adjacent_nodes().begin(), iend=n.adjacent_nodes().end(); it!=iend; ++it)
@@ -168,7 +187,7 @@ private:
 			}
 		}
 
-		clean_triangle_list(mesh);
+		clean_main_triangle_list(mesh);
 		rebuild_node_array(mesh);
 	}
 
@@ -210,6 +229,20 @@ private:
 			for(int j=0; j<3; ++j)
 			{
 				it->set_index(j, mapping[it->index(j)]);
+			}
+		}
+	}
+
+	void remove_old_adjacent_triangles(int n, const Mesh_Ptr& mesh)
+	{
+		// Remove the old adjacent triangles around node n from the adjacent triangles map (but leave them in the main list,
+		// as it's too costly to remove them at this stage and we can do it at the end).
+		MeshTriangleSet adjacentTriangles = m_adjacentTriangleMap.find(n)->second;
+		for(typename MeshTriangleSet::const_iterator it=adjacentTriangles.begin(), iend=adjacentTriangles.end(); it!=iend; ++it)
+		{
+			for(int j=0; j<3; ++j)
+			{
+				m_adjacentTriangleMap.find(it->index(j))->second.erase(*it);
 			}
 		}
 	}

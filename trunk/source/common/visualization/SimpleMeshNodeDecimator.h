@@ -28,7 +28,7 @@ private:
 	typedef std::vector<MeshNodeT> MeshNodeVector;
 	typedef MeshTriangle<Label> MeshTriangleT;
 	typedef std::list<MeshTriangleT> MeshTriangleList;
-	typedef std::vector<MeshTriangleT> MeshTriangleVector;
+	typedef std::set<MeshTriangleT> MeshTriangleSet;
 	typedef NodeLoop<Label> NodeLoopT;
 
 	//#################### NESTED CLASSES ####################
@@ -50,14 +50,14 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	const MeshTriangleVector& m_adjacentTriangles;
+	const MeshTriangleSet& m_adjacentTriangles;
 	boost::optional<Details> m_details;
 	int m_i;
 	Mesh_Ptr m_mesh;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SimpleMeshNodeDecimator(int i, const Mesh_Ptr& mesh, const MeshTriangleVector& adjacentTriangles)
+	SimpleMeshNodeDecimator(int i, const Mesh_Ptr& mesh, const MeshTriangleSet& adjacentTriangles)
 	:	m_adjacentTriangles(adjacentTriangles), m_i(i), m_mesh(mesh)
 	{
 		calculate_details();
@@ -158,15 +158,22 @@ private:
 
 		// Find the two other node indices of the first adjacent triangle (in the triangle's winding order).
 		assert(!m_adjacentTriangles.empty());
-		const MeshTriangleT& tri = m_adjacentTriangles[0];
+		const MeshTriangleT& tri = *m_adjacentTriangles.begin();
 		int triIndices[2];
-		int curTriIndex = 0;
-		for(int k=0; k<3 && curTriIndex<2; ++k)
+		if(tri.index(0) == m_i)
 		{
-			if(tri.index(k) != m_i)
-			{
-				triIndices[curTriIndex++] = tri.index(k);
-			}
+			triIndices[0] = tri.index(1);
+			triIndices[1] = tri.index(2);
+		}
+		else if(tri.index(1) == m_i)
+		{
+			triIndices[0] = tri.index(2);
+			triIndices[1] = tri.index(0);
+		}
+		else	// tri.index(2) == m_i
+		{
+			triIndices[0] = tri.index(0);
+			triIndices[1] = tri.index(1);
 		}
 
 		// Walk round the node loop and check that they appear in the same order there - if not, reverse the node loop winding.

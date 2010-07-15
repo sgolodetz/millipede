@@ -30,6 +30,15 @@ public:
 		m_indices[2] = index2;
 	}
 
+	//#################### PUBLIC OPERATORS ####################
+public:
+	bool operator<(const MeshTriangle& rhs) const
+	{
+		return	m_indices[0] < rhs.m_indices[0] ||
+				(m_indices[0] == rhs.m_indices[0] && m_indices[1] < rhs.m_indices[1]) ||
+				(m_indices[0] == rhs.m_indices[0] && m_indices[1] == rhs.m_indices[1] && m_indices[2] < rhs.m_indices[2]);
+	}
+
 	//#################### PUBLIC METHODS ####################
 public:
 	void flip_winding()
