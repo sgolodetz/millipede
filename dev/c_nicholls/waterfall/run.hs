@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall#-}
 import Process(bounds,output,getAdjacencyList,arrayToNode,save,Voxel(Voxel) )
 
-import Waterfall(waterfall)
+import Waterfall(waterfalls,Edge(Edge))
 import Data.Time.Clock(getCurrentTime,diffUTCTime,NominalDiffTime,UTCTime)
 import PGM( pgmsFromFile)
 import System.Environment(getArgs)
@@ -19,18 +19,17 @@ main = do
 
   t2 <- timeSince t1
   putStrLn "Making Tree"
-  (t,1000000000) <- arrayToNode es (-1,-1) (1000000000,(Voxel 0 (0,0)))
+  (Edge 1000000000 t) <- arrayToNode es (-1,-1) (1000000000,(Voxel 0 (0,0)))
 
   t3 <- timeSince t2
-  putStrLn "Doing Waterfall"
+  putStrLn "Doing waterfall, converting output"
   let bs = bounds ar
-  let trees = (take 6 $ tail $ iterate (waterfall)$ t)
+  let trees = take 5 (waterfalls t)
 
-  t4 <- (timeSince t3)
-  putStrLn "Converting output"
-  ars <- mapM (output bs) ( map (flip (,) 1000000000) trees)
 
-  t5 <- timeSince t4
+  ars <- mapM (output bs) ( map (Edge 1000000000) trees)
+
+  t5 <- timeSince t3
   save path 1 (ars)
   _ <- timeSince t5
   putStrLn "Done"

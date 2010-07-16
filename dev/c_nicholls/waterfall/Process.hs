@@ -15,7 +15,7 @@ import qualified Data.Set  as S
 import Data.Array.IO
 import Data.Array.Unboxed       (IArray,  UArray, amap, bounds,  (!)  )
 import Data.Word                ( Word16)
-import Waterfall(Tree(Node),Edge,Mergeable(union,unions),getRegion,getEdges)
+import Waterfall(Edge(..),mkTree , getRegion,getEdges)
 import PGM(arrayToFile)
 
 type Adjacency  = (Int,(Voxel,Voxel))
@@ -47,7 +47,7 @@ neighbours' arr  (a,b) (x,y) (p:ps) =
 
 ---- IO Array Functions ----
 fillIn :: Edge (S.Set (Int,Point)) -> IOUArray Point Int -> IO (IOUArray Point Int)
-fillIn (node,_) ar = do
+fillIn (Edge _ node ) ar = do
   {let rs' = S.toList ((getRegion node))
   ;let x = avg rs'
   ;mapM (\v -> writeArray ar (snd v) x) rs'
@@ -62,7 +62,7 @@ arrayToNode arr miss (n,(Voxel v p))  = do
   ;let ls' = remove miss ls
   ;let ls'' = remove p ls'
   ;es <- mapM  (arrayToNode arr p) ls''
-  ;return $!  ((Node (S.fromList [(v,p)]) es),n)
+  ;return $!  (Edge n (mkTree (S.fromList [(v,p)]) es))
   }
 
 remove :: Point -> [(Int,Voxel)] -> [(Int,Voxel)]
@@ -151,9 +151,6 @@ save path n (a:as) = do
 
 --- Other Functions ---------
 
-instance Ord a => Mergeable (S.Set a) where
-  union = S.union
-  unions = S.unions
 
 freeze' :: ( MArray a Int IO, IArray UArray Int) => a Point Int -> IO (UArray Point Int)
 freeze' = freeze
