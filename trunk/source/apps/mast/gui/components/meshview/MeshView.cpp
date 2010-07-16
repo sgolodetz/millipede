@@ -28,6 +28,7 @@ enum
 	SLIDERID_CENTRE_X,
 	SLIDERID_CENTRE_Y,
 	SLIDERID_CENTRE_Z,
+	SLIDERID_CLIP,
 	SLIDERID_DISTANCE,
 	SLIDERID_INCLINATION,
 };
@@ -151,27 +152,32 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(m_canvas, 0, wxALL, BORDER_SIZE);
 
 	// Middle right
-	// TODO: Get the slider ranges right.
 	wxPanel *clippingControls = new wxPanel(this);
 	wxFlexGridSizer *clippingControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 	clippingControls->SetSizer(clippingControlsSizer);
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("X Clip Lower:")), 0, wxALIGN_CENTRE_VERTICAL);
-		clippingControlsSizer->Add(new wxSlider(clippingControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+		m_clipSliders[0] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().x, m_sphereCamera->min_centre().x, m_sphereCamera->max_centre().x, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		clippingControlsSizer->Add(m_clipSliders[0]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("X Clip Upper:")), 0, wxALIGN_CENTRE_VERTICAL);
-		clippingControlsSizer->Add(new wxSlider(clippingControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+		m_clipSliders[1] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().x, m_sphereCamera->min_centre().x, m_sphereCamera->max_centre().x, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		clippingControlsSizer->Add(m_clipSliders[1]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Y Clip Lower:")), 0, wxALIGN_CENTRE_VERTICAL);
-		clippingControlsSizer->Add(new wxSlider(clippingControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+		m_clipSliders[2] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().y, m_sphereCamera->min_centre().y, m_sphereCamera->max_centre().y, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		clippingControlsSizer->Add(m_clipSliders[2]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Y Clip Upper:")), 0, wxALIGN_CENTRE_VERTICAL);
-		clippingControlsSizer->Add(new wxSlider(clippingControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+		m_clipSliders[3] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().y, m_sphereCamera->min_centre().y, m_sphereCamera->max_centre().y, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		clippingControlsSizer->Add(m_clipSliders[3]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Z Clip Lower:")), 0, wxALIGN_CENTRE_VERTICAL);
-		clippingControlsSizer->Add(new wxSlider(clippingControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+		m_clipSliders[4] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().z, m_sphereCamera->min_centre().z, m_sphereCamera->max_centre().z, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		clippingControlsSizer->Add(m_clipSliders[4]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Z Clip Upper:")), 0, wxALIGN_CENTRE_VERTICAL);
-		clippingControlsSizer->Add(new wxSlider(clippingControls, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP));
+		m_clipSliders[5] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().z, m_sphereCamera->min_centre().z, m_sphereCamera->max_centre().z, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		clippingControlsSizer->Add(m_clipSliders[5]);
 	sizer->Add(clippingControls, 0, wxALIGN_CENTRE|wxRIGHT, BORDER_SIZE);
 
 	// Bottom left
@@ -262,6 +268,11 @@ void MeshView::OnSliderCentreZ(wxScrollEvent&)
 	m_sphereCamera->set_centre(centre);
 }
 
+void MeshView::OnSliderClip(wxScrollEvent&)
+{
+	m_canvas->Refresh();
+}
+
 void MeshView::OnSliderDistance(wxScrollEvent&)
 {
 	m_sphereCamera->set_distance(m_distanceSlider->GetValue());
@@ -282,6 +293,7 @@ BEGIN_EVENT_TABLE(MeshView, wxPanel)
 	EVT_COMMAND_SCROLL(SLIDERID_CENTRE_X, MeshView::OnSliderCentreX)
 	EVT_COMMAND_SCROLL(SLIDERID_CENTRE_Y, MeshView::OnSliderCentreY)
 	EVT_COMMAND_SCROLL(SLIDERID_CENTRE_Z, MeshView::OnSliderCentreZ)
+	EVT_COMMAND_SCROLL(SLIDERID_CLIP, MeshView::OnSliderClip)
 	EVT_COMMAND_SCROLL(SLIDERID_DISTANCE, MeshView::OnSliderDistance)
 	EVT_COMMAND_SCROLL(SLIDERID_INCLINATION, MeshView::OnSliderInclination)
 END_EVENT_TABLE()

@@ -44,6 +44,7 @@ private:
 	wxSlider *m_centreXSlider;
 	wxSlider *m_centreYSlider;
 	wxSlider *m_centreZSlider;
+	wxSlider *m_clipSliders[6];
 	wxSlider *m_distanceSlider;
 	wxSlider *m_inclinationSlider;
 
@@ -67,6 +68,7 @@ public:
 	void OnSliderCentreX(wxScrollEvent&);
 	void OnSliderCentreY(wxScrollEvent&);
 	void OnSliderCentreZ(wxScrollEvent&);
+	void OnSliderClip(wxScrollEvent&);
 	void OnSliderDistance(wxScrollEvent&);
 	void OnSliderInclination(wxScrollEvent&);
 

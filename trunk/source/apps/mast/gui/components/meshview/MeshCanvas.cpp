@@ -7,6 +7,8 @@
 
 #include <GL/glu.h>
 
+#include <wx/slider.h>
+
 #include <common/visualization/MeshRenderer.h>
 #include "MeshView.h"
 #include "SphereMeshCamera.h"
@@ -50,8 +52,22 @@ void MeshCanvas::render(wxPaintDC&) const
 	const Vector3i& cameraCentre = m_meshView->m_sphereCamera->centre();
 	glTranslated(-cameraCentre.x, -cameraCentre.y, -cameraCentre.z);
 
+	glPushAttrib(GL_TRANSFORM_BIT);
+
+	for(int i=0; i<6; ++i)
+	{
+		GLdouble plane[4] = {0.0,};
+		double sign = i%2 ? -1.0 : 1.0;
+		plane[i/2] = sign;
+		plane[3] = m_meshView->m_clipSliders[i]->GetValue() * -sign;
+		glClipPlane(GL_CLIP_PLANE0 + i, plane);
+		glEnable(GL_CLIP_PLANE0 + i);
+	}
+
 	// Render the mesh itself.
 	m_meshView->m_meshRenderer->render();
+
+	glPopAttrib();
 }
 
 void MeshCanvas::setup()
