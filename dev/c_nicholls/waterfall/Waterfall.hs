@@ -22,16 +22,17 @@ waterfall :: Mergeable a =>   Tree a -> Tree a
 waterfall  (Node r []) = Node r []
 waterfall  (Node r ((Edge w child):cs))
   | hasChildren child && minVal child <  w
-               = mergeNodes (waterfall child) (wndm (Node r cs))
-  | otherwise  = mergeNodes (wndm child )     (wndm (Node r cs))
+               = mergeNodes (waterfall child) (wndm (Node r cs))  -- Case 1
+  -- | otherwise  = mergeNodes (wndm child )     (wndm (Node r cs))  -- Case 2
+  | otherwise  = wndm   (mergeNodes child  (Node r cs))   -- Case 2
 
 
 wndm :: Mergeable a =>   Tree a -> Tree a
 wndm  (Node r []) = Node r []
 wndm  (Node r ((Edge w child):cs))
-  | hasChildren child && minVal child <  w
+  | hasChildren child && minVal child <  w  -- Case 3
                = isertAsChild (Edge w (waterfall child)) (wndm (Node r cs))
-  | otherwise  = mergeNodes (wndm child )      (wndm (Node r cs))
+  | otherwise  = mergeNodes (wndm child )      (wndm (Node r cs)) --Case 4
 
 
 
