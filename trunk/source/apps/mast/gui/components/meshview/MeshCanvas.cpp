@@ -54,6 +54,7 @@ void MeshCanvas::render(wxPaintDC&) const
 
 	glPushAttrib(GL_TRANSFORM_BIT);
 
+	// Set up user-defined clip planes to clip away bits of the mesh.
 	for(int i=0; i<6; ++i)
 	{
 		GLdouble plane[4] = {0.0,};
