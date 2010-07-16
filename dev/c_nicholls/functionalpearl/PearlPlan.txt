@@ -21,7 +21,51 @@
 
  MST (only briefly)
 
- Eliding edges - cases 1 to x
+ Eliding edges - cases I to IV
+
+ Case I     parent -> child ->
+
+   Recurse on child first, as there's bound to be a minimum further
+   down, then combine parent with the result of that operation.
+
+ Case II    parent <-> child
+
+   Can't just elide the edge between parent and child and merge the
+   two into one node, because there may be other children of the
+   parent which need to be recursed on separately from the children of
+   the child. (NB Illustrate this on the sample tree.)  Well, after
+   further discussion it seems that we could, in fact, just elide that
+   edge, but we want to think about it more.
+   
+   Use the recurseWithNoDownMerging function, which recurses without
+   looking for a minimum first. (Children can merge up with the
+   current node, but the current node does not attempt to merge down
+   with its children.)
+
+ Case III   parent -> ? (where '?' can be above or below the parent)
+            |
+            child ->
+
+   This is similar to Case I. After recursing there is no need to
+   combine the parent with the result of the recursion on the
+   child. Simply keep in place the edge between the parent and child.
+
+ Case IV    parent -> ? (where '?' can be above or below the parent)
+            ^
+	    |
+            child
+
+    Use the recurseWithNodownMerging but do combine the result
+    afterwards, as in Case II. (This is semantically identical to Case
+    II but is treated separately for clarity of cases considered.)
+
+
+[In the actual paper, consider cases II and III swapped, and explain
+that it's more important what the child "wants" than what the parent
+"wants". No, scrap that.]
+
+Then for each parent iterate through each child...
+   
 
 5 Correctness?
 
