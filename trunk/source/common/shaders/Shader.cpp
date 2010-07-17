@@ -13,26 +13,37 @@
 
 namespace mp {
 
+//#################### HELPER CLASSES ####################
+struct ShaderDeleter
+{
+	void operator()(void *p)
+	{
+		GLuint *id = static_cast<GLuint*>(p);
+		if(glIsShader(*id)) glDeleteShader(*id);
+		delete id;
+	}
+};
+
 //#################### CONSTRUCTORS ####################
 Shader::Shader(const std::string& source, GLenum shaderType)
 {
 	const char *sourceStrings[] = {source.c_str()};
-	m_id = glCreateShader(shaderType);
-	glShaderSource(m_id, 1, sourceStrings, NULL);
+	m_id.reset(new GLuint(glCreateShader(shaderType)), ShaderDeleter());
+	glShaderSource(*m_id, 1, sourceStrings, NULL);
 }
 
 //#################### PUBLIC METHODS ####################
 void Shader::compile()
 {
-	glCompileShader(m_id);
+	glCompileShader(*m_id);
 	int status;
-	glGetShaderiv(m_id, GL_COMPILE_STATUS, &status);
+	glGetShaderiv(*m_id, GL_COMPILE_STATUS, &status);
 	if(status != GL_TRUE) throw Exception("Shader could not be compiled");
 }
 
 GLuint Shader::id() const
 {
-	return m_id;
+	return *m_id;
 }
 
 Shader Shader::load_and_compile_fragment_shader(const std::string& filename)

@@ -6,18 +6,19 @@
 #ifndef H_MILLIPEDE_SHADERPROGRAM
 #define H_MILLIPEDE_SHADERPROGRAM
 
+#include <vector>
+
 #include <common/ogl/WrappedGL.h>
+#include "Shader.h"
 
 namespace mp {
-
-//#################### FORWARD DECLARATIONS ####################
-class Shader;
 
 class ShaderProgram
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	GLuint m_id;
+	boost::shared_ptr<GLuint> m_id;
+	std::vector<Shader> m_shaders;
 
 	//#################### CONSTRUCTORS ####################
 public:

@@ -9,6 +9,8 @@
 #include <iosfwd>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include <common/ogl/WrappedGL.h>
 
 namespace mp {
@@ -17,7 +19,7 @@ class Shader
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	GLuint m_id;
+	boost::shared_ptr<GLuint> m_id;
 
 	//#################### CONSTRUCTORS ####################
 public:
