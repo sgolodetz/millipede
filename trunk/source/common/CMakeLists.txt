@@ -234,6 +234,17 @@ segmentation/watershed/MeijsterRoerdinkWatershed.h
 )
 
 ##
+SET(shaders_sources
+shaders/Shader.cpp
+shaders/ShaderProgram.cpp
+)
+
+SET(shaders_headers
+shaders/Shader.h
+shaders/ShaderProgram.h
+)
+
+##
 SET(slices_sources
 slices/SliceLocation.cpp
 slices/SliceTextureSet.cpp
@@ -332,6 +343,7 @@ ${ogl_c_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
 ${segmentation_sources}
+${shaders_sources}
 ${slices_sources}
 ${textures_sources}
 ${util_sources}
@@ -357,6 +369,7 @@ ${ogl_headers}
 ${segmentation_headers}
 ${segmentation_waterfall_headers}
 ${segmentation_watershed_headers}
+${shaders_headers}
 ${slices_headers}
 ${textures_headers}
 ${util_headers}
@@ -439,6 +452,10 @@ SOURCE_GROUP(segmentation\\waterfall\\.h FILES ${segmentation_waterfall_headers}
 
 ##
 SOURCE_GROUP(segmentation\\watershed\\.h FILES ${segmentation_watershed_headers})
+
+##
+SOURCE_GROUP(shaders\\.cpp FILES ${shaders_sources})
+SOURCE_GROUP(shaders\\.h FILES ${shaders_headers})
 
 ##
 SOURCE_GROUP(slices\\.cpp FILES ${slices_sources})
