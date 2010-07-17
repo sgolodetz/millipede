@@ -10,7 +10,7 @@
 	#include <windows.h>
 #endif
 
-#include <common/GLee/GLee.h>
+#include "GLee.h"
 
 #ifndef __APPLE__
 	#include <GL/gl.h>

@@ -84,15 +84,6 @@ exceptions/FileNotFoundException.h
 )
 
 ##
-SET(GLee_sources
-GLee/GLee.c
-)
-
-SET(GLee_headers
-GLee/GLee.h
-)
-
-##
 SET(io_files_sources
 io/files/DICOMDIRFile.cpp
 io/files/VolumeChoiceFile.cpp
@@ -164,6 +155,16 @@ math/Vector3.h
 )
 
 ##
+SET(ogl_c_sources
+ogl/GLee.c
+)
+
+SET(ogl_headers
+ogl/GLee.h
+ogl/WrappedGL.h
+)
+
+##
 SET(partitionforests_base_sources
 partitionforests/base/PFNodeID.cpp
 )
@@ -204,11 +205,6 @@ partitionforests/images/SimpleRegionProperties.h
 partitionforests/images/VolumeIPF.h
 partitionforests/images/VolumeIPFMultiFeatureSelection.h
 partitionforests/images/VolumeIPFSelection.h
-)
-
-##
-SET(ogl_headers
-ogl/WrappedGL.h
 )
 
 ##
@@ -327,12 +323,12 @@ ${commands_sources}
 ${dicom_directories_sources}
 ${dicom_util_sources}
 ${dicom_volumes_sources}
-${GLee_sources}
 ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
 ${jobs_sources}
 ${math_sources}
+${ogl_c_sources}
 ${partitionforests_base_sources}
 ${partitionforests_images_sources}
 ${segmentation_sources}
@@ -349,7 +345,6 @@ ${dicom_directories_headers}
 ${dicom_util_headers}
 ${dicom_volumes_headers}
 ${exceptions_headers}
-${GLee_headers}
 ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
@@ -400,9 +395,6 @@ SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
 
 ##
-SOURCE_GROUP(GLee FILES ${GLee_sources} ${GLee_headers})
-
-##
 SOURCE_GROUP(io\\files\\.cpp FILES ${io_files_sources})
 SOURCE_GROUP(io\\files\\.h FILES ${io_files_headers})
 
@@ -427,6 +419,7 @@ SOURCE_GROUP(math\\.cpp FILES ${math_sources})
 SOURCE_GROUP(math\\.h FILES ${math_headers})
 
 ##
+SOURCE_GROUP(ogl\\.c FILES ${ogl_c_sources})
 SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
 
 ##
