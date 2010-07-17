@@ -1,5 +1,5 @@
 wxWidgets 2.8.10 Setup Instructions
-Last Updated by Stuart Golodetz on 11/07/10
+Last Updated by Stuart Golodetz on 17/07/10
 -------------------------------------------
 
 1. Extract wxWidgets-2.8.10.tar.gz into the libraries directory.
@@ -35,7 +35,30 @@ Last Updated by Stuart Golodetz on 11/07/10
 
 	On Mac OS X:
 
-	- Do the same as for Linux, but add --with-macosx-sdk=/Developer/SDKs/MacOSX10.5.sdk when configuring in steps (b) and (d).
+	You have to do essentially the same as for Linux, but with some special tweaks:
+
+	1) Add the appropriate SDK when configuring in steps (b) and (d), e.g. for Snow Leopard:
+
+	--with-macosx-sdk=/Developer/SDKs/MacOSX10.6.sdk
+
+	2) On Snow Leopard, you need to explicitly set the architecture to i386, as described here:
+
+	http://wiki.wxwidgets.org/Development:_wxMac#Building_under_10.6_Snow_Leopard
+
+	The key bit is:
+
+	arch_flags="-arch i386"
+	../configure CFLAGS="$arch_flags" CXXFLAGS="$arch_flags" CPPFLAGS="$arch_flags" LDFLAGS="$arch_flags" OBJCFLAGS="$arch_flags" OBJCXXFLAGS="$arch_flags" ...
+
+	For a debug build, then:
+
+	arch_flags="-arch i386"
+	../configure CFLAGS="$arch_flags" CXXFLAGS="$arch_flags" CPPFLAGS="$arch_flags" LDFLAGS="$arch_flags" OBJCFLAGS="$arch_flags" OBJCXXFLAGS="$arch_flags" --enable-debug --disable-shared --with-opengl
+
+	And for a release build:
+
+	arch_flags="-arch i386"
+	../configure CFLAGS="$arch_flags" CXXFLAGS="$arch_flags" CPPFLAGS="$arch_flags" LDFLAGS="$arch_flags" OBJCFLAGS="$arch_flags" OBJCXXFLAGS="$arch_flags" --disable-shared --with-opengl
 
 Notes:
 

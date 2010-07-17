@@ -10,4 +10,11 @@
 	#include <windows.h>
 #endif
 
-#include <GL/gl.h>
+#ifndef __APPLE__
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#else
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#endif
+

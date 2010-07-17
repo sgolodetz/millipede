@@ -1,5 +1,5 @@
 GDCM 1.2.5 Setup Instructions
-Last Updated by Stuart Golodetz on 11/07/10
+Last Updated by Stuart Golodetz on 17/07/10
 -------------------------------------------
 
 1. Create a gdcm-1.2.5 subdirectory in the libraries directory.
@@ -39,7 +39,10 @@ GDCM_BUILD_SHARED_LIBS	OFF
 
 	On Mac OS X:
 
-	- Do the same as for Linux, but set CMAKE_OSX_SYSROOT appropriately in ccmake. On my system, it was "/Developer/SDKs/MacOSX10.5.sdk" (without quotes).
+	- Mostly the same as for Linux, except for changing two options in ccmake:
+
+		1) Set CMAKE_OSX_SYSROOT to the appropriate SDK, e.g. /Developer/SDKs/MacOSX10.6.sdk for Snow Leopard.
+		2) Set CMAKE_OSX_ARCHITECTURES to i386.
 
 5. On non-Windows platforms, you may additionally need to run "make install". This will put all the shared object files (dynamic libraries) in gdcm-1.2.5/install (or gdcm-1.2.5/install-debug, for the debug build). These may need to be copied to /usr/lib/ so that executables can find them.
 

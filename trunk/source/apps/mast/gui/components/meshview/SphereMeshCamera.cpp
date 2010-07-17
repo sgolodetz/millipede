@@ -8,7 +8,6 @@
 #include <utility>
 
 #include <common/ogl/WrappedGL.h>
-#include <GL/glu.h>
 
 namespace mp {
 

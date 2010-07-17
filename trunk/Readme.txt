@@ -22,19 +22,6 @@ The instructions explain how to build a library X so that it ends up in 'millipe
 
 There is currently (as of the date shown at the top of the document) no interdependency between the different libraries used, so they can be built in any order.
 
-*
-Important Note:
-
-There may be some work needed to get gcc working correctly on Mac OS X, especially if you haven't been coding from the Terminal before. In my case (YMMV), this involved adding the file ~/.profile, containing:
-
-export PATH=$PATH:/Developer/usr/bin
-export C_INCLUDE_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/include
-export CPLUS_INCLUDE_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/include:/Developer/SDKs/MacOSX10.5.sdk/usr/include/c++/4.0.0:/Developer/SDKs/MacOSX10.5.sdk/usr/include/c++/4.0.0/i686-apple-darwin8:/Developer/SDKs/MacOSX10.5.sdk/usr/X11/include
-export LIBRARY_PATH=/Developer/SDKs/MacOSX10.5.sdk/usr/lib
-
-The issue is essentially that Xcode doesn't install gcc in the usual places by default, so you need to specify the places where it does install it explicitly.
-*
-
 ===============================
 Step 2: Build millipede itself.
 ===============================
@@ -80,7 +67,10 @@ respectively. For the debug version (i.e. after running "make install" in the bu
 On Mac OS X
 -----------
 
-- Do the same as for Linux, but set CMAKE_OSX_SYSROOT appropriately in ccmake. On my system, it was "/Developer/SDKs/MacOSX10.5.sdk" (without quotes).
+Mostly the same as for Linux, except for changing two options in ccmake:
+
+1) Set CMAKE_OSX_SYSROOT to the appropriate SDK, e.g. /Developer/SDKs/MacOSX10.6.sdk for Snow Leopard.
+2) Set CMAKE_OSX_ARCHITECTURES to i386.
 
 ##############
 USING BRANCHES

@@ -37,7 +37,7 @@ Linux:
 
 Mac OS X:
 
-./bjam --libdir=../boost_1_39_0/lib --includedir=../boost_1_39_0/include --with-date_time --with-filesystem --with-thread --build-type=complete toolset=darwin install
+./bjam --libdir=../boost_1_39_0/lib --includedir=../boost_1_39_0/include --with-date_time --with-filesystem --with-thread --build-type=complete toolset=darwin architecture=x86 install
 
 
 4. (Optional) Remove the boost-setup directory as it is no longer needed.

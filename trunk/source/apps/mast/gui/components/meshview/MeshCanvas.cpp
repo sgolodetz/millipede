@@ -5,7 +5,7 @@
 
 #include "MeshCanvas.h"
 
-#include <GL/glu.h>
+#include <common/ogl/WrappedGL.h>
 
 #include <wx/slider.h>
 
