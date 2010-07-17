@@ -124,8 +124,15 @@ void MeshView::setup_gui(wxGLContext *context)
 	sizer->Add(new wxPanel(this));
 
 	// Top middle
-	wxCheckBox *wireframeCheckBox = new wxCheckBox(this, CHECKBOXID_WIREFRAME, wxT("Enable Wireframe"));
-	sizer->Add(wireframeCheckBox, 0, wxALIGN_CENTRE_HORIZONTAL|wxTOP, BORDER_SIZE);
+	wxPanel *renderingControls = new wxPanel(this);
+	wxGridSizer *renderingControlsSizer = new wxGridSizer(1, 0, 0, 5);
+	renderingControls->SetSizer(renderingControlsSizer);
+		wxCheckBox *wireframeCheckBox = new wxCheckBox(renderingControls, CHECKBOXID_WIREFRAME, wxT("Enable Wireframe"));
+		renderingControlsSizer->Add(wireframeCheckBox);
+
+		wxCheckBox *phongCheckBox = new wxCheckBox(renderingControls, wxID_ANY, wxT("Enable Phong Lighting"));
+		renderingControlsSizer->Add(phongCheckBox);
+	sizer->Add(renderingControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxTOP, BORDER_SIZE);
 
 	// Top right
 	sizer->Add(new wxPanel(this));
