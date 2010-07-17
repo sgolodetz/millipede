@@ -6,7 +6,6 @@
 #include "PartitionView.h"
 
 #include <wx/button.h>
-#include <wx/glcanvas.h>
 #include <wx/numdlg.h>
 #include <wx/sizer.h>
 #include <wx/slider.h>

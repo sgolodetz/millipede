@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_CANVAS
 #define H_MILLIPEDE_CANVAS
 
+#include <common/ogl/WrappedGL.h>
+
 #include <wx/dcclient.h>
 #include <wx/glcanvas.h>
 

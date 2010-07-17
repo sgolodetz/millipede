@@ -84,6 +84,15 @@ exceptions/FileNotFoundException.h
 )
 
 ##
+SET(GLee_sources
+GLee/GLee.c
+)
+
+SET(GLee_headers
+GLee/GLee.h
+)
+
+##
 SET(io_files_sources
 io/files/DICOMDIRFile.cpp
 io/files/VolumeChoiceFile.cpp
@@ -318,6 +327,7 @@ ${commands_sources}
 ${dicom_directories_sources}
 ${dicom_util_sources}
 ${dicom_volumes_sources}
+${GLee_sources}
 ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
@@ -339,6 +349,7 @@ ${dicom_directories_headers}
 ${dicom_util_headers}
 ${dicom_volumes_headers}
 ${exceptions_headers}
+${GLee_headers}
 ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
@@ -387,6 +398,9 @@ SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
 
 ##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
+
+##
+SOURCE_GROUP(GLee FILES ${GLee_sources} ${GLee_headers})
 
 ##
 SOURCE_GROUP(io\\files\\.cpp FILES ${io_files_sources})

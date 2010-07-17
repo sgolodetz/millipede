@@ -5,8 +5,6 @@
 
 #include "MeshCanvas.h"
 
-#include <common/ogl/WrappedGL.h>
-
 #include <wx/slider.h>
 
 #include <common/visualization/MeshRenderer.h>

@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_SEGMENTATIONWINDOW
 #define H_MILLIPEDE_SEGMENTATIONWINDOW
 
+#include <common/ogl/WrappedGL.h>
+
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 

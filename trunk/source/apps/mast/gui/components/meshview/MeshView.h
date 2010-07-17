@@ -10,6 +10,8 @@
 
 #include <itkVector.h>
 
+#include <common/ogl/WrappedGL.h>
+
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
 

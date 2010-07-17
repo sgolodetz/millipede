@@ -12,6 +12,8 @@
 
 #include <itkVector.h>
 
+#include <common/ogl/WrappedGL.h>
+
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 

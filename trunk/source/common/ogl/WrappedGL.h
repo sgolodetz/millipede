@@ -10,6 +10,8 @@
 	#include <windows.h>
 #endif
 
+#include <common/GLee/GLee.h>
+
 #ifndef __APPLE__
 	#include <GL/gl.h>
 	#include <GL/glu.h>
