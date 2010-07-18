@@ -9,7 +9,17 @@ void main()
 	vec4 ecPos = gl_ModelViewMatrix * gl_Vertex;
 
 	// Calculate lightDir as the eye coordinate vector from the vertex to the light.
-	lightDir = normalize(vec3(gl_LightSource[0].position - ecPos));
+	if(gl_LightSource[0].position.w == 0.0)
+	{
+		// Directional light.
+		lightDir = normalize(vec3(gl_LightSource[0].position));
+	}
+	else
+	{
+		// Point light.
+		lightDir = normalize(vec3(gl_LightSource[0].position - ecPos));
+	}
+	
 
 	// Calculate the eye coordinate normal.
 	normal = normalize(gl_NormalMatrix * gl_Normal);

@@ -240,12 +240,12 @@ void MeshRenderer::render_submesh_solid(const Submesh& submesh, const RGBA32& co
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_COLOR_MATERIAL);
 
-	float noAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	float whiteDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	float position[] = {30.0f, 30.0f, 0.0f, 1.0f};
+	float ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+	float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float position[] = {-1.0f, -1.0f, -1.0f, 0.0f};		// note: this is a directional light
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, noAmbient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuse);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 	glEnable(GL_LIGHT0);
 
