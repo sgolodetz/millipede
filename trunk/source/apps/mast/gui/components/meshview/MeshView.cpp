@@ -132,6 +132,7 @@ void MeshView::setup_gui(wxGLContext *context)
 		renderingControlsSizer->Add(wireframeCheckBox);
 
 		m_phongCheckBox = new wxCheckBox(renderingControls, CHECKBOXID_PHONG, wxT("Enable Phong Lighting"));
+		m_phongCheckBox->SetValue(true);
 		renderingControlsSizer->Add(m_phongCheckBox);
 	sizer->Add(renderingControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxTOP, BORDER_SIZE);
 
@@ -147,9 +148,9 @@ void MeshView::setup_gui(wxGLContext *context)
 		{
 			if(m_meshRenderer->has_submesh(*it))
 			{
-				wxCheckBox *submeshControl = new wxCheckBox(submeshControls, CHECKBOXID_SUBMESH, string_to_wxString(*it));
-				submeshControl->SetValue(m_meshRenderer->submesh_enabled(*it));
-				submeshControlsSizer->Add(submeshControl);
+				wxCheckBox *submeshCheckBox = new wxCheckBox(submeshControls, CHECKBOXID_SUBMESH, string_to_wxString(*it));
+				submeshCheckBox->SetValue(m_meshRenderer->submesh_enabled(*it));
+				submeshControlsSizer->Add(submeshCheckBox);
 			}
 		}
 		Connect(CHECKBOXID_SUBMESH, wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MeshView::OnCheckBoxSubmesh));
