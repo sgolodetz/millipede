@@ -5,8 +5,10 @@
 
 #include "MeshCanvas.h"
 
+#include <wx/checkbox.h>
 #include <wx/slider.h>
 
+#include <common/shaders/ShaderProgram.h>
 #include <common/visualization/MeshRenderer.h>
 #include "MeshView.h"
 #include "SphereMeshCamera.h"
@@ -63,8 +65,15 @@ void MeshCanvas::render(wxPaintDC&) const
 		glEnable(GL_CLIP_PLANE0 + i);
 	}
 
+	// Enable Phong lighting if requested (and possible).
+	bool phongLighting = m_meshView->m_phongCheckBox->GetValue();
+	if(phongLighting) enable_phong();
+
 	// Render the mesh itself.
 	m_meshView->m_meshRenderer->render();
+
+	// Make sure Phong lighting is disabled again.
+	if(phongLighting) disable_phong();
 
 	glPopAttrib();
 }
@@ -94,6 +103,31 @@ void MeshCanvas::setup()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45.0, static_cast<double>(width) / height, 1.0, 4096.0);
+}
+
+//#################### PRIVATE METHODS ####################
+void MeshCanvas::disable_phong() const
+{
+	if(m_shaderProgram)
+	{
+		ShaderProgram::use_fixed_functionality();
+	}
+}
+
+void MeshCanvas::enable_phong() const
+{
+	if(!m_shaderProgram && GLEE_VERSION_2_0)
+	{
+		m_shaderProgram.reset(new ShaderProgram);
+		m_shaderProgram->attach_shader(Shader::load_and_compile_vertex_shader("../resources/phong.vert"));
+		m_shaderProgram->attach_shader(Shader::load_and_compile_fragment_shader("../resources/phong.frag"));
+		m_shaderProgram->link();
+	}
+
+	if(m_shaderProgram)
+	{
+		m_shaderProgram->use();
+	}
 }
 
 }

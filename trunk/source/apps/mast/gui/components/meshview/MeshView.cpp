@@ -22,6 +22,7 @@ namespace {
 enum
 {
 	ID_BASE = wxID_HIGHEST + 1000,	// a dummy value which is never used: subsequent values are guaranteed to be higher than this
+	CHECKBOXID_PHONG,
 	CHECKBOXID_SUBMESH,
 	CHECKBOXID_WIREFRAME,
 	SLIDERID_AZIMUTH,
@@ -130,8 +131,8 @@ void MeshView::setup_gui(wxGLContext *context)
 		wxCheckBox *wireframeCheckBox = new wxCheckBox(renderingControls, CHECKBOXID_WIREFRAME, wxT("Enable Wireframe"));
 		renderingControlsSizer->Add(wireframeCheckBox);
 
-		wxCheckBox *phongCheckBox = new wxCheckBox(renderingControls, wxID_ANY, wxT("Enable Phong Lighting"));
-		renderingControlsSizer->Add(phongCheckBox);
+		m_phongCheckBox = new wxCheckBox(renderingControls, CHECKBOXID_PHONG, wxT("Enable Phong Lighting"));
+		renderingControlsSizer->Add(m_phongCheckBox);
 	sizer->Add(renderingControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxTOP, BORDER_SIZE);
 
 	// Top right
@@ -235,6 +236,11 @@ void MeshView::setup_gui(wxGLContext *context)
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+void MeshView::OnCheckBoxPhong(wxCommandEvent&)
+{
+	m_canvas->Refresh();
+}
+
 void MeshView::OnCheckBoxSubmesh(wxCommandEvent& e)
 {
 	wxCheckBox *submeshControl = static_cast<wxCheckBox*>(e.GetEventObject());
@@ -293,6 +299,7 @@ void MeshView::OnSliderInclination(wxScrollEvent&)
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(MeshView, wxPanel)
 	//~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+	EVT_CHECKBOX(CHECKBOXID_PHONG, MeshView::OnCheckBoxPhong)
 	EVT_CHECKBOX(CHECKBOXID_WIREFRAME, MeshView::OnCheckBoxWireframe)
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~

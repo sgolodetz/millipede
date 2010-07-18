@@ -15,12 +15,14 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<class MeshRenderer> MeshRenderer_Ptr;
 class MeshView;
+typedef boost::shared_ptr<class ShaderProgram> ShaderProgram_Ptr;
 
 class MeshCanvas : public Canvas
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
 	MeshView *m_meshView;
+	mutable ShaderProgram_Ptr m_shaderProgram;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -30,6 +32,11 @@ public:
 public:
 	void render(wxPaintDC&) const;
 	void setup();
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void disable_phong() const;
+	void enable_phong() const;
 };
 
 }

@@ -16,6 +16,7 @@
 #include <wx/panel.h>
 
 //#################### FORWARD DECLARATIONS ####################
+class wxCheckBox;
 class wxSlider;
 
 namespace mp {
@@ -49,6 +50,7 @@ private:
 	wxSlider *m_clipSliders[6];
 	wxSlider *m_distanceSlider;
 	wxSlider *m_inclinationSlider;
+	wxCheckBox *m_phongCheckBox;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -62,6 +64,7 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ CHECKBOXES ~~~~~~~~~~~~~~~~~~~~
+	void OnCheckBoxPhong(wxCommandEvent&);
 	void OnCheckBoxSubmesh(wxCommandEvent& e);
 	void OnCheckBoxWireframe(wxCommandEvent& e);
 
