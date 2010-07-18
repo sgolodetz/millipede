@@ -6,7 +6,7 @@ void main()
 	float ambient = 0.3;
 	float lambertianCoefficient = 0.35;
 	float phongCoefficient = 0.35;
-	float phongExponent = 20;
+	float phongExponent = 20.0;
 
 	// Calculate the Lambertian lighting term.
 	vec3 L = normalize(lightDir);
@@ -15,7 +15,7 @@ void main()
 	float lambertian = clamp(NdotL, 0.0, 1.0);
 
 	// Calculate the Phong lighting term.
-	vec3 R = 2*NdotL*N - L;
+	vec3 R = 2.0*NdotL*N - L;
 	vec3 V = normalize(viewDir);
 	float phong = pow(clamp(dot(R, V), 0.0, 1.0), phongExponent);
 	phong = clamp(phong, 0.0, 1.0);
@@ -30,3 +30,4 @@ void main()
 	// Set the desired fragment colour.
 	gl_FragColor = colour;
 }
+
