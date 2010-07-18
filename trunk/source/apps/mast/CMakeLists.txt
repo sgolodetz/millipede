@@ -243,6 +243,8 @@ INCLUDE(${millipede_SOURCE_DIR}/LinkWxWidgets.cmake)
 ##########################
 
 SET(resources
+phong.frag
+phong.vert
 testvolume1.vcf
 testvolume2.vcf
 )
