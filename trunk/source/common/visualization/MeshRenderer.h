@@ -45,13 +45,14 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	Vector3d m_meshLowerBound, m_meshUpperBound;
+	std::map<int,RGBA32> m_submeshColourMap;
 	std::map<std::string,int> m_submeshNameMap;
 	std::map<int,Submesh_Ptr> m_submeshes;
 	bool m_wireframeEnabled;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit MeshRenderer(const Mesh_CPtr& mesh, const boost::optional<std::map<std::string,int> >& submeshNameMap = boost::none);
+	MeshRenderer(const Mesh_CPtr& mesh, const std::map<int,RGBA32>& submeshColourMap, const boost::optional<std::map<std::string,int> >& submeshNameMap = boost::none);
 
 	//#################### PUBLIC METHODS ####################
 public:

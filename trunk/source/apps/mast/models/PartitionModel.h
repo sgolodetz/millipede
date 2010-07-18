@@ -76,16 +76,17 @@ private:
 
 		MeshRenderer_Ptr& meshRenderer;
 		DataHook<Mesh_Ptr> meshHook;
+		std::map<int,RGBA32> submeshColourMap;
 		std::map<std::string,int> submeshNameMap;
 
-		CreateMeshRendererJob(MeshRenderer_Ptr& meshRenderer_, const DataHook<Mesh_Ptr>& meshHook_, const std::map<std::string,int>& submeshNameMap_)
-		:	meshRenderer(meshRenderer_), meshHook(meshHook_), submeshNameMap(submeshNameMap_)
+		CreateMeshRendererJob(MeshRenderer_Ptr& meshRenderer_, const DataHook<Mesh_Ptr>& meshHook_, const std::map<int,RGBA32>& submeshColourMap_, const std::map<std::string,int>& submeshNameMap_)
+		:	meshRenderer(meshRenderer_), meshHook(meshHook_), submeshColourMap(submeshColourMap_), submeshNameMap(submeshNameMap_)
 		{}
 
 		void execute_impl()
 		{
 			set_status("Creating mesh renderer...");
-			meshRenderer.reset(new MeshRenderer(meshHook.get(), submeshNameMap));
+			meshRenderer.reset(new MeshRenderer(meshHook.get(), submeshColourMap, submeshNameMap));
 		}
 
 		int length() const
@@ -264,6 +265,14 @@ public:
 
 			// Set up the CreateMeshRendererJob.
 			MeshRenderer_Ptr meshRenderer;
+
+			std::map<Feature,RGBA32> featureColourMap = feature_colour_map<Feature>();
+			std::map<int,RGBA32> submeshColourMap;
+			for(typename std::map<Feature,RGBA32>::const_iterator it=featureColourMap.begin(), iend=featureColourMap.end(); it!=iend; ++it)
+			{
+				submeshColourMap.insert(std::make_pair(feature_to_int(it->first), it->second));
+			}
+
 			std::vector<Feature> features = enum_values<Feature>();
 			std::map<std::string,int> submeshNameMap;
 			submeshNameMap.insert(std::make_pair("Internals", 0));
@@ -273,7 +282,7 @@ public:
 			}
 
 			// Note: The mesh in the builder is *shared* with the smoother and decimator (if used), so this mesh hook is the right one.
-			job->add_subjob(new CreateMeshRendererJob(meshRenderer, meshBuilder->get_mesh_hook(), submeshNameMap));
+			job->add_subjob(new CreateMeshRendererJob(meshRenderer, meshBuilder->get_mesh_hook(), submeshColourMap, submeshNameMap));
 
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{

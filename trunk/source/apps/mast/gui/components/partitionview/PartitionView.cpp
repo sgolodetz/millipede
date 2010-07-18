@@ -329,17 +329,7 @@ PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		Map<AbdominalFeature::Enum,RGBA32> colourMap;
-		colourMap.set(AbdominalFeature::AORTA,				ITKImageUtil::make_rgba32(255,0,0,50));
-		colourMap.set(AbdominalFeature::INFERIOR_VENA_CAVA,	ITKImageUtil::make_rgba32(0,0,255,50));
-		colourMap.set(AbdominalFeature::KIDNEY,				ITKImageUtil::make_rgba32(255,255,0,50));
-		colourMap.set(AbdominalFeature::LIVER,				ITKImageUtil::make_rgba32(128,0,128,50));
-		colourMap.set(AbdominalFeature::OTHER_ARTERY,		ITKImageUtil::make_rgba32(128,0,0,50));
-		colourMap.set(AbdominalFeature::OTHER_VEIN,			ITKImageUtil::make_rgba32(0,0,128,50));
-		colourMap.set(AbdominalFeature::SPINAL_CORD,		ITKImageUtil::make_rgba32(128,255,255,100));
-		colourMap.set(AbdominalFeature::SPLEEN,				ITKImageUtil::make_rgba32(0,255,0,50));
-		colourMap.set(AbdominalFeature::VERTEBRA,			ITKImageUtil::make_rgba32(192,255,255,100));
-		return new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, colourMap);
+		return new IPFMultiFeatureSelectionOverlay(multiFeatureSelection, loc, ori, feature_colour_map<AbdominalFeature::Enum>());
 	}
 	else return NULL;
 }

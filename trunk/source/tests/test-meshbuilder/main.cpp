@@ -46,7 +46,9 @@ void test_simple()
 	Job::execute_managed(builder);
 
 	Mesh_Ptr mesh = builder->get_mesh();
-	MeshRenderer renderer(mesh);
+
+	std::map<int,RGBA32> submeshColourMap;	// a dummy colour map (there's no point in filling it)
+	MeshRenderer renderer(mesh, submeshColourMap);
 }
 
 void test_smoothing()

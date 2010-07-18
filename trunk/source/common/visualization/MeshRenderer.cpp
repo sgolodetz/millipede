@@ -11,8 +11,8 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh, const boost::optional<std::map<std::string,int> >& submeshNameMap)
-:	m_wireframeEnabled(false)
+MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh, const std::map<int,RGBA32>& submeshColourMap, const boost::optional<std::map<std::string,int> >& submeshNameMap)
+:	m_submeshColourMap(submeshColourMap), m_wireframeEnabled(false)
 {
 	if(submeshNameMap) m_submeshNameMap = *submeshNameMap;
 
@@ -160,23 +160,16 @@ const Vector3d& MeshRenderer::mesh_upper_bound() const
 
 void MeshRenderer::render() const
 {
-	// TEMPORARY: This should be replaced with a colour mapping passed in by the caller.
-	std::vector<RGBA32> colours;
-	colours.push_back(ITKImageUtil::make_rgba32(255, 0, 0, 255));
-	colours.push_back(ITKImageUtil::make_rgba32(0, 255, 0, 255));
-	colours.push_back(ITKImageUtil::make_rgba32(0, 0, 255, 255));
-	colours.push_back(ITKImageUtil::make_rgba32(255, 255, 0, 255));
-	colours.push_back(ITKImageUtil::make_rgba32(255, 0, 255, 255));
-	colours.push_back(ITKImageUtil::make_rgba32(0, 255, 255, 255));
-	int n = 0;
 	for(std::map<int,Submesh_Ptr>::const_iterator it=m_submeshes.begin(), iend=m_submeshes.end(); it!=iend; ++it)
 	{
+		std::map<int,RGBA32>::const_iterator jt = m_submeshColourMap.find(it->first);
+		RGBA32 colour = jt != m_submeshColourMap.end() ? jt->second : ITKImageUtil::make_rgba32(255,0,255,255);
+
 		if(it->second->enabled)
 		{
-			if(m_wireframeEnabled)	render_submesh_wireframe(*it->second, colours[n]);
-			else					render_submesh_solid(*it->second, colours[n]);
+			if(m_wireframeEnabled)	render_submesh_wireframe(*it->second, colour);
+			else					render_submesh_solid(*it->second, colour);
 		}
-		n = (n+1) % colours.size();
 	}
 }
 

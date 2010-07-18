@@ -6,7 +6,6 @@
 #ifndef H_MILLIPEDE_IPFMULTIFEATURESELECTIONOVERLAY
 #define H_MILLIPEDE_IPFMULTIFEATURESELECTIONOVERLAY
 
-#include <common/adts/Map.h>
 #include <common/partitionforests/base/PartitionForestSelection.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include "IPFOverlayTools.h"
@@ -20,7 +19,7 @@ class IPFMultiFeatureSelectionOverlay : public PartitionOverlay
 public:
 	template <typename LeafLayer, typename BranchLayer, typename Feature>
 	IPFMultiFeatureSelectionOverlay(const boost::shared_ptr<const VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> >& multiFeatureSelection,
-									const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const Map<Feature,RGBA32>& colourMap)
+									const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const std::map<Feature,RGBA32>& colourMap)
 	{
 		typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
 		typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
@@ -36,7 +35,8 @@ public:
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			PartitionForestSelection_CPtr selection = multiFeatureSelection->selection(featureTypes[i]);
-			RGBA32 fillColour = colourMap.contains(featureTypes[i]) ? *colourMap.get(featureTypes[i]) : ITKImageUtil::make_rgba32(255,0,255,255);
+			typename std::map<Feature,RGBA32>::const_iterator jt = colourMap.find(featureTypes[i]);
+			RGBA32 fillColour = jt != colourMap.end() ? jt->second : ITKImageUtil::make_rgba32(255,0,255,255);
 			RGBA32 hatchingColour = fillColour;
 			hatchingColour[3] = 200;	// set the alpha value to a reasonably high value (fill colours for features tend to be relatively transparent)
 
