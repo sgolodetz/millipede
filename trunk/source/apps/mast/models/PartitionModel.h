@@ -268,6 +268,7 @@ public:
 
 			std::map<Feature,RGBA32> featureColourMap = feature_colour_map<Feature>();
 			std::map<int,RGBA32> submeshColourMap;
+			submeshColourMap.insert(std::make_pair(0, ITKImageUtil::make_rgba32(255,0,0,255)));
 			for(typename std::map<Feature,RGBA32>::const_iterator it=featureColourMap.begin(), iend=featureColourMap.end(); it!=iend; ++it)
 			{
 				submeshColourMap.insert(std::make_pair(feature_to_int(it->first), it->second));
