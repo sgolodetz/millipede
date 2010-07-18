@@ -34,7 +34,7 @@ template <> std::map<AbdominalFeature::Enum,RGBA32> feature_colour_map()
 	m.insert(std::make_pair(LIVER,				make_rgba32(128,0,128,50)));
 	m.insert(std::make_pair(OTHER_ARTERY,		make_rgba32(128,0,0,50)));
 	m.insert(std::make_pair(OTHER_VEIN,			make_rgba32(0,0,128,50)));
-	m.insert(std::make_pair(SPINAL_CORD,			make_rgba32(128,255,255,100)));
+	m.insert(std::make_pair(SPINAL_CORD,		make_rgba32(128,255,255,100)));
 	m.insert(std::make_pair(SPLEEN,				make_rgba32(0,255,0,50)));
 	m.insert(std::make_pair(VERTEBRA,			make_rgba32(192,255,255,100)));
 	return m;
