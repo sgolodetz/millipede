@@ -165,27 +165,27 @@ void MeshView::setup_gui(wxGLContext *context)
 	wxFlexGridSizer *clippingControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 	clippingControls->SetSizer(clippingControlsSizer);
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("X Clip Lower:")), 0, wxALIGN_CENTRE_VERTICAL);
-		m_clipSliders[0] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().x - 1, m_sphereCamera->min_centre().x - 1, m_sphereCamera->max_centre().x + 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_clipSliders[0] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().x - 1, m_sphereCamera->min_centre().x - 1, m_sphereCamera->max_centre().x + 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		clippingControlsSizer->Add(m_clipSliders[0]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("X Clip Upper:")), 0, wxALIGN_CENTRE_VERTICAL);
-		m_clipSliders[1] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().x + 1, m_sphereCamera->min_centre().x - 1, m_sphereCamera->max_centre().x + 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_clipSliders[1] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().x + 1, m_sphereCamera->min_centre().x - 1, m_sphereCamera->max_centre().x + 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		clippingControlsSizer->Add(m_clipSliders[1]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Y Clip Lower:")), 0, wxALIGN_CENTRE_VERTICAL);
-		m_clipSliders[2] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().y - 1, m_sphereCamera->min_centre().y - 1, m_sphereCamera->max_centre().y + 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_clipSliders[2] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().y - 1, m_sphereCamera->min_centre().y - 1, m_sphereCamera->max_centre().y + 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		clippingControlsSizer->Add(m_clipSliders[2]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Y Clip Upper:")), 0, wxALIGN_CENTRE_VERTICAL);
-		m_clipSliders[3] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().y + 1, m_sphereCamera->min_centre().y - 1, m_sphereCamera->max_centre().y + 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_clipSliders[3] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().y + 1, m_sphereCamera->min_centre().y - 1, m_sphereCamera->max_centre().y + 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		clippingControlsSizer->Add(m_clipSliders[3]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Z Clip Lower:")), 0, wxALIGN_CENTRE_VERTICAL);
-		m_clipSliders[4] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().z - 1, m_sphereCamera->min_centre().z - 1, m_sphereCamera->max_centre().z + 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_clipSliders[4] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->min_centre().z - 1, m_sphereCamera->min_centre().z - 1, m_sphereCamera->max_centre().z + 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		clippingControlsSizer->Add(m_clipSliders[4]);
 
 		clippingControlsSizer->Add(new wxStaticText(clippingControls, wxID_ANY, wxT("Z Clip Upper:")), 0, wxALIGN_CENTRE_VERTICAL);
-		m_clipSliders[5] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().z + 1, m_sphereCamera->min_centre().z - 1, m_sphereCamera->max_centre().z + 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_clipSliders[5] = new wxSlider(clippingControls, SLIDERID_CLIP, m_sphereCamera->max_centre().z + 1, m_sphereCamera->min_centre().z - 1, m_sphereCamera->max_centre().z + 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		clippingControlsSizer->Add(m_clipSliders[5]);
 	sizer->Add(clippingControls, 0, wxALIGN_CENTRE|wxRIGHT, BORDER_SIZE);
 
@@ -200,15 +200,15 @@ void MeshView::setup_gui(wxGLContext *context)
 		wxFlexGridSizer *centreControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		centreControls->SetSizer(centreControlsSizer);
 			centreControlsSizer->Add(new wxStaticText(centreControls, wxID_ANY, wxT("Centre X:")), 0, wxALIGN_CENTRE_VERTICAL);
-			m_centreXSlider = new wxSlider(centreControls, SLIDERID_CENTRE_X, m_sphereCamera->centre().x, m_sphereCamera->min_centre().x, m_sphereCamera->max_centre().x, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_centreXSlider = new wxSlider(centreControls, SLIDERID_CENTRE_X, m_sphereCamera->centre().x, m_sphereCamera->min_centre().x, m_sphereCamera->max_centre().x, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			centreControlsSizer->Add(m_centreXSlider);
 
 			centreControlsSizer->Add(new wxStaticText(centreControls, wxID_ANY, wxT("Centre Y:")), 0, wxALIGN_CENTRE_VERTICAL);
-			m_centreYSlider = new wxSlider(centreControls, SLIDERID_CENTRE_Y, m_sphereCamera->centre().y, m_sphereCamera->min_centre().y, m_sphereCamera->max_centre().y, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_centreYSlider = new wxSlider(centreControls, SLIDERID_CENTRE_Y, m_sphereCamera->centre().y, m_sphereCamera->min_centre().y, m_sphereCamera->max_centre().y, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			centreControlsSizer->Add(m_centreYSlider);
 
 			centreControlsSizer->Add(new wxStaticText(centreControls, wxID_ANY, wxT("Centre Z:")), 0, wxALIGN_CENTRE_VERTICAL);
-			m_centreZSlider = new wxSlider(centreControls, SLIDERID_CENTRE_Z, m_sphereCamera->centre().z, m_sphereCamera->min_centre().z, m_sphereCamera->max_centre().z, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_centreZSlider = new wxSlider(centreControls, SLIDERID_CENTRE_Z, m_sphereCamera->centre().z, m_sphereCamera->min_centre().z, m_sphereCamera->max_centre().z, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			centreControlsSizer->Add(m_centreZSlider);
 		cameraControlsSizer->Add(centreControls);
 
@@ -218,15 +218,15 @@ void MeshView::setup_gui(wxGLContext *context)
 		wxFlexGridSizer *eyeControlsSizer = new wxFlexGridSizer(0, 2, 0, 0);
 		eyeControls->SetSizer(eyeControlsSizer);
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Distance:")), 0, wxALIGN_CENTRE_VERTICAL);
-			m_distanceSlider = new wxSlider(eyeControls, SLIDERID_DISTANCE, m_sphereCamera->distance(), m_sphereCamera->min_distance(), m_sphereCamera->max_distance(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_distanceSlider = new wxSlider(eyeControls, SLIDERID_DISTANCE, m_sphereCamera->distance(), m_sphereCamera->min_distance(), m_sphereCamera->max_distance(), wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			eyeControlsSizer->Add(m_distanceSlider);
 
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Azimuth:")), 0, wxALIGN_CENTRE_VERTICAL);
-			m_azimuthSlider = new wxSlider(eyeControls, SLIDERID_AZIMUTH, m_sphereCamera->azimuth(), -179, 180, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_azimuthSlider = new wxSlider(eyeControls, SLIDERID_AZIMUTH, m_sphereCamera->azimuth(), -179, 180, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			eyeControlsSizer->Add(m_azimuthSlider);
 
 			eyeControlsSizer->Add(new wxStaticText(eyeControls, wxID_ANY, wxT("Inclination:")), 0, wxALIGN_CENTRE_VERTICAL);
-			m_inclinationSlider = new wxSlider(eyeControls, SLIDERID_INCLINATION, m_sphereCamera->inclination(), -89, 89, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_inclinationSlider = new wxSlider(eyeControls, SLIDERID_INCLINATION, m_sphereCamera->inclination(), -89, 89, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			eyeControlsSizer->Add(m_inclinationSlider);
 		cameraControlsSizer->Add(eyeControls);
 	sizer->Add(cameraControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxBOTTOM, BORDER_SIZE);

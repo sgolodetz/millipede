@@ -445,22 +445,22 @@ void PartitionView::setup_gui(wxGLContext *context)
 		locationControls->SetSizer(locationControlsSizer);
 			wxStaticText *xText = new wxStaticText(locationControls, wxID_ANY, wxT("X: "));
 			locationControlsSizer->Add(xText, 0, wxALIGN_CENTRE_VERTICAL);
-			m_xSlider = new wxSlider(locationControls, SLIDERID_X, volume_choice().minX + m_camera->slice_location().x, volume_choice().minX, volume_choice().maxX, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_xSlider = new wxSlider(locationControls, SLIDERID_X, volume_choice().minX + m_camera->slice_location().x, volume_choice().minX, volume_choice().maxX, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			locationControlsSizer->Add(m_xSlider, 0, wxALIGN_CENTRE);
 
 			wxStaticText *yText = new wxStaticText(locationControls, wxID_ANY, wxT("Y: "));
 			locationControlsSizer->Add(yText, 0, wxALIGN_CENTRE_VERTICAL);
-			m_ySlider = new wxSlider(locationControls, SLIDERID_Y, volume_choice().minY + m_camera->slice_location().y, volume_choice().minY, volume_choice().maxY, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_ySlider = new wxSlider(locationControls, SLIDERID_Y, volume_choice().minY + m_camera->slice_location().y, volume_choice().minY, volume_choice().maxY, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			locationControlsSizer->Add(m_ySlider, 0, wxALIGN_CENTRE);
 
 			wxStaticText *zText = new wxStaticText(locationControls, wxID_ANY, wxT("Z: "));
 			locationControlsSizer->Add(zText, 0, wxALIGN_CENTRE_VERTICAL);
-			m_zSlider = new wxSlider(locationControls, SLIDERID_Z, volume_choice().minZ+1 + m_camera->slice_location().z, volume_choice().minZ+1, volume_choice().maxZ+1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zSlider = new wxSlider(locationControls, SLIDERID_Z, volume_choice().minZ+1 + m_camera->slice_location().z, volume_choice().minZ+1, volume_choice().maxZ+1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			locationControlsSizer->Add(m_zSlider, 0, wxALIGN_CENTRE);
 
 			wxStaticText *zoomText = new wxStaticText(locationControls, wxID_ANY, wxT("Zoom: "));
 			locationControlsSizer->Add(zoomText, 0, wxALIGN_CENTRE_VERTICAL);
-			m_zoomSlider = new wxSlider(locationControls, SLIDERID_ZOOM, m_camera->zoom_level(), m_camera->min_zoom_level(), m_camera->max_zoom_level(), wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+			m_zoomSlider = new wxSlider(locationControls, SLIDERID_ZOOM, m_camera->zoom_level(), m_camera->min_zoom_level(), m_camera->max_zoom_level(), wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 			locationControlsSizer->Add(m_zoomSlider, 0, wxALIGN_CENTRE);
 		middleSizer->Add(locationControls, 0, wxALIGN_CENTRE_HORIZONTAL);
 	sizer->Add(middle);
@@ -481,7 +481,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 	bottomRight->SetSizer(bottomRightSizer);
 		wxStaticText *layerText = new wxStaticText(bottomRight, wxID_ANY, wxT("Layer: "));
 		bottomRightSizer->Add(layerText, 0, wxALIGN_CENTRE_VERTICAL);
-		m_layerSlider = new wxSlider(bottomRight, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(100,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_layerSlider = new wxSlider(bottomRight, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		bottomRightSizer->Add(m_layerSlider, 0, wxALIGN_CENTRE);
 	sizer->Add(bottomRight, 0, wxALIGN_CENTRE_HORIZONTAL);
 
