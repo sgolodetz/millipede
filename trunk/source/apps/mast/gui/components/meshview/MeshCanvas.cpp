@@ -118,10 +118,15 @@ void MeshCanvas::enable_phong() const
 {
 	if(!m_shaderProgram && GLEE_VERSION_2_0)
 	{
-		m_shaderProgram.reset(new ShaderProgram);
-		m_shaderProgram->attach_shader(Shader::load_and_compile_vertex_shader("../resources/phong.vert"));
-		m_shaderProgram->attach_shader(Shader::load_and_compile_fragment_shader("../resources/phong.frag"));
-		m_shaderProgram->link();
+		try
+		{
+			ShaderProgram_Ptr shaderProgram(new ShaderProgram);
+			shaderProgram->attach_shader(Shader::load_and_compile_vertex_shader("../resources/phong.vert"));
+			shaderProgram->attach_shader(Shader::load_and_compile_fragment_shader("../resources/phong.frag"));
+			shaderProgram->link();
+			m_shaderProgram = shaderProgram;
+		}
+		catch(Exception&) {}
 	}
 
 	if(m_shaderProgram)
