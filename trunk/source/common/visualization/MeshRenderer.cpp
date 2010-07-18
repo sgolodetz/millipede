@@ -242,8 +242,8 @@ void MeshRenderer::render_submesh_solid(const Submesh& submesh, const RGBA32& co
 
 	float noAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float whiteDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	float position[] = {1.0f, 1.0f, 0.0f, 0.0f};		// actually specifies the direction for a directional light like this one
-   
+	float position[] = {30.0f, 30.0f, 0.0f, 1.0f};
+
 	glLightfv(GL_LIGHT0, GL_AMBIENT, noAmbient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuse);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
