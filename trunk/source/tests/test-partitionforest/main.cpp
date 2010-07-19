@@ -59,27 +59,23 @@ struct ForestListener : IPF::Listener
 		std::cout << "Forest command sequence undo ended: " << description << '\n';
 	}
 
-	void layer_was_cloned(int index, int commandDepth)
+	void layer_was_cloned(int index)
 	{
-		output_command_depth(commandDepth);
 		std::cout << "Layer cloned: " << index << '\n';
 	}
 
-	void layer_was_deleted(int index, int commandDepth)
+	void layer_was_deleted(int index)
 	{
-		output_command_depth(commandDepth);
 		std::cout << "Layer deleted: " << index << '\n';
 	}
 
-	void layer_was_undeleted(int index, int commandDepth)
+	void layer_was_undeleted(int index)
 	{
-		output_command_depth(commandDepth);
 		std::cout << "Layer undeleted: " << index << '\n';
 	}
 
-	void layer_will_be_deleted(int index, int commandDepth)
+	void layer_will_be_deleted(int index)
 	{
-		output_command_depth(commandDepth);
 		std::cout << "Layer will be deleted: " << index << '\n';
 	}
 

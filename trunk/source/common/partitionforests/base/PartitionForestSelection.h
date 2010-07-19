@@ -339,14 +339,14 @@ public:
 		return usedLayers > 1;
 	}
 
-	void layer_was_cloned(int index, int commandDepth)
+	void layer_was_cloned(int index)
 	{
 		// The desired effect is to insert a layer above the one specified and migrate any selected nodes upwards to the new layer.
 		// This can be achieved more easily by simply inserting an empty layer below the one being cloned, as here.
 		m_nodes.insert(m_nodes.begin() + index, Layer());
 	}
 
-	void layer_was_undeleted(int index, int commandDepth)
+	void layer_was_undeleted(int index)
 	{
 		// Re-add the layer itself.
 		m_nodes.insert(m_nodes.begin() + index, Layer());
@@ -366,7 +366,7 @@ public:
 		}
 	}
 
-	void layer_will_be_deleted(int index, int commandDepth)
+	void layer_will_be_deleted(int index)
 	{
 		// Replace any nodes in the specified layer with their children in the layer below.
 		Layer copy = m_nodes[index];

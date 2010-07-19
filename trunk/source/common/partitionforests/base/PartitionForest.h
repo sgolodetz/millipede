@@ -112,10 +112,10 @@ public:
 		virtual void command_sequence_undo_began(const std::string& description, int commandDepth)					{}
 		virtual void command_sequence_undo_ended(const std::string& description, int commandDepth)					{ forest_changed(commandDepth); }
 		virtual void forest_changed(int commandDepth)																{}
-		virtual void layer_was_cloned(int index, int commandDepth)													{ forest_changed(commandDepth); }
-		virtual void layer_was_deleted(int index, int commandDepth)													{ forest_changed(commandDepth); }
-		virtual void layer_was_undeleted(int index, int commandDepth)												{ forest_changed(commandDepth); }
-		virtual void layer_will_be_deleted(int index, int commandDepth)												{}
+		virtual void layer_was_cloned(int index)																	{ forest_changed(0); }
+		virtual void layer_was_deleted(int index)																	{ forest_changed(0); }
+		virtual void layer_was_undeleted(int index)																	{ forest_changed(0); }
+		virtual void layer_will_be_deleted(int index)																{}
 		virtual void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)		{ forest_changed(commandDepth); }
 		virtual void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)	{ forest_changed(commandDepth); }
 		virtual void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)						{}
@@ -132,10 +132,10 @@ private:
 		void command_sequence_undo_began(const std::string& description, int commandDepth)					{ multicast(bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
 		void command_sequence_undo_ended(const std::string& description, int commandDepth)					{ multicast(bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
 		void forest_changed(int commandDepth)																{ multicast(bind(&Listener::forest_changed, _1, commandDepth)); }
-		void layer_was_cloned(int index, int commandDepth)													{ multicast(bind(&Listener::layer_was_cloned, _1, index, commandDepth)); }
-		void layer_was_deleted(int index, int commandDepth)													{ multicast(bind(&Listener::layer_was_deleted, _1, index, commandDepth)); }
-		void layer_was_undeleted(int index, int commandDepth)												{ multicast(bind(&Listener::layer_was_undeleted, _1, index, commandDepth)); }
-		void layer_will_be_deleted(int index, int commandDepth)												{ multicast(bind(&Listener::layer_will_be_deleted, _1, index, commandDepth)); }
+		void layer_was_cloned(int index)																	{ multicast(bind(&Listener::layer_was_cloned, _1, index)); }
+		void layer_was_deleted(int index)																	{ multicast(bind(&Listener::layer_was_deleted, _1, index)); }
+		void layer_was_undeleted(int index)																	{ multicast(bind(&Listener::layer_was_undeleted, _1, index)); }
+		void layer_will_be_deleted(int index)																{ multicast(bind(&Listener::layer_will_be_deleted, _1, index)); }
 		void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)		{ multicast(bind(&Listener::node_was_split, _1, node, results, commandDepth)); }
 		void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)	{ multicast(bind(&Listener::nodes_were_merged, _1, nodes, result, commandDepth)); }
 		void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)						{ multicast(bind(&Listener::nodes_will_be_merged, _1, nodes, commandDepth)); }
@@ -152,8 +152,8 @@ private:
 		:	Command("Clone Above Layer"), m_base(base), m_indexB(indexB)
 		{}
 
-		void execute()		{ m_base->clone_layer_impl(m_indexB, depth()); }
-		void undo()			{ m_base->delete_layer_impl(m_indexB + 1, depth()); }
+		void execute()		{ m_base->clone_layer_impl(m_indexB); }
+		void undo()			{ m_base->delete_layer_impl(m_indexB + 1); }
 	};
 
 	struct DeleteLayerCommand : Command
@@ -166,8 +166,8 @@ private:
 		:	Command("Delete Layer"), m_base(base), m_indexD(indexD)
 		{}
 
-		void execute()	{ m_layerD = m_base->delete_layer_impl(m_indexD, depth()); }
-		void undo()		{ m_base->undelete_layer_impl(m_indexD, m_layerD, depth()); }
+		void execute()	{ m_layerD = m_base->delete_layer_impl(m_indexD); }
+		void undo()		{ m_base->undelete_layer_impl(m_indexD, m_layerD); }
 	};
 
 	struct MergeSiblingNodesCommand : Command
@@ -1402,7 +1402,7 @@ private:
 		else return IForestLayer_Ptr();
 	}
 
-	void clone_layer_impl(int indexB, int commandDepth)
+	void clone_layer_impl(int indexB)
 	{
 		// Note: We denote the layer below the clone as B and the clone layer itself as C.
 
@@ -1422,7 +1422,7 @@ private:
 			++bt, ++ct;
 		}
 
-		m_listeners->layer_was_cloned(indexB, commandDepth);
+		m_listeners->layer_was_cloned(indexB);
 	}
 
 	static BranchLayer_Ptr clone_graph(const IForestLayer<BranchProperties,int>& sourceLayer)
@@ -1445,9 +1445,9 @@ private:
 		return ret;
 	}
 
-	BranchLayer_Ptr delete_layer_impl(int indexD, int commandDepth)
+	BranchLayer_Ptr delete_layer_impl(int indexD)
 	{
-		m_listeners->layer_will_be_deleted(indexD, commandDepth);
+		m_listeners->layer_will_be_deleted(indexD);
 
 		// Note: We denote the layer to be deleted as D, the layer below as B, and the layer above (if any) as A.
 		// We know that the layer we're deleting is a branch layer, since deleting the leaf layer is explicitly prohibited.
@@ -1479,7 +1479,7 @@ private:
 		// Now layer D itself can be deleted.
 		m_branchLayers.erase(m_branchLayers.begin() + indexD - 1);
 
-		m_listeners->layer_was_deleted(indexD, commandDepth);
+		m_listeners->layer_was_deleted(indexD);
 		return layerD;
 	}
 
@@ -1709,7 +1709,7 @@ private:
 		return newNodes;
 	}
 
-	void undelete_layer_impl(int indexD, const BranchLayer_Ptr& layerD, int commandDepth)
+	void undelete_layer_impl(int indexD, const BranchLayer_Ptr& layerD)
 	{
 		// Note: We denote the layer which has been deleted as D, the layer below as B, and the layer above (if any) as A.
 
@@ -1739,7 +1739,7 @@ private:
 		}
 
 		// Alert any forest listeners as necessary.
-		m_listeners->layer_was_undeleted(indexD, commandDepth);
+		m_listeners->layer_was_undeleted(indexD);
 	}
 };
 
