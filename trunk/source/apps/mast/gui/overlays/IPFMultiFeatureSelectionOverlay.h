@@ -34,6 +34,7 @@ public:
 		std::vector<Feature> featureTypes = enum_values<Feature>();
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
+			if(!multiFeatureSelection->has_selection(featureTypes[i])) continue;
 			PartitionForestSelection_CPtr selection = multiFeatureSelection->selection(featureTypes[i]);
 			typename std::map<Feature,RGBA32>::const_iterator jt = colourMap.find(featureTypes[i]);
 			RGBA32 fillColour = jt != colourMap.end() ? jt->second : ITKImageUtil::make_rgba32(255,0,255,255);

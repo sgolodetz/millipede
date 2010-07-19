@@ -29,6 +29,8 @@ class LabelImageCreator : public SimpleJob
 private:
 	typedef itk::Image<int,3> LabelImage;
 	typedef typename LabelImage::Pointer LabelImagePointer;
+	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
+	typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
@@ -39,7 +41,6 @@ private:
 	DataHook<LabelImagePointer> m_labellingHook;
 	itk::Size<3> m_labellingSize;
 	VolumeIPFMultiFeatureSelection_CPtr m_multiFeatureSelection;
-	int m_taskCount;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -48,7 +49,6 @@ public:
 	{
 		m_labellingSize = multiFeatureSelection->volume_ipf()->volume_size();
 		for(int i=0; i<3; ++i) m_labellingSize[i] += 2;		// add a single voxel border around the labelling (otherwise we can't visualize single slices etc.)
-		m_taskCount = m_labellingSize[0] * m_labellingSize[1] * m_labellingSize[2];
 	}
 
 	//#################### PUBLIC METHODS ####################
@@ -65,7 +65,7 @@ public:
 
 	int length() const
 	{
-		return m_taskCount + 1;
+		return 1;
 	}
 
 	//#################### PRIVATE METHODS ####################
@@ -80,32 +80,29 @@ private:
 		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
 		itk::Index<3> size = ITKImageUtil::make_index_from_size(m_labellingSize);
 
-		itk::Index<3> index;
-		for(index[2]=0; index[2]<size[2]; ++index[2])
-			for(index[1]=0; index[1]<size[1]; ++index[1])
-				for(index[0]=0; index[0]<size[0]; ++index[0])
+		labelling->FillBuffer(0);
+
+		for(Feature f=enum_begin<Feature>(), end=enum_end<Feature>(); f!=end; ++f)
+		{
+			if(!m_multiFeatureSelection->has_selection(f)) continue;
+
+			PartitionForestSelection_CPtr selection = m_multiFeatureSelection->selection(f);
+			int value = feature_to_int(f);
+
+			typedef typename PartitionForestSelectionT::NodeConstIterator Iter;
+			for(Iter it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+			{
+				std::deque<int> receptiveRegion = volumeIPF->receptive_region_of(*it);
+				for(std::deque<int>::const_iterator jt=receptiveRegion.begin(), jend=receptiveRegion.end(); jt!=jend; ++jt)
 				{
-					if(index[0] != 0 && index[1] != 0 && index[2] != 0 &&
-					   index[0] != size[0]-1 && index[1] != size[1]-1 && index[2] != size[2]-1)
-					{
-						itk::Index<3> position = {{index[0]-1, (size[1]-2) - index[1], index[2]-1}};	// note the flipped y axis
-						PFNodeID n(0, volumeIPF->leaf_of_position(position));
-						std::vector<Feature> features = m_multiFeatureSelection->features_of(n);
-
-						// Assume that (a) features can be mapped straightforwardly to ints and (b) the first feature is the most important.
-						int value = !features.empty() ? feature_to_int(features[0]) : 0;
-						labelling->SetPixel(index, value);
-					}
-					else
-					{
-						labelling->SetPixel(index, 0);
-					}
-
-					increment_progress();
+					itk::Index<3> position = volumeIPF->position_of_leaf(*jt);
+					itk::Index<3> index = {{position[0]+1, (size[1]-2) - position[1], position[2]+1}};	// note the flipped y axis
+					labelling->SetPixel(index, value);
 				}
+			}
+		}
 
 		m_labellingHook.set(labelling);
-		increment_progress();
 	}
 };
 

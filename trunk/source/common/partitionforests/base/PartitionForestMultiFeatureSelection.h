@@ -154,6 +154,11 @@ public:
 		return m_forest;
 	}
 
+	bool has_selection(const Feature& feature) const
+	{
+		return m_selections.find(feature) != m_selections.end();
+	}
+
 	void identify_node(const PFNodeID& node, const Feature& feature)
 	{
 		selection_internal(feature)->select_node(node);
