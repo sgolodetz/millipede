@@ -11,6 +11,7 @@ using boost::shared_ptr;
 #include <common/adts/RootedMST.h>
 #include <common/commands/UndoableCommandManager.h>
 #include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
+#include <common/partitionforests/base/PartitionForestTouchRecorder.h>
 #include <common/partitionforests/images/SimpleImageBranchLayer.h>
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
@@ -249,6 +250,28 @@ struct MFSListener : MFS::Listener
 	}
 };
 
+struct TouchRecorder : PartitionForestTouchRecorder<SimpleImageLeafLayer,SimpleImageBranchLayer>
+{
+	typedef std::set<int> Layer;
+
+	explicit TouchRecorder(int highestLayer)
+	:	PartitionForestTouchRecorder<SimpleImageLeafLayer,SimpleImageBranchLayer>(highestLayer)
+	{}
+
+	void nodes_were_touched(const std::vector<Layer>& nodes)
+	{
+		std::cout << "Nodes were touched: ";
+		for(size_t i=0, size=nodes.size(); i<size; ++i)
+		{
+			std::cout << "[ ";
+			std::copy(nodes[i].begin(), nodes[i].end(), std::ostream_iterator<int>(std::cout, " "));
+			std::cout << ']';
+			if(i != size-1) std::cout << ", ";
+		}
+		std::cout << '\n';
+	}
+};
+
 //#################### HELPERS ####################
 IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 {
@@ -472,6 +495,30 @@ void switch_parent_test()
 	ipf->output(std::cout);
 }
 
+void touch_recorder_test()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	ipf->add_shared_listener(shared_ptr<ForestListener>(new ForestListener));
+
+	// Test touch recording.
+	typedef boost::shared_ptr<TouchRecorder> TouchRecorder_Ptr;
+	TouchRecorder_Ptr recorder(new TouchRecorder(ipf->highest_layer()));
+	ipf->add_weak_listener(recorder);
+
+	ipf->clone_layer(2);
+	manager->undo();
+
+	std::set<PFNodeID> mergees;
+	mergees.insert(PFNodeID(2,0));
+	mergees.insert(PFNodeID(2,6));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+	manager->undo();
+
+	ipf->parent_switch(PFNodeID(0,5), 0);
+	manager->undo();
+}
+
 void unzip_zip_test()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
@@ -499,12 +546,13 @@ void unzip_zip_test()
 
 int main()
 {
-	feature_selection_test();
+	//feature_selection_test();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
 	//selection_test();
 	//switch_parent_test();
+	touch_recorder_test();
 	//unzip_zip_test();
 	return 0;
 }
