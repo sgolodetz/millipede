@@ -395,6 +395,16 @@ void SegmentationWindow::OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e)
 	e.Enable(m_view->camera()->has_previous_slice());
 }
 
+void SegmentationWindow::OnUpdateMenuNavigationZoomIn(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->camera()->zoom_level() < m_view->camera()->max_zoom_level());
+}
+
+void SegmentationWindow::OnUpdateMenuNavigationZoomOut(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->camera()->zoom_level() > m_view->camera()->min_zoom_level());
+}
+
 void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
@@ -444,6 +454,8 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, SegmentationWindow::OnUpdateMenuNavigationNextSlice)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, SegmentationWindow::OnUpdateMenuNavigationPreviousLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, SegmentationWindow::OnUpdateMenuNavigationPreviousSlice)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_ZOOMIN, SegmentationWindow::OnUpdateMenuNavigationZoomIn)
+	EVT_UPDATE_UI(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnUpdateMenuNavigationZoomOut)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnUpdateForestNeeder)

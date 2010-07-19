@@ -89,6 +89,8 @@ public:
 	void OnUpdateMenuNavigationNextSlice(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationPreviousLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e);
+	void OnUpdateMenuNavigationZoomIn(wxUpdateUIEvent& e);
+	void OnUpdateMenuNavigationZoomOut(wxUpdateUIEvent& e);
 	void OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e);
 	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
