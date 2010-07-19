@@ -76,10 +76,6 @@ private:
 
 		VolumeIPF_CPtr volumeIPF = m_multiFeatureSelection->volume_ipf();
 		LabelImagePointer labelling = ITKImageUtil::make_image<int>(m_labellingSize);
-
-		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
-		itk::Index<3> size = ITKImageUtil::make_index_from_size(m_labellingSize);
-
 		labelling->FillBuffer(0);
 
 		for(Feature f=enum_begin<Feature>(), end=enum_end<Feature>(); f!=end; ++f)
@@ -96,7 +92,7 @@ private:
 				for(std::deque<int>::const_iterator jt=receptiveRegion.begin(), jend=receptiveRegion.end(); jt!=jend; ++jt)
 				{
 					itk::Index<3> position = volumeIPF->position_of_leaf(*jt);
-					itk::Index<3> index = {{position[0]+1, (size[1]-2) - position[1], position[2]+1}};	// note the flipped y axis
+					itk::Index<3> index = {{position[0]+1, (m_labellingSize[1]-2) - position[1], position[2]+1}};	// note the flipped y axis
 					labelling->SetPixel(index, value);
 				}
 			}
