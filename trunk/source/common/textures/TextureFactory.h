@@ -7,17 +7,12 @@
 #define H_MILLIPEDE_TEXTUREFACTORY
 
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
-#include <itkImage.h>
-#include <itkRGBPixel.h>
-#include <itkRGBAPixel.h>
+#include "Greyscale8ImageTexture.h"
+#include "RGB24ImageTexture.h"
+#include "RGBA32ImageTexture.h"
 
 namespace mp {
-
-//#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class Texture> Texture_Ptr;
 
 class TextureFactory
 {
@@ -33,9 +28,9 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	static Texture_Ptr create_texture(const Greyscale8Image::Pointer& image, bool clamp = true);
-	static Texture_Ptr create_texture(const RGB24Image::Pointer& image, const boost::optional<RGB24>& colourKey = boost::none, bool clamp = true);
-	static Texture_Ptr create_texture(const RGBA32Image::Pointer& image, bool clamp = true);
+	static Greyscale8ImageTexture_Ptr create_texture(const Greyscale8Image::Pointer& image, bool clamp = true);
+	static RGB24ImageTexture_Ptr create_texture(const RGB24Image::Pointer& image, const boost::optional<RGB24>& colourKey = boost::none, bool clamp = true);
+	static RGBA32ImageTexture_Ptr create_texture(const RGBA32Image::Pointer& image, bool clamp = true);
 
 	//#################### PRIVATE METHODS ####################
 private:

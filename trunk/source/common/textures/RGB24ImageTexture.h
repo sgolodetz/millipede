@@ -38,6 +38,9 @@ private:
 	void reload_image_without_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const;
 };
 
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<RGB24ImageTexture> RGB24ImageTexture_Ptr;
+
 }
 
 #endif

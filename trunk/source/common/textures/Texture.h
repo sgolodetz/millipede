@@ -39,12 +39,12 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	void bind() const;
-
-	//#################### PROTECTED METHODS ####################
-protected:
 	void reload() const;
-	void set_id(GLuint id) const;
 };
+
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<Texture> Texture_Ptr;
+typedef boost::shared_ptr<const Texture> Texture_CPtr;
 
 }
 

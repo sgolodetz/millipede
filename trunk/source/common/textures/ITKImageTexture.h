@@ -31,13 +31,15 @@ public:
 	:	Texture(clamp), m_image(image)
 	{}
 
-	//#################### PROTECTED METHODS ####################
-protected:
+	//#################### PUBLIC METHODS ####################
+public:
 	ImagePointer image() const
 	{
 		return m_image;
 	}
 
+	//#################### PROTECTED METHODS ####################
+protected:
 	/**
 	Calculate a version of the image that is resized so that its dimensions are powers of two if necessary.
 	*/
@@ -63,8 +65,8 @@ protected:
 		resampler->SetSize(newSize);
 		resampler->SetOutputOrigin(image()->GetOrigin());
 		typename Image::SpacingType newSpacing = image()->GetSpacing();
-		newSpacing[0] *= (double)size[0] / desiredWidth;
-		newSpacing[1] *= (double)size[1] / desiredHeight;
+		newSpacing[0] *= static_cast<double>(size[0]) / desiredWidth;
+		newSpacing[1] *= static_cast<double>(size[1]) / desiredHeight;
 		resampler->SetOutputSpacing(newSpacing);
 		resampler->SetInput(image());
 		resampler->Update();

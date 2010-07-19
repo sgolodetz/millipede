@@ -27,6 +27,9 @@ private:
 	void reload_image() const;
 };
 
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<Greyscale8ImageTexture> Greyscale8ImageTexture_Ptr;
+
 }
 
 #endif

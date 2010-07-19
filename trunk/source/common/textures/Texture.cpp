@@ -37,7 +37,8 @@ Texture::Texture(bool clamp)
 {}
 
 //#################### DESTRUCTOR ####################
-Texture::~Texture() {}
+Texture::~Texture()
+{}
 
 //#################### PUBLIC METHODS ####################
 /**
@@ -49,16 +50,24 @@ void Texture::bind() const
 	glBindTexture(GL_TEXTURE_2D, *m_id);
 }
 
-//#################### PROTECTED METHODS ####################
 /**
 Reloads the texture.
 */
 void Texture::reload() const
 {
+	// Step 1:	If there's a texture currently loaded, delete it.
+	if(m_id && glIsTexture(*m_id))
+	{
+		glDeleteTextures(1, m_id.get());
+		m_id.reset();	// technically redundant, but clearer when debugging
+	}
+
+	// Step 2:	Generate a new texture ID.
 	GLuint id;
 	glGenTextures(1, &id);
-	set_id(id);
+	m_id.reset(new GLuint(id), TextureDeleter());
 
+	// Step 3:	Bind the texture and set up the texture parameters.
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
@@ -74,18 +83,8 @@ void Texture::reload() const
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
-	// Reload the actual image.
+	// Step 4:	Reload the actual image.
 	reload_image();
-}
-
-/**
-Sets the texture ID (for use by subclasses during reloading).
-
-@param id	The new texture ID
-*/
-void Texture::set_id(GLuint id) const
-{
-	m_id.reset(new GLuint(id), TextureDeleter());
 }
 
 }

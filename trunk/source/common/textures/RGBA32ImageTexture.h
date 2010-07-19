@@ -30,6 +30,9 @@ private:
 	void reload_image() const;
 };
 
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<RGBA32ImageTexture> RGBA32ImageTexture_Ptr;
+
 }
 
 #endif
