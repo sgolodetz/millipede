@@ -55,20 +55,16 @@ Reloads the texture.
 */
 void Texture::reload() const
 {
-	// Step 1:	If there's a texture currently loaded, delete it.
-	if(m_id && glIsTexture(*m_id))
+	// Step 1:	If there's no texture ID, or the current texture ID is invalid, create a new one.
+	if(!m_id || (m_id && !glIsTexture(*m_id)))
 	{
-		glDeleteTextures(1, m_id.get());
-		m_id.reset();	// technically redundant, but clearer when debugging
+		GLuint id;
+		glGenTextures(1, &id);
+		m_id.reset(new GLuint(id), TextureDeleter());
 	}
 
-	// Step 2:	Generate a new texture ID.
-	GLuint id;
-	glGenTextures(1, &id);
-	m_id.reset(new GLuint(id), TextureDeleter());
-
-	// Step 3:	Bind the texture and set up the texture parameters.
-	glBindTexture(GL_TEXTURE_2D, id);
+	// Step 2:	Bind the texture and set up the texture parameters.
+	glBindTexture(GL_TEXTURE_2D, *m_id);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
@@ -83,8 +79,22 @@ void Texture::reload() const
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 
-	// Step 4:	Reload the actual image.
+	// Step 3:	Reload the actual image.
 	reload_image();
+}
+
+/**
+Reloads the [minX,minY]-[maxX,maxY] region of the texture.
+
+@param[in]	minX	The lower x bound of the region to be reloaded
+@param[in]	minY	The lower y bound of the region to be reloaded
+@param[in]	maxX	The upper x bound of the region to be reloaded
+@param[in]	maxY	The upper y bound of the region to be reloaded
+*/
+void Texture::reload_partial(int minX, int minY, int maxX, int maxY) const
+{
+	// TEMPORARY: Until this is properly implemented, just reload the whole texture.
+	reload();
 }
 
 }

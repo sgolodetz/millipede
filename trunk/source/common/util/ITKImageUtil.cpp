@@ -59,6 +59,12 @@ std::vector<itk::Offset<3> > make_6_connected_offsets()
 	return offsets;
 }
 
+itk::Index<2> make_index(long x, long y)
+{
+	itk::Index<2> ret = {{x,y}};
+	return ret;
+}
+
 itk::Index<3> make_index(long x, long y, long z)
 {
 	itk::Index<3> ret = {{x,y,z}};

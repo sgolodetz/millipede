@@ -7,7 +7,6 @@
 #define H_MILLIPEDE_TEXTURE
 
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 #include <common/ogl/WrappedGL.h>
 
@@ -22,7 +21,7 @@ class Texture
 	//#################### PROTECTED VARIABLES ####################
 protected:
 	bool m_clamp;
-	mutable shared_ptr<GLuint> m_id;
+	mutable boost::shared_ptr<GLuint> m_id;
 
 	//#################### CONSTRUCTORS ####################
 protected:
@@ -38,8 +37,9 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void bind() const;
-	void reload() const;
+	virtual void bind() const;
+	virtual void reload() const;
+	virtual void reload_partial(int minX, int minY, int maxX, int maxY) const;
 };
 
 //#################### TYPEDEFS ####################
