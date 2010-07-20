@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_MULTILAYERNODESCOREROVERLAY
 
 #include <common/featureid/multilayer/MultilayerNodeScorer.h>
+#include <common/textures/TextureFactory.h>
 #include <common/util/NumericUtil.h>
 #include "IPFOverlayTools.h"
 #include "PartitionOverlay.h"

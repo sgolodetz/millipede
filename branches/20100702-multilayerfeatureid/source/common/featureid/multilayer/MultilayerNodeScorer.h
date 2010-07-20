@@ -97,14 +97,51 @@ protected:
 	//#################### PRIVATE METHODS ####################
 private:
 	void normalize_scores()
-	{
-		// TODO
+	{	
+		double max_score = 0;
+		int highest_layer = m_forest->highest_layer(); 
+		typedef typename BranchLayer::BranchNodeConstIterator Iter;
+		for(Iter it=m_forest->branch_nodes_cbegin( highest_layer), iend=m_forest->branch_nodes_cend(highest_layer); it!=iend; ++it)
+		{
+			PFNodeID node(highest_layer, it.index());
+			double score  = m_scores[node];
+			max_score = std::max(max_score, score);
+		}
+		if (max_score == 0){return;}
+		for(Iter it=m_forest->branch_nodes_cbegin( highest_layer), iend=m_forest->branch_nodes_cend(highest_layer); it!=iend; ++it)
+		{
+			PFNodeID node(highest_layer, it.index());
+			adjust_scores(node,1 / max_score);
+		}
 	}
 
+	void adjust_scores(const PFNodeID& node, double factor)
+	{
+		m_scores[node] = m_scores[node] * factor;
+		std::set<PFNodeID> children = m_forest->children_of(node);
+		for(std::set<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
+		{
+			adjust_scores(*it,factor);
+		}
+	}
+	
+	double max_score(const PFNodeID& node)
+	{
+		double score = m_scores[node];
+		std::set<PFNodeID> children = m_forest->children_of(node);
+		for(std::set<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
+		{
+			score = std::max(score, max_score(*it));
+		}
+		return score;            
+	}
+	
 	void propagate_scores_down(const PFNodeID& cur, double parentScore = -1.0)
 	{
 		double& score = m_scores[cur];
-		if(parentScore >= 0.0) score = sqrt(score * parentScore);
+		if(parentScore > 0.0){
+			score = sqrt(score * parentScore);
+		}
 
 		if(cur.layer() > 1)
 		{
