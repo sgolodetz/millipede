@@ -61,4 +61,10 @@ void RGB24ImageTexture::reload_image_without_colour_key(const RGB24 *const pixel
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size[0], size[1], 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
 }
 
+void RGB24ImageTexture::reload_partial_image(int minX, int minY, int maxX, int maxY) const
+{
+	// TEMPORARY: Until this is properly implemented, just reload the whole image.
+	reload_image();
+}
+
 }

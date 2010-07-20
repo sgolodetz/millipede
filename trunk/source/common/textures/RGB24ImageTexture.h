@@ -36,6 +36,7 @@ private:
 	void reload_image() const;
 	void reload_image_with_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const;
 	void reload_image_without_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const;
+	void reload_partial_image(int minX, int minY, int maxX, int maxY) const;
 };
 
 //#################### TYPEDEFS ####################

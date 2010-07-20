@@ -28,6 +28,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void reload_image() const;
+	void reload_partial_image(int minX, int minY, int maxX, int maxY) const;
 };
 
 //#################### TYPEDEFS ####################

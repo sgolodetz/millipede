@@ -34,12 +34,17 @@ public:
 	//#################### PRIVATE ABSTRACT METHODS ####################
 private:
 	virtual void reload_image() const = 0;
+	virtual void reload_partial_image(int minX, int minY, int maxX, int maxY) const = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:
 	virtual void bind() const;
 	virtual void reload() const;
 	virtual void reload_partial(int minX, int minY, int maxX, int maxY) const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void prepare_for_reload() const;
 };
 
 //#################### TYPEDEFS ####################

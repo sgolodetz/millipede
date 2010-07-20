@@ -55,6 +55,27 @@ Reloads the texture.
 */
 void Texture::reload() const
 {
+	prepare_for_reload();
+	reload_image();
+}
+
+/**
+Reloads the [minX,minY]-[maxX,maxY] region of the texture.
+
+@param[in]	minX	The lower x bound of the region to be reloaded
+@param[in]	minY	The lower y bound of the region to be reloaded
+@param[in]	maxX	The upper x bound of the region to be reloaded
+@param[in]	maxY	The upper y bound of the region to be reloaded
+*/
+void Texture::reload_partial(int minX, int minY, int maxX, int maxY) const
+{
+	prepare_for_reload();
+	reload_partial_image(minX, minY, maxX, maxY);
+}
+
+//#################### PRIVATE METHODS ####################
+void Texture::prepare_for_reload() const
+{
 	// Step 1:	If there's no texture ID, or the current texture ID is invalid, create a new one.
 	if(!m_id || (m_id && !glIsTexture(*m_id)))
 	{
@@ -78,23 +99,6 @@ void Texture::reload() const
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
-
-	// Step 3:	Reload the actual image.
-	reload_image();
-}
-
-/**
-Reloads the [minX,minY]-[maxX,maxY] region of the texture.
-
-@param[in]	minX	The lower x bound of the region to be reloaded
-@param[in]	minY	The lower y bound of the region to be reloaded
-@param[in]	maxX	The upper x bound of the region to be reloaded
-@param[in]	maxY	The upper y bound of the region to be reloaded
-*/
-void Texture::reload_partial(int minX, int minY, int maxX, int maxY) const
-{
-	// TEMPORARY: Until this is properly implemented, just reload the whole texture.
-	reload();
 }
 
 }

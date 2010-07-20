@@ -27,4 +27,10 @@ void Greyscale8ImageTexture::reload_image() const
 	glTexImage2D(GL_TEXTURE_2D, 0, 1, size[0], size[1], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, input->GetBufferPointer());
 }
 
+void Greyscale8ImageTexture::reload_partial_image(int minX, int minY, int maxX, int maxY) const
+{
+	// TEMPORARY: Until this is properly implemented, just reload the whole image.
+	reload_image();
+}
+
 }
