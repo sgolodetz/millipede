@@ -96,6 +96,7 @@ public:
 	void fit_image_to_view();
 	wxGLContext *get_context() const;
 	void goto_slice();
+	void merge_selected_nodes();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
 

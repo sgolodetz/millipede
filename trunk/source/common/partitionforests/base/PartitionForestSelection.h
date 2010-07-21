@@ -329,16 +329,6 @@ public:
 		else return false;
 	}
 
-	bool is_multi_layer() const
-	{
-		int usedLayers = 0;
-		for(size_t i=0, layerCount=m_nodes.size(); i<layerCount; ++i)
-		{
-			if(m_nodes[i].size() != 0) ++usedLayers;
-		}
-		return usedLayers > 1;
-	}
-
 	void layer_was_cloned(int index)
 	{
 		// The desired effect is to insert a layer above the one specified and migrate any selected nodes upwards to the new layer.
@@ -377,6 +367,16 @@ public:
 
 		// Delete the layer itself.
 		m_nodes.erase(m_nodes.begin() + index);
+	}
+
+	int node_count() const
+	{
+		int nodeCount = 0;
+		for(size_t i=0, layerCount=m_nodes.size(); i<layerCount; ++i)
+		{
+			nodeCount += m_nodes[i].size();
+		}
+		return nodeCount;
 	}
 
 	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
@@ -444,6 +444,16 @@ public:
 	{
 		if(contains(node))	deselect_node(node);
 		else				select_node(node);
+	}
+
+	int used_layers() const
+	{
+		int usedLayers = 0;
+		for(size_t i=0, layerCount=m_nodes.size(); i<layerCount; ++i)
+		{
+			if(m_nodes[i].size() != 0) ++usedLayers;
+		}
+		return usedLayers;
 	}
 
 	ViewNodeConstIterator view_at_layer_cbegin(int layerIndex) const

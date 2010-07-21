@@ -313,6 +313,12 @@ SliceLocation PartitionView::initial_slice_location(const DICOMVolumeChoice& vol
 	return SliceLocation((volumeChoice.maxX - volumeChoice.minX)/2, (volumeChoice.maxY - volumeChoice.minY)/2, (volumeChoice.maxZ - volumeChoice.minZ)/2, 0);
 }
 
+void PartitionView::merge_selected_nodes()
+{
+	std::set<PFNodeID> mergees(m_model->selection()->nodes_cbegin(), m_model->selection()->nodes_cend());
+	m_model->volume_ipf()->merge_nonsibling_nodes(mergees);
+}
+
 const PartitionView::PartitionModel_Ptr& PartitionView::model()
 {
 	return m_model;
