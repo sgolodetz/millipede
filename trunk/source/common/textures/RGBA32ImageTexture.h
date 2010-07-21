@@ -27,6 +27,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	static std::vector<unsigned char> make_buffer(const RGBA32 *const pixels, const itk::Size<2>& size);
 	void reload_image() const;
 	void reload_partial_image(int minX, int minY, int maxX, int maxY) const;
 };

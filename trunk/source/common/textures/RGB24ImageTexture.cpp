@@ -50,7 +50,7 @@ void RGB24ImageTexture::reload_image() const
 {
 	typedef itk::VectorLinearInterpolateImageFunction<Image> Interpolator;
 	typedef itk::VectorResampleImageFilter<Image,Image> Resampler;
-	ImagePointer input = input_image<Resampler,Interpolator>(50);
+	ImagePointer input = scaled_image<Resampler,Interpolator>(50);
 
 	const RGB24 *const pixels = input->GetBufferPointer();
 	itk::Size<2> size = input->GetLargestPossibleRegion().GetSize();

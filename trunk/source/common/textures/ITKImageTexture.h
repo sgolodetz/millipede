@@ -7,8 +7,10 @@
 #define H_MILLIPEDE_ITKIMAGETEXTURE
 
 #include <climits>
+#include <cmath>
 
 #include <itkAffineTransform.h>
+#include <itkExtractImageFilter.h>
 #include <itkImage.h>
 
 #include "Texture.h"
@@ -88,7 +90,7 @@ protected:
 	Calculate a version of the image that is resized so that its dimensions are powers of two if necessary.
 	*/
 	template <typename Resampler, typename Interpolator>
-	ImagePointer input_image(const typename Image::PixelType& defaultValue) const
+	ImagePointer scaled_image(const typename Image::PixelType& defaultValue) const
 	{
 		itk::Size<2> size = m_image->GetLargestPossibleRegion().GetSize();
 
@@ -116,6 +118,37 @@ protected:
 		resampler->Update();
 
 		return resampler->GetOutput();
+	}
+
+	template <typename Resampler, typename Interpolator>
+	ImagePointer scaled_partial_image(int minX, int minY, int maxX, int maxY, const typename Image::PixelType& defaultValue, int& xOffset, int& yOffset) const
+	{
+		ImagePointer scaledImage = scaled_image<Resampler,Interpolator>(defaultValue);
+
+		itk::Size<2> initialSize = m_image->GetLargestPossibleRegion().GetSize();
+		itk::Size<2> scaledSize = scaledImage->GetLargestPossibleRegion().GetSize();
+
+		double scaleX = static_cast<double>(scaledSize[0]) / initialSize[0];
+		double scaleY = static_cast<double>(scaledSize[1]) / initialSize[1];
+
+		typedef itk::ExtractImageFilter<Image,Image> Extractor;
+		typename Extractor::Pointer extractor = Extractor::New();
+		extractor->SetInput(scaledImage);
+
+		itk::Index<2> partialMins = {{floor(scaleX * minX), floor(scaleY * minY)}};
+		itk::Index<2> partialMaxs = {{ceil(scaleX * maxX), ceil(scaleY * maxY)}};
+		itk::Size<2> partialSize = {{partialMaxs[0] + 1 - partialMins[0], partialMaxs[1] + 1 - partialMins[1]}};
+
+		itk::ImageRegion<2> region;
+		region.SetIndex(partialMins);
+		region.SetSize(partialSize);
+		extractor->SetExtractionRegion(region);
+		extractor->Update();
+
+		xOffset = partialMins[0];
+		yOffset = partialMaxs[1];
+
+		return extractor->GetOutput();
 	}
 
 	//#################### PRIVATE METHODS ####################
