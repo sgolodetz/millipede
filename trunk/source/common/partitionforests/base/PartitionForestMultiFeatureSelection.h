@@ -87,6 +87,7 @@ private:
 		void modification_undone(const Modification& modification, int commandDepth)				{ m_listeners->modification_undone(modification, m_feature, commandDepth); }
 		void node_was_deselected(const PFNodeID& node, int commandDepth)							{ m_listeners->node_was_unidentified(node, m_feature, commandDepth); }
 		void node_was_selected(const PFNodeID& node, int commandDepth)								{ m_listeners->node_was_identified(node, m_feature, commandDepth); }
+		void selection_changed(int commandDepth)													{ m_listeners->multi_feature_selection_changed(commandDepth); }
 		void selection_was_cleared(int commandDepth)												{ m_listeners->feature_was_cleared(m_feature, commandDepth); }
 	};
 
