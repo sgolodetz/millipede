@@ -199,6 +199,7 @@ partitionforests/images/ImageBranchLayer.h
 partitionforests/images/ImageLeafLayer.h
 partitionforests/images/LabelImageCreator.h
 partitionforests/images/MosaicImageCreator.h
+partitionforests/images/MosaicTextureSetUpdater.h
 partitionforests/images/SimpleImageBranchLayer.h
 partitionforests/images/SimpleImageLeafLayer.h
 partitionforests/images/SimplePixelProperties.h

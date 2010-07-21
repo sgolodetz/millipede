@@ -334,6 +334,8 @@ public:
 		// The desired effect is to insert a layer above the one specified and migrate any selected nodes upwards to the new layer.
 		// This can be achieved more easily by simply inserting an empty layer below the one being cloned, as here.
 		m_nodes.insert(m_nodes.begin() + index, Layer());
+
+		m_listeners->selection_changed(0);
 	}
 
 	void layer_was_undeleted(int index)
@@ -354,6 +356,8 @@ public:
 		{
 			consolidate_node(*it, boost::none);
 		}
+
+		m_listeners->selection_changed(0);
 	}
 
 	void layer_will_be_deleted(int index)
@@ -367,6 +371,8 @@ public:
 
 		// Delete the layer itself.
 		m_nodes.erase(m_nodes.begin() + index);
+
+		m_listeners->selection_changed(0);
 	}
 
 	int node_count() const
@@ -389,6 +395,8 @@ public:
 				insert_node(*it, boost::none);
 			}
 		}
+
+		m_listeners->selection_changed(0);
 	}
 
 	NodeConstIterator nodes_cbegin() const
@@ -407,6 +415,8 @@ public:
 		// this node's ancestors in the forest will be unchanged by the merge, so we
 		// don't need to consolidate those.
 		consolidate_node(result, boost::none);
+
+		m_listeners->selection_changed(0);
 	}
 
 	void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)

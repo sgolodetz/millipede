@@ -14,6 +14,7 @@
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/base/PartitionForestTouchListener.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
+#include <common/partitionforests/images/MosaicTextureSetUpdater.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
@@ -171,7 +172,25 @@ struct PartitionView::ForestTouchListener : PartitionForestTouchListener<LeafLay
 
 	void nodes_were_touched(const std::vector<Layer>& nodes)
 	{
-		// TODO
+		CompositeJob_Ptr job(new CompositeJob);
+		for(int layer=0, layerCount=static_cast<int>(nodes.size()); layer<layerCount; ++layer)
+		{
+			if(nodes[layer].empty()) continue;
+
+			for(int i=0; i<3; ++i)
+			{
+				SliceOrientation ori = SliceOrientation(i);
+				if(base->m_dicomTextureSet->has_textures(ori))
+				{
+					typedef MosaicTextureSetUpdater<LeafLayer,BranchLayer> MosaicTextureSetUpdaterT;
+					job->add_subjob(new MosaicTextureSetUpdaterT(base->m_partitionTextureSets[layer-1], layer, nodes[layer], volumeIPF, ori, true));
+				}
+			}
+		}
+		Job::execute_managed(job);
+
+		base->recreate_overlays();
+		base->refresh_canvases();
 	}
 };
 

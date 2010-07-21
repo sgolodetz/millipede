@@ -53,13 +53,15 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	const TPixel& get_pixel(const itk::Index<3>& index) const
+	const TPixel& get_pixel(SliceOrientation ori, const itk::Index<3>& index) const
 	{
-		// Note: All of these should in principle return equal - it just depends which textures are actually available right now.
-		if(has_textures(ORIENT_XY)) return m_textures[ORIENT_XY][index[2]]->get_pixel(ITKImageUtil::make_index(index[0], index[1]));
-		if(has_textures(ORIENT_XZ)) return m_textures[ORIENT_XZ][index[1]]->get_pixel(ITKImageUtil::make_index(index[0], index[2]));
-		if(has_textures(ORIENT_YZ)) return m_textures[ORIENT_YZ][index[0]]->get_pixel(ITKImageUtil::make_index(index[1], index[2]));
-		throw Exception("Can't get pixel: there are no textures in any slice orientation available");
+		switch(ori)
+		{
+			case ORIENT_XY:		return m_textures[ORIENT_XY][index[2]]->get_pixel(ITKImageUtil::make_index(index[0], index[1]));
+			case ORIENT_XZ:		return m_textures[ORIENT_XZ][index[1]]->get_pixel(ITKImageUtil::make_index(index[0], index[2]));
+			case ORIENT_YZ:		return m_textures[ORIENT_YZ][index[0]]->get_pixel(ITKImageUtil::make_index(index[1], index[2]));
+			default:			throw Exception("Bad slice orientation");	// this should never happen
+		}
 	}
 
 	bool has_textures(SliceOrientation ori) const
@@ -67,11 +69,15 @@ public:
 		return !m_textures[ori].empty();
 	}
 
-	void set_pixel(const itk::Index<3>& index, const TPixel& pixel)
+	void set_pixel(SliceOrientation ori, const itk::Index<3>& index, const TPixel& pixel)
 	{
-		if(has_textures(ORIENT_YZ)) m_textures[ORIENT_YZ][index[0]]->set_pixel(ITKImageUtil::make_index(index[1], index[2]), pixel);
-		if(has_textures(ORIENT_XZ)) m_textures[ORIENT_XZ][index[1]]->set_pixel(ITKImageUtil::make_index(index[0], index[2]), pixel);
-		if(has_textures(ORIENT_XY)) m_textures[ORIENT_XY][index[2]]->set_pixel(ITKImageUtil::make_index(index[0], index[1]), pixel);
+		switch(ori)
+		{
+			case ORIENT_XY:		m_textures[ORIENT_XY][index[2]]->set_pixel(ITKImageUtil::make_index(index[0], index[1]), pixel); break;
+			case ORIENT_XZ:		m_textures[ORIENT_XZ][index[1]]->set_pixel(ITKImageUtil::make_index(index[0], index[2]), pixel); break;
+			case ORIENT_YZ:		m_textures[ORIENT_YZ][index[0]]->set_pixel(ITKImageUtil::make_index(index[1], index[2]), pixel); break;
+			default:			throw Exception("Bad slice orientation");	// this should never happen
+		}
 	}
 
 	void set_textures(SliceOrientation ori, const std::vector<ITKImageTexture_Ptr>& textures)
