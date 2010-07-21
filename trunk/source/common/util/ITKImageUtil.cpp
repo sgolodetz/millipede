@@ -71,6 +71,13 @@ itk::Index<3> make_index(long x, long y, long z)
 	return ret;
 }
 
+RGB24 make_rgb24(unsigned char r, unsigned char g, unsigned char b)
+{
+	RGB24 p;
+	p[0] = r, p[1] = g, p[2] = b;
+	return p;
+}
+
 RGBA32 make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
 	RGBA32 p;

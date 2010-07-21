@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <itkImageRegionIterator.h>
+#include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
 
 #include <common/slices/SliceOrientation.h>
@@ -16,6 +17,7 @@
 namespace mp {
 
 //#################### TYPEDEFS ####################
+typedef itk::RGBPixel<unsigned char> RGB24;
 typedef itk::RGBAPixel<unsigned char> RGBA32;
 
 namespace ITKImageUtil {
@@ -26,6 +28,7 @@ std::vector<itk::Offset<3> > make_4_connected_offsets(SliceOrientation ori);
 std::vector<itk::Offset<3> > make_6_connected_offsets();
 itk::Index<2> make_index(long x, long y);
 itk::Index<3> make_index(long x, long y, long z);
+RGB24 make_rgb24(unsigned char r, unsigned char g, unsigned char b);
 RGBA32 make_rgba32(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 itk::Vector<double,3> make_vector3d(double x, double y, double z);
 

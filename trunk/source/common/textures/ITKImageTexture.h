@@ -146,7 +146,7 @@ protected:
 		extractor->Update();
 
 		xOffset = partialMins[0];
-		yOffset = partialMaxs[1];
+		yOffset = partialMins[1];
 
 		return extractor->GetOutput();
 	}

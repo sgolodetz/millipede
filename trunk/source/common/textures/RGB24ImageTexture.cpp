@@ -70,8 +70,25 @@ void RGB24ImageTexture::reload_image() const
 
 void RGB24ImageTexture::reload_partial_image(int minX, int minY, int maxX, int maxY) const
 {
-	// TEMPORARY: Until this is properly implemented, just reload the whole image.
-	reload_image();
+	typedef itk::VectorLinearInterpolateImageFunction<Image> Interpolator;
+	typedef itk::VectorResampleImageFilter<Image,Image> Resampler;
+	int xOffset = -1, yOffset = -1;
+	ImagePointer input = scaled_partial_image<Resampler,Interpolator>(minX, minY, maxX, maxY, 50, xOffset, yOffset);
+
+	const RGB24 *const pixels = input->GetBufferPointer();
+	itk::Size<2> size = input->GetLargestPossibleRegion().GetSize();
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	if(m_colourKey)
+	{
+		std::vector<unsigned char> data = make_buffer_with_colour_key(pixels, size);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, size[0], size[1], GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+	}
+	else
+	{
+		std::vector<unsigned char> data = make_buffer_without_colour_key(pixels, size);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, size[0], size[1], GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
+	}
 }
 
 }
