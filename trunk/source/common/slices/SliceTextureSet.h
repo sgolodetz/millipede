@@ -26,6 +26,13 @@ private:
 private:
 	std::vector<ITKImageTexture_Ptr> m_textures[3];
 
+	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
+public:
+	// TODO: Copy constructor (very important!)
+
+private:
+	SliceTextureSet& operator=(const SliceTextureSet&);
+
 	//#################### PUBLIC METHODS ####################
 public:
 	const TPixel& get_pixel(const itk::Index<3>& index) const

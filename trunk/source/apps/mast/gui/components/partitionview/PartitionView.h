@@ -42,7 +42,10 @@ class PartitionView : public wxPanel
 
 	//#################### TYPEDEFS ####################
 private:
-	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef DICOMImageBranchLayer BranchLayer;
+	typedef AbdominalFeature::Enum Feature;
+	typedef DICOMImageLeafLayer LeafLayer;
+	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 
@@ -52,6 +55,7 @@ private:
 	struct ModelListener;
 	struct MultiFeatureSelectionListener;
 	struct SelectionListener;
+	struct TouchRecorder;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -87,6 +91,8 @@ public:
 public:
 	const PartitionCamera_Ptr& camera();
 	PartitionCamera_CPtr camera() const;
+	void clone_current_layer();
+	void delete_current_layer();
 	void fit_image_to_view();
 	wxGLContext *get_context() const;
 	void goto_slice();
@@ -95,7 +101,7 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void add_selection_listeners();
+	void add_listeners();
 	void calculate_canvas_size();
 	void create_dicom_textures();
 	void create_overlays();

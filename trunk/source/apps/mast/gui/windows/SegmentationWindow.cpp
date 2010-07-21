@@ -40,6 +40,8 @@ enum
 	MENUID_NAVIGATION_PREVIOUSSLICE,
 	MENUID_NAVIGATION_ZOOMIN,
 	MENUID_NAVIGATION_ZOOMOUT,
+	MENUID_SEGMENTATION_CLONECURRENTLAYER,
+	MENUID_SEGMENTATION_DELETECURRENTLAYER,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SELECTION_CLEARSELECTION,
 	MENUID_SELECTION_SELECTMARKED_BASE,
@@ -157,8 +159,8 @@ void SegmentationWindow::setup_menus()
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume..."));
 	segmentationMenu->AppendSeparator();
-	segmentationMenu->Append(wxID_ANY, wxT("&Clone Current Layer"));
-	segmentationMenu->Append(wxID_ANY, wxT("&Delete Current Layer"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_CLONECURRENTLAYER, wxT("&Clone Current Layer"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_DELETECURRENTLAYER, wxT("&Delete Current Layer"));
 	segmentationMenu->Append(wxID_ANY, wxT("&Merge Selected Nodes"));
 	wxMenu *splitNodeMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(splitNodeMenu, wxT("&Split Node"));
@@ -314,6 +316,16 @@ void SegmentationWindow::OnMenuNavigationZoomOut(wxCommandEvent&)
 	m_view->camera()->set_zoom_level(m_view->camera()->zoom_level() - 1);
 }
 
+void SegmentationWindow::OnMenuSegmentationCloneCurrentLayer(wxCommandEvent&)
+{
+	m_view->clone_current_layer();
+}
+
+void SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&)
+{
+	m_view->delete_current_layer();
+}
+
 void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
 	m_model->segment_volume(this);
@@ -405,6 +417,11 @@ void SegmentationWindow::OnUpdateMenuNavigationZoomOut(wxUpdateUIEvent& e)
 	e.Enable(m_view->camera()->zoom_level() > m_view->camera()->min_zoom_level());
 }
 
+void SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->volume_ipf() && m_model->volume_ipf()->highest_layer() > 1);
+}
+
 void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
@@ -441,6 +458,8 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_PREVIOUSSLICE, SegmentationWindow::OnMenuNavigationPreviousSlice)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMIN, SegmentationWindow::OnMenuNavigationZoomIn)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnMenuNavigationZoomOut)
+	EVT_MENU(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnMenuSegmentationCloneCurrentLayer)
+	EVT_MENU(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
 	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes)
@@ -456,6 +475,8 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSSLICE, SegmentationWindow::OnUpdateMenuNavigationPreviousSlice)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_ZOOMIN, SegmentationWindow::OnUpdateMenuNavigationZoomIn)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnUpdateMenuNavigationZoomOut)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnUpdateForestNeeder)

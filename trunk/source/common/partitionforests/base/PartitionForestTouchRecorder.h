@@ -56,6 +56,12 @@ public:
 		forest_changed(0);
 	}
 
+	void layer_was_undeleted(int index)
+	{
+		reset(m_nodes.size() + 1);
+		forest_changed(0);
+	}
+
 	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
 	{
 		Layer& layer = m_nodes[node.layer()];

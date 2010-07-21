@@ -12,6 +12,7 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
+#include <common/partitionforests/base/PartitionForestTouchRecorder.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
@@ -88,7 +89,7 @@ struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
 		base->create_partition_textures();
 		base->recreate_overlays();
 		base->refresh_canvases();
-		base->add_selection_listeners();
+		base->add_listeners();
 	}
 };
 
@@ -128,6 +129,105 @@ struct PartitionView::SelectionListener : PartitionModelT::VolumeIPFSelectionT::
 	}
 };
 
+struct PartitionView::TouchRecorder : PartitionForestTouchRecorder<LeafLayer,BranchLayer>
+{
+	typedef PartitionForestTouchRecorder<LeafLayer,BranchLayer> Super;
+
+	typedef std::set<int> Layer;
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
+	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
+
+	PartitionView *base;
+	VolumeIPF_CPtr volumeIPF;
+
+	explicit TouchRecorder(PartitionView *base_, const VolumeIPF_CPtr& volumeIPF_)
+	:	Super(volumeIPF_->highest_layer()), base(base_), volumeIPF(volumeIPF_)
+	{}
+
+	void layer_was_cloned(int index)
+	{
+		Super::layer_was_cloned(index);
+
+		// Clone the partition texture set.
+		Greyscale8SliceTextureSet_Ptr clonedTextureSet(new Greyscale8SliceTextureSet(*base->m_partitionTextureSets[index-1]));
+		base->m_partitionTextureSets.insert(base->m_partitionTextureSets.begin() + index, clonedTextureSet);
+
+		// Update the layer slider and camera ranges.
+		base->m_layerSlider->SetRange(base->m_layerSlider->GetMin(), base->m_layerSlider->GetMax() + 1);
+		base->camera()->set_highest_layer(volumeIPF->highest_layer());
+
+		// Switch to the clone layer.
+		SliceLocation loc = base->camera()->slice_location();
+		loc.layer = index + 1;
+		base->camera()->set_slice_location(loc);
+	}
+
+	void layer_was_deleted(int index)
+	{
+		Super::layer_was_deleted(index);
+
+		// Delete the partition texture set.
+		base->m_partitionTextureSets.erase(base->m_partitionTextureSets.begin() + (index - 1));
+
+		// If we're now viewing above the highest layer, switch down a layer.
+		SliceLocation loc = base->camera()->slice_location();
+		if(loc.layer > volumeIPF->highest_layer())
+		{
+			loc.layer = volumeIPF->highest_layer();
+			base->camera()->set_slice_location(loc);
+		}
+
+		// Update the layer slider and camera ranges.
+		base->m_layerSlider->SetRange(base->m_layerSlider->GetMin(), base->m_layerSlider->GetMax() - 1);
+		base->camera()->set_highest_layer(volumeIPF->highest_layer());
+
+		// Refresh the canvases.
+		base->refresh_canvases();
+	}
+
+	void layer_was_undeleted(int index)
+	{
+		Super::layer_was_undeleted(index);
+
+		// Recreate the partition texture set.
+		base->m_partitionTextureSets.insert(base->m_partitionTextureSets.begin() + (index - 1), Greyscale8SliceTextureSet_Ptr(new Greyscale8SliceTextureSet));
+
+		CompositeJob_Ptr job(new CompositeJob);
+
+		typedef MosaicImageCreator<LeafLayer,BranchLayer> MIC;
+		typedef SliceTextureSetFiller<unsigned char> TSF;
+
+		for(int i=0; i<3; ++i)
+		{
+			SliceOrientation ori = SliceOrientation(i);
+			if(base->m_dicomTextureSet->has_textures(ori))
+			{
+				MIC *mosaicImageCreator = new MIC(volumeIPF, index, ori, true);
+				TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), base->m_partitionTextureSets[index-1]);
+				textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
+				job->add_subjob(mosaicImageCreator);
+				job->add_subjob(textureSetFiller);
+			}
+		}
+
+		execute_with_progress_dialog(job, base, "Recreating Partition Texture Set", false);
+
+		// Update the layer slider and camera ranges.
+		base->m_layerSlider->SetRange(base->m_layerSlider->GetMin(), base->m_layerSlider->GetMax() + 1);
+		base->camera()->set_highest_layer(volumeIPF->highest_layer());
+
+		// Switch to the undeleted layer.
+		SliceLocation loc = base->camera()->slice_location();
+		loc.layer = index;
+		base->camera()->set_slice_location(loc);
+	}
+
+	void nodes_were_touched(const std::vector<Layer>& nodes)
+	{
+		// TODO
+	}
+};
+
 //#################### CONSTRUCTORS ####################
 PartitionView::PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, const ICommandManager_Ptr& commandManager, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)),
@@ -164,6 +264,16 @@ const PartitionCamera_Ptr& PartitionView::camera()
 PartitionCamera_CPtr PartitionView::camera() const
 {
 	return m_camera;
+}
+
+void PartitionView::clone_current_layer()
+{
+	m_model->volume_ipf()->clone_layer(camera()->slice_location().layer);
+}
+
+void PartitionView::delete_current_layer()
+{
+	m_model->volume_ipf()->delete_layer(camera()->slice_location().layer);
 }
 
 void PartitionView::fit_image_to_view()
@@ -214,10 +324,11 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 }
 
 //#################### PRIVATE METHODS ####################
-void PartitionView::add_selection_listeners()
+void PartitionView::add_listeners()
 {
 	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<TouchRecorder>(new TouchRecorder(this, m_model->volume_ipf())));
 }
 
 void PartitionView::calculate_canvas_size()
@@ -282,7 +393,7 @@ Job_Ptr PartitionView::fill_dicom_textures_job(SliceOrientation ori, const itk::
 
 Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 {
-	typedef VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> VolumeIPFT;
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
 	VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
@@ -291,7 +402,7 @@ Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		typedef MosaicImageCreator<DICOMImageLeafLayer,DICOMImageBranchLayer> MIC;
+		typedef MosaicImageCreator<LeafLayer,BranchLayer> MIC;
 		typedef SliceTextureSetFiller<unsigned char> TSF;
 
 		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);

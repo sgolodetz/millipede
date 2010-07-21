@@ -75,6 +75,8 @@ public:
 	void OnMenuNavigationPreviousSlice(wxCommandEvent&);
 	void OnMenuNavigationZoomIn(wxCommandEvent&);
 	void OnMenuNavigationZoomOut(wxCommandEvent&);
+	void OnMenuSegmentationCloneCurrentLayer(wxCommandEvent&);
+	void OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
 	void OnMenuSelectionSelectMarked(wxCommandEvent& e);
@@ -91,6 +93,7 @@ public:
 	void OnUpdateMenuNavigationPreviousSlice(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationZoomIn(wxUpdateUIEvent& e);
 	void OnUpdateMenuNavigationZoomOut(wxUpdateUIEvent& e);
+	void OnUpdateMenuSegmentationDeleteCurrentLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e);
 	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
