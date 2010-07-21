@@ -52,10 +52,10 @@ private:
 	//#################### LISTENERS ####################
 private:
 	struct CameraListener;
+	struct ForestTouchListener;
 	struct ModelListener;
 	struct MultiFeatureSelectionListener;
 	struct SelectionListener;
-	struct TouchRecorder;
 
 	//#################### PRIVATE VARIABLES ####################
 private:

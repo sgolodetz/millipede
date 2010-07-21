@@ -1,17 +1,17 @@
 /***
- * millipede: PartitionForestTouchRecorder.h
+ * millipede: PartitionForestTouchListener.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_PARTITIONFORESTTOUCHRECORDER
-#define H_MILLIPEDE_PARTITIONFORESTTOUCHRECORDER
+#ifndef H_MILLIPEDE_PARTITIONFORESTTOUCHLISTENER
+#define H_MILLIPEDE_PARTITIONFORESTTOUCHLISTENER
 
 #include "PartitionForest.h"
 
 namespace mp {
 
 template <typename LeafLayer, typename BranchLayer>
-class PartitionForestTouchRecorder : public PartitionForest<LeafLayer,BranchLayer>::Listener
+class PartitionForestTouchListener : public PartitionForest<LeafLayer,BranchLayer>::Listener
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -24,7 +24,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit PartitionForestTouchRecorder(int highestLayer)
+	explicit PartitionForestTouchListener(int highestLayer)
 	{
 		reset(highestLayer + 1);
 	}

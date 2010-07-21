@@ -174,7 +174,7 @@ partitionforests/base/IForestLayer.h
 partitionforests/base/PartitionForest.h
 partitionforests/base/PartitionForestMultiFeatureSelection.h
 partitionforests/base/PartitionForestSelection.h
-partitionforests/base/PartitionForestTouchRecorder.h
+partitionforests/base/PartitionForestTouchListener.h
 partitionforests/base/PFNodeID.h
 )
 

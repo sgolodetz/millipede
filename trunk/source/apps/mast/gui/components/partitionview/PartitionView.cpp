@@ -12,7 +12,7 @@
 #include <wx/stattext.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
-#include <common/partitionforests/base/PartitionForestTouchRecorder.h>
+#include <common/partitionforests/base/PartitionForestTouchListener.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
@@ -76,62 +76,9 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	}
 };
 
-struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
+struct PartitionView::ForestTouchListener : PartitionForestTouchListener<LeafLayer,BranchLayer>
 {
-	PartitionView *base;
-
-	explicit ModelListener(PartitionView *base_)
-	:	base(base_)
-	{}
-
-	void forest_changed()
-	{
-		base->create_partition_textures();
-		base->recreate_overlays();
-		base->refresh_canvases();
-		base->add_listeners();
-	}
-};
-
-struct PartitionView::MultiFeatureSelectionListener : PartitionModelT::VolumeIPFMultiFeatureSelectionT::Listener
-{
-	PartitionView *base;
-
-	explicit MultiFeatureSelectionListener(PartitionView *base_)
-	:	base(base_)
-	{}
-
-	void multi_feature_selection_changed(int commandDepth)
-	{
-		if(commandDepth == 0)
-		{
-			base->recreate_multi_feature_selection_overlay();
-			base->refresh_canvases();
-		}
-	}
-};
-
-struct PartitionView::SelectionListener : PartitionModelT::VolumeIPFSelectionT::Listener
-{
-	PartitionView *base;
-
-	explicit SelectionListener(PartitionView *base_)
-	:	base(base_)
-	{}
-
-	void selection_changed(int commandDepth)
-	{
-		if(commandDepth == 0)
-		{
-			base->recreate_selection_overlay();
-			base->refresh_canvases();
-		}
-	}
-};
-
-struct PartitionView::TouchRecorder : PartitionForestTouchRecorder<LeafLayer,BranchLayer>
-{
-	typedef PartitionForestTouchRecorder<LeafLayer,BranchLayer> Super;
+	typedef PartitionForestTouchListener<LeafLayer,BranchLayer> Super;
 
 	typedef std::set<int> Layer;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
@@ -140,7 +87,7 @@ struct PartitionView::TouchRecorder : PartitionForestTouchRecorder<LeafLayer,Bra
 	PartitionView *base;
 	VolumeIPF_CPtr volumeIPF;
 
-	explicit TouchRecorder(PartitionView *base_, const VolumeIPF_CPtr& volumeIPF_)
+	explicit ForestTouchListener(PartitionView *base_, const VolumeIPF_CPtr& volumeIPF_)
 	:	Super(volumeIPF_->highest_layer()), base(base_), volumeIPF(volumeIPF_)
 	{}
 
@@ -225,6 +172,59 @@ struct PartitionView::TouchRecorder : PartitionForestTouchRecorder<LeafLayer,Bra
 	void nodes_were_touched(const std::vector<Layer>& nodes)
 	{
 		// TODO
+	}
+};
+
+struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
+{
+	PartitionView *base;
+
+	explicit ModelListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void forest_changed()
+	{
+		base->create_partition_textures();
+		base->recreate_overlays();
+		base->refresh_canvases();
+		base->add_listeners();
+	}
+};
+
+struct PartitionView::MultiFeatureSelectionListener : PartitionModelT::VolumeIPFMultiFeatureSelectionT::Listener
+{
+	PartitionView *base;
+
+	explicit MultiFeatureSelectionListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void multi_feature_selection_changed(int commandDepth)
+	{
+		if(commandDepth == 0)
+		{
+			base->recreate_multi_feature_selection_overlay();
+			base->refresh_canvases();
+		}
+	}
+};
+
+struct PartitionView::SelectionListener : PartitionModelT::VolumeIPFSelectionT::Listener
+{
+	PartitionView *base;
+
+	explicit SelectionListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void selection_changed(int commandDepth)
+	{
+		if(commandDepth == 0)
+		{
+			base->recreate_selection_overlay();
+			base->refresh_canvases();
+		}
 	}
 };
 
@@ -326,9 +326,9 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 //#################### PRIVATE METHODS ####################
 void PartitionView::add_listeners()
 {
+	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<ForestTouchListener>(new ForestTouchListener(this, m_model->volume_ipf())));
 	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
-	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<TouchRecorder>(new TouchRecorder(this, m_model->volume_ipf())));
 }
 
 void PartitionView::calculate_canvas_size()

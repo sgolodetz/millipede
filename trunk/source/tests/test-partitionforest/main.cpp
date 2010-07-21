@@ -11,7 +11,7 @@ using boost::shared_ptr;
 #include <common/adts/RootedMST.h>
 #include <common/commands/UndoableCommandManager.h>
 #include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
-#include <common/partitionforests/base/PartitionForestTouchRecorder.h>
+#include <common/partitionforests/base/PartitionForestTouchListener.h>
 #include <common/partitionforests/images/SimpleImageBranchLayer.h>
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
@@ -250,12 +250,12 @@ struct MFSListener : MFS::Listener
 	}
 };
 
-struct TouchRecorder : PartitionForestTouchRecorder<SimpleImageLeafLayer,SimpleImageBranchLayer>
+struct ForestTouchListener : PartitionForestTouchListener<SimpleImageLeafLayer,SimpleImageBranchLayer>
 {
 	typedef std::set<int> Layer;
 
-	explicit TouchRecorder(int highestLayer)
-	:	PartitionForestTouchRecorder<SimpleImageLeafLayer,SimpleImageBranchLayer>(highestLayer)
+	explicit ForestTouchListener(int highestLayer)
+	:	PartitionForestTouchListener<SimpleImageLeafLayer,SimpleImageBranchLayer>(highestLayer)
 	{}
 
 	void nodes_were_touched(const std::vector<Layer>& nodes)
@@ -495,16 +495,16 @@ void switch_parent_test()
 	ipf->output(std::cout);
 }
 
-void touch_recorder_test()
+void touch_listener_test()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
 	ipf->add_shared_listener(shared_ptr<ForestListener>(new ForestListener));
 
-	// Test touch recording.
-	typedef boost::shared_ptr<TouchRecorder> TouchRecorder_Ptr;
-	TouchRecorder_Ptr recorder(new TouchRecorder(ipf->highest_layer()));
-	ipf->add_weak_listener(recorder);
+	// Test touch listening.
+	typedef boost::shared_ptr<ForestTouchListener> ForestTouchListener_Ptr;
+	ForestTouchListener_Ptr touchListener(new ForestTouchListener(ipf->highest_layer()));
+	ipf->add_weak_listener(touchListener);
 
 	ipf->clone_layer(2);
 	manager->undo();
@@ -552,7 +552,7 @@ int main()
 	//nonsibling_node_merging_test();
 	//selection_test();
 	//switch_parent_test();
-	touch_recorder_test();
+	touch_listener_test();
 	//unzip_zip_test();
 	return 0;
 }
