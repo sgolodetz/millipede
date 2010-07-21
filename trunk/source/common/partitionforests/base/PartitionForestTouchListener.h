@@ -10,6 +10,14 @@
 
 namespace mp {
 
+/**
+@brief	A PartitionForestTouchListener is a forest listener that can be used by clients to obtain
+		additional information about which nodes have been affected by forest operations.
+
+The additional information can be obtained by deriving from PartitionForestTouchListener and overriding the
+nodes_were_touched() method. (PartitionForestTouchListener effectively augments the usual forest listener
+interface with an extra method.)
+*/
 template <typename LeafLayer, typename BranchLayer>
 class PartitionForestTouchListener : public PartitionForest<LeafLayer,BranchLayer>::Listener
 {
