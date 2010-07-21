@@ -136,11 +136,14 @@ private:
 			}
 			SetItem(index, m_columnMap.find("Features")->second, string_to_wxString(oss.str()));
 
-			std::map<std::string,std::string> propertyMap = m_model->volume_ipf()->branch_properties(*it).property_map();
-			for(std::map<std::string,std::string>::const_iterator jt=propertyMap.begin(), jend=propertyMap.end(); jt!=jend; ++jt)
+			if(it->layer() > 0)
 			{
-				int column = m_columnMap.find(jt->first)->second;
-				SetItem(index, column, string_to_wxString(jt->second));
+				std::map<std::string,std::string> propertyMap = m_model->volume_ipf()->branch_properties(*it).property_map();
+				for(std::map<std::string,std::string>::const_iterator jt=propertyMap.begin(), jend=propertyMap.end(); jt!=jend; ++jt)
+				{
+					int column = m_columnMap.find(jt->first)->second;
+					SetItem(index, column, string_to_wxString(jt->second));
+				}
 			}
 		}
 
