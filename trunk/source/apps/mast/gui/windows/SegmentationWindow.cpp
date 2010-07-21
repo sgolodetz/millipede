@@ -432,9 +432,13 @@ void SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer(wxUpdateUIEv
 
 void SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes(wxUpdateUIEvent& e)
 {
-	int layerIndex = m_view->camera()->slice_location().layer;
-	int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
-	e.Enable(m_model->selection() && nodeCount > 1 && m_model->selection()->used_layers() == 1);
+	if(m_model->selection())
+	{
+		int layerIndex = m_view->camera()->slice_location().layer;
+		int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
+		e.Enable(nodeCount > 1 && m_model->selection()->used_layers() == 1);
+	}
+	else e.Enable(false);
 }
 
 void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
