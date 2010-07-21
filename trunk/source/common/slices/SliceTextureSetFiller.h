@@ -24,6 +24,8 @@ class SliceTextureSetFiller : public CompositeJob
 private:
 	typedef itk::Image<TPixel,2> Image2D;
 	typedef itk::Image<TPixel,3> Image3D;
+	typedef SliceTextureSet<TPixel> SliceTextureSetT;
+	typedef boost::shared_ptr<SliceTextureSetT> SliceTextureSet_Ptr;
 
 	//#################### NESTED CLASSES ####################
 private:

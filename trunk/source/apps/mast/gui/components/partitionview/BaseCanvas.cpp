@@ -36,7 +36,7 @@ void BaseCanvas::render(wxPaintDC&) const
 
 	// Choose an image to render (if available).
 	Texture_CPtr texture;
-	SliceTextureSet_CPtr textureSet = texture_set_to_display();
+	Greyscale8SliceTextureSet_CPtr textureSet = texture_set_to_display();
 	if(textureSet)
 	{
 		assert(camera() != NULL);	// the texture set will have come from the camera, so the camera should be non-null
@@ -236,10 +236,10 @@ itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& 
 	return coords_to_pixels(project_to_2d(p_Coords));
 }
 
-SliceTextureSet_CPtr BaseCanvas::dicom_texture_set() const
+Greyscale8SliceTextureSet_CPtr BaseCanvas::dicom_texture_set() const
 {
 	if(m_partitionView) return m_partitionView->dicom_texture_set();
-	else return SliceTextureSet_CPtr();
+	else return Greyscale8SliceTextureSet_CPtr();
 }
 
 BaseCanvas::PartitionModel_Ptr BaseCanvas::model()
@@ -254,10 +254,10 @@ PartitionOverlayManager_CPtr BaseCanvas::overlay_manager() const
 	else return PartitionOverlayManager_CPtr();
 }
 
-SliceTextureSet_CPtr BaseCanvas::partition_texture_set(int layer) const
+Greyscale8SliceTextureSet_CPtr BaseCanvas::partition_texture_set(int layer) const
 {
 	if(m_partitionView) return m_partitionView->partition_texture_set(layer);
-	else return SliceTextureSet_CPtr();
+	else return Greyscale8SliceTextureSet_CPtr();
 }
 
 itk::Vector<double,2> BaseCanvas::pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const

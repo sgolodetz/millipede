@@ -25,14 +25,14 @@ void PartitionCanvas::render_overlays(double left, double top, double right, dou
 	}
 }
 
-SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
+Greyscale8SliceTextureSet_CPtr PartitionCanvas::texture_set_to_display() const
 {
 	if(camera())
 	{
 		int layer = camera()->slice_location().layer;
 		return partition_texture_set(layer);
 	}
-	else return SliceTextureSet_CPtr();
+	else return Greyscale8SliceTextureSet_CPtr();
 }
 
 //#################### EVENT HANDLERS ####################

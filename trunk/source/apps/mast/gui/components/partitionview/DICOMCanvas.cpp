@@ -23,7 +23,7 @@ void DICOMCanvas::render_overlays(double left, double top, double right, double 
 	}
 }
 
-SliceTextureSet_CPtr DICOMCanvas::texture_set_to_display() const
+Greyscale8SliceTextureSet_CPtr DICOMCanvas::texture_set_to_display() const
 {
 	return dicom_texture_set();
 }

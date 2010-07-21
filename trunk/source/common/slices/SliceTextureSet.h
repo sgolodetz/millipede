@@ -8,19 +8,12 @@
 
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
-
-#include <itkImage.h>
-
+#include <common/textures/ITKImageTexture.h>
 #include "SliceOrientation.h"
 
 namespace mp {
 
-//#################### FORWARD DECLARATIONS ####################
-typedef shared_ptr<class Texture> Texture_Ptr;
-typedef shared_ptr<const class Texture> Texture_CPtr;
-
+template <typename TPixel>
 class SliceTextureSet
 {
 	//#################### PRIVATE VARIABLES ####################
@@ -29,10 +22,27 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	bool has_textures(SliceOrientation ori) const;
-	void set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures);
-	Texture_CPtr texture(SliceOrientation ori, int n) const;
+	bool has_textures(SliceOrientation ori) const
+	{
+		return !m_textures[ori].empty();
+	}
+
+	void set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures)
+	{
+		m_textures[ori] = textures;
+	}
+
+	Texture_CPtr texture(SliceOrientation ori, int n) const
+	{
+		if(0 <= n && n < static_cast<int>(m_textures[ori].size())) return m_textures[ori][n];
+		else return Texture_CPtr();
+	}
 };
+
+//#################### TYPEDEFS ####################
+typedef SliceTextureSet<unsigned char> Greyscale8SliceTextureSet;
+typedef boost::shared_ptr<Greyscale8SliceTextureSet> Greyscale8SliceTextureSet_Ptr;
+typedef boost::shared_ptr<const Greyscale8SliceTextureSet> Greyscale8SliceTextureSet_CPtr;
 
 }
 

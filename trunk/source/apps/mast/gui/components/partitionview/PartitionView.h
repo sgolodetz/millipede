@@ -17,6 +17,7 @@
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/slices/SliceLocation.h>
+#include <common/slices/SliceTextureSet.h>
 #include <mast/models/PartitionModel.h>
 
 //#################### FORWARD DECLARATIONS ####################
@@ -33,8 +34,6 @@ class PartitionCanvas;
 class PartitionOverlay;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
-typedef boost::shared_ptr<class SliceTextureSet> SliceTextureSet_Ptr;
-typedef boost::shared_ptr<const class SliceTextureSet> SliceTextureSet_CPtr;
 
 class PartitionView : public wxPanel
 {
@@ -60,10 +59,10 @@ private:
 	int m_canvasWidth, m_canvasHeight;
 	ICommandManager_Ptr m_commandManager;
 	wxGLContext *m_context;
-	SliceTextureSet_Ptr m_dicomTextureSet;
+	Greyscale8SliceTextureSet_Ptr m_dicomTextureSet;
 	PartitionModel_Ptr m_model;
 	PartitionOverlayManager_Ptr m_overlayManager;
-	std::vector<SliceTextureSet_Ptr> m_partitionTextureSets;
+	std::vector<Greyscale8SliceTextureSet_Ptr> m_partitionTextureSets;
 
 	// Top right
 	wxButton *m_segmentVolumeButton;
@@ -101,14 +100,14 @@ private:
 	void create_dicom_textures();
 	void create_overlays();
 	void create_partition_textures();
-	SliceTextureSet_CPtr dicom_texture_set() const;
+	Greyscale8SliceTextureSet_CPtr dicom_texture_set() const;
 	Job_Ptr fill_dicom_textures_job(SliceOrientation ori, const itk::Image<unsigned char,3>::Pointer& windowedImage) const;
 	Job_Ptr fill_partition_textures_job(SliceOrientation ori) const;
 	void fill_textures(SliceOrientation ori);
 	static SliceLocation initial_slice_location(const DICOMVolumeChoice& volumeChoice);
 	PartitionOverlay *multi_feature_selection_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
-	SliceTextureSet_CPtr partition_texture_set(int layer) const;
+	Greyscale8SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_multi_feature_selection_overlay();
 	void recreate_overlays();
 	void recreate_selection_overlay();

@@ -248,7 +248,6 @@ shaders/ShaderProgram.h
 ##
 SET(slices_sources
 slices/SliceLocation.cpp
-slices/SliceTextureSet.cpp
 )
 
 SET(slices_headers

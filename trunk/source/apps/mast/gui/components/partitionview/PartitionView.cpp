@@ -233,7 +233,7 @@ void PartitionView::calculate_canvas_size()
 
 void PartitionView::create_dicom_textures()
 {
-	m_dicomTextureSet.reset(new SliceTextureSet);
+	m_dicomTextureSet.reset(new Greyscale8SliceTextureSet);
 
 	DICOMVolume::WindowedImagePointer windowedImage = m_model->dicom_volume()->windowed_image(volume_choice().windowSettings);
 	Job_Ptr job = fill_dicom_textures_job(m_camera->slice_orientation(), windowedImage);
@@ -256,8 +256,8 @@ void PartitionView::create_partition_textures()
 	if(!volumeIPF) return;
 	int highestLayer = volumeIPF->highest_layer();
 
-	m_partitionTextureSets = std::vector<SliceTextureSet_Ptr>(highestLayer);
-	for(int layer=1; layer<=highestLayer; ++layer) m_partitionTextureSets[layer-1].reset(new SliceTextureSet);
+	m_partitionTextureSets = std::vector<Greyscale8SliceTextureSet_Ptr>(highestLayer);
+	for(int layer=1; layer<=highestLayer; ++layer) m_partitionTextureSets[layer-1].reset(new Greyscale8SliceTextureSet);
 
 	Job_Ptr job = fill_partition_textures_job(m_camera->slice_orientation());
 	execute_with_progress_dialog(job, this, "Creating Partition Texture Sets", false);
@@ -268,7 +268,7 @@ void PartitionView::create_partition_textures()
 	m_camera->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
 }
 
-SliceTextureSet_CPtr PartitionView::dicom_texture_set() const
+Greyscale8SliceTextureSet_CPtr PartitionView::dicom_texture_set() const
 {
 	return m_dicomTextureSet;
 }
@@ -339,11 +339,11 @@ PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
 	return m_overlayManager;
 }
 
-SliceTextureSet_CPtr PartitionView::partition_texture_set(int layer) const
+Greyscale8SliceTextureSet_CPtr PartitionView::partition_texture_set(int layer) const
 {
 	int n = layer - 1;
 	if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
-	else return SliceTextureSet_CPtr();
+	else return Greyscale8SliceTextureSet_CPtr();
 }
 
 void PartitionView::recreate_multi_feature_selection_overlay()
