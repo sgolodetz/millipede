@@ -169,11 +169,11 @@ struct PartitionView::TouchRecorder : PartitionForestTouchRecorder<LeafLayer,Bra
 		// Delete the partition texture set.
 		base->m_partitionTextureSets.erase(base->m_partitionTextureSets.begin() + (index - 1));
 
-		// If we're now viewing above the highest layer, switch down a layer.
+		// Unless the branch layer we're viewing is the lowest, switch down a layer.
 		SliceLocation loc = base->camera()->slice_location();
-		if(loc.layer > volumeIPF->highest_layer())
+		if(loc.layer > 1)
 		{
-			loc.layer = volumeIPF->highest_layer();
+			--loc.layer;
 			base->camera()->set_slice_location(loc);
 		}
 
