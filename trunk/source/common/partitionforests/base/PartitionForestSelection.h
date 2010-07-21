@@ -375,16 +375,6 @@ public:
 		m_listeners->selection_changed(0);
 	}
 
-	int node_count() const
-	{
-		int nodeCount = 0;
-		for(size_t i=0, layerCount=m_nodes.size(); i<layerCount; ++i)
-		{
-			nodeCount += m_nodes[i].size();
-		}
-		return nodeCount;
-	}
-
 	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
 	{
 		if(in_representation(node))

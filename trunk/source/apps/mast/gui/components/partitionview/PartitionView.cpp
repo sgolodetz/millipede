@@ -334,7 +334,8 @@ SliceLocation PartitionView::initial_slice_location(const DICOMVolumeChoice& vol
 
 void PartitionView::merge_selected_nodes()
 {
-	std::set<PFNodeID> mergees(m_model->selection()->nodes_cbegin(), m_model->selection()->nodes_cend());
+	int layerIndex = m_camera->slice_location().layer;
+	std::set<PFNodeID> mergees(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
 	m_model->volume_ipf()->merge_nonsibling_nodes(mergees);
 }
 
