@@ -39,6 +39,7 @@ private:
 	//#################### PUBLIC METHODS ####################
 public:
 	virtual void bind() const;
+	bool is_clamped() const;
 	virtual void reload() const;
 	virtual void reload_partial(int minX, int minY, int maxX, int maxY) const;
 

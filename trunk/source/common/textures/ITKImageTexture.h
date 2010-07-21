@@ -12,6 +12,7 @@
 #include <itkAffineTransform.h>
 #include <itkExtractImageFilter.h>
 #include <itkImage.h>
+#include <itkImageDuplicator.h>
 
 #include "Texture.h"
 
@@ -38,6 +39,15 @@ public:
 	{
 		reset_dirty_region();
 	}
+
+	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
+private:
+	ITKImageTexture(const ITKImageTexture&);
+	ITKImageTexture& operator=(const ITKImageTexture&);
+
+	//#################### PUBLIC ABSTRACT METHODS ####################
+public:
+	virtual boost::shared_ptr<ITKImageTexture<Image> > clone() const = 0;
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -86,6 +96,15 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	ImagePointer clone_image() const
+	{
+		typedef itk::ImageDuplicator<Image> Duplicator;
+		typename Duplicator::Pointer duplicator = Duplicator::New();
+		duplicator->SetInputImage(m_image);
+		duplicator->Update();
+		return duplicator->GetOutput();
+	}
+
 	/**
 	Calculate a version of the image that is resized so that its dimensions are powers of two if necessary.
 	*/

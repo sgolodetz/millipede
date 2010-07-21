@@ -17,6 +17,12 @@ Greyscale8ImageTexture::Greyscale8ImageTexture(const ImagePointer& image, bool c
 	reload();
 }
 
+//#################### PUBLIC METHODS ####################
+boost::shared_ptr<ITKImageTexture<Greyscale8Image> > Greyscale8ImageTexture::clone() const
+{
+	return boost::shared_ptr<ITKImageTexture<Greyscale8Image> >(new Greyscale8ImageTexture(clone_image(), is_clamped()));
+}
+
 //#################### PRIVATE METHODS ####################
 void Greyscale8ImageTexture::reload_image() const
 {

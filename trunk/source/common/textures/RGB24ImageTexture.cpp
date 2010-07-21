@@ -17,6 +17,12 @@ RGB24ImageTexture::RGB24ImageTexture(const ImagePointer& image, const boost::opt
 	reload();
 }
 
+//#################### PUBLIC METHODS ####################
+boost::shared_ptr<ITKImageTexture<RGB24Image> > RGB24ImageTexture::clone() const
+{
+	return boost::shared_ptr<ITKImageTexture<RGB24Image> >(new RGB24ImageTexture(clone_image(), m_colourKey, is_clamped()));
+}
+
 //#################### PRIVATE METHODS ####################
 std::vector<unsigned char> RGB24ImageTexture::make_buffer_with_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const
 {

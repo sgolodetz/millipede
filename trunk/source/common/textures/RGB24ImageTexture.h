@@ -31,6 +31,10 @@ private:
 private:
 	RGB24ImageTexture(const ImagePointer& image, const boost::optional<RGB24>& colourKey, bool clamp);
 
+	//#################### PUBLIC METHODS ####################
+public:
+	boost::shared_ptr<ITKImageTexture<RGB24Image> > clone() const;
+
 	//#################### PRIVATE METHODS ####################
 private:
 	std::vector<unsigned char> make_buffer_with_colour_key(const RGB24 *const pixels, const itk::Size<2>& size) const;

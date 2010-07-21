@@ -25,6 +25,10 @@ class RGBA32ImageTexture : public ITKImageTexture<RGBA32Image>
 public:
 	explicit RGBA32ImageTexture(const ImagePointer& image, bool clamp);
 
+	//#################### PUBLIC METHODS ####################
+public:
+	boost::shared_ptr<ITKImageTexture<RGBA32Image> > clone() const;
+
 	//#################### PRIVATE METHODS ####################
 private:
 	static std::vector<unsigned char> make_buffer(const RGBA32 *const pixels, const itk::Size<2>& size);

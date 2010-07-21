@@ -17,6 +17,12 @@ RGBA32ImageTexture::RGBA32ImageTexture(const ImagePointer& image, bool clamp)
 	reload();
 }
 
+//#################### PUBLIC METHODS ####################
+boost::shared_ptr<ITKImageTexture<RGBA32Image> > RGBA32ImageTexture::clone() const
+{
+	return boost::shared_ptr<ITKImageTexture<RGBA32Image> >(new RGBA32ImageTexture(clone_image(), is_clamped()));
+}
+
 //#################### PRIVATE METHODS ####################
 std::vector<unsigned char> RGBA32ImageTexture::make_buffer(const RGBA32 *const pixels, const itk::Size<2>& size)
 {

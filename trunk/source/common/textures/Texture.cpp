@@ -51,6 +51,16 @@ void Texture::bind() const
 }
 
 /**
+Returns whether or not the texture is clamped to its edges (rather than wrapped).
+
+@return	As described
+*/
+bool Texture::is_clamped() const
+{
+	return m_clamp;
+}
+
+/**
 Reloads the texture.
 */
 void Texture::reload() const

@@ -22,6 +22,10 @@ class Greyscale8ImageTexture : public ITKImageTexture<Greyscale8Image>
 private:
 	Greyscale8ImageTexture(const ImagePointer& image, bool clamp);
 
+	//#################### PUBLIC METHODS ####################
+public:
+	boost::shared_ptr<ITKImageTexture<Greyscale8Image> > clone() const;
+
 	//#################### PRIVATE METHODS ####################
 private:
 	void reload_image() const;

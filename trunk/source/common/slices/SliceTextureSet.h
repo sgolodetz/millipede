@@ -26,9 +26,27 @@ private:
 private:
 	std::vector<ITKImageTexture_Ptr> m_textures[3];
 
+	//#################### CONSTRUCTORS ####################
+public:
+	SliceTextureSet()
+	{}
+
 	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
 public:
-	// TODO: Copy constructor (very important!)
+	SliceTextureSet(const SliceTextureSet& rhs)
+	{
+		// Perform a deep copy of all the textures.
+		for(int i=0; i<3; ++i)
+		{
+			size_t size = rhs.m_textures[i].size();
+			m_textures[i].resize(size);
+
+			for(size_t j=0; j<size; ++j)
+			{
+				m_textures[i][j] = rhs.m_textures[i][j]->clone();
+			}
+		}
+	}
 
 private:
 	SliceTextureSet& operator=(const SliceTextureSet&);
