@@ -16,18 +16,40 @@ namespace mp {
 template <typename TPixel>
 class SliceTextureSet
 {
+	//#################### TYPEDEFS ####################
+private:
+	typedef itk::Image<TPixel,2> Image;
+	typedef ITKImageTexture<Image> ITKImageTextureT;
+	typedef boost::shared_ptr<ITKImageTextureT> ITKImageTexture_Ptr;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
-	std::vector<Texture_Ptr> m_textures[3];
+	std::vector<ITKImageTexture_Ptr> m_textures[3];
 
 	//#################### PUBLIC METHODS ####################
 public:
+	const TPixel& get_pixel(const itk::Index<3>& index) const
+	{
+		// Note: All of these should in principle return equal - it just depends which textures are actually available right now.
+		if(has_textures(ORIENT_XY)) return m_textures[ORIENT_XY][index[2]]->get_pixel(ITKImageUtil::make_index(index[0], index[1]));
+		if(has_textures(ORIENT_XZ)) return m_textures[ORIENT_XZ][index[1]]->get_pixel(ITKImageUtil::make_index(index[0], index[2]));
+		if(has_textures(ORIENT_YZ)) return m_textures[ORIENT_YZ][index[0]]->get_pixel(ITKImageUtil::make_index(index[1], index[2]));
+		throw Exception("Can't get pixel: there are no textures in any slice orientation available");
+	}
+
 	bool has_textures(SliceOrientation ori) const
 	{
 		return !m_textures[ori].empty();
 	}
 
-	void set_textures(SliceOrientation ori, const std::vector<Texture_Ptr>& textures)
+	void set_pixel(const itk::Index<3>& index, const TPixel& pixel)
+	{
+		if(has_textures(ORIENT_YZ)) m_textures[ORIENT_YZ][index[0]]->set_pixel(ITKImageUtil::make_index(index[1], index[2]), pixel);
+		if(has_textures(ORIENT_XZ)) m_textures[ORIENT_XZ][index[1]]->set_pixel(ITKImageUtil::make_index(index[0], index[2]), pixel);
+		if(has_textures(ORIENT_XY)) m_textures[ORIENT_XY][index[2]]->set_pixel(ITKImageUtil::make_index(index[0], index[1]), pixel);
+	}
+
+	void set_textures(SliceOrientation ori, const std::vector<ITKImageTexture_Ptr>& textures)
 	{
 		m_textures[ori] = textures;
 	}

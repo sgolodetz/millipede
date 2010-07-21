@@ -24,6 +24,8 @@ class SliceTextureSetFiller : public CompositeJob
 private:
 	typedef itk::Image<TPixel,2> Image2D;
 	typedef itk::Image<TPixel,3> Image3D;
+	typedef ITKImageTexture<Image2D> ITKImageTextureT;
+	typedef boost::shared_ptr<ITKImageTextureT> ITKImageTexture_Ptr;
 	typedef SliceTextureSet<TPixel> SliceTextureSetT;
 	typedef boost::shared_ptr<SliceTextureSetT> SliceTextureSet_Ptr;
 
@@ -83,7 +85,7 @@ private:
 	{
 		DataHook<typename Image2D::Pointer> sliceImageHook;
 		int sliceIndex;
-		DataHook<Texture_Ptr> textureHook;
+		DataHook<ITKImageTexture_Ptr> textureHook;
 
 		explicit CreateTextureJob(int sliceIndex_)
 		:	sliceIndex(sliceIndex_)
@@ -106,7 +108,7 @@ private:
 	{
 		SliceOrientation ori;
 		SliceTextureSet_Ptr sliceTextureSet;
-		std::vector<DataHook<Texture_Ptr> > textureHooks;
+		std::vector<DataHook<ITKImageTexture_Ptr> > textureHooks;
 
 		TextureSetFillerJob(SliceOrientation ori_, const SliceTextureSet_Ptr& sliceTextureSet_)
 		:	ori(ori_), sliceTextureSet(sliceTextureSet_)
@@ -116,7 +118,7 @@ private:
 		{
 			set_status("Filling texture set...");
 
-			std::vector<Texture_Ptr> textures;
+			std::vector<ITKImageTexture_Ptr> textures;
 			for(size_t i=0, size=textureHooks.size(); i<size; ++i)
 			{
 				textures.push_back(textureHooks[i].get());
