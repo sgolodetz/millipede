@@ -34,6 +34,7 @@ template <> std::map<AbdominalFeature::Enum,RGBA32> feature_colour_map()
 	m.insert(std::make_pair(LIVER,				make_rgba32(128,0,128,50)));
 	m.insert(std::make_pair(OTHER_ARTERY,		make_rgba32(128,0,0,50)));
 	m.insert(std::make_pair(OTHER_VEIN,			make_rgba32(0,0,128,50)));
+	m.insert(std::make_pair(RIB,				make_rgba32(192,255,192,100)));
 	m.insert(std::make_pair(SPINAL_CORD,		make_rgba32(128,255,255,100)));
 	m.insert(std::make_pair(SPLEEN,				make_rgba32(0,255,0,50)));
 	m.insert(std::make_pair(VERTEBRA,			make_rgba32(192,255,255,100)));
@@ -49,6 +50,7 @@ std::string feature_key(AbdominalFeature::Enum e)
 		case INFERIOR_VENA_CAVA:	return "V";
 		case KIDNEY:				return "K";
 		case LIVER:					return "L";
+		case RIB:					return "R";
 		case SPINAL_CORD:			return "C";
 		case SPLEEN:				return "P";
 		case VERTEBRA:				return "S";
@@ -67,6 +69,7 @@ std::string feature_name(AbdominalFeature::Enum e)
 		case LIVER:					return "Liver";
 		case OTHER_ARTERY:			return "Other Artery";
 		case OTHER_VEIN:			return "Other Vein";
+		case RIB:					return "Rib";
 		case SPINAL_CORD:			return "Spinal Cord";
 		case SPLEEN:				return "Spleen";
 		case VERTEBRA:				return "Vertebra";
