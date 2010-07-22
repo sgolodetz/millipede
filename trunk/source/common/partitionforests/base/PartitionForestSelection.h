@@ -375,6 +375,21 @@ public:
 		m_listeners->selection_changed(0);
 	}
 
+	/**
+	@brief	Calculates the layer in which any merging of the selected nodes should happen.
+
+	@param[in]	viewLayer	The layer being "viewed" by the user
+	@return	The layer in which a merge should happen
+	*/
+	int merge_layer(int viewLayer) const
+	{
+		for(int i=0; i<viewLayer; ++i)
+		{
+			if(!m_nodes[i].empty()) return i;
+		}
+		return viewLayer;
+	}
+
 	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
 	{
 		if(in_representation(node))
@@ -444,16 +459,6 @@ public:
 	{
 		if(contains(node))	deselect_node(node);
 		else				select_node(node);
-	}
-
-	int used_layers() const
-	{
-		int usedLayers = 0;
-		for(size_t i=0, layerCount=m_nodes.size(); i<layerCount; ++i)
-		{
-			if(m_nodes[i].size() != 0) ++usedLayers;
-		}
-		return usedLayers;
 	}
 
 	ViewNodeConstIterator view_at_layer_cbegin(int layerIndex) const
