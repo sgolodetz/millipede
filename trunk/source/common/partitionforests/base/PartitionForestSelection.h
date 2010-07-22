@@ -292,6 +292,16 @@ public:
 		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(boost::mem_fn(&PartitionForestSelectionT::clear_impl), _1, _2), "Clear Selection")));
 	}
 
+	void command_sequence_execution_ended(const std::string& description, int commandDepth)
+	{
+		m_listeners->selection_changed(commandDepth);
+	}
+
+	void command_sequence_undo_ended(const std::string& description, int commandDepth)
+	{
+		m_listeners->selection_changed(commandDepth);
+	}
+
 	bool contains(const PFNodeID& node) const
 	{
 		if(in_representation(node)) return true;
