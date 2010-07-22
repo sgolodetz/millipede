@@ -408,7 +408,7 @@ public:
 			consolidate_node(*it, boost::none);
 		}
 
-		m_listeners->selection_changed(0);
+		m_listeners->selection_changed(commandDepth);
 	}
 
 	NodeConstIterator nodes_cbegin() const
@@ -428,7 +428,7 @@ public:
 		// don't need to consolidate those.
 		consolidate_node(result, boost::none);
 
-		m_listeners->selection_changed(0);
+		m_listeners->selection_changed(commandDepth);
 	}
 
 	void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)

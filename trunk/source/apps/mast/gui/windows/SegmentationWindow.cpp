@@ -206,7 +206,7 @@ void SegmentationWindow::setup_menus()
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
-	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D..."));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+Shift+V"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(wxID_ANY, wxT("&Contents..."));
