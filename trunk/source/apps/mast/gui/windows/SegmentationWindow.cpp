@@ -162,9 +162,9 @@ void SegmentationWindow::setup_menus()
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume..."));
 	segmentationMenu->AppendSeparator();
-	segmentationMenu->Append(MENUID_SEGMENTATION_CLONECURRENTLAYER, wxT("&Clone Current Layer"));
-	segmentationMenu->Append(MENUID_SEGMENTATION_DELETECURRENTLAYER, wxT("&Delete Current Layer"));
-	segmentationMenu->Append(MENUID_SEGMENTATION_MERGESELECTEDNODES, wxT("&Merge Selected Nodes"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_CLONECURRENTLAYER, wxT("&Clone Current Layer\tCtrl+Shift+C"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_DELETECURRENTLAYER, wxT("&Delete Current Layer\tCtrl+Shift+D"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_MERGESELECTEDNODES, wxT("&Merge Selected Nodes\tCtrl+Shift+M"));
 	wxMenu *splitNodeMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(splitNodeMenu, wxT("&Split Node"));
 		splitNodeMenu->Append(wxID_ANY, wxT("Set &Node"));
@@ -204,7 +204,7 @@ void SegmentationWindow::setup_menus()
 	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+Q"));
+	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
 	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D..."));
 
 	wxMenu *helpMenu = new wxMenu;
