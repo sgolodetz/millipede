@@ -392,6 +392,7 @@ public:
 
 	void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)
 	{
+		// Step 1:	If the node being split was itself in the selection, replace it with the results of the split.
 		if(in_representation(node))
 		{
 			erase_node(node, boost::none);
@@ -399,6 +400,12 @@ public:
 			{
 				insert_node(*it, boost::none);
 			}
+		}
+
+		// Step 2:	Consolidate the individual result nodes. (This is important when the split results from an unzip.)
+		for(std::set<PFNodeID>::const_iterator it=results.begin(), iend=results.end(); it!=iend; ++it)
+		{
+			consolidate_node(*it, boost::none);
 		}
 
 		m_listeners->selection_changed(0);
