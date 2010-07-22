@@ -104,6 +104,7 @@ public:
 	void merge_selected_nodes();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
+	void unzip_selected_node();
 
 	//#################### PRIVATE METHODS ####################
 private:

@@ -385,6 +385,20 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 	return m_model;
 }
 
+void PartitionView::unzip_selected_node()
+{
+	int layerIndex = m_camera->slice_location().layer;
+	PFNodeID node = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+
+	int highestLayer = m_model->volume_ipf()->highest_layer();
+	long toLayer = wxGetNumberFromUser(wxT(""), wxT("To Layer:"), wxT("Unzip Selected Node"), highestLayer, node.layer() + 1, highestLayer, this);
+
+	if(toLayer != -1)
+	{
+		m_model->volume_ipf()->unzip_node(node, toLayer);
+	}
+}
+
 //#################### PRIVATE METHODS ####################
 void PartitionView::add_listeners()
 {
