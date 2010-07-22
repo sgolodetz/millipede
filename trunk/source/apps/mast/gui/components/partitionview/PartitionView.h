@@ -49,6 +49,11 @@ private:
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 
+	//#################### COMMANDS ####################
+private:
+	struct RecreateSelectionOverlayPreCommand;
+	struct RecreateSelectionOverlayPostCommand;
+
 	//#################### LISTENERS ####################
 private:
 	struct CameraListener;
