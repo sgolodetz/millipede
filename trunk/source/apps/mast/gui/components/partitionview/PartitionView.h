@@ -19,6 +19,7 @@
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceTextureSet.h>
 #include <mast/models/PartitionModel.h>
+#include "ParentSwitchManager.h"
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;
@@ -45,9 +46,12 @@ private:
 	typedef DICOMImageBranchLayer BranchLayer;
 	typedef AbdominalFeature::Enum Feature;
 	typedef DICOMImageLeafLayer LeafLayer;
+	typedef ParentSwitchManager<LeafLayer,BranchLayer> ParentSwitchManagerT;
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
+public:
+	typedef boost::shared_ptr<ParentSwitchManagerT> ParentSwitchManager_Ptr;
 
 	//#################### COMMANDS ####################
 private:
@@ -71,6 +75,7 @@ private:
 	Greyscale8SliceTextureSet_Ptr m_dicomTextureSet;
 	PartitionModel_Ptr m_model;
 	PartitionOverlayManager_Ptr m_overlayManager;
+	ParentSwitchManager_Ptr m_parentSwitchManager;
 	std::vector<Greyscale8SliceTextureSet_Ptr> m_partitionTextureSets;
 
 	// Top right
@@ -104,6 +109,7 @@ public:
 	void merge_selected_nodes();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
+	const ParentSwitchManager_Ptr& parent_switch_manager();
 	void unzip_selected_node();
 
 	//#################### PRIVATE METHODS ####################

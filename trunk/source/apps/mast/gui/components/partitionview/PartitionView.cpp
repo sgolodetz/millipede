@@ -385,6 +385,11 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 	return m_model;
 }
 
+const PartitionView::ParentSwitchManager_Ptr& PartitionView::parent_switch_manager()
+{
+	return m_parentSwitchManager;
+}
+
 void PartitionView::unzip_selected_node()
 {
 	int layerIndex = m_camera->slice_location().layer;
@@ -405,6 +410,9 @@ void PartitionView::add_listeners()
 	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<ForestTouchListener>(new ForestTouchListener(this, m_model->volume_ipf())));
 	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+
+	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf()));
+	m_model->volume_ipf()->add_weak_listener(m_parentSwitchManager);
 }
 
 void PartitionView::calculate_canvas_size()

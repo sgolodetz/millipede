@@ -79,6 +79,9 @@ public:
 	void OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&);
 	void OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
+	void OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&);
+	void OnMenuSegmentationSwitchParentSetNewParent(wxCommandEvent&);
+	void OnMenuSegmentationSwitchParentStartAgain(wxCommandEvent&);
 	void OnMenuSegmentationUnzipSelectedNode(wxCommandEvent&);
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
 	void OnMenuSelectionSelectMarked(wxCommandEvent& e);
@@ -97,10 +100,12 @@ public:
 	void OnUpdateMenuNavigationZoomOut(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationDeleteCurrentLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationMergeSelectedNodes(wxUpdateUIEvent& e);
-	void OnUpdateMenuSegmentationUnzipSelectedNode(wxUpdateUIEvent& e);
+	void OnUpdateMenuSegmentationSwitchParentSetNewParent(wxUpdateUIEvent& e);
+	void OnUpdateMenuSegmentationSwitchParentStartAgain(wxUpdateUIEvent& e);
 	void OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e);
 	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
+	void OnUpdateSingleNonHighestNodeSelectionNeeder(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

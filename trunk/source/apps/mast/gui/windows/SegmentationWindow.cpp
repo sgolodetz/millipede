@@ -46,6 +46,9 @@ enum
 	MENUID_SEGMENTATION_DELETECURRENTLAYER,
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
+	MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD,
+	MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT,
+	MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN,
 	MENUID_SEGMENTATION_UNZIPSELECTEDNODE,
 	MENUID_SELECTION_CLEARSELECTION,
 	MENUID_SELECTION_SELECTMARKED_BASE,
@@ -179,10 +182,10 @@ void SegmentationWindow::setup_menus()
 	segmentationMenu->AppendSeparator();
 	wxMenu *switchParentMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(switchParentMenu, wxT("Switch &Parent"));
-		switchParentMenu->Append(wxID_ANY, wxT("Set &Child"));
-		switchParentMenu->Append(wxID_ANY, wxT("Set New &Parent"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, wxT("Set &Child"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, wxT("Set New &Parent"));
 		switchParentMenu->AppendSeparator();
-		switchParentMenu->Append(wxID_ANY, wxT("&Start Again"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
 
 	wxMenu *featuresMenu = new wxMenu;
 	wxMenu *autoMarkMenu = new wxMenu;
@@ -340,6 +343,23 @@ void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 	m_model->segment_volume(this);
 }
 
+void SegmentationWindow::OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&)
+{
+	PFNodeID child = *m_model->selection()->view_at_layer_cbegin(m_view->camera()->slice_location().layer);
+	m_view->parent_switch_manager()->set_child(child);
+}
+
+void SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent(wxCommandEvent&)
+{
+	PFNodeID newParent = *m_model->selection()->view_at_layer_cbegin(m_view->camera()->slice_location().layer);
+	m_view->parent_switch_manager()->perform_switch(newParent);
+}
+
+void SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain(wxCommandEvent&)
+{
+	m_view->parent_switch_manager()->reset();
+}
+
 void SegmentationWindow::OnMenuSegmentationUnzipSelectedNode(wxCommandEvent&)
 {
 	m_view->unzip_selected_node();
@@ -447,18 +467,27 @@ void SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes(wxUpdateUIEv
 	else e.Enable(false);
 }
 
-void SegmentationWindow::OnUpdateMenuSegmentationUnzipSelectedNode(wxUpdateUIEvent& e)
+void SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent(wxUpdateUIEvent& e)
 {
 	e.Enable(false);
-	if(m_model->selection())
+
+	PartitionView::ParentSwitchManager_Ptr parentSwitchManager = m_view->parent_switch_manager();
+	if(parentSwitchManager)
 	{
 		int layerIndex = m_view->camera()->slice_location().layer;
-		if(layerIndex < m_model->volume_ipf()->highest_layer())
+		int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
+		if(nodeCount == 1)
 		{
-			int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
-			e.Enable(nodeCount == 1);
+			PFNodeID newParent = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+			const std::set<PFNodeID>& potentialNewParents = parentSwitchManager->potential_new_parents();
+			e.Enable(potentialNewParents.find(newParent) != potentialNewParents.end());
 		}
 	}
+}
+
+void SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->parent_switch_manager() && m_view->parent_switch_manager()->has_child());
 }
 
 void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
@@ -475,6 +504,20 @@ void SegmentationWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
 void SegmentationWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)
 {
 	e.Enable(m_model->selection() && !m_model->selection()->empty());
+}
+
+void SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder(wxUpdateUIEvent& e)
+{
+	e.Enable(false);
+	if(m_model->selection())
+	{
+		int layerIndex = m_view->camera()->slice_location().layer;
+		if(layerIndex < m_model->volume_ipf()->highest_layer())
+		{
+			int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
+			e.Enable(nodeCount == 1);
+		}
+	}
 }
 
 //#################### EVENT TABLE ####################
@@ -501,6 +544,9 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
+	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnMenuSegmentationSwitchParentSetChild)
+	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent)
+	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain)
 	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnMenuSegmentationUnzipSelectedNode)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
 	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes)
@@ -519,7 +565,10 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
-	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnUpdateMenuSegmentationUnzipSelectedNode)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnUpdateForestNeeder)
