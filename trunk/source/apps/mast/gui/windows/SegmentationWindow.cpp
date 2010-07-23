@@ -185,7 +185,7 @@ void SegmentationWindow::setup_menus()
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, wxT("Set &Child\tCtrl+Shift+X"));
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, wxT("Set New &Parent\tCtrl+Shift+V"));
 		switchParentMenu->AppendSeparator();
-		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again\tCtrl+Shift+Z"));
 
 	wxMenu *featuresMenu = new wxMenu;
 	wxMenu *autoMarkMenu = new wxMenu;
@@ -516,7 +516,11 @@ void SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder(wxUpdateUIE
 		if(layerIndex < m_model->volume_ipf()->highest_layer())
 		{
 			int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
-			e.Enable(nodeCount == 1);
+			if(nodeCount == 1)
+			{
+				PFNodeID node = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+				e.Enable(node.layer() == layerIndex);
+			}
 		}
 	}
 }
