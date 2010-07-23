@@ -79,6 +79,7 @@ public:
 	void OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&);
 	void OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
+	void OnMenuSegmentationSplitNodeSetNode(wxCommandEvent&);
 	void OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&);
 	void OnMenuSegmentationSwitchParentSetNewParent(wxCommandEvent&);
 	void OnMenuSegmentationSwitchParentStartAgain(wxCommandEvent&);
@@ -106,6 +107,7 @@ public:
 	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
 	void OnUpdateSingleNonHighestNodeSelectionNeeder(wxUpdateUIEvent& e);
+	void OnUpdateSingleNonLowestNodeSelectionNeeder(wxUpdateUIEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

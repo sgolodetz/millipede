@@ -54,6 +54,7 @@ gui/components/partitionview/PartitionView.cpp
 SET(gui_components_partitionview_headers
 gui/components/partitionview/BaseCanvas.h
 gui/components/partitionview/DICOMCanvas.h
+gui/components/partitionview/NodeSplitManager.h
 gui/components/partitionview/ParentSwitchManager.h
 gui/components/partitionview/PartitionCamera.h
 gui/components/partitionview/PartitionCanvas.h
@@ -90,10 +91,10 @@ gui/overlays/PartitionOverlayManager.cpp
 )
 
 SET(gui_overlays_headers
+gui/overlays/HighlightNodesOverlay.h
 gui/overlays/IPFOverlayTools.h
 gui/overlays/IPFMultiFeatureSelectionOverlay.h
 gui/overlays/IPFSelectionOverlay.h
-gui/overlays/ParentSwitchOverlay.h
 gui/overlays/PartitionOverlay.h
 gui/overlays/PartitionOverlayManager.h
 )

@@ -46,6 +46,7 @@ enum
 	MENUID_SEGMENTATION_DELETECURRENTLAYER,
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
+	MENUID_SEGMENTATION_SPLITNODE_SETNODE,
 	MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD,
 	MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT,
 	MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN,
@@ -171,9 +172,9 @@ void SegmentationWindow::setup_menus()
 	segmentationMenu->Append(MENUID_SEGMENTATION_MERGESELECTEDNODES, wxT("&Merge Selected Nodes\tCtrl+Shift+M"));
 	wxMenu *splitNodeMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(splitNodeMenu, wxT("&Split Node"));
-		splitNodeMenu->Append(wxID_ANY, wxT("Set &Node"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_SETNODE, wxT("Set &Node"));
 		splitNodeMenu->Append(wxID_ANY, wxT("&Add Subgroup"));
-		splitNodeMenu->Append(wxID_ANY, wxT("&Manage Subgroups..."));
+		splitNodeMenu->Append(wxID_ANY, wxT("&Remove Subgroup"));
 		splitNodeMenu->Append(wxID_ANY, wxT("&Finalize Split"));
 		splitNodeMenu->AppendSeparator();
 		splitNodeMenu->Append(wxID_ANY, wxT("&Start Again"));
@@ -209,7 +210,7 @@ void SegmentationWindow::setup_menus()
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
-	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+Shift+V"));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D..."));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(wxID_ANY, wxT("&Contents..."));
@@ -341,6 +342,13 @@ void SegmentationWindow::OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&)
 void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
 	m_model->segment_volume(this);
+}
+
+void SegmentationWindow::OnMenuSegmentationSplitNodeSetNode(wxCommandEvent&)
+{
+	PFNodeID splitNode = *m_model->selection()->view_at_layer_cbegin(m_view->camera()->slice_location().layer);
+	m_view->node_split_manager()->set_split_node(splitNode);
+	m_view->camera()->goto_previous_layer();
 }
 
 void SegmentationWindow::OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&)
@@ -525,6 +533,24 @@ void SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder(wxUpdateUIE
 	}
 }
 
+void SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder(wxUpdateUIEvent& e)
+{
+	e.Enable(false);
+	if(m_model->selection())
+	{
+		int layerIndex = m_view->camera()->slice_location().layer;
+		if(layerIndex > 1)
+		{
+			int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
+			if(nodeCount == 1)
+			{
+				PFNodeID node = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+				e.Enable(node.layer() == layerIndex);
+			}
+		}
+	}
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
@@ -549,6 +575,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
+	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnMenuSegmentationSplitNodeSetNode)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnMenuSegmentationSwitchParentSetChild)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain)
@@ -570,6 +597,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain)

@@ -18,9 +18,9 @@
 #include <common/partitionforests/images/MosaicTextureSetUpdater.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/dialogs/DialogUtil.h>
+#include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
-#include <mast/gui/overlays/ParentSwitchOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
@@ -231,6 +231,21 @@ struct PartitionView::MultiFeatureSelectionListener : PartitionModelT::VolumeIPF
 	}
 };
 
+struct PartitionView::NodeSplitManagerListener : NodeSplitManager<LeafLayer,BranchLayer>::Listener
+{
+	PartitionView *base;
+
+	explicit NodeSplitManagerListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void node_split_manager_changed()
+	{
+		base->recreate_node_split_overlay();
+		base->refresh_canvases();
+	}
+};
+
 struct PartitionView::ParentSwitchManagerListener : ParentSwitchManager<LeafLayer,BranchLayer>::Listener
 {
 	PartitionView *base;
@@ -371,6 +386,11 @@ PartitionView::PartitionModel_CPtr PartitionView::model() const
 	return m_model;
 }
 
+const PartitionView::NodeSplitManager_Ptr& PartitionView::node_split_manager()
+{
+	return m_nodeSplitManager;
+}
+
 const PartitionView::ParentSwitchManager_Ptr& PartitionView::parent_switch_manager()
 {
 	return m_parentSwitchManager;
@@ -396,6 +416,10 @@ void PartitionView::add_listeners()
 	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<ForestTouchListener>(new ForestTouchListener(this, m_model->volume_ipf())));
 	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+
+	m_nodeSplitManager.reset(new NodeSplitManagerT(m_model->volume_ipf()));
+	m_model->volume_ipf()->add_weak_listener(m_nodeSplitManager);
+	m_nodeSplitManager->add_shared_listener(boost::shared_ptr<NodeSplitManagerListener>(new NodeSplitManagerListener(this)));
 
 	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf(), m_model->selection(), m_commandManager));
 	m_model->volume_ipf()->add_weak_listener(m_parentSwitchManager);
@@ -427,6 +451,7 @@ void PartitionView::create_overlays()
 	m_overlayManager->clear_overlays();
 	m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", multi_feature_selection_overlay());
 	m_overlayManager->insert_overlay_at_top("IPFSelection", selection_overlay());
+	m_overlayManager->insert_overlay_at_top("NodeSplit", node_split_overlay());
 	m_overlayManager->insert_overlay_at_top("ParentSwitch", parent_switch_overlay());
 }
 
@@ -517,6 +542,18 @@ PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 	else return NULL;
 }
 
+PartitionOverlay *PartitionView::node_split_overlay() const
+{
+	PartitionModelT::VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(volumeIPF && m_nodeSplitManager)
+	{
+		SliceLocation loc = m_camera->slice_location();
+		SliceOrientation ori = m_camera->slice_orientation();
+		return new HighlightNodesOverlay(m_nodeSplitManager->unallocated_children(), volumeIPF, loc, ori, ITKImageUtil::make_rgba32(0,0,255,50));
+	}
+	else return NULL;
+}
+
 PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
 {
 	return m_overlayManager;
@@ -529,7 +566,7 @@ PartitionOverlay *PartitionView::parent_switch_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		return new ParentSwitchOverlay(m_parentSwitchManager->potential_new_parents(), volumeIPF, loc, ori);
+		return new HighlightNodesOverlay(m_parentSwitchManager->potential_new_parents(), volumeIPF, loc, ori, ITKImageUtil::make_rgba32(0,255,0,50));
 	}
 	else return NULL;
 }
@@ -546,9 +583,15 @@ void PartitionView::recreate_multi_feature_selection_overlay()
 	m_overlayManager->replace_overlay("IPFMultiFeatureSelection", multi_feature_selection_overlay());
 }
 
+void PartitionView::recreate_node_split_overlay()
+{
+	m_overlayManager->replace_overlay("NodeSplit", node_split_overlay());
+}
+
 void PartitionView::recreate_overlays()
 {
 	recreate_multi_feature_selection_overlay();
+	recreate_node_split_overlay();
 	recreate_parent_switch_overlay();
 	recreate_selection_overlay();
 }

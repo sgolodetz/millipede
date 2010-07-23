@@ -19,6 +19,7 @@
 #include <common/slices/SliceLocation.h>
 #include <common/slices/SliceTextureSet.h>
 #include <mast/models/PartitionModel.h>
+#include "NodeSplitManager.h"
 #include "ParentSwitchManager.h"
 
 //#################### FORWARD DECLARATIONS ####################
@@ -46,6 +47,8 @@ private:
 	typedef DICOMImageBranchLayer BranchLayer;
 	typedef AbdominalFeature::Enum Feature;
 	typedef DICOMImageLeafLayer LeafLayer;
+	typedef NodeSplitManager<LeafLayer,BranchLayer> NodeSplitManagerT;
+	typedef boost::shared_ptr<NodeSplitManagerT> NodeSplitManager_Ptr;
 	typedef ParentSwitchManager<LeafLayer,BranchLayer> ParentSwitchManagerT;
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
@@ -59,6 +62,7 @@ private:
 	struct ForestTouchListener;
 	struct ModelListener;
 	struct MultiFeatureSelectionListener;
+	struct NodeSplitManagerListener;
 	struct ParentSwitchManagerListener;
 	struct SelectionListener;
 
@@ -70,6 +74,7 @@ private:
 	wxGLContext *m_context;
 	Greyscale8SliceTextureSet_Ptr m_dicomTextureSet;
 	PartitionModel_Ptr m_model;
+	NodeSplitManager_Ptr m_nodeSplitManager;
 	PartitionOverlayManager_Ptr m_overlayManager;
 	ParentSwitchManager_Ptr m_parentSwitchManager;
 	std::vector<Greyscale8SliceTextureSet_Ptr> m_partitionTextureSets;
@@ -105,6 +110,7 @@ public:
 	void merge_selected_nodes();
 	const PartitionModel_Ptr& model();
 	PartitionModel_CPtr model() const;
+	const NodeSplitManager_Ptr& node_split_manager();
 	const ParentSwitchManager_Ptr& parent_switch_manager();
 	void unzip_selected_node();
 
@@ -121,10 +127,12 @@ private:
 	void fill_textures(SliceOrientation ori);
 	static SliceLocation initial_slice_location(const DICOMVolumeChoice& volumeChoice);
 	PartitionOverlay *multi_feature_selection_overlay() const;
+	PartitionOverlay *node_split_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	PartitionOverlay *parent_switch_overlay() const;
 	Greyscale8SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_multi_feature_selection_overlay();
+	void recreate_node_split_overlay();
 	void recreate_overlays();
 	void recreate_parent_switch_overlay();
 	void recreate_selection_overlay();
