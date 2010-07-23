@@ -313,6 +313,16 @@ public:
 	}
 
 	/**
+	@brief	Returns the listeners of the forest.
+
+	@return	As described
+	*/
+	shared_ptr<CompositeListener> listeners() const
+	{
+		return m_listeners;
+	}
+
+	/**
 	@brief	Provides a general way of constructing a lowest branch layer from a leaf layer and a specified
 			partitioning of the leaf nodes it contains.
 
@@ -1057,7 +1067,7 @@ public:
 			if(toLayer < node.layer() || toLayer > highest_layer()) throw Exception(OSSWrapper() << "Invalid layer: " << toLayer);
 		}
 
-		SequenceGuard guard(m_commandManager, m_listeners, "Unzip Node");
+		SequenceGuard guard(m_commandManager, "Unzip Node", m_listeners);
 
 		std::vector<Chain> chains;
 
@@ -1180,7 +1190,7 @@ public:
 			}
 		}
 
-		SequenceGuard guard(m_commandManager, m_listeners, "Zip Chains");
+		SequenceGuard guard(m_commandManager, "Zip Chains", m_listeners);
 
 		// Find the high and low layers of the chains.
 		int highLayer = chains[0].front().layer();
@@ -1260,7 +1270,7 @@ public:
 			}
 		}
 
-		SequenceGuard guard(m_commandManager, m_listeners, "Merge Non-Sibling Nodes");
+		SequenceGuard guard(m_commandManager, "Merge Non-Sibling Nodes", m_listeners);
 
 		std::set<PFNodeID> mergedNodes;
 
@@ -1350,7 +1360,7 @@ public:
 			if(!adjacent) throw Exception(OSSWrapper() << "Node " << node << " is not adjacent to its proposed new parent " << newParent);
 		}
 
-		SequenceGuard guard(m_commandManager, m_listeners, "Parent Switch");
+		SequenceGuard guard(m_commandManager, "Parent Switch", m_listeners);
 
 		// Find the common ancestor layer of the old and new parents, and the chain leading down to the new parent.
 		IForestLayer_Ptr layerN = forest_layer(node.layer());

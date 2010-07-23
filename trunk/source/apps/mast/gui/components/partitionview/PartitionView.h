@@ -53,11 +53,6 @@ private:
 public:
 	typedef boost::shared_ptr<ParentSwitchManagerT> ParentSwitchManager_Ptr;
 
-	//#################### COMMANDS ####################
-private:
-	struct RecreateSelectionOverlayPreCommand;
-	struct RecreateSelectionOverlayPostCommand;
-
 	//#################### LISTENERS ####################
 private:
 	struct CameraListener;

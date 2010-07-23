@@ -385,6 +385,11 @@ public:
 		m_listeners->selection_changed(0);
 	}
 
+	shared_ptr<CompositeListener> listeners() const
+	{
+		return m_listeners;
+	}
+
 	/**
 	@brief	Calculates the layer in which any merging of the selected nodes should happen.
 
@@ -452,7 +457,7 @@ public:
 
 	void replace_with_node(const PFNodeID& node)
 	{
-		SequenceGuard guard(m_commandManager, m_listeners, "Replace Selection");
+		SequenceGuard guard(m_commandManager, "Replace Selection", m_listeners);
 		clear();
 		select_node(node);
 	}

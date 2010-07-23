@@ -118,7 +118,7 @@ public:
 
 	void clear_all()
 	{
-		SequenceGuard guard(m_commandManager, m_listeners, "Clear All Features");
+		SequenceGuard guard(m_commandManager, "Clear All Features", m_listeners);
 		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
 			it->second->clear();
@@ -165,6 +165,11 @@ public:
 		selection_internal(feature)->select_node(node);
 	}
 
+	shared_ptr<CompositeListener> listeners() const
+	{
+		return m_listeners;
+	}
+
 	PartitionForestSelection_CPtr selection(const Feature& feature) const
 	{
 		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
@@ -195,7 +200,7 @@ public:
 
 	void toggle_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
 	{
-		SequenceGuard guard(m_commandManager, m_listeners, "Toggle Selection");
+		SequenceGuard guard(m_commandManager, "Toggle Selection", m_listeners);
 		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
 		{
 			toggle_node(*it, feature);

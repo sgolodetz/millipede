@@ -11,7 +11,7 @@
 #include <wx/slider.h>
 #include <wx/stattext.h>
 
-#include <common/commands/CommandSequenceGuard.h>
+#include <common/commands/ListenerAlertingCommandSequenceGuard.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/base/PartitionForestTouchListener.h>
 #include <common/partitionforests/images/MosaicImageCreator.h>
@@ -48,31 +48,6 @@ enum
 }
 
 namespace mp {
-
-//#################### COMMANDS ####################
-struct PartitionView::RecreateSelectionOverlayPreCommand : Command
-{
-	PartitionView *base;
-
-	RecreateSelectionOverlayPreCommand(PartitionView *base_)
-	:	Command("Recreate Selection Overlay"), base(base_)
-	{}
-
-	void execute()	{}
-	void undo()		{ base->recreate_selection_overlay(); }
-};
-
-struct PartitionView::RecreateSelectionOverlayPostCommand : Command
-{
-	PartitionView *base;
-
-	RecreateSelectionOverlayPostCommand(PartitionView *base_)
-	:	Command("Recreate Selection Overlay"), base(base_)
-	{}
-
-	void execute()	{ base->recreate_selection_overlay(); }
-	void undo()		{}
-};
 
 //#################### LISTENERS ####################
 struct PartitionView::CameraListener : PartitionCamera::Listener
@@ -319,16 +294,11 @@ void PartitionView::clone_current_layer()
 void PartitionView::delete_current_layer()
 {
 	// Note:	We clear the selection before deleting the layer, since the interaction between the two causes intricacies
-	//			that aren't worth solving. However, by combining the two into a single command, we inadvertently prevent the
-	//			selection overlay from being properly updated (it only gets updated in response to top-level commands). In
-	//			order to circumvent this problem, we add explicit pre and post commands to make sure the selection overlay
-	//			gets recreated properly. (This is basically the same problem addressed by ListenerAlertingCommandSequenceGuard,
-	//			but the difference there is that the listeners for the nested commands are the same - here, they're not.)
-	CommandSequenceGuard guard(m_commandManager, "Delete Layer");
-	m_commandManager->execute(Command_Ptr(new RecreateSelectionOverlayPreCommand(this)));
+	//			that aren't worth solving.
+	typedef ListenerAlertingCommandSequenceGuard2<PartitionModelT::VolumeIPFT::Listener, PartitionModelT::VolumeIPFSelectionT::Listener> SequenceGuard;
+	SequenceGuard guard(m_commandManager, "Delete Layer", m_model->volume_ipf()->listeners(), m_model->selection()->listeners());
 	m_model->selection()->clear();
 	m_model->volume_ipf()->delete_layer(camera()->slice_location().layer);
-	m_commandManager->execute(Command_Ptr(new RecreateSelectionOverlayPostCommand(this)));
 }
 
 void PartitionView::fit_image_to_view()
