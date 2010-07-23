@@ -121,9 +121,11 @@ private:
 	static SliceLocation initial_slice_location(const DICOMVolumeChoice& volumeChoice);
 	PartitionOverlay *multi_feature_selection_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
+	PartitionOverlay *parent_switch_overlay() const;
 	Greyscale8SliceTextureSet_CPtr partition_texture_set(int layer) const;
 	void recreate_multi_feature_selection_overlay();
 	void recreate_overlays();
+	void recreate_parent_switch_overlay();
 	void recreate_selection_overlay();
 	void refresh_canvases();
 	PartitionOverlay *selection_overlay() const;

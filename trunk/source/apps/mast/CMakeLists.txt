@@ -93,6 +93,7 @@ SET(gui_overlays_headers
 gui/overlays/IPFOverlayTools.h
 gui/overlays/IPFMultiFeatureSelectionOverlay.h
 gui/overlays/IPFSelectionOverlay.h
+gui/overlays/ParentSwitchOverlay.h
 gui/overlays/PartitionOverlay.h
 gui/overlays/PartitionOverlayManager.h
 )

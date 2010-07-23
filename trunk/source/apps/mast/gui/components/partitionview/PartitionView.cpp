@@ -20,6 +20,7 @@
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
+#include <mast/gui/overlays/ParentSwitchOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
 #include "DICOMCanvas.h"
@@ -410,6 +411,7 @@ void PartitionView::create_overlays()
 	m_overlayManager->clear_overlays();
 	m_overlayManager->insert_overlay_at_top("IPFMultiFeatureSelection", multi_feature_selection_overlay());
 	m_overlayManager->insert_overlay_at_top("IPFSelection", selection_overlay());
+	m_overlayManager->insert_overlay_at_top("ParentSwitch", parent_switch_overlay());
 }
 
 void PartitionView::create_partition_textures()
@@ -504,6 +506,18 @@ PartitionOverlayManager_CPtr PartitionView::overlay_manager() const
 	return m_overlayManager;
 }
 
+PartitionOverlay *PartitionView::parent_switch_overlay() const
+{
+	PartitionModelT::VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(volumeIPF && m_parentSwitchManager)
+	{
+		SliceLocation loc = m_camera->slice_location();
+		SliceOrientation ori = m_camera->slice_orientation();
+		return new ParentSwitchOverlay(m_parentSwitchManager->potential_new_parents(), volumeIPF, loc, ori);
+	}
+	else return NULL;
+}
+
 Greyscale8SliceTextureSet_CPtr PartitionView::partition_texture_set(int layer) const
 {
 	int n = layer - 1;
@@ -519,7 +533,13 @@ void PartitionView::recreate_multi_feature_selection_overlay()
 void PartitionView::recreate_overlays()
 {
 	recreate_multi_feature_selection_overlay();
+	recreate_parent_switch_overlay();
 	recreate_selection_overlay();
+}
+
+void PartitionView::recreate_parent_switch_overlay()
+{
+	m_overlayManager->replace_overlay("ParentSwitch", parent_switch_overlay());
 }
 
 void PartitionView::recreate_selection_overlay()
