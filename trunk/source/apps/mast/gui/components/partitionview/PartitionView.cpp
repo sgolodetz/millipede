@@ -417,7 +417,7 @@ void PartitionView::add_listeners()
 	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
 
-	m_nodeSplitManager.reset(new NodeSplitManagerT(m_model->volume_ipf()));
+	m_nodeSplitManager.reset(new NodeSplitManagerT(m_model->volume_ipf(), m_model->selection()));
 	m_model->volume_ipf()->add_weak_listener(m_nodeSplitManager);
 	m_nodeSplitManager->add_shared_listener(boost::shared_ptr<NodeSplitManagerListener>(new NodeSplitManagerListener(this)));
 
@@ -549,7 +549,7 @@ PartitionOverlay *PartitionView::node_split_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		return new HighlightNodesOverlay(m_nodeSplitManager->unallocated_children(), volumeIPF, loc, ori, ITKImageUtil::make_rgba32(0,0,255,50));
+		return new HighlightNodesOverlay(m_nodeSplitManager->unallocated_children(), ITKImageUtil::make_rgba32(0,0,255,50), volumeIPF, loc, ori);
 	}
 	else return NULL;
 }
@@ -566,7 +566,7 @@ PartitionOverlay *PartitionView::parent_switch_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		return new HighlightNodesOverlay(m_parentSwitchManager->potential_new_parents(), volumeIPF, loc, ori, ITKImageUtil::make_rgba32(0,255,0,50));
+		return new HighlightNodesOverlay(m_parentSwitchManager->potential_new_parents(), ITKImageUtil::make_rgba32(0,255,0,50), volumeIPF, loc, ori);
 	}
 	else return NULL;
 }

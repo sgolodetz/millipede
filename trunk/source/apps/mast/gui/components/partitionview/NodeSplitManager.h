@@ -7,7 +7,7 @@
 #define H_MILLIPEDE_NODESPLITMANAGER
 
 #include <common/listeners/CompositeListenerBase.h>
-#include <common/partitionforests/base/PartitionForest.h>
+#include <common/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
 
@@ -35,19 +35,22 @@ private:
 private:
 	typedef PartitionForest<LeafLayer,BranchLayer> PartitionForestT;
 	typedef boost::shared_ptr<PartitionForestT> PartitionForest_Ptr;
+	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
+	typedef boost::shared_ptr<PartitionForestSelectionT> PartitionForestSelection_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
 	PartitionForest_Ptr m_forest;
 	CompositeListener m_listeners;
+	PartitionForestSelection_Ptr m_selection;
 	PFNodeID m_splitNode;
 	std::vector<std::set<PFNodeID> > m_subgroups;
 	std::set<PFNodeID> m_unallocatedChildren;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit NodeSplitManager(const PartitionForest_Ptr& forest)
-	:	m_forest(forest)
+	NodeSplitManager(const PartitionForest_Ptr& forest, const PartitionForestSelection_Ptr& selection)
+	:	m_forest(forest), m_selection(selection)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -91,6 +94,9 @@ public:
 		reset();
 		m_splitNode = splitNode;
 		m_unallocatedChildren = m_forest->children_of(splitNode);
+
+		// Clear the selection to make it easier for the user to see what's going on.
+		m_selection->clear();
 
 		m_listeners.node_split_manager_changed();
 	}

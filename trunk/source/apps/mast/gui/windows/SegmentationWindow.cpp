@@ -47,6 +47,7 @@ enum
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SEGMENTATION_SPLITNODE_SETNODE,
+	MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN,
 	MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD,
 	MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT,
 	MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN,
@@ -177,7 +178,7 @@ void SegmentationWindow::setup_menus()
 		splitNodeMenu->Append(wxID_ANY, wxT("&Remove Subgroup"));
 		splitNodeMenu->Append(wxID_ANY, wxT("&Finalize Split"));
 		splitNodeMenu->AppendSeparator();
-		splitNodeMenu->Append(wxID_ANY, wxT("&Start Again"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, wxT("&Unzip Selected Node...\tCtrl+Shift+U"));
 	segmentationMenu->AppendSeparator();
@@ -351,6 +352,11 @@ void SegmentationWindow::OnMenuSegmentationSplitNodeSetNode(wxCommandEvent&)
 	m_view->camera()->goto_previous_layer();
 }
 
+void SegmentationWindow::OnMenuSegmentationSplitNodeStartAgain(wxCommandEvent&)
+{
+	m_view->node_split_manager()->reset();
+}
+
 void SegmentationWindow::OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&)
 {
 	PFNodeID child = *m_model->selection()->view_at_layer_cbegin(m_view->camera()->slice_location().layer);
@@ -476,6 +482,11 @@ void SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes(wxUpdateUIEv
 	else e.Enable(false);
 }
 
+void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeStartAgain(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->node_split_manager() && !m_view->node_split_manager()->unallocated_children().empty());
+}
+
 void SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent(wxUpdateUIEvent& e)
 {
 	e.Enable(false);
@@ -576,6 +587,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnMenuSegmentationSplitNodeSetNode)
+	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSplitNodeStartAgain)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnMenuSegmentationSwitchParentSetChild)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain)
@@ -598,6 +610,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeStartAgain)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain)

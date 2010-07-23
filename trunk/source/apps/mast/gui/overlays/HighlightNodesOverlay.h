@@ -17,8 +17,8 @@ class HighlightNodesOverlay : public PartitionOverlay
 	//#################### CONSTRUCTORS ####################
 public:
 	template <typename LeafLayer, typename BranchLayer>
-	HighlightNodesOverlay(const std::set<PFNodeID>& nodes, const boost::shared_ptr<const VolumeIPF<LeafLayer,BranchLayer> >& volumeIPF,
-						  const SliceLocation& sliceLocation, SliceOrientation sliceOrientation, const RGBA32& colour)
+	HighlightNodesOverlay(const std::set<PFNodeID>& nodes, const RGBA32& colour, const boost::shared_ptr<const VolumeIPF<LeafLayer,BranchLayer> >& volumeIPF,
+						  const SliceLocation& sliceLocation, SliceOrientation sliceOrientation)
 	{
 		itk::Index<3> sliceBegin, sliceEnd;
 		int width, height;
