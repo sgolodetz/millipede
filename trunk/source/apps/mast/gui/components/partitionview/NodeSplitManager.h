@@ -74,6 +74,11 @@ public:
 		m_listeners.node_split_manager_changed();
 	}
 
+	const std::set<PFNodeID>& allocated_children() const
+	{
+		return m_allocatedChildren;
+	}
+
 	void finalize_split()
 	{
 		// TODO

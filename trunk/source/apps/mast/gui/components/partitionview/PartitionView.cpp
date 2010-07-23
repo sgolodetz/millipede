@@ -549,7 +549,10 @@ PartitionOverlay *PartitionView::node_split_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		return new HighlightNodesOverlay(m_nodeSplitManager->unallocated_children(), ITKImageUtil::make_rgba32(0,0,255,50), volumeIPF, loc, ori);
+		NodeHighlightSets nhs;
+		nhs.push_back(std::make_pair(m_nodeSplitManager->allocated_children(), ITKImageUtil::make_rgba32(255,255,0,50)));
+		nhs.push_back(std::make_pair(m_nodeSplitManager->unallocated_children(), ITKImageUtil::make_rgba32(0,0,255,50)));
+		return new HighlightNodesOverlay(nhs, volumeIPF, loc, ori);
 	}
 	else return NULL;
 }
@@ -566,7 +569,9 @@ PartitionOverlay *PartitionView::parent_switch_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		return new HighlightNodesOverlay(m_parentSwitchManager->potential_new_parents(), ITKImageUtil::make_rgba32(0,255,0,50), volumeIPF, loc, ori);
+		NodeHighlightSets nhs;
+		nhs.push_back(std::make_pair(m_parentSwitchManager->potential_new_parents(), ITKImageUtil::make_rgba32(0,255,0,50)));
+		return new HighlightNodesOverlay(nhs, volumeIPF, loc, ori);
 	}
 	else return NULL;
 }
