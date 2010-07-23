@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_NODESPLITMANAGER
 #define H_MILLIPEDE_NODESPLITMANAGER
 
+#include <list>
+
 #include <common/listeners/CompositeListenerBase.h>
 #include <common/partitionforests/base/PartitionForestSelection.h>
 
@@ -45,7 +47,7 @@ private:
 	CompositeListener m_listeners;
 	PartitionForestSelection_Ptr m_selection;
 	PFNodeID m_splitNode;
-	std::vector<std::set<PFNodeID> > m_subgroups;
+	std::list<std::set<PFNodeID> > m_subgroups;
 	std::set<PFNodeID> m_unallocatedChildren;
 
 	//#################### CONSTRUCTORS ####################
@@ -91,14 +93,29 @@ public:
 
 	void remove_subgroup_containing(const PFNodeID& node)
 	{
-		// TODO
+		for(std::list<std::set<PFNodeID> >::const_iterator it=m_subgroups.begin(), iend=m_subgroups.end(); it!=iend; ++it)
+		{
+			const std::set<PFNodeID>& subgroup = *it;
+			if(subgroup.find(node) != subgroup.end())
+			{
+				for(std::set<PFNodeID>::const_iterator jt=subgroup.begin(), jend=subgroup.end(); jt!=jend; ++jt)
+				{
+					m_allocatedChildren.erase(*jt);
+					m_unallocatedChildren.insert(*jt);
+				}
+				m_subgroups.erase(it);
+				break;
+			}
+		}
+
+		m_listeners.node_split_manager_changed();
 	}
 
 	void reset()
 	{
 		m_allocatedChildren.clear();
 		m_splitNode = PFNodeID::invalid();
-		std::vector<std::set<PFNodeID> >().swap(m_subgroups);
+		m_subgroups.clear();
 		m_unallocatedChildren.clear();
 
 		m_listeners.node_split_manager_changed();

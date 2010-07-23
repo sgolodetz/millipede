@@ -80,6 +80,7 @@ public:
 	void OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&);
+	void OnMenuSegmentationSplitNodeRemoveSubgroup(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeSetNode(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeStartAgain(wxCommandEvent&);
 	void OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&);
@@ -104,6 +105,7 @@ public:
 	void OnUpdateMenuSegmentationDeleteCurrentLayer(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationMergeSelectedNodes(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationSplitNodeAddSubgroup(wxUpdateUIEvent& e);
+	void OnUpdateMenuSegmentationSplitNodeRemoveSubgroup(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationSplitNodeStartAgain(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationSwitchParentSetNewParent(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationSwitchParentStartAgain(wxUpdateUIEvent& e);

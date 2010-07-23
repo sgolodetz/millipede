@@ -47,6 +47,7 @@ enum
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP,
+	MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP,
 	MENUID_SEGMENTATION_SPLITNODE_SETNODE,
 	MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN,
 	MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD,
@@ -176,7 +177,7 @@ void SegmentationWindow::setup_menus()
 	segmentationMenu->AppendSubMenu(splitNodeMenu, wxT("&Split Node"));
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_SETNODE, wxT("Set &Node"));
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, wxT("&Add Subgroup"));
-		splitNodeMenu->Append(wxID_ANY, wxT("&Remove Subgroup"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, wxT("&Remove Subgroup"));
 		splitNodeMenu->Append(wxID_ANY, wxT("&Finalize Split"));
 		splitNodeMenu->AppendSeparator();
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
@@ -348,9 +349,15 @@ void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&)
 {
-	int viewLayer = m_view->camera()->slice_location().layer;
-	std::set<PFNodeID> subgroup(m_model->selection()->view_at_layer_cbegin(viewLayer), m_model->selection()->view_at_layer_cend(viewLayer));
+	int layerIndex = m_view->camera()->slice_location().layer;
+	std::set<PFNodeID> subgroup(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
 	m_view->node_split_manager()->add_subgroup(subgroup);
+}
+
+void SegmentationWindow::OnMenuSegmentationSplitNodeRemoveSubgroup(wxCommandEvent&)
+{
+	PFNodeID node = *m_model->selection()->view_at_layer_cbegin(m_view->camera()->slice_location().layer);
+	m_view->node_split_manager()->remove_subgroup_containing(node);
 }
 
 void SegmentationWindow::OnMenuSegmentationSplitNodeSetNode(wxCommandEvent&)
@@ -494,7 +501,7 @@ void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup(wxUpdateUI
 {
 	e.Enable(false);
 
-	// Check that there's a selection available.
+	// Check that the selection is available.
 	if(!m_model->selection()) return;
 
 	// Check that we're in the process of splitting a node.
@@ -520,9 +527,29 @@ void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup(wxUpdateUI
 	{
 		selectedNodeIndices.insert(it->index());
 	}
-
-	// Iff all of the above are true, enable the menu item.
 	e.Enable(m_model->volume_ipf()->are_connected(selectedNodeIndices, splitNode.layer() - 1));
+}
+
+void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeRemoveSubgroup(wxUpdateUIEvent& e)
+{
+	e.Enable(false);
+
+	// Check that the node split manager is available.
+	PartitionView::NodeSplitManager_Ptr nodeSplitManager = m_view->node_split_manager();
+	if(!nodeSplitManager) return;
+
+	// Check that only one node is selected (when viewed from the current layer).
+	int layerIndex = m_view->camera()->slice_location().layer;
+	int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
+	if(nodeCount != 1) return;
+
+	// Check the node is actually in the layer being viewed.
+	PFNodeID node = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+	if(node.layer() != layerIndex) return;
+
+	// Check that the node is an allocated child of the node currently being split.
+	const std::set<PFNodeID>& allocatedChildren = nodeSplitManager->allocated_children();
+	e.Enable(allocatedChildren.find(node) != allocatedChildren.end());
 }
 
 void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeStartAgain(wxUpdateUIEvent& e)
@@ -630,6 +657,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup)
+	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeRemoveSubgroup)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnMenuSegmentationSplitNodeSetNode)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSplitNodeStartAgain)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnMenuSegmentationSwitchParentSetChild)
@@ -654,6 +682,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeRemoveSubgroup)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeStartAgain)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
