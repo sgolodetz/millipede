@@ -381,7 +381,7 @@ void PartitionView::add_listeners()
 	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
 
-	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf()));
+	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf(), m_model->selection(), m_commandManager));
 	m_model->volume_ipf()->add_weak_listener(m_parentSwitchManager);
 }
 

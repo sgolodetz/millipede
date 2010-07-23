@@ -6,8 +6,9 @@
 #ifndef H_MILLIPEDE_PARENTSWITCHMANAGER
 #define H_MILLIPEDE_PARENTSWITCHMANAGER
 
+#include <common/commands/ListenerAlertingCommandSequenceGuard.h>
 #include <common/exceptions/Exception.h>
-#include <common/partitionforests/base/PartitionForest.h>
+#include <common/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
 
@@ -18,17 +19,22 @@ class ParentSwitchManager : public PartitionForest<LeafLayer,BranchLayer>::Liste
 private:
 	typedef PartitionForest<LeafLayer,BranchLayer> PartitionForestT;
 	typedef boost::shared_ptr<PartitionForestT> PartitionForest_Ptr;
+	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
+	typedef boost::shared_ptr<PartitionForestSelectionT> PartitionForestSelection_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	ICommandManager_Ptr m_commandManager;
 	PartitionForest_Ptr m_forest;
+	PartitionForestSelection_Ptr m_selection;
+
 	PFNodeID m_child;
 	std::set<PFNodeID> m_potentialNewParents;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit ParentSwitchManager(const PartitionForest_Ptr& forest)
-	:	m_forest(forest)
+	ParentSwitchManager(const PartitionForest_Ptr& forest, const PartitionForestSelection_Ptr& selection, const ICommandManager_Ptr& commandManager)
+	:	m_commandManager(commandManager), m_forest(forest), m_selection(selection)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -47,6 +53,9 @@ public:
 	{
 		if(m_potentialNewParents.find(newParent) != m_potentialNewParents.end())
 		{
+			typedef ListenerAlertingCommandSequenceGuard2<typename PartitionForestT::Listener, typename PartitionForestSelectionT::Listener> SequenceGuard;
+			SequenceGuard guard(m_commandManager, "Parent Switch", m_forest->listeners(), m_selection->listeners());
+			m_selection->select_node(m_child);
 			m_forest->parent_switch(m_child, newParent.index());
 			reset();
 		}
