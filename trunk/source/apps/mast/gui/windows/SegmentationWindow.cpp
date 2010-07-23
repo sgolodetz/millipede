@@ -182,8 +182,8 @@ void SegmentationWindow::setup_menus()
 	segmentationMenu->AppendSeparator();
 	wxMenu *switchParentMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(switchParentMenu, wxT("Switch &Parent"));
-		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, wxT("Set &Child"));
-		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, wxT("Set New &Parent"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, wxT("Set &Child\tCtrl+Shift+X"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, wxT("Set New &Parent\tCtrl+Shift+V"));
 		switchParentMenu->AppendSeparator();
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
 
