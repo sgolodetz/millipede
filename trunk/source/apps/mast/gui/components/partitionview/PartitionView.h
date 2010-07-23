@@ -48,12 +48,12 @@ private:
 	typedef AbdominalFeature::Enum Feature;
 	typedef DICOMImageLeafLayer LeafLayer;
 	typedef NodeSplitManager<LeafLayer,BranchLayer> NodeSplitManagerT;
-	typedef boost::shared_ptr<NodeSplitManagerT> NodeSplitManager_Ptr;
 	typedef ParentSwitchManager<LeafLayer,BranchLayer> ParentSwitchManagerT;
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
 public:
+	typedef boost::shared_ptr<NodeSplitManagerT> NodeSplitManager_Ptr;
 	typedef boost::shared_ptr<ParentSwitchManagerT> ParentSwitchManager_Ptr;
 
 	//#################### LISTENERS ####################

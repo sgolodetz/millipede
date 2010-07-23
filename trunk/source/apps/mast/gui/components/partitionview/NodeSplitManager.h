@@ -40,6 +40,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	std::set<PFNodeID> m_allocatedChildren;
 	PartitionForest_Ptr m_forest;
 	CompositeListener m_listeners;
 	PartitionForestSelection_Ptr m_selection;
@@ -62,7 +63,15 @@ public:
 
 	void add_subgroup(const std::set<PFNodeID>& subgroup)
 	{
-		// TODO
+		// Note: No validation of the subgroup is done here - it's done in the update handler for the menu item instead.
+		for(std::set<PFNodeID>::const_iterator it=subgroup.begin(), iend=subgroup.end(); it!=iend; ++it)
+		{
+			m_unallocatedChildren.erase(*it);
+			m_allocatedChildren.insert(*it);
+		}
+		m_subgroups.push_back(subgroup);
+
+		m_listeners.node_split_manager_changed();
 	}
 
 	void finalize_split()
@@ -82,6 +91,7 @@ public:
 
 	void reset()
 	{
+		m_allocatedChildren.clear();
 		m_splitNode = PFNodeID::invalid();
 		std::vector<std::set<PFNodeID> >().swap(m_subgroups);
 		m_unallocatedChildren.clear();
@@ -99,6 +109,11 @@ public:
 		m_selection->clear();
 
 		m_listeners.node_split_manager_changed();
+	}
+
+	const PFNodeID& split_node() const
+	{
+		return m_splitNode;
 	}
 
 	const std::set<PFNodeID>& unallocated_children() const

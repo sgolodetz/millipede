@@ -313,6 +313,25 @@ public:
 	}
 
 	/**
+	@brief	Determines whether the specified nodes are connected in the specified layer.
+
+	@param[in]	nodes		The nodes whose connectivity is to be checked
+	@param[in]	layerIndex	The layer in which to check their connectivity
+	@pre
+		-	0 <= layerIndex <= highest_layer()
+	@return	true, if the nodes are connected in the specified layer, or false otherwise
+	*/
+	bool are_connected(std::set<int> nodes, int layerIndex) const
+	{
+		if(nodes.empty()) return false;
+
+		find_connected_component(nodes, layerIndex);
+
+		// If no nodes remain after finding the first connected component, the nodes must be connected, and vice-versa.
+		return nodes.empty();
+	}
+
+	/**
 	@brief	Returns the listeners of the forest.
 
 	@return	As described
@@ -1385,16 +1404,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	bool are_connected(std::set<int> nodes, int layerIndex) const
-	{
-		if(nodes.empty()) return false;
-
-		find_connected_component(nodes, layerIndex);
-
-		// If no nodes remain after finding the first connected component, the nodes must be connected, and vice-versa.
-		return nodes.empty();
-	}
-
 	BranchLayer_Ptr branch_layer(int index) const
 	{
 		return m_branchLayers[index-1];
