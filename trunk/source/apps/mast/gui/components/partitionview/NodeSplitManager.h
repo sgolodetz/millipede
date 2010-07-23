@@ -118,7 +118,7 @@ public:
 
 	void remove_subgroup_containing(const PFNodeID& node)
 	{
-		for(std::list<std::set<PFNodeID> >::const_iterator it=m_subgroups.begin(), iend=m_subgroups.end(); it!=iend; ++it)
+		for(std::list<std::set<PFNodeID> >::iterator it=m_subgroups.begin(), iend=m_subgroups.end(); it!=iend; ++it)
 		{
 			const std::set<PFNodeID>& subgroup = *it;
 			if(subgroup.find(node) != subgroup.end())
