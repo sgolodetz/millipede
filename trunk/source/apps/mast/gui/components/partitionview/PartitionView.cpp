@@ -231,6 +231,21 @@ struct PartitionView::MultiFeatureSelectionListener : PartitionModelT::VolumeIPF
 	}
 };
 
+struct PartitionView::ParentSwitchManagerListener : ParentSwitchManager<LeafLayer,BranchLayer>::Listener
+{
+	PartitionView *base;
+
+	explicit ParentSwitchManagerListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void parent_switch_manager_changed()
+	{
+		base->recreate_parent_switch_overlay();
+		base->refresh_canvases();
+	}
+};
+
 struct PartitionView::SelectionListener : PartitionModelT::VolumeIPFSelectionT::Listener
 {
 	PartitionView *base;
@@ -384,6 +399,7 @@ void PartitionView::add_listeners()
 
 	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf(), m_model->selection(), m_commandManager));
 	m_model->volume_ipf()->add_weak_listener(m_parentSwitchManager);
+	m_parentSwitchManager->add_shared_listener(boost::shared_ptr<ParentSwitchManagerListener>(new ParentSwitchManagerListener(this)));
 }
 
 void PartitionView::calculate_canvas_size()

@@ -8,6 +8,7 @@
 
 #include <common/commands/ListenerAlertingCommandSequenceGuard.h>
 #include <common/exceptions/Exception.h>
+#include <common/listeners/CompositeListenerBase.h>
 #include <common/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
@@ -15,6 +16,23 @@ namespace mp {
 template <typename LeafLayer, typename BranchLayer>
 class ParentSwitchManager : public PartitionForest<LeafLayer,BranchLayer>::Listener
 {
+	//#################### LISTENERS ####################
+public:
+	struct Listener
+	{
+		virtual ~Listener() {}
+		virtual void parent_switch_manager_changed() = 0;
+	};
+
+private:
+	struct CompositeListener : CompositeListenerBase<Listener>
+	{
+		void parent_switch_manager_changed()
+		{
+			multicast(boost::bind(&Listener::parent_switch_manager_changed, _1));
+		}
+	};
+
 	//#################### TYPEDEFS ####################
 private:
 	typedef PartitionForest<LeafLayer,BranchLayer> PartitionForestT;
@@ -24,12 +42,12 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	PFNodeID m_child;
 	ICommandManager_Ptr m_commandManager;
 	PartitionForest_Ptr m_forest;
-	PartitionForestSelection_Ptr m_selection;
-
-	PFNodeID m_child;
+	CompositeListener m_listeners;
 	std::set<PFNodeID> m_potentialNewParents;
+	PartitionForestSelection_Ptr m_selection;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -39,6 +57,11 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	void add_shared_listener(const boost::shared_ptr<Listener>& listener)
+	{
+		m_listeners.add_shared_listener(listener);
+	}
+
 	void forest_changed(int commandDepth)
 	{
 		reset();
@@ -71,6 +94,8 @@ public:
 	{
 		m_child = PFNodeID::invalid();
 		m_potentialNewParents.clear();
+
+		m_listeners.parent_switch_manager_changed();
 	}
 
 	void set_child(const PFNodeID& child)
@@ -89,6 +114,8 @@ public:
 
 		// Note: The child's own parent is not a potential *new* parent (obviously).
 		m_potentialNewParents.erase(m_forest->parent_of(child));
+
+		m_listeners.parent_switch_manager_changed();
 	}
 };
 

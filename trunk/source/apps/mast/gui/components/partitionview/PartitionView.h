@@ -59,6 +59,7 @@ private:
 	struct ForestTouchListener;
 	struct ModelListener;
 	struct MultiFeatureSelectionListener;
+	struct ParentSwitchManagerListener;
 	struct SelectionListener;
 
 	//#################### PRIVATE VARIABLES ####################
