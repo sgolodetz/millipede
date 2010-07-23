@@ -39,6 +39,13 @@ public:
 
 		set_texture(TextureFactory::create_texture(image));
 	}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	bool on_dicom_canvas() const
+	{
+		return false;
+	}
 };
 
 }

@@ -347,6 +347,7 @@ void SegmentationWindow::OnMenuSegmentationSwitchParentSetChild(wxCommandEvent&)
 {
 	PFNodeID child = *m_model->selection()->view_at_layer_cbegin(m_view->camera()->slice_location().layer);
 	m_view->parent_switch_manager()->set_child(child);
+	m_view->camera()->goto_next_layer();
 }
 
 void SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent(wxCommandEvent&)
