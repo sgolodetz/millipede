@@ -47,6 +47,7 @@ enum
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP,
+	MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT,
 	MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP,
 	MENUID_SEGMENTATION_SPLITNODE_SETNODE,
 	MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN,
@@ -178,7 +179,7 @@ void SegmentationWindow::setup_menus()
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_SETNODE, wxT("Set &Node"));
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, wxT("&Add Subgroup"));
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, wxT("&Remove Subgroup"));
-		splitNodeMenu->Append(wxID_ANY, wxT("&Finalize Split"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, wxT("&Finalize Split"));
 		splitNodeMenu->AppendSeparator();
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
@@ -352,6 +353,12 @@ void SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&)
 	int layerIndex = m_view->camera()->slice_location().layer;
 	std::set<PFNodeID> subgroup(m_model->selection()->view_at_layer_cbegin(layerIndex), m_model->selection()->view_at_layer_cend(layerIndex));
 	m_view->node_split_manager()->add_subgroup(subgroup);
+}
+
+void SegmentationWindow::OnMenuSegmentationSplitNodeFinalizeSplit(wxCommandEvent&)
+{
+	m_view->node_split_manager()->finalize_split();
+	m_view->camera()->goto_next_layer();
 }
 
 void SegmentationWindow::OnMenuSegmentationSplitNodeRemoveSubgroup(wxCommandEvent&)
@@ -530,6 +537,11 @@ void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup(wxUpdateUI
 	e.Enable(m_model->volume_ipf()->are_connected(selectedNodeIndices, splitNode.layer() - 1));
 }
 
+void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeFinalizeSplit(wxUpdateUIEvent& e)
+{
+	e.Enable(m_view->node_split_manager() && m_view->node_split_manager()->split_node() != PFNodeID::invalid());
+}
+
 void SegmentationWindow::OnUpdateMenuSegmentationSplitNodeRemoveSubgroup(wxUpdateUIEvent& e)
 {
 	e.Enable(false);
@@ -657,6 +669,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup)
+	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, SegmentationWindow::OnMenuSegmentationSplitNodeFinalizeSplit)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeRemoveSubgroup)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnMenuSegmentationSplitNodeSetNode)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSplitNodeStartAgain)
@@ -682,6 +695,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeFinalizeSplit)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeRemoveSubgroup)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_SETNODE, SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeStartAgain)

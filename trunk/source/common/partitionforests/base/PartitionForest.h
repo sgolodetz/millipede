@@ -332,6 +332,23 @@ public:
 	}
 
 	/**
+	@brief	Finds the connected components of the specified nodes in the specified layer.
+
+	@param[in]	nodes		The indices of the nodes whose connected components are to be found
+	@param[in]	layerIndex	The layer in which the nodes lie
+	@return	As described
+	*/
+	std::vector<std::set<int> > find_connected_components(std::set<int> nodes, int layerIndex) const
+	{
+		std::vector<std::set<int> > ret;
+		while(!nodes.empty())
+		{
+			ret.push_back(find_connected_component(nodes, layerIndex));
+		}
+		return ret;
+	}
+
+	/**
 	@brief	Returns the listeners of the forest.
 
 	@return	As described
@@ -1568,16 +1585,6 @@ private:
 			}
 		}
 
-		return ret;
-	}
-
-	std::vector<std::set<int> > find_connected_components(std::set<int> nodes, int layerIndex) const
-	{
-		std::vector<std::set<int> > ret;
-		while(!nodes.empty())
-		{
-			ret.push_back(find_connected_component(nodes, layerIndex));
-		}
 		return ret;
 	}
 

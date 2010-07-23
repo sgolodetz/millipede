@@ -83,7 +83,32 @@ public:
 
 	void finalize_split()
 	{
-		// TODO
+		std::vector<std::set<int> > subgroups;
+
+		// Add the known subgroups.
+		for(std::list<std::set<PFNodeID> >::const_iterator it=m_subgroups.begin(), iend=m_subgroups.end(); it!=iend; ++it)
+		{
+			std::set<int> subgroup;
+			for(std::set<PFNodeID>::const_iterator jt=it->begin(), jend=it->end(); jt!=jend; ++jt)
+			{
+				subgroup.insert(jt->index());
+			}
+			subgroups.push_back(subgroup);
+		}
+
+		// Determine the connected components of any unallocated children and add those as additional subgroups.
+		std::set<int> unallocatedChildren;
+		for(std::set<PFNodeID>::const_iterator it=m_unallocatedChildren.begin(), iend=m_unallocatedChildren.end(); it!=iend; ++it)
+		{
+			unallocatedChildren.insert(it->index());
+		}
+		std::vector<std::set<int> > connectedComponents = m_forest->find_connected_components(unallocatedChildren, m_splitNode.layer() - 1);
+		std::copy(connectedComponents.begin(), connectedComponents.end(), std::back_inserter(subgroups));
+
+		// Split the node.
+		m_forest->split_node(m_splitNode, subgroups);
+
+		reset();
 	}
 
 	void forest_changed(int commandDepth)
