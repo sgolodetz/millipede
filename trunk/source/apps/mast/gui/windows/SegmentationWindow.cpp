@@ -176,10 +176,10 @@ void SegmentationWindow::setup_menus()
 	segmentationMenu->Append(MENUID_SEGMENTATION_MERGESELECTEDNODES, wxT("&Merge Selected Nodes\tCtrl+Shift+M"));
 	wxMenu *splitNodeMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(splitNodeMenu, wxT("&Split Node"));
-		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_SETNODE, wxT("Set &Node"));
-		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, wxT("&Add Subgroup"));
-		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, wxT("&Remove Subgroup"));
-		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, wxT("&Finalize Split"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_SETNODE, wxT("Set &Node\tCtrl+Shift+S"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, wxT("&Add Subgroup\tCtrl+Shift+A"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, wxT("&Remove Subgroup\tCtrl+Shift+R"));
+		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, wxT("&Finalize Split\tCtrl+Shift+F"));
 		splitNodeMenu->AppendSeparator();
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
