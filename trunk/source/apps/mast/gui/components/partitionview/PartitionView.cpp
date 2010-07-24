@@ -558,8 +558,8 @@ PartitionOverlay *PartitionView::node_split_overlay() const
 			ITKImageUtil::make_rgba32(255,255,0,50),
 			ITKImageUtil::make_rgba32(255,0,255,50),
 			ITKImageUtil::make_rgba32(0,255,255,50),
-			ITKImageUtil::make_rgba32(255,192,192,50),
-			ITKImageUtil::make_rgba32(84,216,131,50)
+			ITKImageUtil::make_rgba32(0,255,0,50),
+			ITKImageUtil::make_rgba32(192,0,0,50)
 		};
 
 		const std::list<std::set<PFNodeID> >& subgroups = m_nodeSplitManager->subgroups();

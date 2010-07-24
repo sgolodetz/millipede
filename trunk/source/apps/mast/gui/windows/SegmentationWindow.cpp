@@ -184,13 +184,19 @@ void SegmentationWindow::setup_menus()
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, wxT("&Unzip Selected Node...\tCtrl+Shift+U"));
+	wxMenu *zipNodeMenu = new wxMenu;
+	segmentationMenu->AppendSubMenu(zipNodeMenu, wxT("&Zip Node"));
+		zipNodeMenu->Append(wxID_ANY, wxT("Set &Source"));
+		zipNodeMenu->Append(wxID_ANY, wxT("Set &Destination"));
+		zipNodeMenu->AppendSeparator();
+		zipNodeMenu->Append(wxID_ANY, wxT("Start &Again"));
 	segmentationMenu->AppendSeparator();
 	wxMenu *switchParentMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(switchParentMenu, wxT("Switch &Parent"));
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, wxT("Set &Child\tCtrl+Shift+X"));
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, wxT("Set New &Parent\tCtrl+Shift+V"));
 		switchParentMenu->AppendSeparator();
-		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again\tCtrl+Shift+Z"));
+		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
 
 	wxMenu *featuresMenu = new wxMenu;
 	wxMenu *autoMarkMenu = new wxMenu;
