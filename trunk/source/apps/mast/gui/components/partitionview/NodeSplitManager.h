@@ -163,6 +163,11 @@ public:
 		return m_splitNode;
 	}
 
+	const std::list<std::set<PFNodeID> >& subgroups() const
+	{
+		return m_subgroups;
+	}
+
 	const std::set<PFNodeID>& unallocated_children() const
 	{
 		return m_unallocatedChildren;

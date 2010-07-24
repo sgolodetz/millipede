@@ -549,9 +549,29 @@ PartitionOverlay *PartitionView::node_split_overlay() const
 	{
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
+
 		NodeHighlightSets nhs;
-		nhs.push_back(std::make_pair(m_nodeSplitManager->allocated_children(), ITKImageUtil::make_rgba32(255,255,0,50)));
+
+		// TODO: Add more colours as desired (depending on how many subgroups there are likely to be).
+		RGBA32 colours[] =
+		{
+			ITKImageUtil::make_rgba32(255,255,0,50),
+			ITKImageUtil::make_rgba32(255,0,255,50),
+			ITKImageUtil::make_rgba32(0,255,255,50),
+			ITKImageUtil::make_rgba32(255,192,192,50),
+			ITKImageUtil::make_rgba32(84,216,131,50)
+		};
+
+		const std::list<std::set<PFNodeID> >& subgroups = m_nodeSplitManager->subgroups();
+		int curColour = 0, colourCount = sizeof(colours) / sizeof(RGBA32);
+		for(std::list<std::set<PFNodeID> >::const_iterator it=subgroups.begin(), iend=subgroups.end(); it!=iend; ++it)
+		{
+			nhs.push_back(std::make_pair(*it, colours[curColour]));
+			curColour = (curColour+1) % colourCount;
+		}
+
 		nhs.push_back(std::make_pair(m_nodeSplitManager->unallocated_children(), ITKImageUtil::make_rgba32(0,0,255,50)));
+
 		return new HighlightNodesOverlay(nhs, volumeIPF, loc, ori);
 	}
 	else return NULL;
