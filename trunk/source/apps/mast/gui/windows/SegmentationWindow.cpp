@@ -184,12 +184,6 @@ void SegmentationWindow::setup_menus()
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, wxT("&Unzip Selected Node...\tCtrl+Shift+U"));
-	wxMenu *zipNodeMenu = new wxMenu;
-	segmentationMenu->AppendSubMenu(zipNodeMenu, wxT("&Zip Node"));
-		zipNodeMenu->Append(wxID_ANY, wxT("Set &Source"));
-		zipNodeMenu->Append(wxID_ANY, wxT("Set &Destination"));
-		zipNodeMenu->AppendSeparator();
-		zipNodeMenu->Append(wxID_ANY, wxT("Start &Again"));
 	segmentationMenu->AppendSeparator();
 	wxMenu *switchParentMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(switchParentMenu, wxT("Switch &Parent"));
