@@ -407,6 +407,7 @@ void PartitionView::unzip_selected_node()
 	if(toLayer != -1)
 	{
 		m_model->volume_ipf()->unzip_node(node, toLayer);
+		m_camera->goto_layer(toLayer);
 	}
 }
 

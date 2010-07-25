@@ -43,6 +43,13 @@ void PartitionCamera::centre()
 	set_slice_location(loc);
 }
 
+void PartitionCamera::goto_layer(int layer)
+{
+	SliceLocation loc = m_sliceLocation;
+	loc.layer = layer;
+	set_slice_location(loc);
+}
+
 void PartitionCamera::goto_next_layer()
 {
 	SliceLocation loc = m_sliceLocation;

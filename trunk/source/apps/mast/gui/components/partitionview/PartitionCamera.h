@@ -56,6 +56,7 @@ public:
 public:
 	void add_shared_listener(const boost::shared_ptr<Listener>& listener);
 	void centre();
+	void goto_layer(int layer);
 	void goto_next_layer();
 	void goto_next_slice();
 	void goto_previous_layer();
