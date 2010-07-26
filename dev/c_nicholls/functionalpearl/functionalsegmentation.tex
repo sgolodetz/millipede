@@ -22,13 +22,18 @@ A simpler approach to waterfall
 \maketitle
 \pagestyle{empty}
 
-\iffalse
+\section{Introduction}
+
 @@@
 
- - segmentation is
+ - segmentation is ...
+
  - waterfall algorithm for segmentation
+
  - existing implementation (arguably overly complicated)
+
  - we have a better, simpler one
+
  - we will illustrate it on CT scans
 
 It is useful to be able to identify particular features in a set of
@@ -37,7 +42,8 @@ where algorithms can be used to aid the detection and classification
 of organ and tumour tissue. This is the main motivation for this
 project, although the algorithm presented is a generic one, with many
 applications.
-\fi
+
+\section{Motivation}
 
  This project is motivated by the need to {\em segment\/} greyscale
  images originating from computerised tomography (CT) scanners. That
@@ -47,6 +53,18 @@ applications.
  purpose~\cite{golodetz}, although other approaches exist. This paper
  presents a new, simplified, implementation of the {\em waterfall\/}
  algorithm.
+
+\section{Conventional imperative approach to waterfall}
+
+ - it is "very imperative"
+
+ - construct MST and consume it from any side
+
+ - include refs
+
+ - high-level description of waterfall (space permitting)
+
+
 
 The watershed algorithm, introduced by Beucher and
 Lantuejoul~\cite{beucher79}, produces a segmentation of an image,
@@ -153,11 +171,87 @@ requires careful implementation of the MST but, more importantly, is
 relatively complex and hard to implement.
 \fi
 
+
+\section{Functional approach to waterfall}
+
+ - single recursive pass (fairly opaque but no special cases for the
+ detail)
+
+
 In this paper we present a new data structure for the waterfall
 algorithm that simplifies the process and improves efficiency compared
 to current implementations. It is based on a recursive-tree data
 structure and a recursive relation on the nodes rather than the
 conventional iterative transformations.
+
+
+\subsection{How it works}
+
+ MST (only briefly)
+
+\begin{verbatim}
+ Eliding edges - cases I to IV
+
+ Case I     parent -> child ->
+
+   Recurse on child first, as there's bound to be a minimum further
+   down, then combine parent with the result of that operation.
+
+ Case II    parent <-> child
+
+   Can't just elide the edge between parent and child and merge the
+   two into one node, because there may be other children of the
+   parent which need to be recursed on separately from the children of
+   the child. (NB Illustrate this on the sample tree.)  Well, after
+   further discussion it seems that we could, in fact, just elide that
+   edge, but we want to think about it more.
+   
+   Use the recurseWithNoDownMerging function, which recurses without
+   looking for a minimum first. (Children can merge up with the
+   current node, but the current node does not attempt to merge down
+   with its children.)
+
+ Case III   parent -> ? (where '?' can be above or below the parent)
+            |
+            child ->
+
+   This is similar to Case I. After recursing there is no need to
+   combine the parent with the result of the recursion on the
+   child. Simply keep in place the edge between the parent and child.
+
+ Case IV    parent -> ? (where '?' can be above or below the parent)
+            ^
+            |
+            child
+
+    Use the recurseWithNodownMerging but do combine the result
+    afterwards, as in Case II. (This is semantically identical to Case
+    II but is treated separately for clarity of cases considered.)
+
+
+[In the actual paper, consider cases II and III swapped, and explain
+that it's more important what the child "wants" than what the parent
+"wants". No, scrap that.]
+
+Then for each parent iterate through each child...
+\end{verbatim}
+
+\subsection{Correctness?}
+
+(note that there is arbitrary choice about edges of same weight)
+
+
+\section{Results}
+
+
+\section{Conclusions}
+
+ - can be done in pure FP style
+
+ - clearer to write/code
+
+ - shorter code and simpler data structures
+
 
 The main advantage of our approach to the waterfall problem is that
 the algorithm uses a single loop to walk the MST and is therefore
