@@ -47,21 +47,21 @@ private:
 	//#################### NESTED CLASSES ####################
 public:
 	/**
-	@brief	A LeafPositioner controls where nodes are drawn in the layer graphs.
+	@brief	A NodePositioner controls where nodes are drawn in the layer graphs.
 	*/
-	struct LeafPositioner
+	struct NodePositioner
 	{
-		virtual ~LeafPositioner() {}
+		virtual ~NodePositioner() {}
 		virtual Vector2d position_of_node(const PFNodeID& node) const = 0;
 	};
 
-	class Grid2DLeafPositioner : public LeafPositioner
+	class Grid2DNodePositioner : public NodePositioner
 	{
 	private:
 		PartitionForest_Ptr m_forest;
 		int m_leafRows, m_leafCols;
 	public:
-		Grid2DLeafPositioner(const PartitionForest_Ptr& forest, int leafRows, int leafCols)
+		Grid2DNodePositioner(const PartitionForest_Ptr& forest, int leafRows, int leafCols)
 		:	m_forest(forest), m_leafRows(leafRows), m_leafCols(leafCols)
 		{}
 
@@ -116,6 +116,10 @@ public:
 		void output_finished()					{ /* No-op */ }
 	};
 
+	/**
+	@brief	A FileSequenceStreamController is a stream controller that yields sequences of
+			files for the Graphviz outputter to write to.
+	*/
 	class FileSequenceStreamController : public StreamController
 	{
 	private:
@@ -158,7 +162,7 @@ public:
 		}
 	};
 
-	typedef boost::shared_ptr<LeafPositioner> LeafPositioner_Ptr;
+	typedef boost::shared_ptr<NodePositioner> NodePositioner_Ptr;
 	typedef boost::shared_ptr<StreamController> StreamController_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
@@ -167,7 +171,7 @@ private:
 	int m_depthInterest;
 	PartitionForest_Ptr m_forest;
 	bool m_graphLabels;
-	LeafPositioner_Ptr m_leafPositioner;
+	NodePositioner_Ptr m_nodePositioner;
 	PartitionForestSelection_Ptr m_selection;
 	StreamController_Ptr m_streamController;
 
@@ -176,12 +180,12 @@ public:
 	PartitionForestGraphvizOutputter(const StreamController_Ptr& streamController,
 									 const PartitionForest_Ptr& forest,
 									 const boost::optional<PartitionForestSelection_Ptr>& selection = boost::none,
-									 const boost::optional<LeafPositioner_Ptr>& leafPositioner = boost::none)
+									 const boost::optional<NodePositioner_Ptr>& nodePositioner = boost::none)
 	:	m_consolidationInterest(false),
 		m_depthInterest(0),
 		m_forest(forest),
 		m_graphLabels(false),
-		m_leafPositioner(leafPositioner ? *leafPositioner : LeafPositioner_Ptr()),
+		m_nodePositioner(nodePositioner ? *nodePositioner : NodePositioner_Ptr()),
 		m_selection(selection ? *selection : PartitionForestSelection_Ptr()),
 		m_streamController(streamController)
 	{}
@@ -193,7 +197,7 @@ public:
 		if(commandDepth <= m_depthInterest)
 		{
 			output_hierarchy(description);
-			if(m_leafPositioner)
+			if(m_nodePositioner)
 			{
 				for(int i=0; i<=m_forest->highest_layer(); ++i)
 				{
@@ -350,7 +354,7 @@ private:
 		{
 			os << "\tn" << it.index() << " [label=\"(" << layerIndex << ',' << it.index() << ")\"";
 
-			Vector2d pos = m_leafPositioner->position_of_node(PFNodeID(layerIndex, it.index()));
+			Vector2d pos = m_nodePositioner->position_of_node(PFNodeID(layerIndex, it.index()));
 			os << ", pos=\"" << pos.x << ',' << pos.y << "!\"";
 
 			os << "];\n";

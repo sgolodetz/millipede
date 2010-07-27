@@ -347,8 +347,8 @@ void graphviz_test()
 #else
 	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("unzipnode", 'a'));
 #endif
-	boost::shared_ptr<GVO::LeafPositioner> leafPositioner(new GVO::Grid2DLeafPositioner(ipf, 3, 3));
-	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection, leafPositioner));
+	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection, nodePositioner));
 	gvo->set_depth_interest(1);
 	gvo->set_graph_labels(false);
 
