@@ -3,7 +3,7 @@ Outline
 {Give an example tree}
 
 The idea of the waterfall algorithm is to merge together local minima on a spanning tree.
-A local minima on a tree is a set of connected edges S of equal weight w such that for each edge e
+A local minimum on a tree is a set of connected edges S of equal weight w such that for each edge e
 crossing the boundary between s and s', weight of e > w.
 
 Between any to such regional minima there is a singe path that joins them.
@@ -13,12 +13,12 @@ separated by other edges.
 
 This is traditionally a very imperative algorithm:
 
-*) Each regional minima is identified via a pass over the tree
-*) Next, the smallest edge leading away from a regional minima is found:
+*) Each regional minimum is identified via a pass over the tree
+*) Next, the smallest edge leading away from a regional minimum is found:
    - If it connects two regional minima, it is kept unchanged.
-   - Otherwise tghe edge is elided and the two nodes that it connects
+   - Otherwise the edge is elided and the two nodes that it connects
      are merged.
-*) Continue until all edges have been delt with.
+*) Continue until all edges have been dealt with.
 
 It is evident that this algorithm does not act in a localised manner,
 the regional minima may be spread all over the tree.
@@ -55,7 +55,7 @@ Therefore we also define a class mergeable:
 >   empty = unions []
 
 With the idea that the waterfall algorithm can work over a tree of any mergeable data type
-e.g. a list of charachters:
+e.g. a list of characters:
 
 > instance Mergeable [Char] where
 >   union a b  = a ++ b
@@ -68,7 +68,7 @@ The type signature of waterfall is then
 
 
 
-At the root of a tree we need to concider the following cases:
+At the root of a tree we need to consider the following cases:
 
 1) A child with which we want to merge (i.e. the smallest child) that does not want to merge with us.
 2) A child with which we want to merge (i.e. the smallest child) that does want to merge with us.
@@ -82,13 +82,13 @@ It needn't know about the rest of the tree above it.
 Otherwise, the minimal edge from the child is the edge towards it's parent.
 In this case, we want to recurse on the child but without looking for it's smallest edge since it has already been identified.
 
-For this case, we define a function similar to waterfal that does not attempt to identify the smallest child and merge with it.
+For this case, we define a function similar to waterfall that does not attempt to identify the smallest child and merge with it.
 This function has almost the same definition as that of waterfall.
 
 {Explain more algorithm}
 
 {Include the invariant the edges are sorted by weight, so the minimum is at the head}
-Origionally, we had something like this:
+Originally, we had something like this:
 waterfall :: Mergeable a =>   Tree a -> Tree a
 waterfall  (Node r []) = Node r []
 waterfall  (Node r es)
