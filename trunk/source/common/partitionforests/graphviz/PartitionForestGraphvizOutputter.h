@@ -16,7 +16,7 @@
 
 #include <common/io/util/OSSWrapper.h>
 #include <common/math/Vector2.h>
-#include "PartitionForestSelection.h"
+#include <common/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
 

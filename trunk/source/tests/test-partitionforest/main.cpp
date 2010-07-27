@@ -10,9 +10,9 @@ using boost::shared_ptr;
 
 #include <common/adts/RootedMST.h>
 #include <common/commands/UndoableCommandManager.h>
-#include <common/partitionforests/base/PartitionForestGraphvizOutputter.h>
 #include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
 #include <common/partitionforests/base/PartitionForestTouchListener.h>
+#include <common/partitionforests/graphviz/PartitionForestGraphvizOutputter.h>
 #include <common/partitionforests/images/SimpleImageBranchLayer.h>
 #include <common/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;

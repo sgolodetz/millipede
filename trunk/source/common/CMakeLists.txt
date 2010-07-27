@@ -173,11 +173,15 @@ partitionforests/base/PFNodeID.cpp
 SET(partitionforests_base_headers
 partitionforests/base/IForestLayer.h
 partitionforests/base/PartitionForest.h
-partitionforests/base/PartitionForestGraphvizOutputter.h
 partitionforests/base/PartitionForestMultiFeatureSelection.h
 partitionforests/base/PartitionForestSelection.h
 partitionforests/base/PartitionForestTouchListener.h
 partitionforests/base/PFNodeID.h
+)
+
+##
+SET(partitionforests_graphviz_headers
+partitionforests/graphviz/PartitionForestGraphvizOutputter.h
 )
 
 ##
@@ -367,6 +371,7 @@ ${jobs_headers}
 ${listeners_headers}
 ${math_headers}
 ${partitionforests_base_headers}
+${partitionforests_graphviz_headers}
 ${partitionforests_images_headers}
 ${ogl_headers}
 ${segmentation_headers}
@@ -441,6 +446,9 @@ SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
 ##
 SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
 SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
+
+##
+SOURCE_GROUP(partitionforests\\graphviz\\.h FILES ${partitionforests_graphviz_headers})
 
 ##
 SOURCE_GROUP(partitionforests\\images\\.cpp FILES ${partitionforests_images_sources})
