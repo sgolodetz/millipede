@@ -151,6 +151,7 @@ SET(math_headers
 math/MathConstants.h
 math/NumericUtil.h
 math/Plane.h
+math/Vector2.h
 math/Vector3.h
 )
 

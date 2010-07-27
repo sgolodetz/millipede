@@ -15,6 +15,7 @@
 #include <boost/optional.hpp>
 
 #include <common/io/util/OSSWrapper.h>
+#include <common/math/Vector2.h>
 #include "PartitionForestSelection.h"
 
 namespace mp {
@@ -51,7 +52,7 @@ public:
 	struct LeafPositioner
 	{
 		virtual ~LeafPositioner() {}
-		virtual std::pair<double,double> position_of_node(const PFNodeID& node) const = 0;
+		virtual Vector2d position_of_node(const PFNodeID& node) const = 0;
 	};
 
 	class Grid2DLeafPositioner : public LeafPositioner
@@ -64,32 +65,29 @@ public:
 		:	m_forest(forest), m_leafRows(leafRows), m_leafCols(leafCols)
 		{}
 
-		std::pair<double,double> position_of_node(const PFNodeID& node) const
+		Vector2d position_of_node(const PFNodeID& node) const
 		{
 			if(node.layer() > 0)	return position_of_branch(node);
 			else					return position_of_leaf(node.index());
 		}
 	private:
-		std::pair<double,double> position_of_branch(const PFNodeID& node) const
+		Vector2d position_of_branch(const PFNodeID& node) const
 		{
-			std::pair<double,double> pos(0.0, 0.0);
+			Vector2d pos;
 
 			std::deque<int> leaves = m_forest->receptive_region_of(node);
 			for(std::deque<int>::const_iterator it=leaves.begin(), iend=leaves.end(); it!=iend; ++it)
 			{
-				std::pair<double,double> leafPos = position_of_leaf(*it);
-				pos.first += leafPos.first;
-				pos.second += leafPos.second;
+				pos += position_of_leaf(*it);
 			}
-			pos.first /= leaves.size();
-			pos.second /= leaves.size();
+			pos /= leaves.size();
 
 			return pos;
 		}
 
-		std::pair<double,double> position_of_leaf(int leafIndex) const
+		Vector2d position_of_leaf(int leafIndex) const
 		{
-			return std::pair<double,double>(leafIndex % m_leafCols, m_leafRows - leafIndex / m_leafCols);
+			return Vector2d(leafIndex % m_leafCols, m_leafRows - leafIndex / m_leafCols);
 		}
 	};
 
@@ -352,8 +350,8 @@ private:
 		{
 			os << "\tn" << it.index() << " [label=\"(" << layerIndex << ',' << it.index() << ")\"";
 
-			std::pair<double,double> pos = m_leafPositioner->position_of_node(PFNodeID(layerIndex, it.index()));
-			os << ", pos=\"" << pos.first << ',' << pos.second << "!\"";
+			Vector2d pos = m_leafPositioner->position_of_node(PFNodeID(layerIndex, it.index()));
+			os << ", pos=\"" << pos.x << ',' << pos.y << "!\"";
 
 			os << "];\n";
 		}
