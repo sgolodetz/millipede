@@ -331,46 +331,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void output_layer_graph(int layerIndex, const std::string& description)
-	{
-		std::ostream& os = m_streamController->graph_stream(layerIndex);
-
-		os << "/* " << description << " - Layer " << layerIndex << " adjacency graph */\n";
-
-		os << "graph\n";
-		os << "{\n";
-
-		if(m_graphLabels)
-		{
-			os << "\tlabel = \"" << description << "\";\n";
-		}
-
-		os << "\toverlap = \"prism\";\n";
-		os << "\tsep = \"+16\";\n";
-		os << "\tnode [shape=circle, style=solid, label=\"\"];\n\n";
-
-		// Output the nodes.
-		for(NodeConstIterator it=m_forest->nodes_cbegin(layerIndex), iend=m_forest->nodes_cend(layerIndex); it!=iend; ++it)
-		{
-			os << "\tn" << it.index() << " [label=\"(" << layerIndex << ',' << it.index() << ")\"";
-
-			Vector2d pos = m_nodePositioner->position_of_node(PFNodeID(layerIndex, it.index()));
-			os << ", pos=\"" << pos.x << ',' << pos.y << "!\"";
-
-			os << "];\n";
-		}
-
-		os << '\n';
-
-		// Output the edges between them.
-		for(EdgeConstIterator it=m_forest->edges_cbegin(layerIndex), iend=m_forest->edges_cend(layerIndex); it!=iend; ++it)
-		{
-			os << "\tn" << it->u << " -- n" << it->v << " [label=\"" << it->weight << "\"];\n";
-		}
-
-		os << "}\n";
-	}
-
 	void output_hierarchy(const std::string& description)
 	{
 		std::ostream& os = m_streamController->hierarchy_stream();
@@ -416,6 +376,46 @@ private:
 				PFNodeID parent = m_forest->parent_of(PFNodeID(i, jt.index()));
 				os << "\tn" << parent.layer() << '_' << parent.index() << " -- " << 'n' << i << '_' << jt.index() << ";\n";
 			}
+		}
+
+		os << "}\n";
+	}
+
+	void output_layer_graph(int layerIndex, const std::string& description)
+	{
+		std::ostream& os = m_streamController->graph_stream(layerIndex);
+
+		os << "/* " << description << " - Layer " << layerIndex << " adjacency graph */\n";
+
+		os << "graph\n";
+		os << "{\n";
+
+		if(m_graphLabels)
+		{
+			os << "\tlabel = \"" << description << "\";\n";
+		}
+
+		os << "\toverlap = \"prism\";\n";
+		os << "\tsep = \"+16\";\n";
+		os << "\tnode [shape=circle, style=solid, label=\"\"];\n\n";
+
+		// Output the nodes.
+		for(NodeConstIterator it=m_forest->nodes_cbegin(layerIndex), iend=m_forest->nodes_cend(layerIndex); it!=iend; ++it)
+		{
+			os << "\tn" << it.index() << " [label=\"(" << layerIndex << ',' << it.index() << ")\"";
+
+			Vector2d pos = m_nodePositioner->position_of_node(PFNodeID(layerIndex, it.index()));
+			os << ", pos=\"" << pos.x << ',' << pos.y << "!\"";
+
+			os << "];\n";
+		}
+
+		os << '\n';
+
+		// Output the edges between them.
+		for(EdgeConstIterator it=m_forest->edges_cbegin(layerIndex), iend=m_forest->edges_cend(layerIndex); it!=iend; ++it)
+		{
+			os << "\tn" << it->u << " -- n" << it->v << " [label=\"" << it->weight << "\"];\n";
 		}
 
 		os << "}\n";
