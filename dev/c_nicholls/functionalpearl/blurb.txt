@@ -6,7 +6,7 @@ The idea of the waterfall algorithm is to merge together local minima on a spann
 A local minimum on a tree is a set of connected edges S of equal weight w such that for each edge e
 crossing the boundary between s and s', weight of e > w.
 
-Between any to such regional minima there is a singe path that joins them.
+Between any two such regional minima there is a single path that joins them.
 Along this path there will be an edge of maximal weight (assuming different edge weights).
 The waterfall algorithm aims to identify these maximal edges and merge together any nodes
 separated by other edges.
