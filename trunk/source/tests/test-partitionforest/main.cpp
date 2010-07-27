@@ -10,6 +10,7 @@ using boost::shared_ptr;
 
 #include <common/adts/RootedMST.h>
 #include <common/commands/UndoableCommandManager.h>
+#include <common/partitionforests/base/PartitionForestGraphvizOutputter.h>
 #include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
 #include <common/partitionforests/base/PartitionForestTouchListener.h>
 #include <common/partitionforests/images/SimpleImageBranchLayer.h>
@@ -331,6 +332,32 @@ void feature_selection_test()
 	manager->undo();
 }
 
+void graphviz_test()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_weak_listener(selection);
+
+	typedef PartitionForestGraphvizOutputter<SimpleImageLeafLayer,SimpleImageBranchLayer,SimpleFeature> GVO;
+#if 1
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("unzipnode", 'a'));
+#else
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::StdOutputStreamController);
+#endif
+	boost::shared_ptr<GVO::LeafPositioner> leafPositioner(new GVO::Grid2DLeafPositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection, leafPositioner));
+	gvo->set_depth_interest(1);
+	gvo->set_graph_labels(false);
+
+	ipf->add_shared_listener(gvo);
+
+	gvo->output("Initial forest");
+	ipf->unzip_node(PFNodeID(0,1), ipf->highest_layer());
+}
+
 void listener_test()
 {
 	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
@@ -547,12 +574,13 @@ void unzip_zip_test()
 int main()
 {
 	//feature_selection_test();
+	graphviz_test();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
 	//selection_test();
 	//switch_parent_test();
-	touch_listener_test();
+	//touch_listener_test();
 	//unzip_zip_test();
 	return 0;
 }
