@@ -343,9 +343,9 @@ void graphviz_test()
 
 	typedef PartitionForestGraphvizOutputter<SimpleImageLeafLayer,SimpleImageBranchLayer,SimpleFeature> GVO;
 #if 1
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("unzipnode", 'a'));
-#else
 	boost::shared_ptr<GVO::StreamController> streamController(new GVO::StdOutputStreamController);
+#else
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("unzipnode", 'a'));
 #endif
 	boost::shared_ptr<GVO::LeafPositioner> leafPositioner(new GVO::Grid2DLeafPositioner(ipf, 3, 3));
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection, leafPositioner));
