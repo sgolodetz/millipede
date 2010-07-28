@@ -1,0 +1,36 @@
+\documentclass{journal}
+\usepackage{ textcomp }
+\usepackage{ifpdf}
+\usepackage{ifthen}
+\usepackage{mathtools}
+\usepackage{subfigure}
+\usepackage{epsfig}
+\usepackage{ amssymb }
+
+\title{\LARGE \bf
+Waterfall proof
+}
+\author{Chris Nicholls
+}
+%\institute{Oxford University Computing Laboratory}
+
+\begin{document}
+
+Define a graph as $G = (N,E)$
+where $N$ is the set of nodes and $E :: N\times N \times \mathbb{N}$ is the set of weighted edges
+that must satisfy the following properties:
+\begin{enumerate}
+\item Transitivity. $(a,b,k) \in E  \iff (b,a,k) \in E$, if there is an edge from node a to node b, then there is an edge from node b to node a of the same weight.
+\item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there is at most one edge between two nodes.
+\item We also require that no two edges are of equal weight, $(a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? provide details.
+
+\end{enumerate}
+
+We define a regional-minima in the following way:
+An edge $e = (a,b,k)$ is a regional minima iff
+$\forall c \in E, l \in \mathbb{N} :
+  (c,b,l) \in E \implies l \geq k\ and\
+  (a,c,l) \in E \implies l \geq k $
+
+
+\end{document}
