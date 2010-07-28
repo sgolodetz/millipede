@@ -110,7 +110,7 @@ void SegmentationWindow::setup_gui(wxGLContext *context)
 	Show();
 
 	m_view = new PartitionView(this, m_model, m_commandManager, context);
-	sizer->Add(m_view, 0, wxALIGN_CENTRE_HORIZONTAL);
+	sizer->Add(m_view, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 10);
 
 	sizer->AddSpacer(10);
 
@@ -209,6 +209,8 @@ void SegmentationWindow::setup_menus()
 			if(shortcut != "") oss << '\t' << shortcut;
 			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
+	featuresMenu->AppendSeparator();
+	featuresMenu->Append(wxID_ANY, wxT("Combine Feature &Selections..."));
 	featuresMenu->AppendSeparator();
 	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 

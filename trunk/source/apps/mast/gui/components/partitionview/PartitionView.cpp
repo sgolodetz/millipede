@@ -6,6 +6,7 @@
 #include "PartitionView.h"
 
 #include <wx/button.h>
+#include <wx/choice.h>
 #include <wx/numdlg.h>
 #include <wx/sizer.h>
 #include <wx/slider.h>
@@ -654,7 +655,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
 
-	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 5, 5);
+	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 10, 10);
 	SetSizer(sizer);
 
 	int attribList[] =
@@ -667,14 +668,26 @@ void PartitionView::setup_gui(wxGLContext *context)
 	};
 
 	// Top left
-	sizer->Add(new wxPanel(this));
+	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume..."));
+	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	// Top middle
 	sizer->Add(new wxPanel(this));
 
 	// Top right
-	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume..."));
-	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTRE_HORIZONTAL);
+	wxPanel *topRight = new wxPanel(this);
+	wxGridSizer *topRightSizer = new wxGridSizer(1, 0, 0, 5);
+	topRight->SetSizer(topRightSizer);
+		topRightSizer->Add(new wxStaticText(topRight, wxID_ANY, wxT("Multi-Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
+
+		wxArrayString mfsStrings;
+		mfsStrings.Add(wxT("Default"));
+		// TODO: Populate the list of strings for the drop-down box.
+
+		wxChoice *multiFeatureSelectionChoice = new wxChoice(topRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, mfsStrings);
+		multiFeatureSelectionChoice->SetSelection(0);
+		topRightSizer->Add(multiFeatureSelectionChoice);
+	sizer->Add(topRight, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	// Middle left
 	m_dicomCanvas = new DICOMCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
