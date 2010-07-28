@@ -678,7 +678,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 	wxPanel *topRight = new wxPanel(this);
 	wxGridSizer *topRightSizer = new wxGridSizer(1, 0, 0, 5);
 	topRight->SetSizer(topRightSizer);
-		topRightSizer->Add(new wxStaticText(topRight, wxID_ANY, wxT("Multi-Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
+		topRightSizer->Add(new wxStaticText(topRight, wxID_ANY, wxT("Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
 
 		wxArrayString mfsStrings;
 		mfsStrings.Add(wxT("Default"));

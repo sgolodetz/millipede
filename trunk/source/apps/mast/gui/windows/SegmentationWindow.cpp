@@ -210,13 +210,14 @@ void SegmentationWindow::setup_menus()
 			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
 	featuresMenu->AppendSeparator();
-	featuresMenu->Append(wxID_ANY, wxT("Combine Feature &Selections..."));
+	featuresMenu->Append(wxID_ANY, wxT("Manage &Selections..."));
 	featuresMenu->AppendSeparator();
 	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
+	toolsMenu->Append(wxID_ANY, wxT("&Compare Feature Selections..."));
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
-	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D..."));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+V"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(wxID_ANY, wxT("&Contents..."));
