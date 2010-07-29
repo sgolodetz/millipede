@@ -57,5 +57,17 @@ The waterfall algorithm then elides all but those edges that are of maximal weig
   not the minimum edge away from either of its endpoints.
 
 "$\Leftarrow$"
+  Let $e = (n_1,n_2,w_e)$ be an edge such that it is not the minimum edge away from either of its endpoints.
+  Let  $a$ be the minimum edge connected to $n_1$ and $b$ be the minimum edge connected to $n_2$
+
+  ...
+  Create a sequence of edges from $n_1$ by always picking the smallest edge from the current vertex until
+  you the smallest edge is already in the sequence.
+  Do  the same for $n_2$
+  Show the endpoints of these sequences are regional minima
+  Therefore e is path maximal.
+  ....
+
+
 \end{proof}
 \end{document}
