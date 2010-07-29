@@ -5,6 +5,13 @@
 \usepackage{subfigure}
 \usepackage{epsfig}
 
+\usepackage{textcomp}
+\usepackage{mathtools}
+\usepackage{subfigure}
+\usepackage{epsfig}
+\usepackage{amssymb}
+%\usepackage{amsthm}
+
 \title{\LARGE \bf
 A simpler approach to waterfall
 }
@@ -236,7 +243,64 @@ Then for each parent iterate through each child...
 
 \subsection{Correctness?}
 
+Define a graph as $G = (N,E)$
+where $N$ is the set of nodes and $E :: N\times N \times \mathbb{N}$ is the set 
+of weighted edges
+that must satisfy the following properties:
+\begin{enumerate}
+\item Transitivity. $(a,b,k) \in E  \iff (b,a,k) \in E$, if there is an edge fro
+m node a to node b, then there is an edge from node b to node a of the same weig
+ht.
+\item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there 
+is at most one edge between two nodes.
+\item We also require that no two edges are of equal weight, $(a_1,b_1,k) \in E\
+ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? prov
+ide details.
+
+\end{enumerate}
+
+We define a regional minimum to be an edge that is surrounded by edges of geater 
+weight, i.e.
+An edge $e = (a,b,k)$ is a regional minimum iff
+$\forall c \in E, l \in \mathbb{N} :
+  (c,b,l) \in E \implies l \geq k\ and\
+  (a,c,l) \in E \implies l \geq k $
+
+??? example.
+
+A path between two regional minima is then a sequence of $n$ edges $e_1 ... e_n$
+such that $e_1$ and $e_n$ are the only two regional minima
+and for each $ 0 \leq i \le n,\ e_i = (a,b,w_1) , e_{i+1} = (b,c,w_2)$
+
+\noindent An edge is path-maximal if it is the edge with greatest weight along a
+ path.
+The waterfall algorithm then elides all but those edges that are of maximal weig
+ht along some path.
+
+\noindent Claim: An edge is path-maximal iff it is not the minimum edge away fro
+m either of its endpoints.
+
+%\begin{proof}:
+
+\noindent "$\Rightarrow$"
+\indent
+  Let $e$ be an edge in the graph and suppose it is path-maximal.
+  By definition there exists a sequence of edges $e_1 ... e_n$
+  with $c = e_i$ for some $ 0 \leq i leq n$. Clearly $i \neq 0$ and $i \neq n$ s
+ince
+  $e_i$ and $e_n$ must be regional minima. Therefore at each end of $c$ there is
+ another edge
+  leading from that node with weight smaller than that of $c$, so $c$ is
+  not the minimum edge away from either of its endpoints.
+
+"$\Leftarrow$"
+%\end{proof}
+
+
+
 (note that there is arbitrary choice about edges of same weight)
+
+
 
 
 \section{Results}
@@ -277,29 +341,28 @@ imaging.
 
 \bibstyle{plain}
 
-\begin{thebibliography}{2}
- 	
+\begin{thebibliography}{99}
 
-\bibitem{golodetz}{Stuart Golodetz, Irina Voiculescu and Stephen
-  Cameron.  {\em Region Analysis of Abdominal CT Scans using Image
-    Partition Forests}. In Proceedings of CSTST 2008 pages
-  432-7. October 2008.}
+\bibitem[Golodetz et al]{golodetz} Stuart Golodetz, Irina Voiculescu
+  and Stephen Cameron.  {\em Region Analysis of Abdominal CT Scans
+    using Image Partition Forests}. In Proceedings of CSTST
+  2008. Pages 432-7. October 2008.
 
-\bibitem{beucher79}{S.\ Beucher, C.\ Lantuejoul. {\em Use of
-    watersheds in contour detection}. International Workshop on image
-  processing, real-time edge and motion detection/estimation, Rennes,
-  France, Sept.\ 1979.}
+\bibitem[Beucher 1979]{beucher79} S.\ Beucher, C.\ Lantuejoul. {\em
+  Use of watersheds in contour detection}. International Workshop on
+  image processing, real-time edge and motion detection/estimation,
+  Rennes, France. Sept.\ 1979.
 
-\bibitem{beucher94}{Serge Beucher. {\em Watershed, hierarchical
-    segmentation and waterfall algorithm}. In Mathematical Morphology
-  and its Applications to Image Processing, Proc.\ ISMM 94, pages
-  69-76, Fontainebleau, France, 1994. Kluwer Ac.\ Publ.}
+\bibitem[Beucher 1994]{beucher94} Serge Beucher. {\em Watershed,
+  hierarchical segmentation and waterfall algorithm}. In Mathematical
+  Morphology and its Applications to Image Processing, Proc.\ ISMM 94,
+  pages 69-76, Fontainebleau, France, 1994. Kluwer Ac.\ Publ.
 
-\bibitem{marcotegui}{Beatriz Marcotegui and Serge Beucher, {\em Fast
-    Implementation of Waterfall Based on Graphs}. In Mathematical
-  Morphology: 40 Years On, Springer Netherlands, 2005.}
+\bibitem[Marcotegui and Beucher 2005]{marcotegui}{Marcotegui and
+  Beucher} Beatriz Marcotegui and Serge Beucher. {\em Fast
+  Implementation of Waterfall Based on Graphs}. In {Mathematical
+  Morphology: 40 Years On}. Springer Netherlands, 2005.
 
 \end{thebibliography}
 
 \end{document}
-
