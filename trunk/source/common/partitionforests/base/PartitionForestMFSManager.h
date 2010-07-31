@@ -22,6 +22,29 @@ public:
 
 	//#################### COMMANDS ####################
 private:
+	struct AddMFSCommand : Command
+	{
+		PartitionForestMFSManager *m_base;
+		std::string m_mfsName;
+		MFS_Ptr m_mfs;
+
+		AddMFSCommand(PartitionForestMFSManager *base, const std::string& mfsName, const MFS_Ptr& mfs)
+		:	Command("Add Multi-Feature Selection"), m_base(base), m_mfsName(mfsName), m_mfs(mfs)
+		{}
+
+		void execute()
+		{
+			m_base->m_multiFeatureSelections.insert(std::make_pair(m_mfsName, m_mfs));
+			m_base->m_listeners.multi_feature_selection_manager_changed();
+		}
+
+		void undo()
+		{
+			m_base->m_multiFeatureSelections.erase(m_mfsName);
+			m_base->m_listeners.multi_feature_selection_manager_changed();
+		}
+	};
+
 	struct SetActiveMFSCommand : Command
 	{
 		PartitionForestMFSManager *m_base;
@@ -39,7 +62,7 @@ private:
 			{
 				m_oldActiveMultiFeatureSelection = m_base->m_activeMultiFeatureSelection;
 				m_base->m_activeMultiFeatureSelection = std::make_pair(it->first, it->second);
-				m_base->m_listeners.active_multi_feature_selection_changed();
+				m_base->m_listeners.multi_feature_selection_manager_changed();
 			}
 			else throw Exception("Multi-feature selection " + m_name + " does not exist");
 		}
@@ -48,7 +71,7 @@ private:
 		{
 			m_base->m_activeMultiFeatureSelection = *m_oldActiveMultiFeatureSelection;
 			m_oldActiveMultiFeatureSelection.reset();
-			m_base->m_listeners.active_multi_feature_selection_changed();
+			m_base->m_listeners.multi_feature_selection_manager_changed();
 		}
 	};
 
@@ -57,15 +80,15 @@ public:
 	struct Listener
 	{
 		virtual ~Listener() {}
-		virtual void active_multi_feature_selection_changed() = 0;
+		virtual void multi_feature_selection_manager_changed() = 0;
 	};
 
 private:
 	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-		void active_multi_feature_selection_changed()
+		void multi_feature_selection_manager_changed()
 		{
-			multicast(boost::bind(&Listener::active_multi_feature_selection_changed, _1));
+			multicast(boost::bind(&Listener::multi_feature_selection_manager_changed, _1));
 		}
 	};
 
@@ -81,7 +104,7 @@ public:
 	PartitionForestMFSManager(const std::string& initialMFSName, const MFS_Ptr& initialMFS)
 	:	m_activeMultiFeatureSelection(initialMFSName, initialMFS), m_commandManager(new BasicCommandManager)
 	{
-		add_multi_feature_selection(initialMFSName, initialMFS);
+		m_multiFeatureSelections.insert(std::make_pair(initialMFSName, initialMFS));
 	}
 
 	//#################### PUBLIC METHODS ####################
@@ -98,7 +121,7 @@ public:
 
 	void add_multi_feature_selection(const std::string& mfsName, const MFS_Ptr& mfs)
 	{
-		m_multiFeatureSelections.insert(std::make_pair(mfsName, mfs));
+		m_commandManager->execute(Command_Ptr(new AddMFSCommand(this, mfsName, mfs)));
 	}
 
 	void add_shared_listener(const boost::shared_ptr<Listener>& listener)

@@ -15,6 +15,7 @@
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/gui/components/selectionview/SelectionView.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
+#include <mast/gui/dialogs/ManageFeatureSelectionsDialog.h>
 #include <mast/util/StringConversion.h>
 
 namespace {
@@ -26,6 +27,7 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
+	MENUID_FEATURES_MANAGEFEATURESELECTIONS,
 	MENUID_FEATURES_TOGGLE_BASE,
 	MENUID_FEATURES_TOGGLE_LAST = (MENUID_FEATURES_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
@@ -88,7 +90,7 @@ void SegmentationWindow::connect_special_menu_items()
 	{
 		{
 			int id = (MENUID_FEATURES_TOGGLE_BASE+1) + i;
-			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeatureToggle));
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeaturesToggle));
 			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateNonEmptySelectionNeeder));
 		}
 
@@ -210,7 +212,7 @@ void SegmentationWindow::setup_menus()
 			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
 		}
 	featuresMenu->AppendSeparator();
-	featuresMenu->Append(wxID_ANY, wxT("Manage &Selections..."));
+	featuresMenu->Append(MENUID_FEATURES_MANAGEFEATURESELECTIONS, wxT("&Manage Feature Selections...\tCtrl+M"));
 	featuresMenu->AppendSeparator();
 	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
@@ -255,7 +257,13 @@ void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 	m_commandManager->undo();
 }
 
-void SegmentationWindow::OnMenuFeatureToggle(wxCommandEvent& e)
+void SegmentationWindow::OnMenuFeaturesManageFeatureSelections(wxCommandEvent&)
+{
+	ManageFeatureSelectionsDialog<PartitionModelT::VolumeIPFMultiFeatureSelectionT> dialog(this, m_model->multi_feature_selection_manager());
+	dialog.ShowModal();
+}
+
+void SegmentationWindow::OnMenuFeaturesToggle(wxCommandEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURES_TOGGLE_BASE+1));
 	m_model->active_multi_feature_selection()->toggle_selection(m_model->selection(), feature);
@@ -653,6 +661,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnMenuActionsClearHistory)
 	EVT_MENU(MENUID_ACTIONS_REDO, SegmentationWindow::OnMenuActionsRedo)
 	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
+	EVT_MENU(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnMenuFeaturesManageFeatureSelections)
 	EVT_MENU(MENUID_FILE_EXIT, SegmentationWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, SegmentationWindow::OnMenuNavigationCentreCamera)
 	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, SegmentationWindow::OnMenuNavigationFitToView)
@@ -688,6 +697,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnUpdateMenuActionsClearHistory)
 	EVT_UPDATE_UI(MENUID_ACTIONS_REDO, SegmentationWindow::OnUpdateMenuActionsRedo)
 	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, SegmentationWindow::OnUpdateMenuActionsUndo)
+	EVT_UPDATE_UI(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTLAYER, SegmentationWindow::OnUpdateMenuNavigationNextLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, SegmentationWindow::OnUpdateMenuNavigationNextSlice)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_PREVIOUSLAYER, SegmentationWindow::OnUpdateMenuNavigationPreviousLayer)

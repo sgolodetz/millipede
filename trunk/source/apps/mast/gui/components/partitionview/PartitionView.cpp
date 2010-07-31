@@ -208,7 +208,7 @@ struct PartitionView::MFSManagerListener : PartitionModelT::PartitionForestMFSMa
 	:	base(base_)
 	{}
 
-	void active_multi_feature_selection_changed()
+	void multi_feature_selection_manager_changed()
 	{
 		base->add_mfs_listener();
 		base->recreate_multi_feature_selection_choice();
@@ -746,11 +746,11 @@ void PartitionView::setup_gui(wxGLContext *context)
 
 	// Top right
 	wxPanel *topRight = new wxPanel(this);
-	wxGridSizer *topRightSizer = new wxGridSizer(1, 0, 0, 5);
+	wxFlexGridSizer *topRightSizer = new wxFlexGridSizer(1, 0, 0, 5);
 	topRight->SetSizer(topRightSizer);
 		topRightSizer->Add(new wxStaticText(topRight, wxID_ANY, wxT("Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
 
-		m_multiFeatureSelectionChoice = new wxChoice(topRight, CHOICEID_MULTI_FEATURE_SELECTION, wxDefaultPosition, wxDefaultSize, wxArrayString());
+		m_multiFeatureSelectionChoice = new wxChoice(topRight, CHOICEID_MULTI_FEATURE_SELECTION, wxDefaultPosition, wxSize(150,25), wxArrayString());
 		recreate_multi_feature_selection_choice();
 		topRightSizer->Add(m_multiFeatureSelectionChoice);
 	sizer->Add(topRight, 0, wxALIGN_CENTRE_HORIZONTAL);

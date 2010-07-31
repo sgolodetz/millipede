@@ -37,7 +37,7 @@ private:
 		:	base(base_)
 		{}
 
-		void active_multi_feature_selection_changed()
+		void multi_feature_selection_manager_changed()
 		{
 			base->add_mfs_listener();
 			base->refresh_list();

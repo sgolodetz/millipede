@@ -77,6 +77,7 @@ gui/dialogs/VolumeChooserDialog.cpp
 SET(gui_dialogs_headers
 gui/dialogs/DialogUtil.h
 gui/dialogs/FeatureVolumesDialog.h
+gui/dialogs/ManageFeatureSelectionsDialog.h
 gui/dialogs/SegmentDICOMVolumeDialog.h
 gui/dialogs/SegmentVolumeDialog.h
 gui/dialogs/VisualizeIn3DDialog.h
