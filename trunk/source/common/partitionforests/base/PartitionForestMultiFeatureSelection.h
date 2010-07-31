@@ -116,6 +116,11 @@ public:
 		m_listeners->add_shared_listener(listener);
 	}
 
+	void add_weak_listener(const weak_ptr<Listener>& listener)
+	{
+		m_listeners->add_weak_listener(listener);
+	}
+
 	void clear_all()
 	{
 		SequenceGuard guard(m_commandManager, "Clear All Features", m_listeners);

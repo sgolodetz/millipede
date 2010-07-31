@@ -74,6 +74,7 @@ private:
 	wxGLContext *m_context;
 	Greyscale8SliceTextureSet_Ptr m_dicomTextureSet;
 	PartitionModel_Ptr m_model;
+	boost::shared_ptr<MultiFeatureSelectionListener> m_multiFeatureSelectionListener;
 	NodeSplitManager_Ptr m_nodeSplitManager;
 	PartitionOverlayManager_Ptr m_overlayManager;
 	ParentSwitchManager_Ptr m_parentSwitchManager;
@@ -117,6 +118,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void add_listeners();
+	void add_mfs_listener();
 	void calculate_canvas_size();
 	void create_dicom_textures();
 	void create_overlays();

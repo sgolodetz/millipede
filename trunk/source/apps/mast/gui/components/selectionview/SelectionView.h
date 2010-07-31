@@ -76,6 +76,7 @@ private:
 private:
 	std::map<std::string,size_t> m_columnMap;
 	PartitionModel_Ptr m_model;
+	boost::shared_ptr<MultiFeatureSelectionListener> m_multiFeatureSelectionListener;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -108,10 +109,16 @@ private:
 		m_columnMap.insert(std::make_pair(title, column));
 	}
 
+	void add_mfs_listener()
+	{
+		m_multiFeatureSelectionListener.reset(new MultiFeatureSelectionListener(this));
+		m_model->active_multi_feature_selection()->add_weak_listener(m_multiFeatureSelectionListener);
+	}
+
 	void add_selection_listeners()
 	{
-		m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 		m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+		add_mfs_listener();
 	}
 
 	void refresh_list()
@@ -119,7 +126,7 @@ private:
 		DeleteAllItems();
 
 		typename PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
-		typename PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
+		typename PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->active_multi_feature_selection();
 		int index = 0;
 
 		typedef typename PartitionModelT::VolumeIPFSelectionT::NodeConstIterator Iter;

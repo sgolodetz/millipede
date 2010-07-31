@@ -416,8 +416,8 @@ void PartitionView::unzip_selected_node()
 void PartitionView::add_listeners()
 {
 	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<ForestTouchListener>(new ForestTouchListener(this, m_model->volume_ipf())));
-	m_model->multi_feature_selection()->add_shared_listener(boost::shared_ptr<MultiFeatureSelectionListener>(new MultiFeatureSelectionListener(this)));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+	add_mfs_listener();
 
 	m_nodeSplitManager.reset(new NodeSplitManagerT(m_model->volume_ipf(), m_model->selection()));
 	m_model->volume_ipf()->add_weak_listener(m_nodeSplitManager);
@@ -426,6 +426,12 @@ void PartitionView::add_listeners()
 	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf(), m_model->selection(), m_commandManager));
 	m_model->volume_ipf()->add_weak_listener(m_parentSwitchManager);
 	m_parentSwitchManager->add_shared_listener(boost::shared_ptr<ParentSwitchManagerListener>(new ParentSwitchManagerListener(this)));
+}
+
+void PartitionView::add_mfs_listener()
+{
+	m_multiFeatureSelectionListener.reset(new MultiFeatureSelectionListener(this));
+	m_model->active_multi_feature_selection()->add_weak_listener(m_multiFeatureSelectionListener);
 }
 
 void PartitionView::calculate_canvas_size()
@@ -534,7 +540,7 @@ void PartitionView::fill_textures(SliceOrientation ori)
 
 PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 {
-	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->multi_feature_selection();
+	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr multiFeatureSelection = m_model->active_multi_feature_selection();
 	if(multiFeatureSelection)
 	{
 		SliceLocation loc = m_camera->slice_location();

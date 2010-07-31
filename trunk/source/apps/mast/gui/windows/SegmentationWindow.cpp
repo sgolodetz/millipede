@@ -258,7 +258,7 @@ void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 void SegmentationWindow::OnMenuFeatureToggle(wxCommandEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURES_TOGGLE_BASE+1));
-	m_model->multi_feature_selection()->toggle_selection(m_model->selection(), feature);
+	m_model->active_multi_feature_selection()->toggle_selection(m_model->selection(), feature);
 }
 
 void SegmentationWindow::OnMenuFileExit(wxCommandEvent&)
@@ -413,7 +413,7 @@ void SegmentationWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 void SegmentationWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
-	m_model->selection()->replace_with_selection(m_model->multi_feature_selection()->selection(feature));
+	m_model->selection()->replace_with_selection(m_model->active_multi_feature_selection()->selection(feature));
 }
 
 void SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
@@ -598,7 +598,7 @@ void SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain(wxUpdate
 void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 {
 	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
-	e.Enable(m_model->multi_feature_selection() && !m_model->multi_feature_selection()->selection(feature)->empty());
+	e.Enable(m_model->active_multi_feature_selection() && !m_model->active_multi_feature_selection()->selection(feature)->empty());
 }
 
 void SegmentationWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)

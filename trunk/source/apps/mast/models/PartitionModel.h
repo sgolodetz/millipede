@@ -13,6 +13,7 @@
 #include <common/commands/UndoableCommandManager.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
+#include <common/partitionforests/base/PartitionForestMFSManager.h>
 #include <common/partitionforests/images/LabelImageCreator.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
@@ -50,6 +51,10 @@ public:
 	typedef VolumeIPFSelection<LeafLayer,BranchLayer> VolumeIPFSelectionT;
 	typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFSelectionT> VolumeIPFSelection_CPtr;
+
+	typedef PartitionForestMFSManager<VolumeIPFMultiFeatureSelectionT> PartitionForestMFSManagerT;
+	typedef boost::shared_ptr<PartitionForestMFSManagerT> PartitionForestMFSManager_Ptr;
+	typedef boost::shared_ptr<const PartitionForestMFSManagerT> PartitionForestMFSManager_CPtr;
 
 	//#################### LISTENERS ####################
 public:
@@ -101,7 +106,7 @@ private:
 	DICOMVolume_Ptr m_dicomVolume;
 	DICOMVolumeChoice m_dicomVolumeChoice;
 	CompositeListener m_listeners;
-	VolumeIPFMultiFeatureSelection_Ptr m_multiFeatureSelection;
+	PartitionForestMFSManager_Ptr m_multiFeatureSelectionManager;
 	VolumeIPFSelection_Ptr m_selection;
 	VolumeIPF_Ptr m_volumeIPF;
 
@@ -113,6 +118,16 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	VolumeIPFMultiFeatureSelection_Ptr active_multi_feature_selection()
+	{
+		return m_multiFeatureSelectionManager ? m_multiFeatureSelectionManager->active_multi_feature_selection() : VolumeIPFMultiFeatureSelection_Ptr();
+	}
+
+	VolumeIPFMultiFeatureSelection_CPtr active_multi_feature_selection() const
+	{
+		return m_multiFeatureSelectionManager ? m_multiFeatureSelectionManager->active_multi_feature_selection() : VolumeIPFMultiFeatureSelection_CPtr();
+	}
+
 	void add_shared_listener(const boost::shared_ptr<Listener>& listener)
 	{
 		m_listeners.add_shared_listener(listener);
@@ -123,8 +138,8 @@ public:
 
 	@param[in]	feature		The feature whose volume is to be calculated
 	@pre
+		-	active_multi_feature_selection() is non-null
 		-	dicom_volume() is non-null
-		-	multi_feature_selection() is non-null
 		-	volume_ipf() is non-null
 	@return	As described
 	*/
@@ -132,7 +147,7 @@ public:
 	{
 		typedef PartitionForestSelection<LeafLayer,BranchLayer> SelectionT;
 		typedef boost::shared_ptr<const SelectionT> Selection_CPtr;
-		Selection_CPtr featureSelection = multi_feature_selection()->selection(feature);
+		Selection_CPtr featureSelection = active_multi_feature_selection()->selection(feature);
 
 		itk::Vector<double,3> spacing = m_dicomVolume->spacing();
 		double voxelVolume = spacing[0] * spacing[1] * spacing[2];
@@ -155,16 +170,6 @@ public:
 	const DICOMVolumeChoice& dicom_volume_choice() const
 	{
 		return m_dicomVolumeChoice;
-	}
-
-	const VolumeIPFMultiFeatureSelection_Ptr& multi_feature_selection()
-	{
-		return m_multiFeatureSelection;
-	}
-
-	VolumeIPFMultiFeatureSelection_CPtr multi_feature_selection() const
-	{
-		return m_multiFeatureSelection;
 	}
 
 	void segment_volume(wxWindow *parent)
@@ -207,7 +212,7 @@ public:
 		m_commandManager = commandManager;
 		if(m_volumeIPF) m_volumeIPF->set_command_manager(commandManager);
 		if(m_selection) m_selection->set_command_manager(commandManager);
-		if(m_multiFeatureSelection) m_multiFeatureSelection->set_command_manager(commandManager);
+		if(m_multiFeatureSelectionManager) m_multiFeatureSelectionManager->set_command_manager(commandManager);
 	}
 
 	void set_volume_ipf(const VolumeIPF_Ptr& volumeIPF)
@@ -216,7 +221,8 @@ public:
 
 		m_volumeIPF = volumeIPF;
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
-		m_multiFeatureSelection.reset(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
+		VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
+		m_multiFeatureSelectionManager.reset(new PartitionForestMFSManagerT("Default", multiFeatureSelection));
 
 		volumeIPF->add_weak_listener(m_selection);
 		set_command_manager(m_commandManager);
@@ -239,7 +245,7 @@ public:
 
 			// Set up label image creation.
 			typedef LabelImageCreator<LeafLayer,BranchLayer,Feature> LabelImageCreatorT;
-			LabelImageCreatorT *labelImageCreator = new LabelImageCreatorT(m_multiFeatureSelection);
+			LabelImageCreatorT *labelImageCreator = new LabelImageCreatorT(active_multi_feature_selection());
 			job->add_subjob(labelImageCreator);
 
 			// Set up mesh building.
