@@ -5,6 +5,8 @@
 
 #include "PartitionView.h"
 
+#include <boost/tuple/tuple.hpp>
+
 #include <wx/button.h>
 #include <wx/choice.h>
 #include <wx/numdlg.h>
@@ -40,6 +42,7 @@ enum
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
 	BUTTONID_VISUALIZE_IN_3D,
+	CHOICEID_MULTI_FEATURE_SELECTION,
 	SLIDERID_X,
 	SLIDERID_Y,
 	SLIDERID_Z,
@@ -197,7 +200,24 @@ struct PartitionView::ForestTouchListener : PartitionForestTouchListener<LeafLay
 	}
 };
 
-struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
+struct PartitionView::MFSManagerListener : PartitionModelT::PartitionForestMFSManagerT::Listener
+{
+	PartitionView *base;
+
+	explicit MFSManagerListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void active_multi_feature_selection_changed()
+	{
+		base->add_mfs_listener();
+		base->recreate_multi_feature_selection_choice();
+		base->recreate_multi_feature_selection_overlay();
+		base->refresh_canvases();
+	}
+};
+
+struct PartitionView::ModelListener : PartitionModelT::Listener
 {
 	PartitionView *base;
 
@@ -208,6 +228,7 @@ struct PartitionView::ModelListener : PartitionView::PartitionModelT::Listener
 	void forest_changed()
 	{
 		base->create_partition_textures();
+		base->recreate_multi_feature_selection_choice();
 		base->recreate_overlays();
 		base->refresh_canvases();
 		base->add_listeners();
@@ -417,6 +438,7 @@ void PartitionView::add_listeners()
 {
 	m_model->volume_ipf()->add_shared_listener(boost::shared_ptr<ForestTouchListener>(new ForestTouchListener(this, m_model->volume_ipf())));
 	m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+	m_model->multi_feature_selection_manager()->add_shared_listener(boost::shared_ptr<MFSManagerListener>(new MFSManagerListener(this)));
 	add_mfs_listener();
 
 	m_nodeSplitManager.reset(new NodeSplitManagerT(m_model->volume_ipf(), m_model->selection()));
@@ -550,6 +572,35 @@ PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 	else return NULL;
 }
 
+std::pair<wxArrayString,int> PartitionView::multi_feature_selection_strings() const
+{
+	wxArrayString mfsStrings;
+	int activeIndex;
+
+	typedef PartitionModelT::PartitionForestMFSManager_CPtr MFSManager_CPtr;
+	MFSManager_CPtr mfsManager = m_model->multi_feature_selection_manager();
+
+	if(mfsManager)
+	{
+		typedef PartitionModelT::PartitionForestMFSManagerT::MFSMap MFSMap;
+		for(MFSMap::const_iterator it=mfsManager->multi_feature_selections().begin(), iend=mfsManager->multi_feature_selections().end(); it!=iend; ++it)
+		{
+			if(it->second == mfsManager->active_multi_feature_selection())
+			{
+				activeIndex = mfsStrings.GetCount();
+			}
+			mfsStrings.Add(string_to_wxString(it->first));
+		}
+	}
+	else
+	{
+		mfsStrings.Add(wxT("<None>"));
+		activeIndex = 0;
+	}
+
+	return std::make_pair(mfsStrings, activeIndex);
+}
+
 PartitionOverlay *PartitionView::node_split_overlay() const
 {
 	PartitionModelT::VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
@@ -609,6 +660,19 @@ Greyscale8SliceTextureSet_CPtr PartitionView::partition_texture_set(int layer) c
 	int n = layer - 1;
 	if(0 <= n && n < static_cast<int>(m_partitionTextureSets.size())) return m_partitionTextureSets[n];
 	else return Greyscale8SliceTextureSet_CPtr();
+}
+
+void PartitionView::recreate_multi_feature_selection_choice()
+{
+	m_multiFeatureSelectionChoice->Clear();
+	wxArrayString mfsStrings;
+	int activeIndex;
+	boost::tie(mfsStrings, activeIndex) = multi_feature_selection_strings();
+	for(size_t i=0, count=mfsStrings.GetCount(); i<count; ++i)
+	{
+		m_multiFeatureSelectionChoice->Append(mfsStrings[i]);
+	}
+	m_multiFeatureSelectionChoice->SetSelection(activeIndex);
 }
 
 void PartitionView::recreate_multi_feature_selection_overlay()
@@ -686,13 +750,9 @@ void PartitionView::setup_gui(wxGLContext *context)
 	topRight->SetSizer(topRightSizer);
 		topRightSizer->Add(new wxStaticText(topRight, wxID_ANY, wxT("Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
 
-		wxArrayString mfsStrings;
-		mfsStrings.Add(wxT("Default"));
-		// TODO: Populate the list of strings for the drop-down box.
-
-		wxChoice *multiFeatureSelectionChoice = new wxChoice(topRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, mfsStrings);
-		multiFeatureSelectionChoice->SetSelection(0);
-		topRightSizer->Add(multiFeatureSelectionChoice);
+		m_multiFeatureSelectionChoice = new wxChoice(topRight, CHOICEID_MULTI_FEATURE_SELECTION, wxDefaultPosition, wxDefaultSize, wxArrayString());
+		recreate_multi_feature_selection_choice();
+		topRightSizer->Add(m_multiFeatureSelectionChoice);
 	sizer->Add(topRight, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	// Middle left
@@ -821,6 +881,13 @@ void PartitionView::OnButtonVisualizeIn3D(wxCommandEvent&)
 	m_model->visualize_in_3d(this, get_context());
 }
 
+//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
+void PartitionView::OnChoiceMultiFeatureSelection(wxCommandEvent&)
+{
+	std::string name = wxString_to_string(m_multiFeatureSelectionChoice->GetStringSelection());
+	m_model->multi_feature_selection_manager()->set_active_multi_feature_selection(name);
+}
+
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnSliderX(wxScrollEvent&)
 {
@@ -871,6 +938,9 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionView::OnButtonViewYZ)
 	EVT_BUTTON(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnButtonVisualizeIn3D)
 
+	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
+	EVT_CHOICE(CHOICEID_MULTI_FEATURE_SELECTION, PartitionView::OnChoiceMultiFeatureSelection)
+
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	EVT_COMMAND_SCROLL(SLIDERID_X, PartitionView::OnSliderX)
 	EVT_COMMAND_SCROLL(SLIDERID_Y, PartitionView::OnSliderY)
@@ -880,6 +950,7 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(CHOICEID_MULTI_FEATURE_SELECTION, PartitionView::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(SLIDERID_LAYER, PartitionView::OnUpdateSliderLayer)
 END_EVENT_TABLE()
 

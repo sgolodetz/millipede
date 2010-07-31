@@ -24,6 +24,7 @@
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;
+class wxChoice;
 class wxSlider;
 
 namespace mp {
@@ -60,6 +61,7 @@ public:
 private:
 	struct CameraListener;
 	struct ForestTouchListener;
+	struct MFSManagerListener;
 	struct ModelListener;
 	struct MultiFeatureSelectionListener;
 	struct NodeSplitManagerListener;
@@ -80,8 +82,11 @@ private:
 	ParentSwitchManager_Ptr m_parentSwitchManager;
 	std::vector<Greyscale8SliceTextureSet_Ptr> m_partitionTextureSets;
 
-	// Top right
+	// Top left
 	wxButton *m_segmentVolumeButton;
+
+	// Top right
+	wxChoice *m_multiFeatureSelectionChoice;
 
 	// Middle left
 	DICOMCanvas *m_dicomCanvas;
@@ -129,10 +134,12 @@ private:
 	void fill_textures(SliceOrientation ori);
 	static SliceLocation initial_slice_location(const DICOMVolumeChoice& volumeChoice);
 	PartitionOverlay *multi_feature_selection_overlay() const;
+	std::pair<wxArrayString,int> multi_feature_selection_strings() const;
 	PartitionOverlay *node_split_overlay() const;
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	PartitionOverlay *parent_switch_overlay() const;
 	Greyscale8SliceTextureSet_CPtr partition_texture_set(int layer) const;
+	void recreate_multi_feature_selection_choice();
 	void recreate_multi_feature_selection_overlay();
 	void recreate_node_split_overlay();
 	void recreate_overlays();
@@ -153,6 +160,9 @@ public:
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);
 	void OnButtonVisualizeIn3D(wxCommandEvent&);
+
+	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
+	void OnChoiceMultiFeatureSelection(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	void OnSliderX(wxScrollEvent&);

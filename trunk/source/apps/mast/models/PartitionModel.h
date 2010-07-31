@@ -172,6 +172,11 @@ public:
 		return m_dicomVolumeChoice;
 	}
 
+	const PartitionForestMFSManager_Ptr& multi_feature_selection_manager()
+	{
+		return m_multiFeatureSelectionManager;
+	}
+
 	void segment_volume(wxWindow *parent)
 	{
 		VolumeIPF_Ptr volumeIPF;

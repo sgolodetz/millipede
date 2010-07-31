@@ -29,6 +29,21 @@ private:
 
 	//#################### LISTENERS ####################
 private:
+	struct MFSManagerListener : PartitionModelT::PartitionForestMFSManagerT::Listener
+	{
+		SelectionView *base;
+
+		explicit MFSManagerListener(SelectionView *base_)
+		:	base(base_)
+		{}
+
+		void active_multi_feature_selection_changed()
+		{
+			base->add_mfs_listener();
+			base->refresh_list();
+		}
+	};
+
 	struct ModelListener : PartitionModelT::Listener
 	{
 		SelectionView *base;
@@ -40,7 +55,7 @@ private:
 		void forest_changed()
 		{
 			base->refresh_list();
-			base->add_selection_listeners();
+			base->add_listeners();
 		}
 	};
 
@@ -115,9 +130,10 @@ private:
 		m_model->active_multi_feature_selection()->add_weak_listener(m_multiFeatureSelectionListener);
 	}
 
-	void add_selection_listeners()
+	void add_listeners()
 	{
 		m_model->selection()->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(this)));
+		m_model->multi_feature_selection_manager()->add_shared_listener(boost::shared_ptr<MFSManagerListener>(new MFSManagerListener(this)));
 		add_mfs_listener();
 	}
 
