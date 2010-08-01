@@ -33,6 +33,7 @@ private:
 	typedef shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 
 	typedef PartitionForestMultiFeatureSelection<LeafLayer,BranchLayer,Feature> PartitionForestMultiFeatureSelectionT;
+	typedef boost::shared_ptr<const PartitionForestMultiFeatureSelectionT> PartitionForestMultiFeatureSelection_CPtr;
 public:
 	typedef typename PartitionForestSelectionT::Modification Modification;
 
@@ -153,6 +154,40 @@ public:
 	{
 		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
 		if(it != m_selections.end()) it->second->clear();
+	}
+
+	void combine(const PartitionForestMultiFeatureSelection_CPtr& lhs, const PartitionForestMultiFeatureSelection_CPtr& rhs)
+	{
+		// Note: This method should only be invoked on newly-created multi-feature selections.
+		assert(m_selections.empty());
+
+		typedef std::map<Feature,PartitionForestSelection_Ptr> SelectionMap;
+		typedef typename SelectionMap::const_iterator SelectionMapCIter;
+
+		// Step 1: Construct the appropriate selections.
+		for(SelectionMapCIter it=lhs->m_selections.begin(), iend=lhs->m_selections.end(); it!=iend; ++it)
+		{
+			selection(it->first);
+		}
+
+		for(SelectionMapCIter it=rhs->m_selections.begin(), iend=rhs->m_selections.end(); it!=iend; ++it)
+		{
+			selection(it->first);
+		}
+
+		// Step 2: Combine the corresponding selections from lhs and rhs.
+		for(SelectionMapCIter it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		{
+			const Feature& feature = it->first;
+			const PartitionForestSelection_Ptr& selection = it->second;
+
+			SelectionMapCIter lhsSelIt = lhs->m_selections.find(feature);
+			SelectionMapCIter rhsSelIt = rhs->m_selections.find(feature);
+
+			if(lhsSelIt == lhs->m_selections.end())			*selection = *rhsSelIt->second;
+			else if(rhsSelIt == rhs->m_selections.end())	*selection = *lhsSelIt->second;
+			else											selection->combine(lhsSelIt->second, rhsSelIt->second);
+		}
 	}
 
 	bool empty() const

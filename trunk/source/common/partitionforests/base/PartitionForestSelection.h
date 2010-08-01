@@ -318,6 +318,22 @@ public:
 		m_commandManager->execute(Command_Ptr(new ModifyingCommand(this, boost::bind(boost::mem_fn(&PartitionForestSelectionT::clear_impl), _1, _2), "Clear Selection")));
 	}
 
+	void combine(const PartitionForestSelection_CPtr& lhs, const PartitionForestSelection_CPtr& rhs)
+	{
+		// Note: This method should only be invoked on newly-created selections.
+		assert(empty());
+
+		for(NodeConstIterator it=lhs->nodes_cbegin(), iend=lhs->nodes_cend(); it!=iend; ++it)
+		{
+			select_node_impl(*it, -1);
+		}
+
+		for(NodeConstIterator it=rhs->nodes_cbegin(), iend=rhs->nodes_cend(); it!=iend; ++it)
+		{
+			select_node_impl(*it, -1);
+		}
+	}
+
 	void command_sequence_execution_ended(const std::string& description, int commandDepth)
 	{
 		m_listeners->selection_changed(commandDepth);
