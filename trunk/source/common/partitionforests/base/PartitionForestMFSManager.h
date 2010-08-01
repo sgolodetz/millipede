@@ -130,6 +130,11 @@ public:
 		m_listeners.add_shared_listener(listener);
 	}
 
+	void add_weak_listener(const boost::weak_ptr<Listener>& listener)
+	{
+		m_listeners.add_weak_listener(listener);
+	}
+
 	bool has_multi_feature_selection(const std::string& name) const
 	{
 		return m_multiFeatureSelections.find(name) != m_multiFeatureSelections.end();
