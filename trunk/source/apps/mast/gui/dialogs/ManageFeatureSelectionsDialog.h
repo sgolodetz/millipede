@@ -28,6 +28,7 @@ namespace mp_ManageFeatureSelectionsDialog {
 enum
 {
 	BUTTONID_CREATE_NEW,
+	BUTTONID_DELETE,
 };
 
 template <typename MFS, typename Forest>
@@ -59,7 +60,7 @@ private:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	Forest_Ptr m_forest;
-	std::vector<wxChoice*> m_mfsChoices;
+	std::map<std::string,wxChoice*> m_mfsChoices;
 	MFSManager_Ptr m_mfsManager;
 	boost::shared_ptr<MFSManagerListener> m_mfsManagerListener;
 
@@ -77,10 +78,11 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void add_mfs_choice(wxWindow *parent, wxSizer *parentSizer)
+	void add_mfs_choice(const std::string& choiceName, wxWindow *parent, wxSizer *parentSizer)
 	{
-		m_mfsChoices.push_back(new wxChoice(parent, wxID_ANY, wxDefaultPosition, wxSize(150,25), wxArrayString()));
-		parentSizer->Add(m_mfsChoices.back());
+		wxChoice *choice = new wxChoice(parent, wxID_ANY, wxDefaultPosition, wxSize(150,25), wxArrayString());
+		m_mfsChoices.insert(std::make_pair(choiceName, choice));
+		parentSizer->Add(choice);
 	}
 
 	std::string get_appropriate_name(const std::string& caption, const std::string& initialName)
@@ -109,12 +111,13 @@ private:
 			mfsStrings.Add(string_to_wxString(it->first));
 		}
 
-		for(std::vector<wxChoice*>::const_iterator it=m_mfsChoices.begin(), iend=m_mfsChoices.end(); it!=iend; ++it)
+		for(std::map<std::string,wxChoice*>::const_iterator it=m_mfsChoices.begin(), iend=m_mfsChoices.end(); it!=iend; ++it)
 		{
-			(*it)->Clear();
+			wxChoice *choice = it->second;
+			choice->Clear();
 			for(size_t j=0, count=mfsStrings.GetCount(); j<count; ++j)
 			{
-				(*it)->Append(mfsStrings[j]);
+				choice->Append(mfsStrings[j]);
 			}
 		}
 	}
@@ -144,7 +147,7 @@ private:
 		wxFlexGridSizer *unaryInputsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		unaryInputs->SetSizer(unaryInputsSizer);
 			unaryInputsSizer->Add(new wxStaticText(unaryInputs, wxID_ANY, wxT("Input:")), 0, wxALIGN_CENTRE_VERTICAL);
-			add_mfs_choice(unaryInputs, unaryInputsSizer);
+			add_mfs_choice("UInput", unaryInputs, unaryInputsSizer);
 		unaryOperations->Add(unaryInputs, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		unaryOperations->AddSpacer(10);
@@ -153,7 +156,7 @@ private:
 		wxFlexGridSizer *unaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		unaryButtons->SetSizer(unaryButtonsSizer);
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, wxID_ANY, wxT("&Clone...")));
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, wxID_ANY, wxT("&Delete")));
+			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_DELETE, wxT("&Delete")));
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, wxID_ANY, wxT("&Rename...")));
 		unaryOperations->Add(unaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
@@ -165,9 +168,9 @@ private:
 		wxFlexGridSizer *binaryInputsSizer = new wxFlexGridSizer(2, 0, 0, 5);
 		binaryInputs->SetSizer(binaryInputsSizer);
 			binaryInputsSizer->Add(new wxStaticText(binaryInputs, wxID_ANY, wxT("Left-Hand Input:")), 0, wxALIGN_CENTRE_VERTICAL);
-			add_mfs_choice(binaryInputs, binaryInputsSizer);
+			add_mfs_choice("BLInput", binaryInputs, binaryInputsSizer);
 			binaryInputsSizer->Add(new wxStaticText(binaryInputs, wxID_ANY, wxT("Right-Hand Input:")), 0, wxALIGN_CENTRE_VERTICAL);
-			add_mfs_choice(binaryInputs, binaryInputsSizer);
+			add_mfs_choice("BRInput", binaryInputs, binaryInputsSizer);
 		binaryOperations->Add(binaryInputs, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		binaryOperations->AddSpacer(10);
@@ -193,13 +196,28 @@ public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	void OnButtonCreateNew(wxCommandEvent&)
 	{
-		std::string mfsName = get_appropriate_name("Create New Feature Selection", "Feature Selection");
-		if(mfsName != "")
+		std::string name = get_appropriate_name("Create New Feature Selection", "Feature Selection");
+		if(name != "")
 		{
 			MFS_Ptr mfs(new MFS(m_forest));
-			m_mfsManager->add_multi_feature_selection(mfsName, mfs);
-			m_mfsManager->set_active_multi_feature_selection(mfsName);
+			m_mfsManager->add_multi_feature_selection(name, mfs);
+			m_mfsManager->set_active_multi_feature_selection(name);
 		}
+	}
+
+	void OnButtonDelete(wxCommandEvent&)
+	{
+		std::string name = wxString_to_string(m_mfsChoices.find("UInput")->second->GetStringSelection());
+		if(name != "")
+		{
+			m_mfsManager->remove_multi_feature_selection(name);
+		}
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateButtonDelete(wxUpdateUIEvent& e)
+	{
+		e.Enable(m_mfsManager->multi_feature_selections().size() > 1);
 	}
 
 	//#################### EVENT TABLE ####################
@@ -210,6 +228,10 @@ public:
 BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
+	EVT_BUTTON(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonDelete))
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonDelete))
 END_EVENT_TABLE()
 
 }

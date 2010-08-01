@@ -25,22 +25,51 @@ private:
 	struct AddMFSCommand : Command
 	{
 		PartitionForestMFSManager *m_base;
-		std::string m_mfsName;
+		std::string m_name;
 		MFS_Ptr m_mfs;
 
-		AddMFSCommand(PartitionForestMFSManager *base, const std::string& mfsName, const MFS_Ptr& mfs)
-		:	Command("Add Multi-Feature Selection"), m_base(base), m_mfsName(mfsName), m_mfs(mfs)
+		AddMFSCommand(PartitionForestMFSManager *base, const std::string& name, const MFS_Ptr& mfs)
+		:	Command("Add Multi-Feature Selection"), m_base(base), m_name(name), m_mfs(mfs)
 		{}
 
 		void execute()
 		{
-			m_base->m_multiFeatureSelections.insert(std::make_pair(m_mfsName, m_mfs));
+			m_base->m_multiFeatureSelections.insert(std::make_pair(m_name, m_mfs));
 			m_base->m_listeners.multi_feature_selection_manager_changed();
 		}
 
 		void undo()
 		{
-			m_base->m_multiFeatureSelections.erase(m_mfsName);
+			m_base->m_multiFeatureSelections.erase(m_name);
+			m_base->m_listeners.multi_feature_selection_manager_changed();
+		}
+	};
+
+	struct RemoveMFSCommand : Command
+	{
+		PartitionForestMFSManager *m_base;
+		std::string m_name;
+		MFS_Ptr m_oldMFS;
+		bool m_oldMFSWasActive;
+
+		RemoveMFSCommand(PartitionForestMFSManager *base, const std::string& name)
+		:	Command("Remove Multi-Feature Selection"), m_base(base), m_name(name)
+		{}
+
+		void execute()
+		{
+			m_oldMFS = m_base->m_multiFeatureSelections.find(m_name)->second;
+			m_oldMFSWasActive = m_base->m_activeMultiFeatureSelection.first == m_name;
+			m_base->m_multiFeatureSelections.erase(m_name);
+			if(m_oldMFSWasActive) m_base->m_activeMultiFeatureSelection = *m_base->m_multiFeatureSelections.begin();
+			m_base->m_listeners.multi_feature_selection_manager_changed();
+		}
+
+		void undo()
+		{
+			std::pair<std::string,MFS_Ptr> p = std::make_pair(m_name, m_oldMFS);
+			m_base->m_multiFeatureSelections.insert(p);
+			if(m_oldMFSWasActive) m_base->m_activeMultiFeatureSelection = p;
 			m_base->m_listeners.multi_feature_selection_manager_changed();
 		}
 	};
@@ -61,7 +90,7 @@ private:
 			if(it != m_base->m_multiFeatureSelections.end())
 			{
 				m_oldActiveMultiFeatureSelection = m_base->m_activeMultiFeatureSelection;
-				m_base->m_activeMultiFeatureSelection = std::make_pair(it->first, it->second);
+				m_base->m_activeMultiFeatureSelection = *it;
 				m_base->m_listeners.multi_feature_selection_manager_changed();
 			}
 			else throw Exception("Multi-feature selection " + m_name + " does not exist");
@@ -119,10 +148,10 @@ public:
 		return m_activeMultiFeatureSelection.second;
 	}
 
-	void add_multi_feature_selection(const std::string& mfsName, const MFS_Ptr& mfs)
+	void add_multi_feature_selection(const std::string& name, const MFS_Ptr& mfs)
 	{
 		mfs->set_command_manager(m_commandManager);
-		m_commandManager->execute(Command_Ptr(new AddMFSCommand(this, mfsName, mfs)));
+		m_commandManager->execute(Command_Ptr(new AddMFSCommand(this, name, mfs)));
 	}
 
 	void add_shared_listener(const boost::shared_ptr<Listener>& listener)
@@ -143,6 +172,11 @@ public:
 	const MFSMap& multi_feature_selections() const
 	{
 		return m_multiFeatureSelections;
+	}
+
+	void remove_multi_feature_selection(const std::string& name)
+	{
+		m_commandManager->execute(Command_Ptr(new RemoveMFSCommand(this, name)));
 	}
 
 	void set_active_multi_feature_selection(const std::string& name)
