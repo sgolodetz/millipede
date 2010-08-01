@@ -13,6 +13,7 @@
 #include <wx/button.h>
 #include <wx/choice.h>
 #include <wx/dialog.h>
+#include <wx/listctrl.h>
 #include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
@@ -60,7 +61,7 @@ private:
 
 		void multi_feature_selection_manager_changed()
 		{
-			base->repopulate_mfs_choices();
+			base->repopulate_mfs_lists();
 		}
 	};
 
@@ -68,6 +69,7 @@ private:
 private:
 	Forest_Ptr m_forest;
 	std::map<std::string,wxChoice*> m_mfsChoices;
+	wxListCtrl *m_mfsList;
 	MFSManager_Ptr m_mfsManager;
 	boost::shared_ptr<MFSManagerListener> m_mfsManagerListener;
 
@@ -113,7 +115,7 @@ private:
 		return wxString_to_string(m_mfsChoices.find(choiceName)->second->GetStringSelection());
 	}
 
-	void repopulate_mfs_choices()
+	void repopulate_mfs_lists()
 	{
 		wxArrayString mfsStrings;
 
@@ -121,6 +123,12 @@ private:
 		for(typename MFSMap::const_iterator it=m_mfsManager->multi_feature_selections().begin(), iend=m_mfsManager->multi_feature_selections().end(); it!=iend; ++it)
 		{
 			mfsStrings.Add(string_to_wxString(it->first));
+		}
+
+		m_mfsList->DeleteAllItems();
+		for(size_t i=0, count=mfsStrings.GetCount(); i<count; ++i)
+		{
+			m_mfsList->InsertItem(i, mfsStrings[i]);
 		}
 
 		for(std::map<std::string,wxChoice*>::const_iterator it=m_mfsChoices.begin(), iend=m_mfsChoices.end(); it!=iend; ++it)
@@ -143,22 +151,31 @@ private:
 		SetSizer(sizer);
 
 		wxPanel *inner = new wxPanel(this);
-		wxFlexGridSizer *innerSizer = new wxFlexGridSizer(0, 1, 20, 0);
+		wxFlexGridSizer *innerSizer = new wxFlexGridSizer(1, 0, 0, 20);
 		inner->SetSizer(innerSizer);
 		sizer->Add(inner, 0, wxALL, 10);
 
-		// Nullary operations
-		wxStaticBoxSizer *nullaryOperations = new wxStaticBoxSizer(wxVERTICAL, inner, wxT("Nullary Operations"));
-		innerSizer->Add(nullaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
+		//~~~~~~~~~~~~~~~~~
+		// Operations Panel
+		//~~~~~~~~~~~~~~~~~
 
-		wxButton *createButton = new wxButton(inner, BUTTONID_CREATE_NEW, wxT("Create &New..."));
+		wxPanel *operations = new wxPanel(inner);
+		wxFlexGridSizer *operationsSizer = new wxFlexGridSizer(0, 1, 20, 0);
+		operations->SetSizer(operationsSizer);
+		innerSizer->Add(operations);
+
+		// Nullary operations
+		wxStaticBoxSizer *nullaryOperations = new wxStaticBoxSizer(wxVERTICAL, operations, wxT("Nullary Operations"));
+		operationsSizer->Add(nullaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
+
+		wxButton *createButton = new wxButton(operations, BUTTONID_CREATE_NEW, wxT("Create &New..."));
 		nullaryOperations->Add(createButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Unary operations
-		wxStaticBoxSizer *unaryOperations = new wxStaticBoxSizer(wxVERTICAL, inner, wxT("Unary Operations"));
-		innerSizer->Add(unaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
+		wxStaticBoxSizer *unaryOperations = new wxStaticBoxSizer(wxVERTICAL, operations, wxT("Unary Operations"));
+		operationsSizer->Add(unaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
 
-		wxPanel *unaryInputs = new wxPanel(inner);
+		wxPanel *unaryInputs = new wxPanel(operations);
 		wxFlexGridSizer *unaryInputsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		unaryInputs->SetSizer(unaryInputsSizer);
 			unaryInputsSizer->Add(new wxStaticText(unaryInputs, wxID_ANY, wxT("Input:")), 0, wxALIGN_CENTRE_VERTICAL);
@@ -167,7 +184,7 @@ private:
 
 		unaryOperations->AddSpacer(10);
 
-		wxPanel *unaryButtons = new wxPanel(inner);
+		wxPanel *unaryButtons = new wxPanel(operations);
 		wxFlexGridSizer *unaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		unaryButtons->SetSizer(unaryButtonsSizer);
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_CLONE, wxT("&Clone...")));
@@ -176,10 +193,10 @@ private:
 		unaryOperations->Add(unaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Binary operations
-		wxStaticBoxSizer *binaryOperations = new wxStaticBoxSizer(wxVERTICAL, inner, wxT("Binary Operations"));
-		innerSizer->Add(binaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
+		wxStaticBoxSizer *binaryOperations = new wxStaticBoxSizer(wxVERTICAL, operations, wxT("Binary Operations"));
+		operationsSizer->Add(binaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
 
-		wxPanel *binaryInputs = new wxPanel(inner);
+		wxPanel *binaryInputs = new wxPanel(operations);
 		wxFlexGridSizer *binaryInputsSizer = new wxFlexGridSizer(2, 0, 0, 5);
 		binaryInputs->SetSizer(binaryInputsSizer);
 			binaryInputsSizer->Add(new wxStaticText(binaryInputs, wxID_ANY, wxT("Left-Hand Input:")), 0, wxALIGN_CENTRE_VERTICAL);
@@ -190,7 +207,7 @@ private:
 
 		binaryOperations->AddSpacer(10);
 
-		wxPanel *binaryButtons = new wxPanel(inner);
+		wxPanel *binaryButtons = new wxPanel(operations);
 		wxFlexGridSizer *binaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		binaryButtons->SetSizer(binaryButtonsSizer);
 			binaryButtonsSizer->Add(new wxButton(binaryButtons, wxID_ANY, wxT("&Intersect...")));
@@ -199,9 +216,18 @@ private:
 		binaryOperations->Add(binaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Close button
-		innerSizer->Add(new wxButton(inner, wxID_CANCEL, wxT("Close")), 0, wxALIGN_CENTRE_HORIZONTAL);
+		operationsSizer->Add(new wxButton(operations, wxID_CANCEL, wxT("Close")), 0, wxALIGN_CENTRE_HORIZONTAL);
 
-		repopulate_mfs_choices();
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// Feature Selections Display
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		m_mfsList = new wxListCtrl(inner, wxID_ANY, wxDefaultPosition, wxSize(150,300), wxLC_REPORT|wxLC_SINGLE_SEL);
+		m_mfsList->InsertColumn(0, wxT("Feature Selections"));
+		m_mfsList->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
+		innerSizer->Add(m_mfsList);
+
+		repopulate_mfs_lists();
 		sizer->Fit(this);
 		CentreOnParent();
 	}
