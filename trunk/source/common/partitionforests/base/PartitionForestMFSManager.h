@@ -121,12 +121,18 @@ public:
 
 	void add_multi_feature_selection(const std::string& mfsName, const MFS_Ptr& mfs)
 	{
+		mfs->set_command_manager(m_commandManager);
 		m_commandManager->execute(Command_Ptr(new AddMFSCommand(this, mfsName, mfs)));
 	}
 
 	void add_shared_listener(const boost::shared_ptr<Listener>& listener)
 	{
 		m_listeners.add_shared_listener(listener);
+	}
+
+	bool has_multi_feature_selection(const std::string& name) const
+	{
+		return m_multiFeatureSelections.find(name) != m_multiFeatureSelections.end();
 	}
 
 	const MFSMap& multi_feature_selections() const

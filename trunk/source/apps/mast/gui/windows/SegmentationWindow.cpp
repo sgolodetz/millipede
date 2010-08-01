@@ -171,7 +171,7 @@ void SegmentationWindow::setup_menus()
 	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
 
 	wxMenu *segmentationMenu = new wxMenu;
-	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume..."));
+	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume...\tCtrl+Alt+Shift+S"));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_CLONECURRENTLAYER, wxT("&Clone Current Layer\tCtrl+Shift+C"));
 	segmentationMenu->Append(MENUID_SEGMENTATION_DELETECURRENTLAYER, wxT("&Delete Current Layer\tCtrl+Shift+D"));
@@ -259,7 +259,8 @@ void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuFeaturesManageFeatureSelections(wxCommandEvent&)
 {
-	ManageFeatureSelectionsDialog<PartitionModelT::VolumeIPFMultiFeatureSelectionT> dialog(this, m_model->multi_feature_selection_manager());
+	typedef ManageFeatureSelectionsDialog<PartitionModelT::VolumeIPFMultiFeatureSelectionT,PartitionModelT::VolumeIPFT> Dialog;
+	Dialog dialog(this, m_model->multi_feature_selection_manager(), m_model->volume_ipf());
 	dialog.ShowModal();
 }
 

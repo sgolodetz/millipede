@@ -6,32 +6,48 @@
 #ifndef H_MILLIPEDE_MANAGEFEATURESELECTIONSDIALOG
 #define H_MILLIPEDE_MANAGEFEATURESELECTIONSDIALOG
 
+#include <boost/algorithm/string/trim.hpp>
+
 #include <wx/button.h>
 #include <wx/choice.h>
 #include <wx/dialog.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/textdlg.h>
 
 #include <common/partitionforests/base/PartitionForestMFSManager.h>
+#include <mast/util/StringConversion.h>
 
 namespace mp {
 
-template <typename MFS>
+namespace mp_ManageFeatureSelectionsDialog {
+
+//#################### ENUMERATIONS ####################
+enum
+{
+	BUTTONID_CREATE_NEW,
+};
+
+template <typename MFS, typename Forest>
 class ManageFeatureSelectionsDialog : public wxDialog
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef boost::shared_ptr<Forest> Forest_Ptr;
 	typedef boost::shared_ptr<PartitionForestMFSManager<MFS> > MFSManager_Ptr;
+	typedef boost::shared_ptr<MFS> MFS_Ptr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	Forest_Ptr m_forest;
 	MFSManager_Ptr m_mfsManager;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	ManageFeatureSelectionsDialog(wxWindow *parent, const MFSManager_Ptr& mfsManager)
-	:	wxDialog(parent, wxID_ANY, wxT("Manage Feature Selections"), wxDefaultPosition, wxDefaultSize), m_mfsManager(mfsManager)
+	ManageFeatureSelectionsDialog(wxWindow *parent, const MFSManager_Ptr& mfsManager, const Forest_Ptr& forest)
+	:	wxDialog(parent, wxID_ANY, wxT("Manage Feature Selections"), wxDefaultPosition, wxDefaultSize), m_forest(forest), m_mfsManager(mfsManager)
 	{
 		wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 		SetSizer(sizer);
@@ -45,7 +61,7 @@ public:
 		wxStaticBoxSizer *nullaryOperations = new wxStaticBoxSizer(wxVERTICAL, inner, wxT("Nullary Operations"));
 		innerSizer->Add(nullaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
 
-		wxButton *createButton = new wxButton(inner, wxID_ANY, wxT("Create &New..."));
+		wxButton *createButton = new wxButton(inner, BUTTONID_CREATE_NEW, wxT("Create &New..."));
 		nullaryOperations->Add(createButton, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Unary operations
@@ -98,7 +114,51 @@ public:
 		sizer->Fit(this);
 		CentreOnParent();
 	}
+
+	//#################### PRIVATE METHODS ####################
+private:
+	std::string get_appropriate_name(const std::string& caption, const std::string& initialName)
+	{
+		std::string name = initialName;
+		for(;;)
+		{
+			name = wxString_to_string(wxGetTextFromUser(wxT("Name:"), string_to_wxString(caption), string_to_wxString(name), this));
+			boost::trim(name);
+
+			if(name == "" || !m_mfsManager->has_multi_feature_selection(name)) break;
+
+			// If the name wasn't appropriate, display an error message.
+			wxMessageBox(wxT("The specified name is already in use."), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+		}
+		return name;
+	}
+
+	//#################### EVENT HANDLERS ####################
+public:
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonCreateNew(wxCommandEvent&)
+	{
+		std::string mfsName = get_appropriate_name("Create New Feature Selection", "Feature Selection");
+		if(mfsName != "")
+		{
+			MFS_Ptr mfs(new MFS(m_forest));
+			m_mfsManager->add_multi_feature_selection(mfsName, mfs);
+		}
+	}
+
+	//#################### EVENT TABLE ####################
+	DECLARE_EVENT_TABLE()
 };
+
+//#################### EVENT TABLE ####################
+BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest)
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
+END_EVENT_TABLE()
+
+}
+
+using mp_ManageFeatureSelectionsDialog::ManageFeatureSelectionsDialog;
 
 }
 
