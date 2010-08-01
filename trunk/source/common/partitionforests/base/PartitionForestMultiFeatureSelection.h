@@ -101,13 +101,32 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit PartitionForestMultiFeatureSelection(const PartitionForest_Ptr& forest)
-	:	m_commandManager(new BasicCommandManager), m_forest(forest), m_listeners(new CompositeListener)
+	:	m_commandManager(new BasicCommandManager),
+		m_forest(forest),
+		m_listeners(new CompositeListener)
 	{}
 
 	//#################### DESTRUCTOR ####################
 public:
 	virtual ~PartitionForestMultiFeatureSelection()
 	{}
+
+	//#################### COPY CONSTRUCTOR & ASSIGNMENT OPERATOR ####################
+public:
+	PartitionForestMultiFeatureSelection(const PartitionForestMultiFeatureSelection& rhs)
+	:	m_commandManager(rhs.m_commandManager),
+		m_forest(rhs.m_forest),
+		m_listeners(new CompositeListener)
+	{
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::const_iterator it=rhs.m_selections.begin(), iend=rhs.m_selections.end(); it!=iend; ++it)
+		{
+			*selection_internal(it->first) = *it->second;
+		}
+	}
+
+private:
+	// Currently deliberately left unimplemented (not needed)
+	PartitionForestMultiFeatureSelection& operator=(const PartitionForestMultiFeatureSelection&);
 
 	//#################### PUBLIC METHODS ####################
 public:

@@ -192,6 +192,13 @@ public:
 		return m_multiFeatureSelections.find(name) != m_multiFeatureSelections.end();
 	}
 
+	const MFS_Ptr& multi_feature_selection(const std::string& name) const
+	{
+		typename MFSMap::const_iterator it = m_multiFeatureSelections.find(name);
+		if(it != m_multiFeatureSelections.end()) return it->second;
+		else throw Exception("Multi-feature selection " + name + " does not exist");
+	}
+
 	const MFSMap& multi_feature_selections() const
 	{
 		return m_multiFeatureSelections;

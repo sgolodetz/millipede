@@ -226,8 +226,8 @@ public:
 
 		m_volumeIPF = volumeIPF;
 		m_selection.reset(new VolumeIPFSelectionT(volumeIPF));
-		m_multiFeatureSelectionManager.reset(new PartitionForestMFSManagerT("Feature Selection 1", VolumeIPFMultiFeatureSelection_Ptr(new VolumeIPFMultiFeatureSelectionT(volumeIPF))));
-		m_multiFeatureSelectionManager->add_multi_feature_selection("Feature Selection 2", VolumeIPFMultiFeatureSelection_Ptr(new VolumeIPFMultiFeatureSelectionT(volumeIPF)));
+		VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection(new VolumeIPFMultiFeatureSelectionT(volumeIPF));
+		m_multiFeatureSelectionManager.reset(new PartitionForestMFSManagerT("Default", multiFeatureSelection));
 
 		volumeIPF->add_weak_listener(m_selection);
 		set_command_manager(m_commandManager);

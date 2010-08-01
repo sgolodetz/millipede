@@ -29,6 +29,7 @@ namespace mp_ManageFeatureSelectionsDialog {
 //#################### ENUMERATIONS ####################
 enum
 {
+	BUTTONID_CLONE,
 	BUTTONID_CREATE_NEW,
 	BUTTONID_DELETE,
 	BUTTONID_RENAME,
@@ -104,6 +105,11 @@ private:
 		return name;
 	}
 
+	std::string get_mfs_choice(const std::string& choiceName) const
+	{
+		return wxString_to_string(m_mfsChoices.find(choiceName)->second->GetStringSelection());
+	}
+
 	void repopulate_mfs_choices()
 	{
 		wxArrayString mfsStrings;
@@ -161,7 +167,7 @@ private:
 		wxPanel *unaryButtons = new wxPanel(inner);
 		wxFlexGridSizer *unaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		unaryButtons->SetSizer(unaryButtonsSizer);
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, wxID_ANY, wxT("&Clone...")));
+			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_CLONE, wxT("&Clone...")));
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_DELETE, wxT("&Delete")));
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_RENAME, wxT("&Rename...")));
 		unaryOperations->Add(unaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
@@ -200,6 +206,18 @@ private:
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonClone(wxCommandEvent&)
+	{
+		std::string name = get_mfs_choice("UInput");
+		std::string cloneName = get_appropriate_name("Clone Feature Selection", name);
+		if(cloneName != "")
+		{
+			MFS_Ptr clone(new MFS(*m_mfsManager->multi_feature_selection(name)));
+			m_mfsManager->add_multi_feature_selection(cloneName, clone);
+			m_mfsManager->set_active_multi_feature_selection(cloneName);
+		}
+	}
+
 	void OnButtonCreateNew(wxCommandEvent&)
 	{
 		std::string name = get_appropriate_name("Create New Feature Selection", "Feature Selection");
@@ -213,16 +231,13 @@ public:
 
 	void OnButtonDelete(wxCommandEvent&)
 	{
-		std::string name = wxString_to_string(m_mfsChoices.find("UInput")->second->GetStringSelection());
-		if(name != "")
-		{
-			m_mfsManager->remove_multi_feature_selection(name);
-		}
+		std::string name = get_mfs_choice("UInput");
+		m_mfsManager->remove_multi_feature_selection(name);
 	}
 
 	void OnButtonRename(wxCommandEvent&)
 	{
-		std::string oldName = wxString_to_string(m_mfsChoices.find("UInput")->second->GetStringSelection());
+		std::string oldName = get_mfs_choice("UInput");
 		std::string newName = get_appropriate_name("Rename Feature Selection", oldName);
 		if(newName != "")
 		{
@@ -236,11 +251,6 @@ public:
 		e.Enable(m_mfsManager->multi_feature_selections().size() > 1);
 	}
 
-	void OnUpdateButtonRename(wxUpdateUIEvent& e)
-	{
-		e.Enable(m_mfsChoices.find("UInput")->second->GetStringSelection() != wxEmptyString);
-	}
-
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
 };
@@ -248,13 +258,13 @@ public:
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(BUTTONID_CLONE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonClone))
 	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
 	EVT_BUTTON(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonDelete))
 	EVT_BUTTON(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonRename))
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonDelete))
-	EVT_UPDATE_UI(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonRename))
 END_EVENT_TABLE()
 
 }

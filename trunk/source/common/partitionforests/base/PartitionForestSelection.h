@@ -270,7 +270,9 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	explicit PartitionForestSelection(const PartitionForest_Ptr& forest)
-	:	m_commandManager(new BasicCommandManager), m_forest(forest), m_listeners(new CompositeListener)
+	:	m_commandManager(new BasicCommandManager),
+		m_forest(forest),
+		m_listeners(new CompositeListener)
 	{
 		m_nodes.resize(m_forest->highest_layer() + 1);
 	}
@@ -279,6 +281,30 @@ public:
 public:
 	virtual ~PartitionForestSelection()
 	{}
+
+	//#################### COPY CONSTRUCTOR, ASSIGNMENT OPERATOR AND SWAP ####################
+public:
+	PartitionForestSelection(const PartitionForestSelection& rhs)
+	:	m_nodes(rhs.m_nodes),
+		m_commandManager(rhs.m_commandManager),
+		m_forest(rhs.m_forest),
+		m_listeners(new CompositeListener)
+	{}
+
+	PartitionForestSelection& operator=(const PartitionForestSelection& rhs)
+	{
+		PartitionForestSelection(rhs).swap(*this);
+		return *this;
+	}
+
+	PartitionForestSelection& swap(PartitionForestSelection& rhs)
+	{
+		std::swap(m_nodes, rhs.m_nodes);
+		std::swap(m_commandManager, rhs.m_commandManager);
+		std::swap(m_forest, rhs.m_forest);
+		std::swap(m_listeners, rhs.m_listeners);
+		return *this;
+	}
 
 	//#################### PUBLIC METHODS ####################
 public:
