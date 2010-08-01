@@ -252,6 +252,34 @@ public:
 		}
 	}
 
+	void subtract(const PartitionForestMultiFeatureSelection_CPtr& lhs, const PartitionForestMultiFeatureSelection_CPtr& rhs)
+	{
+		// Note: This method should only be invoked on newly-created multi-feature selections.
+		assert(m_selections.empty());
+
+		typedef std::map<Feature,PartitionForestSelection_Ptr> SelectionMap;
+		typedef typename SelectionMap::const_iterator SelectionMapCIter;
+
+		// Step 1: Construct the appropriate selections.
+		for(SelectionMapCIter it=lhs->m_selections.begin(), iend=lhs->m_selections.end(); it!=iend; ++it)
+		{
+			selection(it->first);
+		}
+
+		// Step 2: Subtract the corresponding rhs selections from the lhs ones.
+		for(SelectionMapCIter it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		{
+			const Feature& feature = it->first;
+			const PartitionForestSelection_Ptr& selection = it->second;
+
+			SelectionMapCIter lhsSelIt = lhs->m_selections.find(feature);
+			SelectionMapCIter rhsSelIt = rhs->m_selections.find(feature);
+
+			if(rhsSelIt != rhs->m_selections.end())		selection->subtract(lhsSelIt->second, rhsSelIt->second);
+			else										*selection = *lhsSelIt->second;
+		}
+	}
+
 	void toggle_node(const PFNodeID& node, const Feature& feature)
 	{
 		selection_internal(feature)->toggle_node(node);

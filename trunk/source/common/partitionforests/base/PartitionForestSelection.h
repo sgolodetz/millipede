@@ -519,6 +519,22 @@ public:
 		m_commandManager = commandManager;
 	}
 
+	void subtract(const PartitionForestSelection_CPtr& lhs, const PartitionForestSelection_CPtr& rhs)
+	{
+		// Note: This method should only be invoked on newly-created selections.
+		assert(empty());
+
+		for(NodeConstIterator it=lhs->nodes_cbegin(), iend=lhs->nodes_cend(); it!=iend; ++it)
+		{
+			select_node_impl(*it, -1);
+		}
+
+		for(NodeConstIterator it=rhs->nodes_cbegin(), iend=rhs->nodes_cend(); it!=iend; ++it)
+		{
+			deselect_node_impl(*it, -1);
+		}
+	}
+
 	void toggle_node(const PFNodeID& node)
 	{
 		if(contains(node))	deselect_node(node);
@@ -660,11 +676,17 @@ private:
 
 		// Case 3:	One or more descendants of the node are in the representation.
 		std::list<PFNodeID> descendants = descendants_in_representation(node);
-		for(std::list<PFNodeID>::const_iterator it=descendants.begin(), iend=descendants.end(); it!=iend; ++it)
+		if(!descendants.empty())
 		{
-			erase_node(*it, modification);
+			for(std::list<PFNodeID>::const_iterator it=descendants.begin(), iend=descendants.end(); it!=iend; ++it)
+			{
+				erase_node(*it, modification);
+			}
+			m_listeners->node_was_deselected(node, commandDepth);
+			return modification;
 		}
-		m_listeners->node_was_deselected(node, commandDepth);
+
+		// Case 4:	Neither the node nor any of its ancestors or descendants is in the representation.
 		return modification;
 	}
 

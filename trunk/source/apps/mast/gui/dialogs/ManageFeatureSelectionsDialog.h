@@ -34,6 +34,7 @@ enum
 	BUTTONID_CREATE_NEW,
 	BUTTONID_DELETE,
 	BUTTONID_RENAME,
+	BUTTONID_SUBTRACT,
 	BUTTONID_UNION,
 };
 
@@ -193,7 +194,7 @@ private:
 		wxFlexGridSizer *binaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		binaryButtons->SetSizer(binaryButtonsSizer);
 			binaryButtonsSizer->Add(new wxButton(binaryButtons, wxID_ANY, wxT("&Intersect...")));
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, wxID_ANY, wxT("&Subtract...")));
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("&Subtract...")));
 			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_UNION, wxT("&Union...")));
 		binaryOperations->Add(binaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
@@ -247,6 +248,20 @@ public:
 		}
 	}
 
+	void OnButtonSubtract(wxCommandEvent&)
+	{
+		std::string lhsName = get_mfs_choice("BLInput");
+		std::string rhsName = get_mfs_choice("BRInput");
+		std::string combinedName = get_appropriate_name("Subtract Feature Selections", OSSWrapper() << "Subtract(" << lhsName << ',' << rhsName << ')');
+		if(combinedName != "")
+		{
+			MFS_Ptr mfs(new MFS(m_forest));
+			mfs->subtract(m_mfsManager->multi_feature_selection(lhsName), m_mfsManager->multi_feature_selection(rhsName));
+			m_mfsManager->add_multi_feature_selection(combinedName, mfs);
+			m_mfsManager->set_active_multi_feature_selection(combinedName);
+		}
+	}
+
 	void OnButtonUnion(wxCommandEvent&)
 	{
 		std::string lhsName = get_mfs_choice("BLInput");
@@ -283,10 +298,12 @@ BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest
 	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
 	EVT_BUTTON(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonDelete))
 	EVT_BUTTON(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonRename))
+	EVT_BUTTON(BUTTONID_SUBTRACT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonSubtract))
 	EVT_BUTTON(BUTTONID_UNION, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonUnion))
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonDelete))
+	EVT_UPDATE_UI(BUTTONID_SUBTRACT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonBinaryOp))
 	EVT_UPDATE_UI(BUTTONID_UNION, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonBinaryOp))
 END_EVENT_TABLE()
 
