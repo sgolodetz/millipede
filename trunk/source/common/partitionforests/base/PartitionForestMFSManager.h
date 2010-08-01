@@ -74,6 +74,29 @@ private:
 		}
 	};
 
+	struct RenameMFSCommand : Command
+	{
+		PartitionForestMFSManager *m_base;
+		std::string m_oldName, m_newName;
+
+		RenameMFSCommand(PartitionForestMFSManager *base, const std::string& oldName, const std::string& newName)
+		:	Command("Rename Multi-Feature Selection"), m_base(base), m_oldName(oldName), m_newName(newName)
+		{}
+
+		void execute()	{ rename(m_oldName, m_newName); }
+		void undo()		{ rename(m_newName, m_oldName); }
+
+		void rename(const std::string& from, const std::string& to)
+		{
+			MFSMap::iterator it = m_base->m_multiFeatureSelections.find(from);
+			MFS_Ptr mfs = it->second;
+			m_base->m_multiFeatureSelections.erase(it);
+			m_base->m_multiFeatureSelections.insert(std::make_pair(to, mfs));
+			if(m_base->m_activeMultiFeatureSelection.first == from) m_base->m_activeMultiFeatureSelection.first = to;
+			m_base->m_listeners.multi_feature_selection_manager_changed();
+		}
+	};
+
 	struct SetActiveMFSCommand : Command
 	{
 		PartitionForestMFSManager *m_base;
@@ -177,6 +200,11 @@ public:
 	void remove_multi_feature_selection(const std::string& name)
 	{
 		m_commandManager->execute(Command_Ptr(new RemoveMFSCommand(this, name)));
+	}
+
+	void rename_multi_feature_selection(const std::string& oldName, const std::string& newName)
+	{
+		m_commandManager->execute(Command_Ptr(new RenameMFSCommand(this, oldName, newName)));
 	}
 
 	void set_active_multi_feature_selection(const std::string& name)

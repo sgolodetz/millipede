@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_MANAGEFEATURESELECTIONSDIALOG
 #define H_MILLIPEDE_MANAGEFEATURESELECTIONSDIALOG
 
+#include <cassert>
+
 #include <boost/algorithm/string/trim.hpp>
 
 #include <wx/button.h>
@@ -29,6 +31,7 @@ enum
 {
 	BUTTONID_CREATE_NEW,
 	BUTTONID_DELETE,
+	BUTTONID_RENAME,
 };
 
 template <typename MFS, typename Forest>
@@ -119,6 +122,9 @@ private:
 			{
 				choice->Append(mfsStrings[j]);
 			}
+
+			assert(choice->GetCount() != 0);
+			choice->SetSelection(0);
 		}
 	}
 
@@ -157,7 +163,7 @@ private:
 		unaryButtons->SetSizer(unaryButtonsSizer);
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, wxID_ANY, wxT("&Clone...")));
 			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_DELETE, wxT("&Delete")));
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, wxID_ANY, wxT("&Rename...")));
+			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_RENAME, wxT("&Rename...")));
 		unaryOperations->Add(unaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Binary operations
@@ -214,10 +220,25 @@ public:
 		}
 	}
 
+	void OnButtonRename(wxCommandEvent&)
+	{
+		std::string oldName = wxString_to_string(m_mfsChoices.find("UInput")->second->GetStringSelection());
+		std::string newName = get_appropriate_name("Rename Feature Selection", oldName);
+		if(newName != "")
+		{
+			m_mfsManager->rename_multi_feature_selection(oldName, newName);
+		}
+	}
+
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	void OnUpdateButtonDelete(wxUpdateUIEvent& e)
 	{
 		e.Enable(m_mfsManager->multi_feature_selections().size() > 1);
+	}
+
+	void OnUpdateButtonRename(wxUpdateUIEvent& e)
+	{
+		e.Enable(m_mfsChoices.find("UInput")->second->GetStringSelection() != wxEmptyString);
 	}
 
 	//#################### EVENT TABLE ####################
@@ -229,9 +250,11 @@ BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
 	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
 	EVT_BUTTON(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonDelete))
+	EVT_BUTTON(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonRename))
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonDelete))
+	EVT_UPDATE_UI(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonRename))
 END_EVENT_TABLE()
 
 }
