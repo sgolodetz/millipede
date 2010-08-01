@@ -34,8 +34,10 @@ enum
 	BUTTONID_CLONE,
 	BUTTONID_CREATE_NEW,
 	BUTTONID_DELETE,
+	BUTTONID_INTERSECT,
 	BUTTONID_RENAME,
 	BUTTONID_SUBTRACT,
+	BUTTONID_SYMDIFF,
 	BUTTONID_UNION,
 };
 
@@ -46,6 +48,7 @@ class ManageFeatureSelectionsDialog : public wxDialog
 private:
 	typedef boost::shared_ptr<Forest> Forest_Ptr;
 	typedef boost::shared_ptr<MFS> MFS_Ptr;
+	typedef boost::shared_ptr<const MFS> MFS_CPtr;
 	typedef PartitionForestMFSManager<MFS> MFSManager;
 	typedef boost::shared_ptr<MFSManager> MFSManager_Ptr;
 
@@ -208,11 +211,12 @@ private:
 		binaryOperations->AddSpacer(10);
 
 		wxPanel *binaryButtons = new wxPanel(operations);
-		wxFlexGridSizer *binaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
+		wxFlexGridSizer *binaryButtonsSizer = new wxFlexGridSizer(2, 2, 0, 5);
 		binaryButtons->SetSizer(binaryButtonsSizer);
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, wxID_ANY, wxT("&Intersect...")));
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("&Subtract...")));
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_UNION, wxT("&Union...")));
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_INTERSECT, wxT("&Intersect...")), 0, wxALIGN_CENTRE_HORIZONTAL);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_UNION, wxT("&Union...")), 0, wxALIGN_CENTRE_HORIZONTAL);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("&Subtract...")), 0, wxALIGN_CENTRE_HORIZONTAL);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SYMDIFF, wxT("Sym&Diff...")), 0, wxALIGN_CENTRE_HORIZONTAL);
 		binaryOperations->Add(binaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Close button
@@ -264,6 +268,24 @@ public:
 		m_mfsManager->remove_multi_feature_selection(name);
 	}
 
+	void OnButtonIntersect(wxCommandEvent&)
+	{
+		std::string lhsName = get_mfs_choice("BLInput"), rhsName = get_mfs_choice("BRInput");
+		std::string combinedName = get_appropriate_name("Intersect Feature Selections", OSSWrapper() << "Intersect(" << lhsName << ',' << rhsName << ')');
+		if(combinedName != "")
+		{
+			MFS_CPtr lhs = m_mfsManager->multi_feature_selection(lhsName);
+			MFS_CPtr rhs = m_mfsManager->multi_feature_selection(rhsName);
+			MFS_Ptr LunionR(new MFS(m_forest));		LunionR->combine(lhs, rhs);
+			MFS_Ptr LsubR(new MFS(m_forest));		LsubR->subtract(lhs, rhs);
+			MFS_Ptr RsubL(new MFS(m_forest));		RsubL->subtract(rhs, lhs);
+			MFS_Ptr LsymdiffR(new MFS(m_forest));	LsymdiffR->combine(LsubR, RsubL);
+			MFS_Ptr mfs(new MFS(m_forest));			mfs->subtract(LunionR, LsymdiffR);
+			m_mfsManager->add_multi_feature_selection(combinedName, mfs);
+			m_mfsManager->set_active_multi_feature_selection(combinedName);
+		}
+	}
+
 	void OnButtonRename(wxCommandEvent&)
 	{
 		std::string oldName = get_mfs_choice("UInput");
@@ -276,8 +298,7 @@ public:
 
 	void OnButtonSubtract(wxCommandEvent&)
 	{
-		std::string lhsName = get_mfs_choice("BLInput");
-		std::string rhsName = get_mfs_choice("BRInput");
+		std::string lhsName = get_mfs_choice("BLInput"), rhsName = get_mfs_choice("BRInput");
 		std::string combinedName = get_appropriate_name("Subtract Feature Selections", OSSWrapper() << "Subtract(" << lhsName << ',' << rhsName << ')');
 		if(combinedName != "")
 		{
@@ -288,10 +309,25 @@ public:
 		}
 	}
 
+	void OnButtonSymDiff(wxCommandEvent&)
+	{
+		std::string lhsName = get_mfs_choice("BLInput"), rhsName = get_mfs_choice("BRInput");
+		std::string combinedName = get_appropriate_name("SymDiff Feature Selections", OSSWrapper() << "SymDiff(" << lhsName << ',' << rhsName << ')');
+		if(combinedName != "")
+		{
+			MFS_CPtr lhs = m_mfsManager->multi_feature_selection(lhsName);
+			MFS_CPtr rhs = m_mfsManager->multi_feature_selection(rhsName);
+			MFS_Ptr LsubR(new MFS(m_forest));	LsubR->subtract(lhs, rhs);
+			MFS_Ptr RsubL(new MFS(m_forest));	RsubL->subtract(rhs, lhs);
+			MFS_Ptr mfs(new MFS(m_forest));		mfs->combine(LsubR, RsubL);
+			m_mfsManager->add_multi_feature_selection(combinedName, mfs);
+			m_mfsManager->set_active_multi_feature_selection(combinedName);
+		}
+	}
+
 	void OnButtonUnion(wxCommandEvent&)
 	{
-		std::string lhsName = get_mfs_choice("BLInput");
-		std::string rhsName = get_mfs_choice("BRInput");
+		std::string lhsName = get_mfs_choice("BLInput"), rhsName = get_mfs_choice("BRInput");
 		std::string combinedName = get_appropriate_name("Union Feature Selections", OSSWrapper() << "Union(" << lhsName << ',' << rhsName << ')');
 		if(combinedName != "")
 		{
@@ -323,13 +359,17 @@ BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest
 	EVT_BUTTON(BUTTONID_CLONE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonClone))
 	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
 	EVT_BUTTON(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonDelete))
+	EVT_BUTTON(BUTTONID_INTERSECT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonIntersect))
 	EVT_BUTTON(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonRename))
 	EVT_BUTTON(BUTTONID_SUBTRACT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonSubtract))
+	EVT_BUTTON(BUTTONID_SYMDIFF, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonSymDiff))
 	EVT_BUTTON(BUTTONID_UNION, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonUnion))
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonDelete))
+	EVT_UPDATE_UI(BUTTONID_INTERSECT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonBinaryOp))
 	EVT_UPDATE_UI(BUTTONID_SUBTRACT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonBinaryOp))
+	EVT_UPDATE_UI(BUTTONID_SYMDIFF, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonBinaryOp))
 	EVT_UPDATE_UI(BUTTONID_UNION, (ManageFeatureSelectionsDialog<MFS,Forest>::OnUpdateButtonBinaryOp))
 END_EVENT_TABLE()
 
