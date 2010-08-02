@@ -10,6 +10,7 @@
 #include <wx/button.h>
 #include <wx/choice.h>
 #include <wx/numdlg.h>
+#include <wx/radiobut.h>
 #include <wx/sizer.h>
 #include <wx/slider.h>
 #include <wx/stattext.h>
@@ -745,15 +746,13 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(new wxPanel(this));
 
 	// Top right
-	wxPanel *topRight = new wxPanel(this);
 	wxFlexGridSizer *topRightSizer = new wxFlexGridSizer(1, 0, 0, 5);
-	topRight->SetSizer(topRightSizer);
-		topRightSizer->Add(new wxStaticText(topRight, wxID_ANY, wxT("Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
+		topRightSizer->Add(new wxStaticText(this, wxID_ANY, wxT("Feature Selection:")), 0, wxALIGN_CENTRE_VERTICAL);
 
-		m_multiFeatureSelectionChoice = new wxChoice(topRight, CHOICEID_MULTI_FEATURE_SELECTION, wxDefaultPosition, wxSize(150,25), wxArrayString());
+		m_multiFeatureSelectionChoice = new wxChoice(this, CHOICEID_MULTI_FEATURE_SELECTION, wxDefaultPosition, wxSize(150,25), wxArrayString());
 		recreate_multi_feature_selection_choice();
 		topRightSizer->Add(m_multiFeatureSelectionChoice);
-	sizer->Add(topRight, 0, wxALIGN_CENTRE_HORIZONTAL);
+	sizer->Add(topRightSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	// Middle left
 	m_dicomCanvas = new DICOMCanvas(this, context, attribList, wxID_ANY, wxDefaultPosition, wxSize(m_canvasWidth, m_canvasHeight));
@@ -809,20 +808,23 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(m_partitionCanvas);
 
 	// Bottom left
-	sizer->Add(new wxPanel(this));
+	wxFlexGridSizer *drawingToolsSizer = new wxFlexGridSizer(1, 0, 0, 20);
+		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Box Select"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP));
+		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Lasso")));
+		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("L&ine Loop")));
+		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Magic Wand")));
+	sizer->Add(drawingToolsSizer, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
 	// Bottom middle
 	sizer->Add(new wxPanel(this));
 
 	// Bottom right
-	wxPanel *bottomRight = new wxPanel(this);
 	wxFlexGridSizer *bottomRightSizer = new wxFlexGridSizer(0, 2, 0, 0);
-	bottomRight->SetSizer(bottomRightSizer);
-		wxStaticText *layerText = new wxStaticText(bottomRight, wxID_ANY, wxT("Layer: "));
+		wxStaticText *layerText = new wxStaticText(this, wxID_ANY, wxT("Layer: "));
 		bottomRightSizer->Add(layerText, 0, wxALIGN_CENTRE_VERTICAL);
-		m_layerSlider = new wxSlider(bottomRight, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
+		m_layerSlider = new wxSlider(this, SLIDERID_LAYER, 0, 0, 1, wxDefaultPosition, wxSize(150,50), wxHORIZONTAL|wxSL_AUTOTICKS|wxSL_LABELS|wxSL_TOP);
 		bottomRightSizer->Add(m_layerSlider, 0, wxALIGN_CENTRE);
-	sizer->Add(bottomRight, 0, wxALIGN_CENTRE_HORIZONTAL);
+	sizer->Add(bottomRightSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	sizer->Fit(this);
 }
