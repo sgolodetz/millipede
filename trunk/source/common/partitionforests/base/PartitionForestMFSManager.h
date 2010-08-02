@@ -88,7 +88,7 @@ private:
 
 		void rename(const std::string& from, const std::string& to)
 		{
-			MFSMap::iterator it = m_base->m_multiFeatureSelections.find(from);
+			typename MFSMap::iterator it = m_base->m_multiFeatureSelections.find(from);
 			MFS_Ptr mfs = it->second;
 			m_base->m_multiFeatureSelections.erase(it);
 			m_base->m_multiFeatureSelections.insert(std::make_pair(to, mfs));
