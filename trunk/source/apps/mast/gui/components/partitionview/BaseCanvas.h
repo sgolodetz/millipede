@@ -19,6 +19,7 @@ namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<class DrawingTool> DrawingTool_Ptr;
+typedef boost::shared_ptr<const class DrawingTool> DrawingTool_CPtr;
 typedef boost::shared_ptr<class PartitionCamera> PartitionCamera_Ptr;
 typedef boost::shared_ptr<const class PartitionCamera> PartitionCamera_CPtr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
@@ -64,6 +65,7 @@ protected:
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
 	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
 	DrawingTool_Ptr current_drawing_tool();
+	DrawingTool_CPtr current_drawing_tool() const;
 	Greyscale8SliceTextureSet_CPtr dicom_texture_set() const;
 	PartitionModel_Ptr model();
 	PartitionOverlayManager_CPtr overlay_manager() const;

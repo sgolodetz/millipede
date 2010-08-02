@@ -242,6 +242,12 @@ DrawingTool_Ptr BaseCanvas::current_drawing_tool()
 	else return DrawingTool_Ptr();
 }
 
+DrawingTool_CPtr BaseCanvas::current_drawing_tool() const
+{
+	if(m_partitionView) return m_partitionView->current_drawing_tool();
+	else return DrawingTool_CPtr();
+}
+
 Greyscale8SliceTextureSet_CPtr BaseCanvas::dicom_texture_set() const
 {
 	if(m_partitionView) return m_partitionView->dicom_texture_set();

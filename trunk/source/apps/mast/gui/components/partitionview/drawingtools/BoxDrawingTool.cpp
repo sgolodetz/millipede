@@ -5,6 +5,8 @@
 
 #include "BoxDrawingTool.h"
 
+#include <common/ogl/WrappedGL.h>
+
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
@@ -26,8 +28,7 @@ void BoxDrawingTool::mouse_pressed(const Vector2i& p)
 
 void BoxDrawingTool::render() const
 {
-	// NYI
-	throw 23;
+	// TODO
 }
 
 void BoxDrawingTool::reset()
