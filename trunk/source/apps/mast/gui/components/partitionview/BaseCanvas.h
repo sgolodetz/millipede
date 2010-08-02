@@ -8,6 +8,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <common/math/Vector2.h>
+#include <common/math/Vector3.h>
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
@@ -56,29 +58,29 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
-	void calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const;
+	void calculate_image_bounds(Vector2d& tl_Pixels, Vector2d& br_Pixels) const;
 	PartitionCamera_Ptr camera();
 	PartitionCamera_CPtr camera() const;
-	itk::Vector<double,2> centre_coords() const;
-	itk::Vector<double,2> centre_pixels() const;
-	itk::Vector<double,2> coord_to_pixel_offset(const itk::Vector<double,2>& offset_Coords) const;
-	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,2>& p_Coords) const;
-	itk::Vector<double,2> coords_to_pixels(const itk::Vector<double,3>& p_Coords) const;
+	Vector2d centre_coords() const;
+	Vector2d centre_pixels() const;
+	Vector2d coord_to_pixel_offset(const Vector2d& offset_Coords) const;
+	Vector2d coords_to_pixels(const Vector2d& p_Coords) const;
+	Vector2d coords_to_pixels(const Vector3d& p_Coords) const;
 	DrawingTool_Ptr current_drawing_tool();
 	DrawingTool_CPtr current_drawing_tool() const;
 	Greyscale8SliceTextureSet_CPtr dicom_texture_set() const;
 	PartitionModel_Ptr model();
 	PartitionOverlayManager_CPtr overlay_manager() const;
 	Greyscale8SliceTextureSet_CPtr partition_texture_set(int layer) const;
-	itk::Vector<double,2> pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const;
-	itk::Vector<double,3> pixels_to_3d_coords(const itk::Vector<double,2>& p_Pixels) const;
-	itk::Vector<double,2> pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const;
-	itk::Vector<double,2> project_to_2d(const itk::Vector<double,3>& p) const;
-	itk::Vector<double,3> project_to_3d(const itk::Vector<double,2>& p) const;
+	Vector2d pixel_to_coord_offset(const Vector2d& offset_Pixels) const;
+	Vector3d pixels_to_3d_coords(const Vector2d& p_Pixels) const;
+	Vector2d pixels_to_coords(const Vector2d& p_Pixels) const;
+	Vector2d project_to_2d(const Vector3d& p) const;
+	Vector3d project_to_3d(const Vector2d& p) const;
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta);
+	void zoom_on(const Vector2d& zoomCentre_Pixels, int zoomLevelDelta);
 
 	//#################### EVENT HANDLERS ####################
 public:

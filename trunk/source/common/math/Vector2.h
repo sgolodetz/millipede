@@ -55,6 +55,32 @@ struct Vector2
 
 	//#################### PUBLIC OPERATORS ####################
 	/**
+	@brief	Returns the i'th component of the vector.
+
+	@param[in]	i	The index of the component to return
+	@pre
+		-	i == 0 || i == 1
+	@return	x if i == 0, or y if i == 1
+	*/
+	T& operator[](int i)
+	{
+		return const_cast<T&>(const_cast<const Vector2<T>*>(this)->operator[](i));
+	}
+
+	/**
+	@brief	The const version of operator[].
+	*/
+	const T& operator[](int i) const
+	{
+		switch(i)
+		{
+			case 0:		return x;
+			case 1:		return y;
+			default:	throw Exception("Bad component index");
+		}
+	}
+
+	/**
 	@brief	Adds the vector rhs to this vector.
 
 	@param[in]	rhs		The vector to add
@@ -94,6 +120,19 @@ struct Vector2
 	}
 
 	/**
+	@brief	Multiples this vector component-wise with rhs.
+
+	@param[in]	rhs		The vector with which to multiply
+	@return	A reference to this vector
+	*/
+	Vector2& operator*=(const Vector2& rhs)
+	{
+		x *= rhs.x;
+		y *= rhs.y;
+		return *this;
+	}
+
+	/**
 	@brief	Scales this vector by the inverse of the specified factor.
 
 	@param[in]	factor	The factor by whose inverse the vector will be scaled
@@ -103,6 +142,19 @@ struct Vector2
 	{
 		x = NumericUtil::round_to_nearest<T>(x / factor);
 		y = NumericUtil::round_to_nearest<T>(y / factor);
+		return *this;
+	}
+
+	/**
+	@brief	Divides this vector component-wise by rhs.
+
+	@param[in]	rhs		The vector by which to divide
+	@return	A reference to this vector
+	*/
+	Vector2& operator/=(const Vector2& rhs)
+	{
+		x = NumericUtil::round_to_nearest<T>(static_cast<double>(x) / rhs.x);
+		y = NumericUtil::round_to_nearest<T>(static_cast<double>(y) / rhs.y);
 		return *this;
 	}
 
@@ -151,10 +203,26 @@ Vector2<T> operator*(const Vector2<T>& v, double factor)
 }
 
 template <typename T>
+Vector2<T> operator*(const Vector2<T>& lhs, const Vector2<T>& rhs)
+{
+	Vector2<T> copy = lhs;
+	copy *= rhs;
+	return copy;
+}
+
+template <typename T>
 Vector2<T> operator/(const Vector2<T>& v, double factor)
 {
 	Vector2<T> copy = v;
 	copy /= factor;
+	return copy;
+}
+
+template <typename T>
+Vector2<T> operator/(const Vector2<T>& lhs, const Vector2<T>& rhs)
+{
+	Vector2<T> copy = lhs;
+	copy /= rhs;
 	return copy;
 }
 

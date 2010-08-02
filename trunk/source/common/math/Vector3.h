@@ -60,6 +60,33 @@ struct Vector3
 
 	//#################### PUBLIC OPERATORS ####################
 	/**
+	@brief	Returns the i'th component of the vector.
+
+	@param[in]	i	The index of the component to return
+	@pre
+		-	0 <= i <= 2
+	@return	x if i == 0, y if i == 1, or z if i == 2
+	*/
+	T& operator[](int i)
+	{
+		return const_cast<T&>(const_cast<const Vector3<T>*>(this)->operator[](i));
+	}
+
+	/**
+	@brief	The const version of operator[].
+	*/
+	const T& operator[](int i) const
+	{
+		switch(i)
+		{
+			case 0:		return x;
+			case 1:		return y;
+			case 2:		return z;
+			default:	throw Exception("Bad component index");
+		}
+	}
+
+	/**
 	@brief	Adds the vector rhs to this vector.
 
 	@param[in]	rhs		The vector to add

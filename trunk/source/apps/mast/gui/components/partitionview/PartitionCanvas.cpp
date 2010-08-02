@@ -42,11 +42,10 @@ void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
 {
 	if(!model()->volume_ipf()) return;
 
-	itk::Vector<double,2> p_Pixels;
-	p_Pixels[0] = e.GetX(), p_Pixels[1] = e.GetY();
+	Vector2d p_Pixels(e.GetX(), e.GetY());
 
 	// Exit if the click is not within the image bounds.
-	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	Vector2d tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
 	for(int i=0; i<2; ++i)
 	{
@@ -57,7 +56,7 @@ void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
 	}
 
 	// Determine the node being clicked.
-	itk::Vector<double,3> p_Coords = pixels_to_3d_coords(p_Pixels);
+	Vector3d p_Coords = pixels_to_3d_coords(p_Pixels);
 	int layerIndex = camera()->slice_location().layer;
 	itk::Index<3> position;
 	for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);

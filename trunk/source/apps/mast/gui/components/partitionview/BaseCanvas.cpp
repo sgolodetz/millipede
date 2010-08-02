@@ -51,7 +51,7 @@ void BaseCanvas::render(wxPaintDC&) const
 
 	if(texture)
 	{
-		itk::Vector<double,2> tl_Pixels, br_Pixels;
+		Vector2d tl_Pixels, br_Pixels;
 		calculate_image_bounds(tl_Pixels, br_Pixels);
 
 		// Render the image.
@@ -60,15 +60,15 @@ void BaseCanvas::render(wxPaintDC&) const
 		texture->bind();
 		glColor3d(1,1,1);
 		glBegin(GL_QUADS);
-			glTexCoord2d(0,0);	glVertex2d(tl_Pixels[0], tl_Pixels[1]);
-			glTexCoord2d(1,0);	glVertex2d(br_Pixels[0] + 1, tl_Pixels[1]);
-			glTexCoord2d(1,1);	glVertex2d(br_Pixels[0] + 1, br_Pixels[1] + 1);
-			glTexCoord2d(0,1);	glVertex2d(tl_Pixels[0], br_Pixels[1] + 1);
+			glTexCoord2d(0,0);	glVertex2d(tl_Pixels.x, tl_Pixels.y);
+			glTexCoord2d(1,0);	glVertex2d(br_Pixels.x + 1, tl_Pixels.y);
+			glTexCoord2d(1,1);	glVertex2d(br_Pixels.x + 1, br_Pixels.y + 1);
+			glTexCoord2d(0,1);	glVertex2d(tl_Pixels.x, br_Pixels.y + 1);
 		glEnd();
 		glPopAttrib();
 
 		// Render any overlays for this canvas.
-		render_overlays(tl_Pixels[0], tl_Pixels[1], br_Pixels[0] + 1, br_Pixels[1] + 1);
+		render_overlays(tl_Pixels.x, tl_Pixels.y, br_Pixels.x + 1, br_Pixels.y + 1);
 	}
 	else
 	{
@@ -121,9 +121,9 @@ void BaseCanvas::setup(PartitionView *partitionView)
 void BaseCanvas::zoom_to_fit()
 {
 	// Step 1:	Calculate the sizes of the image and canvas.
-	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	Vector2d tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
-	double imageWidth = br_Pixels[0] + 1 - tl_Pixels[0], imageHeight = br_Pixels[1] + 1 - tl_Pixels[1];
+	double imageWidth = br_Pixels.x + 1 - tl_Pixels.x, imageHeight = br_Pixels.y + 1 - tl_Pixels.y;
 	wxSize canvasSize = GetSize();
 	double canvasWidth = canvasSize.GetWidth(), canvasHeight = canvasSize.GetHeight();
 
@@ -168,13 +168,11 @@ void BaseCanvas::zoom_to_fit()
 }
 
 //#################### PROTECTED METHODS ####################
-void BaseCanvas::calculate_image_bounds(itk::Vector<double,2>& tl_Pixels, itk::Vector<double,2>& br_Pixels) const
+void BaseCanvas::calculate_image_bounds(Vector2d& tl_Pixels, Vector2d& br_Pixels) const
 {
 	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
-	itk::Vector<double,3> tl_Coords;
-	tl_Coords.Fill(0);
-	itk::Vector<double,3> br_Coords;
-	for(int i=0; i<3; ++i) br_Coords[i] = volumeSize[i] - 1;
+	Vector3d tl_Coords(0,0,0);
+	Vector3d br_Coords(volumeSize[0] - 1, volumeSize[1] - 1, volumeSize[2] - 1);
 	tl_Pixels = coords_to_pixels(tl_Coords);
 	br_Pixels = coords_to_pixels(br_Coords);
 }
@@ -191,47 +189,42 @@ PartitionCamera_CPtr BaseCanvas::camera() const
 	else return PartitionCamera_CPtr();
 }
 
-itk::Vector<double,2> BaseCanvas::centre_coords() const
+Vector2d BaseCanvas::centre_coords() const
 {
 	SliceLocation loc = camera()->slice_location();
-	itk::Vector<double,3> centre3D_Coords;
-	centre3D_Coords[0] = loc.x, centre3D_Coords[1] = loc.y, centre3D_Coords[2] = loc.z;
-	return project_to_2d(centre3D_Coords);
+	return project_to_2d(Vector3d(loc.x, loc.y, loc.z));
 }
 
-itk::Vector<double,2> BaseCanvas::centre_pixels() const
+Vector2d BaseCanvas::centre_pixels() const
 {
 	int width, height;
 	GetSize(&width, &height);
-	itk::Vector<double,2> centre_Pixels;
-	centre_Pixels[0] = width * 0.5, centre_Pixels[1] = height * 0.5;
-	return centre_Pixels;
+	return Vector2d(width * 0.5, height * 0.5);
 }
 
-itk::Vector<double,2> BaseCanvas::coord_to_pixel_offset(const itk::Vector<double,2>& offset_Coords) const
+Vector2d BaseCanvas::coord_to_pixel_offset(const Vector2d& offset_Coords) const
 {
 	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
 	double zoomFactor = camera()->zoom_factor();
-	itk::Vector<double,3> spacing = m_partitionView->model()->dicom_volume()->spacing();
-	itk::Vector<double,2> scaleFactors = project_to_2d(zoomFactor * spacing);
+	itk::Vector<double,3> temp = m_partitionView->model()->dicom_volume()->spacing();
+	Vector3d spacing(temp[0], temp[1], temp[2]);
+	Vector2d scaleFactors = project_to_2d(zoomFactor * spacing);
 
 	// Scale to get the offset in Pixels.
-	itk::Vector<double,2> offset_Pixels;
-	for(int i=0; i<2; ++i) offset_Pixels[i] = offset_Coords[i] * scaleFactors[i];
-
+	Vector2d offset_Pixels = offset_Coords * scaleFactors;
 	return offset_Pixels;
 }
 
-itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,2>& p_Coords) const
+Vector2d BaseCanvas::coords_to_pixels(const Vector2d& p_Coords) const
 {
-	itk::Vector<double,2> centre_Coords = centre_coords();
-	itk::Vector<double,2> offset_Coords = p_Coords - centre_Coords;
-	itk::Vector<double,2> offset_Pixels = coord_to_pixel_offset(offset_Coords);
-	itk::Vector<double,2> centre_Pixels = centre_pixels();
+	Vector2d centre_Coords = centre_coords();
+	Vector2d offset_Coords = p_Coords - centre_Coords;
+	Vector2d offset_Pixels = coord_to_pixel_offset(offset_Coords);
+	Vector2d centre_Pixels = centre_pixels();
 	return centre_Pixels + offset_Pixels;
 }
 
-itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& p_Coords) const
+Vector2d BaseCanvas::coords_to_pixels(const Vector3d& p_Coords) const
 {
 	return coords_to_pixels(project_to_2d(p_Coords));
 }
@@ -272,92 +265,72 @@ Greyscale8SliceTextureSet_CPtr BaseCanvas::partition_texture_set(int layer) cons
 	else return Greyscale8SliceTextureSet_CPtr();
 }
 
-itk::Vector<double,2> BaseCanvas::pixel_to_coord_offset(const itk::Vector<double,2>& offset_Pixels) const
+Vector2d BaseCanvas::pixel_to_coord_offset(const Vector2d& offset_Pixels) const
 {
 	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
 	double zoomFactor = camera()->zoom_factor();
-	itk::Vector<double,3> spacing = m_partitionView->model()->dicom_volume()->spacing();
-	itk::Vector<double,2> scaleFactors = project_to_2d(zoomFactor * spacing);
+	itk::Vector<double,3> temp = m_partitionView->model()->dicom_volume()->spacing();
+	Vector3d spacing(temp[0], temp[1], temp[2]);
+	Vector2d scaleFactors = project_to_2d(zoomFactor * spacing);
 
 	// Scale to get the offset in Coords.
-	itk::Vector<double,2> offset_Coords;
-	for(int i=0; i<2; ++i) offset_Coords[i] = offset_Pixels[i] / scaleFactors[i];
-
+	Vector2d offset_Coords = offset_Pixels / scaleFactors;
 	return offset_Coords;
 }
 
-itk::Vector<double,3> BaseCanvas::pixels_to_3d_coords(const itk::Vector<double,2>& p_Pixels) const
+Vector3d BaseCanvas::pixels_to_3d_coords(const Vector2d& p_Pixels) const
 {
 	return project_to_3d(pixels_to_coords(p_Pixels));
 }
 
-itk::Vector<double,2> BaseCanvas::pixels_to_coords(const itk::Vector<double,2>& p_Pixels) const
+Vector2d BaseCanvas::pixels_to_coords(const Vector2d& p_Pixels) const
 {
-	itk::Vector<double,2> centre_Pixels = centre_pixels();
-	itk::Vector<double,2> offset_Pixels = p_Pixels - centre_Pixels;
-	itk::Vector<double,2> offset_Coords = pixel_to_coord_offset(offset_Pixels);
-	itk::Vector<double,2> centre_Coords = centre_coords();
+	Vector2d centre_Pixels = centre_pixels();
+	Vector2d offset_Pixels = p_Pixels - centre_Pixels;
+	Vector2d offset_Coords = pixel_to_coord_offset(offset_Pixels);
+	Vector2d centre_Coords = centre_coords();
 	return centre_Coords + offset_Coords;
 }
 
-itk::Vector<double,2> BaseCanvas::project_to_2d(const itk::Vector<double,3>& p) const
+Vector2d BaseCanvas::project_to_2d(const Vector3d& p) const
 {
-	itk::Vector<double,2> ret;
 	switch(camera()->slice_orientation())
 	{
-		case ORIENT_XY:
-			ret[0] = p[0];
-			ret[1] = p[1];
-			break;
-		case ORIENT_XZ:
-			ret[0] = p[0];
-			ret[1] = p[2];
-			break;
-		case ORIENT_YZ:
-			ret[0] = p[1];
-			ret[1] = p[2];
-			break;
+		case ORIENT_XY:	return Vector2d(p.x, p.y);
+		case ORIENT_XZ:	return Vector2d(p.x, p.z);
+		case ORIENT_YZ:	return Vector2d(p.y, p.z);
 	}
-	return ret;
+
+	// This should never happen.
+	throw Exception("Bad slice orientation");
 }
 
-itk::Vector<double,3> BaseCanvas::project_to_3d(const itk::Vector<double,2>& p) const
+Vector3d BaseCanvas::project_to_3d(const Vector2d& p) const
 {
-	itk::Vector<double,3> ret;
 	switch(camera()->slice_orientation())
 	{
-		case ORIENT_XY:
-			ret[0] = p[0];
-			ret[1] = p[1];
-			ret[2] = camera()->slice_location().z;
-			break;
-		case ORIENT_XZ:
-			ret[0] = p[0];
-			ret[1] = camera()->slice_location().y;
-			ret[2] = p[1];
-			break;
-		case ORIENT_YZ:
-			ret[0] = camera()->slice_location().x;
-			ret[1] = p[0];
-			ret[2] = p[1];
-			break;
+		case ORIENT_XY:	return Vector3d(p.x, p.y, camera()->slice_location().z);
+		case ORIENT_XZ:	return Vector3d(p.x, camera()->slice_location().y, p.y);
+		case ORIENT_YZ:	return Vector3d(camera()->slice_location().x, p.x, p.y);
 	}
-	return ret;
+
+	// This should never happen.
+	throw Exception("Bad slice orientation");
 }
 
 //#################### PRIVATE METHODS ####################
-void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelDelta)
+void BaseCanvas::zoom_on(const Vector2d& zoomCentre_Pixels, int zoomLevelDelta)
 {
 	// Calculate the offset of the zoom centre from the centre in Pixels.
-	itk::Vector<double,2> zoomCentreOffset_Pixels = zoomCentre_Pixels - centre_pixels();
+	Vector2d zoomCentreOffset_Pixels = zoomCentre_Pixels - centre_pixels();
 
 	// Calculate the new centre in Pixels.
 	int newZoomLevel = camera()->zoom_level() + zoomLevelDelta;
 	double zoomFactor = camera()->zoom_factor(newZoomLevel) / camera()->zoom_factor();
-	itk::Vector<double,2> newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
+	Vector2d newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
 
 	// Clamp it to the image bounds.
-	itk::Vector<double,2> tl_Pixels, br_Pixels;
+	Vector2d tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
 	for(int i=0; i<2; ++i)
 	{
@@ -366,7 +339,7 @@ void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelD
 	}
 
 	// Calculate the new centre in Coords.
-	itk::Vector<double,2> newCentre_Coords = pixels_to_coords(newCentre_Pixels);
+	Vector2d newCentre_Coords = pixels_to_coords(newCentre_Pixels);
 
 	// Set the zoom level.
 	if(!camera()->set_zoom_level(newZoomLevel)) return;
@@ -376,16 +349,16 @@ void BaseCanvas::zoom_on(itk::Vector<double,2> zoomCentre_Pixels, int zoomLevelD
 	switch(camera()->slice_orientation())
 	{
 		case ORIENT_XY:
-			loc.x = static_cast<int>(newCentre_Coords[0]);
-			loc.y = static_cast<int>(newCentre_Coords[1]);
+			loc.x = static_cast<int>(newCentre_Coords.x);
+			loc.y = static_cast<int>(newCentre_Coords.y);
 			break;
 		case ORIENT_XZ:
-			loc.x = static_cast<int>(newCentre_Coords[0]);
-			loc.z = static_cast<int>(newCentre_Coords[1]);
+			loc.x = static_cast<int>(newCentre_Coords.x);
+			loc.z = static_cast<int>(newCentre_Coords.y);
 			break;
 		case ORIENT_YZ:
-			loc.y = static_cast<int>(newCentre_Coords[0]);
-			loc.z = static_cast<int>(newCentre_Coords[1]);
+			loc.y = static_cast<int>(newCentre_Coords.x);
+			loc.z = static_cast<int>(newCentre_Coords.y);
 			break;
 	}
 	camera()->set_slice_location(loc);
@@ -407,9 +380,7 @@ void BaseCanvas::OnMouseWheel(wxMouseEvent& e)
 
 	if(lines != 0)
 	{
-		itk::Vector<double,2> zoomCentre;
-		zoomCentre[0] = e.GetX();
-		zoomCentre[1] = e.GetY();
+		Vector2d zoomCentre(e.GetX(), e.GetY());
 		int zoomLevelDelta = lines * 1;		// I've left it like this to allow the amount to zoom to be easily changed in future
 		zoom_on(zoomCentre, zoomLevelDelta);
 	}
