@@ -62,6 +62,16 @@ gui/components/partitionview/PartitionView.h
 )
 
 ##
+SET(gui_components_partitionview_drawingtools_sources
+gui/components/partitionview/drawingtools/BoxDrawingTool.cpp
+)
+
+SET(gui_components_partitionview_drawingtools_headers
+gui/components/partitionview/drawingtools/BoxDrawingTool.h
+gui/components/partitionview/drawingtools/DrawingTool.h
+)
+
+##
 SET(gui_components_selectionview_headers
 gui/components/selectionview/SelectionView.h
 )
@@ -136,6 +146,7 @@ ${mast_sources}
 ${gui_components_canvas_sources}
 ${gui_components_meshview_sources}
 ${gui_components_partitionview_sources}
+${gui_components_partitionview_drawingtools_sources}
 ${gui_dialogs_sources}
 ${gui_overlays_sources}
 ${gui_windows_sources}
@@ -147,6 +158,7 @@ ${mast_headers}
 ${gui_components_canvas_headers}
 ${gui_components_meshview_headers}
 ${gui_components_partitionview_headers}
+${gui_components_partitionview_drawingtools_headers}
 ${gui_components_selectionview_headers}
 ${gui_dialogs_headers}
 ${gui_overlays_headers}
@@ -177,6 +189,10 @@ SOURCE_GROUP(gui\\components\\meshview\\.h FILES ${gui_components_meshview_heade
 ##
 SOURCE_GROUP(gui\\components\\partitionview\\.cpp FILES ${gui_components_partitionview_sources})
 SOURCE_GROUP(gui\\components\\partitionview\\.h FILES ${gui_components_partitionview_headers})
+
+##
+SOURCE_GROUP(gui\\components\\partitionview\\drawingtools\\.cpp FILES ${gui_components_partitionview_drawingtools_sources})
+SOURCE_GROUP(gui\\components\\partitionview\\drawingtools\\.h FILES ${gui_components_partitionview_drawingtools_headers})
 
 ##
 SOURCE_GROUP(gui\\components\\selectionview\\.h FILES ${gui_components_selectionview_headers})

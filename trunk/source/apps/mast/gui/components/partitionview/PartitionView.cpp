@@ -10,7 +10,6 @@
 #include <wx/button.h>
 #include <wx/choice.h>
 #include <wx/numdlg.h>
-#include <wx/radiobut.h>
 #include <wx/sizer.h>
 #include <wx/slider.h>
 #include <wx/stattext.h>
@@ -21,6 +20,7 @@
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/partitionforests/images/MosaicTextureSetUpdater.h>
 #include <common/slices/SliceTextureSetFiller.h>
+#include <mast/gui/components/partitionview/drawingtools/BoxDrawingTool.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
@@ -318,6 +318,8 @@ PartitionView::PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, 
 	m_model->add_shared_listener(boost::shared_ptr<ModelListener>(new ModelListener(this)));
 	m_model->set_command_manager(commandManager);
 
+	setup_drawing_tools();
+
 	calculate_canvas_size();
 	setup_gui(context);
 
@@ -505,6 +507,11 @@ void PartitionView::create_partition_textures()
 	m_camera->set_highest_layer(highestLayer);
 	SliceLocation loc = m_camera->slice_location();
 	m_camera->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
+}
+
+DrawingTool_Ptr PartitionView::current_drawing_tool()
+{
+	return m_currentDrawingTool.second;
 }
 
 Greyscale8SliceTextureSet_CPtr PartitionView::dicom_texture_set() const
@@ -722,6 +729,14 @@ PartitionOverlay *PartitionView::selection_overlay() const
 	else return NULL;
 }
 
+void PartitionView::setup_drawing_tools()
+{
+	m_drawingTools[DRAWINGTOOL_BOX] = std::make_pair(DRAWINGTOOL_BOX, DrawingTool_Ptr(new BoxDrawingTool));
+	// TODO: Other drawing tools.
+
+	m_currentDrawingTool = m_drawingTools[DRAWINGTOOL_BOX];
+}
+
 void PartitionView::setup_gui(wxGLContext *context)
 {
 	SetBackgroundColour(wxColour(240,240,240));
@@ -808,13 +823,19 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(m_partitionCanvas);
 
 	// Bottom left
-	wxFlexGridSizer *drawingToolsSizer = new wxFlexGridSizer(1, 0, 0, 20);
-		wxRadioButton *boxSelectRadio = new wxRadioButton(this, wxID_ANY, wxT("&Box Select"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-		boxSelectRadio->SetValue(true);
-		drawingToolsSizer->Add(boxSelectRadio);
-		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Lasso")));
-		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("L&ine Loop")));
-		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Magic Wand")));
+	wxFlexGridSizer *drawingToolsSizer = new wxFlexGridSizer(1, 0, 0, 5);
+		drawingToolsSizer->Add(new wxStaticText(this, wxID_ANY, wxT("Drawing Tool:")), 0, wxALIGN_CENTRE_VERTICAL);
+
+		wxString drawingToolTypes[DRAWINGTOOL_COUNT];
+		drawingToolTypes[DRAWINGTOOL_BOX] = wxT("Box Select");
+		drawingToolTypes[DRAWINGTOOL_LASSO] = wxT("Lasso");
+		drawingToolTypes[DRAWINGTOOL_LINELOOP] = wxT("Line Loop");
+		drawingToolTypes[DRAWINGTOOL_MAGICWAND] = wxT("Magic Wand");
+
+		wxChoice *drawingToolChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, DRAWINGTOOL_COUNT, drawingToolTypes);
+		drawingToolChoice->SetSelection(0);
+		drawingToolsSizer->Add(drawingToolChoice, 0, wxALIGN_CENTRE_VERTICAL);
+		drawingToolsSizer->Add(new wxButton(this, wxID_ANY, wxT("Options...")), 0, wxALIGN_CENTRE_VERTICAL);
 	sizer->Add(drawingToolsSizer, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
 	// Bottom middle

@@ -236,6 +236,12 @@ itk::Vector<double,2> BaseCanvas::coords_to_pixels(const itk::Vector<double,3>& 
 	return coords_to_pixels(project_to_2d(p_Coords));
 }
 
+DrawingTool_Ptr BaseCanvas::current_drawing_tool()
+{
+	if(m_partitionView) return m_partitionView->current_drawing_tool();
+	else return DrawingTool_Ptr();
+}
+
 Greyscale8SliceTextureSet_CPtr BaseCanvas::dicom_texture_set() const
 {
 	if(m_partitionView) return m_partitionView->dicom_texture_set();

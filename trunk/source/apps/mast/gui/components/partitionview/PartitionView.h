@@ -30,6 +30,7 @@ class wxSlider;
 namespace mp {
 
 class DICOMCanvas;
+typedef boost::shared_ptr<class DrawingTool> DrawingTool_Ptr;
 typedef boost::shared_ptr<class Job> Job_Ptr;
 typedef boost::shared_ptr<class PartitionCamera> PartitionCamera_Ptr;
 typedef boost::shared_ptr<const class PartitionCamera> PartitionCamera_CPtr;
@@ -42,6 +43,17 @@ class PartitionView : public wxPanel
 {
 	//#################### FRIENDS ####################
 	friend class BaseCanvas;
+
+	//#################### ENUMERATIONS ####################
+private:
+	enum DrawingToolType
+	{
+		DRAWINGTOOL_BOX,
+		DRAWINGTOOL_LASSO,
+		DRAWINGTOOL_LINELOOP,
+		DRAWINGTOOL_MAGICWAND,
+		DRAWINGTOOL_COUNT,
+	};
 
 	//#################### TYPEDEFS ####################
 private:
@@ -74,7 +86,9 @@ private:
 	int m_canvasWidth, m_canvasHeight;
 	ICommandManager_Ptr m_commandManager;
 	wxGLContext *m_context;
+	std::pair<DrawingToolType,DrawingTool_Ptr> m_currentDrawingTool;
 	Greyscale8SliceTextureSet_Ptr m_dicomTextureSet;
+	std::pair<DrawingToolType,DrawingTool_Ptr> m_drawingTools[DRAWINGTOOL_COUNT];
 	PartitionModel_Ptr m_model;
 	boost::shared_ptr<MultiFeatureSelectionListener> m_multiFeatureSelectionListener;
 	NodeSplitManager_Ptr m_nodeSplitManager;
@@ -128,6 +142,7 @@ private:
 	void create_dicom_textures();
 	void create_overlays();
 	void create_partition_textures();
+	DrawingTool_Ptr current_drawing_tool();
 	Greyscale8SliceTextureSet_CPtr dicom_texture_set() const;
 	Job_Ptr fill_dicom_textures_job(SliceOrientation ori, const itk::Image<unsigned char,3>::Pointer& windowedImage) const;
 	Job_Ptr fill_partition_textures_job(SliceOrientation ori) const;
@@ -147,6 +162,7 @@ private:
 	void recreate_selection_overlay();
 	void refresh_canvases();
 	PartitionOverlay *selection_overlay() const;
+	void setup_drawing_tools();
 	void setup_gui(wxGLContext *context);
 	void update_sliders();
 	const DICOMVolumeChoice& volume_choice() const;
