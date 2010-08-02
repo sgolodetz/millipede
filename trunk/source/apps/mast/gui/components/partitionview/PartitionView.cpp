@@ -576,7 +576,7 @@ PartitionOverlay *PartitionView::multi_feature_selection_overlay() const
 std::pair<wxArrayString,int> PartitionView::multi_feature_selection_strings() const
 {
 	wxArrayString mfsStrings;
-	int activeIndex;
+	int activeIndex = wxNOT_FOUND;
 
 	typedef PartitionModelT::PartitionForestMFSManager_CPtr MFSManager_CPtr;
 	MFSManager_CPtr mfsManager = m_model->multi_feature_selection_manager();
