@@ -809,7 +809,9 @@ void PartitionView::setup_gui(wxGLContext *context)
 
 	// Bottom left
 	wxFlexGridSizer *drawingToolsSizer = new wxFlexGridSizer(1, 0, 0, 20);
-		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Box Select"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP));
+		wxRadioButton *boxSelectRadio = new wxRadioButton(this, wxID_ANY, wxT("&Box Select"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+		boxSelectRadio->SetValue(true);
+		drawingToolsSizer->Add(boxSelectRadio);
 		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Lasso")));
 		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("L&ine Loop")));
 		drawingToolsSizer->Add(new wxRadioButton(this, wxID_ANY, wxT("&Magic Wand")));
