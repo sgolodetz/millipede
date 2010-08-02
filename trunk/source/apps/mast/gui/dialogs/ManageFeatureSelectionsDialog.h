@@ -172,7 +172,7 @@ private:
 		operationsSizer->Add(nullaryOperations, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		wxButton *createButton = new wxButton(operations, BUTTONID_CREATE_NEW, wxT("Create &New..."));
-		nullaryOperations->Add(createButton, 0, wxALIGN_CENTRE_HORIZONTAL);
+		nullaryOperations->Add(createButton, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
 		// Unary operations
 		wxStaticBoxSizer *unaryOperations = new wxStaticBoxSizer(wxVERTICAL, operations, wxT("Unary Operations"));
@@ -190,9 +190,9 @@ private:
 		wxPanel *unaryButtons = new wxPanel(operations);
 		wxFlexGridSizer *unaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
 		unaryButtons->SetSizer(unaryButtonsSizer);
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_CLONE, wxT("&Clone...")));
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_DELETE, wxT("&Delete")));
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_RENAME, wxT("&Rename...")));
+			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_CLONE, wxT("&Clone...")), 0, wxALL, 5);
+			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_DELETE, wxT("&Delete")), 0, wxALL, 5);
+			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_RENAME, wxT("&Rename...")), 0, wxALL, 5);
 		unaryOperations->Add(unaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Binary operations
@@ -211,22 +211,22 @@ private:
 		binaryOperations->AddSpacer(10);
 
 		wxPanel *binaryButtons = new wxPanel(operations);
-		wxFlexGridSizer *binaryButtonsSizer = new wxFlexGridSizer(2, 2, 0, 5);
+		wxFlexGridSizer *binaryButtonsSizer = new wxFlexGridSizer(2, 2, 0, 0);
 		binaryButtons->SetSizer(binaryButtonsSizer);
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_INTERSECT, wxT("&Intersect...")), 0, wxALIGN_CENTRE_HORIZONTAL);
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_UNION, wxT("&Union...")), 0, wxALIGN_CENTRE_HORIZONTAL);
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("&Subtract...")), 0, wxALIGN_CENTRE_HORIZONTAL);
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SYMDIFF, wxT("Sym&Diff...")), 0, wxALIGN_CENTRE_HORIZONTAL);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_INTERSECT, wxT("&Intersect...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_UNION, wxT("&Union...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("&Subtract...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SYMDIFF, wxT("Sym&Diff...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 		binaryOperations->Add(binaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Close button
-		operationsSizer->Add(new wxButton(operations, wxID_CANCEL, wxT("Close")), 0, wxALIGN_CENTRE_HORIZONTAL);
+		operationsSizer->Add(new wxButton(operations, wxID_CANCEL, wxT("Close")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		// Feature Selections Display
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		m_mfsList = new wxListCtrl(inner, wxID_ANY, wxDefaultPosition, wxSize(150,300), wxLC_REPORT|wxLC_SINGLE_SEL);
+		m_mfsList = new wxListCtrl(inner, wxID_ANY, wxDefaultPosition, wxSize(175,300), wxLC_REPORT|wxLC_SINGLE_SEL);
 		m_mfsList->InsertColumn(0, wxT("Feature Selections"));
 		m_mfsList->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
 		innerSizer->Add(m_mfsList);
