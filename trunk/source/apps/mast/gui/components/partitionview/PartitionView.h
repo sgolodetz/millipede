@@ -111,6 +111,9 @@ private:
 	// Middle right
 	PartitionCanvas *m_partitionCanvas;
 
+	// Bottom left
+	wxChoice *m_drawingToolChoice;
+
 	// Bottom right
 	wxSlider *m_layerSlider;
 
@@ -178,6 +181,7 @@ public:
 	void OnButtonVisualizeIn3D(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
+	void OnChoiceDrawingTool(wxCommandEvent&);
 	void OnChoiceMultiFeatureSelection(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~

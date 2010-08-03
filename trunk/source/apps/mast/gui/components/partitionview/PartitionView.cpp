@@ -21,6 +21,7 @@
 #include <common/partitionforests/images/MosaicTextureSetUpdater.h>
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/components/partitionview/drawingtools/BoxDrawingTool.h>
+#include <mast/gui/components/partitionview/drawingtools/LassoDrawingTool.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
@@ -43,6 +44,7 @@ enum
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
 	BUTTONID_VISUALIZE_IN_3D,
+	CHOICEID_DRAWING_TOOL,
 	CHOICEID_MULTI_FEATURE_SELECTION,
 	SLIDERID_X,
 	SLIDERID_Y,
@@ -732,6 +734,7 @@ PartitionOverlay *PartitionView::selection_overlay() const
 void PartitionView::setup_drawing_tools()
 {
 	m_drawingTools[DRAWINGTOOL_BOX] = std::make_pair(DRAWINGTOOL_BOX, DrawingTool_Ptr(new BoxDrawingTool));
+	m_drawingTools[DRAWINGTOOL_LASSO] = std::make_pair(DRAWINGTOOL_LASSO, DrawingTool_Ptr(new LassoDrawingTool));
 	// TODO: Other drawing tools.
 
 	m_currentDrawingTool = m_drawingTools[DRAWINGTOOL_BOX];
@@ -832,9 +835,9 @@ void PartitionView::setup_gui(wxGLContext *context)
 		drawingToolTypes[DRAWINGTOOL_LINELOOP] = wxT("Line Loop");
 		drawingToolTypes[DRAWINGTOOL_MAGICWAND] = wxT("Magic Wand");
 
-		wxChoice *drawingToolChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, DRAWINGTOOL_COUNT, drawingToolTypes);
-		drawingToolChoice->SetSelection(0);
-		drawingToolsSizer->Add(drawingToolChoice, 0, wxALIGN_CENTRE_VERTICAL);
+		m_drawingToolChoice = new wxChoice(this, CHOICEID_DRAWING_TOOL, wxDefaultPosition, wxDefaultSize, DRAWINGTOOL_COUNT, drawingToolTypes);
+		m_drawingToolChoice->SetSelection(0);
+		drawingToolsSizer->Add(m_drawingToolChoice, 0, wxALIGN_CENTRE_VERTICAL);
 		drawingToolsSizer->Add(new wxButton(this, wxID_ANY, wxT("Options...")), 0, wxALIGN_CENTRE_VERTICAL);
 	sizer->Add(drawingToolsSizer, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
@@ -907,6 +910,11 @@ void PartitionView::OnButtonVisualizeIn3D(wxCommandEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
+void PartitionView::OnChoiceDrawingTool(wxCommandEvent&)
+{
+	m_currentDrawingTool = m_drawingTools[m_drawingToolChoice->GetSelection()];
+}
+
 void PartitionView::OnChoiceMultiFeatureSelection(wxCommandEvent&)
 {
 	std::string name = wxString_to_string(m_multiFeatureSelectionChoice->GetStringSelection());
@@ -964,6 +972,7 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_BUTTON(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnButtonVisualizeIn3D)
 
 	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
+	EVT_CHOICE(CHOICEID_DRAWING_TOOL, PartitionView::OnChoiceDrawingTool)
 	EVT_CHOICE(CHOICEID_MULTI_FEATURE_SELECTION, PartitionView::OnChoiceMultiFeatureSelection)
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
@@ -975,6 +984,7 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 	EVT_UPDATE_UI(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(CHOICEID_DRAWING_TOOL, PartitionView::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(CHOICEID_MULTI_FEATURE_SELECTION, PartitionView::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(SLIDERID_LAYER, PartitionView::OnUpdateSliderLayer)
 END_EVENT_TABLE()
