@@ -9,6 +9,12 @@
 
 namespace mp {
 
+//#################### PRIVATE ABSTRACT METHODS ####################
+void LineBasedDrawingTool::render_sub() const
+{
+	// No-op by default
+}
+
 //#################### PUBLIC METHODS ####################
 bool LineBasedDrawingTool::has_started() const
 {
@@ -34,6 +40,8 @@ void LineBasedDrawingTool::render() const
 			glVertex2i(last.x, last.y);
 		glEnd();
 	}
+
+	render_sub();
 }
 
 void LineBasedDrawingTool::reset()

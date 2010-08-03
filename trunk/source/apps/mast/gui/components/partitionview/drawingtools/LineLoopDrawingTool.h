@@ -16,6 +16,10 @@ class LineLoopDrawingTool : public LineBasedDrawingTool
 public:
 	void mouse_pressed(const Vector2i& p);
 	ToolStyle style() const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	void render_sub() const;
 };
 
 }
