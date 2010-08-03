@@ -202,6 +202,13 @@ Vector2d BaseCanvas::centre_pixels() const
 	return Vector2d(width * 0.5, height * 0.5);
 }
 
+Vector2d BaseCanvas::clamp_to_image_bounds(const Vector2d& p_Pixels) const
+{
+	Vector2d tl_Pixels, br_Pixels;
+	calculate_image_bounds(tl_Pixels, br_Pixels);
+	return Vector2d(std::min(std::max(p_Pixels.x, tl_Pixels.x), br_Pixels.x), std::min(std::max(p_Pixels.y, tl_Pixels.y), br_Pixels.y));
+}
+
 Vector2d BaseCanvas::coord_to_pixel_offset(const Vector2d& offset_Coords) const
 {
 	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
@@ -318,6 +325,20 @@ Vector3d BaseCanvas::project_to_3d(const Vector2d& p) const
 	throw Exception("Bad slice orientation");
 }
 
+bool BaseCanvas::within_image_bounds(const Vector2d& p_Pixels) const
+{
+	Vector2d tl_Pixels, br_Pixels;
+	calculate_image_bounds(tl_Pixels, br_Pixels);
+	for(int i=0; i<2; ++i)
+	{
+		if(p_Pixels[i] < tl_Pixels[i] || p_Pixels[i] > br_Pixels[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 //#################### PRIVATE METHODS ####################
 void BaseCanvas::zoom_on(const Vector2d& zoomCentre_Pixels, int zoomLevelDelta)
 {
@@ -330,13 +351,7 @@ void BaseCanvas::zoom_on(const Vector2d& zoomCentre_Pixels, int zoomLevelDelta)
 	Vector2d newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
 
 	// Clamp it to the image bounds.
-	Vector2d tl_Pixels, br_Pixels;
-	calculate_image_bounds(tl_Pixels, br_Pixels);
-	for(int i=0; i<2; ++i)
-	{
-		if(newCentre_Pixels[i] < tl_Pixels[i]) newCentre_Pixels[i] = tl_Pixels[i];
-		if(newCentre_Pixels[i] > br_Pixels[i]) newCentre_Pixels[i] = br_Pixels[i];
-	}
+	newCentre_Pixels = clamp_to_image_bounds(newCentre_Pixels);
 
 	// Calculate the new centre in Coords.
 	Vector2d newCentre_Coords = pixels_to_coords(newCentre_Pixels);

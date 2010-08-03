@@ -45,15 +45,7 @@ void PartitionCanvas::OnLeftDown(wxMouseEvent& e)
 	Vector2d p_Pixels(e.GetX(), e.GetY());
 
 	// Exit if the click is not within the image bounds.
-	Vector2d tl_Pixels, br_Pixels;
-	calculate_image_bounds(tl_Pixels, br_Pixels);
-	for(int i=0; i<2; ++i)
-	{
-		if(p_Pixels[i] < tl_Pixels[i] || p_Pixels[i] > br_Pixels[i])
-		{
-			return;
-		}
-	}
+	if(!within_image_bounds(p_Pixels)) return;
 
 	// Determine the node being clicked.
 	Vector3d p_Coords = pixels_to_3d_coords(p_Pixels);

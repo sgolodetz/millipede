@@ -29,6 +29,7 @@ private:
 public:
 	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
 	void OnLeftDown(wxMouseEvent& e);
+	void OnMouseMotion(wxMouseEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
