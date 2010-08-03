@@ -10,6 +10,11 @@
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
+bool BoxDrawingTool::has_started() const
+{
+	return m_anchor;
+}
+
 bool BoxDrawingTool::is_single_pass() const
 {
 	return true;
@@ -68,7 +73,7 @@ void BoxDrawingTool::reset()
 std::deque<Vector2i> BoxDrawingTool::selected_pixels() const
 {
 	// NYI
-	throw 23;
+	return std::deque<Vector2i>();
 }
 
 }

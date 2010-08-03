@@ -20,6 +20,7 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	bool has_started() const;
 	bool is_single_pass() const;
 	void mouse_dragged(const Vector2i& p);
 	void mouse_pressed(const Vector2i& p);

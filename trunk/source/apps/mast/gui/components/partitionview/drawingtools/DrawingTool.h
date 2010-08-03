@@ -14,12 +14,23 @@ namespace mp {
 
 class DrawingTool
 {
+	//#################### ENUMERATIONS ####################
+public:
+	enum PassType
+	{
+		ADD_PASS,
+		REMOVE_PASS,
+		REPLACE_PASS,
+	};
+
 	//#################### DESTRUCTOR ####################
 public:
 	virtual ~DrawingTool() {}
 
-	//#################### PUBLIC METHODS ####################
+	//#################### PUBLIC ABSTRACT METHODS ####################
 public:
+	virtual void end_pass(PassType passType) {}
+	virtual bool has_started() const = 0;
 	virtual bool is_single_pass() const = 0;
 	virtual void mouse_dragged(const Vector2i& p) = 0;
 	virtual void mouse_pressed(const Vector2i& p) = 0;

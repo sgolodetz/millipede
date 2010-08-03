@@ -22,13 +22,16 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
+	void finish_drawing();
 	void render_overlays(double left, double top, double right, double bottom) const;
 	Greyscale8SliceTextureSet_CPtr texture_set_to_display() const;
 
 	//#################### EVENT HANDLERS ####################
 public:
 	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+	void OnLeaveWindow(wxMouseEvent& e);
 	void OnLeftDown(wxMouseEvent& e);
+	void OnLeftUp(wxMouseEvent& e);
 	void OnMouseMotion(wxMouseEvent& e);
 
 	//#################### EVENT TABLE ####################

@@ -26,6 +26,14 @@ void DICOMCanvas::render(wxPaintDC& dc) const
 }
 
 //#################### PRIVATE METHODS ####################
+void DICOMCanvas::finish_drawing()
+{
+	// TODO
+
+	current_drawing_tool()->reset();
+	Refresh();
+}
+
 void DICOMCanvas::render_overlays(double left, double top, double right, double bottom) const
 {
 	if(overlay_manager())
@@ -42,6 +50,14 @@ Greyscale8SliceTextureSet_CPtr DICOMCanvas::texture_set_to_display() const
 //#################### EVENT HANDLERS ####################
 
 //~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+void DICOMCanvas::OnLeaveWindow(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_drawing_tool()) return;
+
+	current_drawing_tool()->reset();
+	Refresh();
+}
+
 void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
 {
 	if(!model()->volume_ipf() || !current_drawing_tool()) return;
@@ -54,23 +70,56 @@ void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
 	}
 }
 
+void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_drawing_tool()) return;
+
+	if(current_drawing_tool()->has_started())
+	{
+		if(current_drawing_tool()->is_single_pass())
+		{
+			finish_drawing();
+		}
+		else
+		{
+			DrawingTool::PassType passType = DrawingTool::REPLACE_PASS;
+			if(e.ShiftDown())
+			{
+				passType = DrawingTool::ADD_PASS;
+			}
+			else if(e.ControlDown())
+			{
+				passType = DrawingTool::REMOVE_PASS;
+			}
+
+			current_drawing_tool()->end_pass(passType);
+		}
+	}
+}
+
 void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 {
 	if(!model()->volume_ipf() || !current_drawing_tool()) return;
 
 	if(e.LeftIsDown())
 	{
-		Vector2i p_Pixels(e.GetX(), e.GetY());
-		p_Pixels = clamp_to_image_bounds(p_Pixels);
-		current_drawing_tool()->mouse_dragged(p_Pixels);
-		Refresh();
+		if(current_drawing_tool()->has_started())
+		{
+			Vector2i p_Pixels(e.GetX(), e.GetY());
+			p_Pixels = clamp_to_image_bounds(p_Pixels);
+			current_drawing_tool()->mouse_dragged(p_Pixels);
+			Refresh();
+		}
+		else OnLeftDown(e);
 	}
 }
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(DICOMCanvas, BaseCanvas)
 	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
+	EVT_LEAVE_WINDOW(DICOMCanvas::OnLeaveWindow)
 	EVT_LEFT_DOWN(DICOMCanvas::OnLeftDown)
+	EVT_LEFT_UP(DICOMCanvas::OnLeftUp)
 	EVT_MOTION(DICOMCanvas::OnMouseMotion)
 END_EVENT_TABLE()
 
