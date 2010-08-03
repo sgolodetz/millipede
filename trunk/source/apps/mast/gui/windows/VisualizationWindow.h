@@ -17,6 +17,8 @@
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 
+#include <common/math/Vector3.h>
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
@@ -30,7 +32,7 @@ class VisualizationWindow : public wxFrame
 {
 	//#################### CONSTRUCTORS ####################
 public:
-	VisualizationWindow(wxWindow *parent, const std::string& title, const MeshRenderer_Ptr& meshRenderer, const itk::Vector<double,3>& meshScale, wxGLContext *context = NULL);
+	VisualizationWindow(wxWindow *parent, const std::string& title, const MeshRenderer_Ptr& meshRenderer, const Vector3d& meshScale, wxGLContext *context = NULL);
 };
 
 }

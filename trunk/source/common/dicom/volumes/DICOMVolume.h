@@ -10,6 +10,8 @@
 
 #include <itkImage.h>
 
+#include <common/math/Vector3.h>
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
@@ -48,7 +50,7 @@ public:
 	BaseImagePointer base_image() const;
 	Modality modality() const;
 	itk::Size<3> size() const;
-	itk::Vector<double,3> spacing() const;
+	Vector3d spacing() const;
 	WindowedImagePointer windowed_image(const WindowSettings& windowSettings) const;
 };
 

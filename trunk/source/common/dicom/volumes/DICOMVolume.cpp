@@ -32,9 +32,10 @@ itk::Size<3> DICOMVolume::size() const
 	return m_baseImage->GetLargestPossibleRegion().GetSize();
 }
 
-itk::Vector<double,3> DICOMVolume::spacing() const
+Vector3d DICOMVolume::spacing() const
 {
-	return m_baseImage->GetSpacing();
+	itk::Vector<double,3> v = m_baseImage->GetSpacing();
+	return Vector3d(v[0], v[1], v[2]);
 }
 
 DICOMVolume::WindowedImagePointer DICOMVolume::windowed_image(const WindowSettings& windowSettings) const

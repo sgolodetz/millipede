@@ -14,7 +14,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 VisualizationWindow::VisualizationWindow(wxWindow *parent, const std::string& title, const MeshRenderer_Ptr& meshRenderer,
-										 const itk::Vector<double,3>& meshScale, wxGLContext *context)
+										 const Vector3d& meshScale, wxGLContext *context)
 :	wxFrame(parent, wxID_ANY, string_to_wxString(title))
 {
 	SetBackgroundColour(wxColour(240,240,240));

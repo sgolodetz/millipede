@@ -149,8 +149,8 @@ public:
 		typedef boost::shared_ptr<const SelectionT> Selection_CPtr;
 		Selection_CPtr featureSelection = active_multi_feature_selection()->selection(feature);
 
-		itk::Vector<double,3> spacing = m_dicomVolume->spacing();
-		double voxelVolume = spacing[0] * spacing[1] * spacing[2];
+		Vector3d spacing = m_dicomVolume->spacing();
+		double voxelVolume = spacing.x * spacing.y * spacing.z;
 
 		double volume = 0;
 		for(typename SelectionT::NodeConstIterator it=featureSelection->nodes_cbegin(), iend=featureSelection->nodes_cend(); it!=iend; ++it)

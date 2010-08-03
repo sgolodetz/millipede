@@ -213,8 +213,7 @@ Vector2d BaseCanvas::coord_to_pixel_offset(const Vector2d& offset_Coords) const
 {
 	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
 	double zoomFactor = camera()->zoom_factor();
-	itk::Vector<double,3> temp = m_partitionView->model()->dicom_volume()->spacing();
-	Vector3d spacing(temp[0], temp[1], temp[2]);
+	Vector3d spacing = m_partitionView->model()->dicom_volume()->spacing();
 	Vector2d scaleFactors = project_to_2d(zoomFactor * spacing);
 
 	// Scale to get the offset in Pixels.
@@ -276,8 +275,7 @@ Vector2d BaseCanvas::pixel_to_coord_offset(const Vector2d& offset_Pixels) const
 {
 	// Calculate the scale factors in each of the dimensions and project into 2D to get the 2D factors.
 	double zoomFactor = camera()->zoom_factor();
-	itk::Vector<double,3> temp = m_partitionView->model()->dicom_volume()->spacing();
-	Vector3d spacing(temp[0], temp[1], temp[2]);
+	Vector3d spacing = m_partitionView->model()->dicom_volume()->spacing();
 	Vector2d scaleFactors = project_to_2d(zoomFactor * spacing);
 
 	// Scale to get the offset in Coords.

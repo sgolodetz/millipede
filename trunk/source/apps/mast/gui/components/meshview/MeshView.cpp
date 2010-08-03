@@ -62,7 +62,7 @@ struct MeshView::CameraListener : MeshCamera::Listener
 };
 
 //#################### CONSTRUCTORS ####################
-MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, const itk::Vector<double,3>& meshScale, wxGLContext *context)
+MeshView::MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, const Vector3d& meshScale, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)), m_meshRenderer(meshRenderer), m_meshScale(meshScale)
 {
 	setup_camera();

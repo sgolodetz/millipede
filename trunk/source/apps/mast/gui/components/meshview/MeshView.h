@@ -15,6 +15,8 @@
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
 
+#include <common/math/Vector3.h>
+
 //#################### FORWARD DECLARATIONS ####################
 class wxCheckBox;
 class wxSlider;
@@ -40,7 +42,7 @@ private:
 	MeshCamera_Ptr m_camera;
 	MeshCanvas *m_canvas;
 	MeshRenderer_Ptr m_meshRenderer;
-	itk::Vector<double,3> m_meshScale;
+	Vector3d m_meshScale;
 	SphereMeshCamera_Ptr m_sphereCamera;
 
 	wxSlider *m_azimuthSlider;
@@ -54,7 +56,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, const itk::Vector<double,3>& meshScale, wxGLContext *context = NULL);
+	explicit MeshView(wxWindow *parent, const MeshRenderer_Ptr& meshRenderer, const Vector3d& meshScale, wxGLContext *context = NULL);
 
 	//#################### PRIVATE METHODS ####################
 private:
