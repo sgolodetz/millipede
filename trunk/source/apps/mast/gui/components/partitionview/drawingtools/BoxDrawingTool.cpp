@@ -80,4 +80,9 @@ std::vector<Vector2i> BoxDrawingTool::selected_pixels() const
 	return selectedPixels;
 }
 
+DrawingTool::ToolStyle BoxDrawingTool::style() const
+{
+	return TOOLSTYLE_CLICKANDDRAG;
+}
+
 }

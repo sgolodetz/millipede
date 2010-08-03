@@ -22,6 +22,7 @@
 #include <common/slices/SliceTextureSetFiller.h>
 #include <mast/gui/components/partitionview/drawingtools/BoxDrawingTool.h>
 #include <mast/gui/components/partitionview/drawingtools/LassoDrawingTool.h>
+#include <mast/gui/components/partitionview/drawingtools/LineLoopDrawingTool.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
@@ -735,6 +736,7 @@ void PartitionView::setup_drawing_tools()
 {
 	m_drawingTools[DRAWINGTOOL_BOX] = std::make_pair(DRAWINGTOOL_BOX, DrawingTool_Ptr(new BoxDrawingTool));
 	m_drawingTools[DRAWINGTOOL_LASSO] = std::make_pair(DRAWINGTOOL_LASSO, DrawingTool_Ptr(new LassoDrawingTool));
+	m_drawingTools[DRAWINGTOOL_LINELOOP] = std::make_pair(DRAWINGTOOL_LINELOOP, DrawingTool_Ptr(new LineLoopDrawingTool));
 	// TODO: Other drawing tools.
 
 	m_currentDrawingTool = m_drawingTools[DRAWINGTOOL_BOX];

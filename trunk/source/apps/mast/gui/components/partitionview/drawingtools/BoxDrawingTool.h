@@ -26,6 +26,7 @@ public:
 	void render() const;
 	void reset();
 	std::vector<Vector2i> selected_pixels() const;
+	ToolStyle style() const;
 };
 
 }

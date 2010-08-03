@@ -65,12 +65,16 @@ gui/components/partitionview/PartitionView.h
 SET(gui_components_partitionview_drawingtools_sources
 gui/components/partitionview/drawingtools/BoxDrawingTool.cpp
 gui/components/partitionview/drawingtools/LassoDrawingTool.cpp
+gui/components/partitionview/drawingtools/LineBasedDrawingTool.cpp
+gui/components/partitionview/drawingtools/LineLoopDrawingTool.cpp
 )
 
 SET(gui_components_partitionview_drawingtools_headers
 gui/components/partitionview/drawingtools/BoxDrawingTool.h
 gui/components/partitionview/drawingtools/DrawingTool.h
 gui/components/partitionview/drawingtools/LassoDrawingTool.h
+gui/components/partitionview/drawingtools/LineBasedDrawingTool.h
+gui/components/partitionview/drawingtools/LineLoopDrawingTool.h
 )
 
 ##

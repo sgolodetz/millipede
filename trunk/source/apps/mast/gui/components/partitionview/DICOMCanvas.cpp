@@ -26,6 +26,44 @@ void DICOMCanvas::render(wxPaintDC& dc) const
 }
 
 //#################### PRIVATE METHODS ####################
+void DICOMCanvas::finish_drawing(wxMouseEvent& e)
+{
+	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
+	typedef PartitionModelT::VolumeIPFSelection_Ptr VolumeIPFSelection_Ptr;
+	VolumeIPFSelection_Ptr selectionDiff(new VolumeIPFSelectionT(model()->volume_ipf()));
+
+	std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
+	for(size_t i=0, size=selectedPixels.size(); i<size; ++i)
+	{
+		const Vector2i& p_Pixels = selectedPixels[i];
+		Vector3d p_Coords = pixels_to_3d_coords(Vector2d(p_Pixels));
+		itk::Index<3> position;
+		for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
+		selectionDiff->select_node(PFNodeID(0, model()->volume_ipf()->leaf_of_position(position)));
+	}
+
+	VolumeIPFSelection_Ptr newSelection;
+
+	if(e.ShiftDown())
+	{
+		newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
+		newSelection->combine(model()->selection(), selectionDiff);
+	}
+	else if(e.ControlDown())
+	{
+		newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
+		newSelection->subtract(model()->selection(), selectionDiff);
+	}
+	else
+	{
+		newSelection = selectionDiff;
+	}
+
+	model()->selection()->replace_with_selection(newSelection);
+	current_drawing_tool()->reset();
+	Refresh();
+}
+
 void DICOMCanvas::render_overlays(double left, double top, double right, double bottom) const
 {
 	if(overlay_manager())
@@ -58,56 +96,28 @@ void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
 	if(within_image_bounds(p_Pixels))
 	{
 		current_drawing_tool()->mouse_pressed(p_Pixels);
-		Refresh();
+
+		if(current_drawing_tool()->style() == DrawingTool::TOOLSTYLE_INSTANTANEOUS)
+		{
+			finish_drawing(e);
+		}
+		else Refresh();
 	}
 }
 
 void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 {
-	if(!model()->volume_ipf() || !current_drawing_tool()) return;
+	if(!model()->volume_ipf() || !current_drawing_tool() || !current_drawing_tool()->has_started()) return;
 
-	if(current_drawing_tool()->has_started())
+	if(current_drawing_tool()->style() != DrawingTool::TOOLSTYLE_MULTICLICK)
 	{
-		typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
-		typedef PartitionModelT::VolumeIPFSelection_Ptr VolumeIPFSelection_Ptr;
-		VolumeIPFSelection_Ptr selectionDiff(new VolumeIPFSelectionT(model()->volume_ipf()));
-
-		std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
-		for(size_t i=0, size=selectedPixels.size(); i<size; ++i)
-		{
-			const Vector2i& p_Pixels = selectedPixels[i];
-			Vector3d p_Coords = pixels_to_3d_coords(Vector2d(p_Pixels));
-			itk::Index<3> position;
-			for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
-			selectionDiff->select_node(PFNodeID(0, model()->volume_ipf()->leaf_of_position(position)));
-		}
-
-		VolumeIPFSelection_Ptr newSelection;
-
-		if(e.ShiftDown())
-		{
-			newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
-			newSelection->combine(model()->selection(), selectionDiff);
-		}
-		else if(e.ControlDown())
-		{
-			newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
-			newSelection->subtract(model()->selection(), selectionDiff);
-		}
-		else
-		{
-			newSelection = selectionDiff;
-		}
-
-		model()->selection()->replace_with_selection(newSelection);
-		current_drawing_tool()->reset();
-		Refresh();
+		finish_drawing(e);
 	}
 }
 
 void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 {
-	if(!model()->volume_ipf() || !current_drawing_tool()) return;
+	if(!model()->volume_ipf() || !current_drawing_tool() || current_drawing_tool()->style() != DrawingTool::TOOLSTYLE_CLICKANDDRAG) return;
 
 	if(e.LeftIsDown())
 	{
