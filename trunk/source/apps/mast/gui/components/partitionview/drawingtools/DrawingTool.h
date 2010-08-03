@@ -32,6 +32,7 @@ public:
 	virtual bool has_started() const = 0;
 	virtual void mouse_dragged(const Vector2i& p) {}
 	virtual void mouse_pressed(const Vector2i& p) = 0;
+	virtual void mouse_released(const Vector2i& p) {}
 	virtual void render() const = 0;
 	virtual void reset() = 0;
 	virtual std::vector<Vector2i> selected_pixels() const = 0;

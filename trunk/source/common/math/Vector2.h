@@ -167,6 +167,32 @@ struct Vector2
 	{
 		return Vector2(-x, -y);
 	}
+
+	//#################### PUBLIC METHODS ####################
+public:
+	/**
+	@brief	Calculates the distance between this vector and rhs.
+
+	@param[in]	rhs		The vector to which to calculate the distance
+	@return	The distance
+	*/
+	double distance(const Vector2& rhs) const
+	{
+		return sqrt(distance_squared(rhs));
+	}
+
+	/**
+	@brief	Calculates the square of the distance between this vector and rhs.
+
+	@param[in]	rhs		The vector to which to calculate the square of the distance
+	@return	The square of the distance
+	*/
+	double distance_squared(const Vector2& rhs) const
+	{
+		double dx = x - rhs.x;
+		double dy = y - rhs.y;
+		return dx*dx + dy*dy;
+	}
 };
 
 //#################### GLOBAL OPERATORS ####################

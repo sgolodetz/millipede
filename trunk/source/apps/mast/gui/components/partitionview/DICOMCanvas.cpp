@@ -109,6 +109,8 @@ void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 {
 	if(!model()->volume_ipf() || !current_drawing_tool() || !current_drawing_tool()->has_started()) return;
 
+	current_drawing_tool()->mouse_released(Vector2i(e.GetX(), e.GetY()));
+
 	if(current_drawing_tool()->style() != DrawingTool::TOOLSTYLE_MULTICLICK)
 	{
 		finish_drawing(e);
@@ -117,7 +119,7 @@ void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 
 void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 {
-	if(!model()->volume_ipf() || !current_drawing_tool() || current_drawing_tool()->style() != DrawingTool::TOOLSTYLE_CLICKANDDRAG) return;
+	if(!model()->volume_ipf() || !current_drawing_tool() || current_drawing_tool()->style() == DrawingTool::TOOLSTYLE_INSTANTANEOUS) return;
 
 	if(e.LeftIsDown())
 	{

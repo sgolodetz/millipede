@@ -10,9 +10,32 @@
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
+void LineLoopDrawingTool::mouse_dragged(const Vector2i& p)
+{
+	if(m_grabbedPoint)
+	{
+		**m_grabbedPoint = p;
+	}
+}
+
 void LineLoopDrawingTool::mouse_pressed(const Vector2i& p)
 {
-	m_drawnPixels.push_back(p);
+	const int MAX_DIST_SQUARED = 10*10;
+	for(std::list<Vector2i>::iterator it=m_drawnPixels.begin(), iend=m_drawnPixels.end(); it!=iend; ++it)
+	{
+		if(it->distance_squared(p) < MAX_DIST_SQUARED)
+		{
+			m_grabbedPoint = it;
+			break;
+		}
+	}
+
+	if(!m_grabbedPoint) m_drawnPixels.push_back(p);
+}
+
+void LineLoopDrawingTool::mouse_released(const Vector2i& p)
+{
+	m_grabbedPoint.reset();
 }
 
 DrawingTool::ToolStyle LineLoopDrawingTool::style() const
