@@ -33,6 +33,7 @@ public:
 	void OnLeftDown(wxMouseEvent& e);
 	void OnLeftUp(wxMouseEvent& e);
 	void OnMouseMotion(wxMouseEvent& e);
+	void OnRightUp(wxMouseEvent& e);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

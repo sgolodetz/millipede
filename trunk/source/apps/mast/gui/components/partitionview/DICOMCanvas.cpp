@@ -134,6 +134,16 @@ void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 	}
 }
 
+void DICOMCanvas::OnRightUp(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_drawing_tool() || !current_drawing_tool()->has_started()) return;
+
+	if(current_drawing_tool()->style() == DrawingTool::TOOLSTYLE_MULTICLICK)
+	{
+		finish_drawing(e);
+	}
+}
+
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(DICOMCanvas, BaseCanvas)
 	//~~~~~~~~~~~~~~~~~~~~ MOUSE ~~~~~~~~~~~~~~~~~~~~
@@ -141,6 +151,7 @@ BEGIN_EVENT_TABLE(DICOMCanvas, BaseCanvas)
 	EVT_LEFT_DOWN(DICOMCanvas::OnLeftDown)
 	EVT_LEFT_UP(DICOMCanvas::OnLeftUp)
 	EVT_MOTION(DICOMCanvas::OnMouseMotion)
+	EVT_RIGHT_UP(DICOMCanvas::OnRightUp)
 END_EVENT_TABLE()
 
 }
