@@ -70,19 +70,25 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 	void slice_location_changed(bool sliceChanged, bool layerChanged)
 	{
 		base->update_sliders();
-		if(sliceChanged || layerChanged) base->recreate_overlays();
+		if(sliceChanged || layerChanged)
+		{
+			base->recreate_overlays();
+			base->current_drawing_tool()->reset();
+		}
 		base->refresh_canvases();
 	}
 
 	void slice_orientation_changed()
 	{
 		base->recreate_overlays();
+		base->current_drawing_tool()->reset();
 		base->refresh_canvases();
 	}
 
 	void zoom_level_changed()
 	{
 		base->update_sliders();
+		base->current_drawing_tool()->reset();
 		base->refresh_canvases();
 	}
 };
@@ -234,6 +240,7 @@ struct PartitionView::ModelListener : PartitionModelT::Listener
 		base->create_partition_textures();
 		base->recreate_multi_feature_selection_choice();
 		base->recreate_overlays();
+		base->current_drawing_tool()->reset();
 		base->refresh_canvases();
 		base->add_listeners();
 	}
