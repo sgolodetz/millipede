@@ -49,7 +49,7 @@ void DICOMCanvas::finish_drawing(wxMouseEvent& e)
 		newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
 		newSelection->combine(model()->selection(), selectionDiff);
 	}
-	else if(e.ControlDown())
+	else if(e.CmdDown())
 	{
 		newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
 		newSelection->subtract(model()->selection(), selectionDiff);
