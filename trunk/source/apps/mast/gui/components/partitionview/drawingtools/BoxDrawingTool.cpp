@@ -15,11 +15,6 @@ bool BoxDrawingTool::has_started() const
 	return m_anchor;
 }
 
-bool BoxDrawingTool::is_single_pass() const
-{
-	return true;
-}
-
 void BoxDrawingTool::mouse_dragged(const Vector2i& p)
 {
 	m_other = p;
@@ -70,10 +65,19 @@ void BoxDrawingTool::reset()
 	m_other.reset();
 }
 
-std::deque<Vector2i> BoxDrawingTool::selected_pixels() const
+std::vector<Vector2i> BoxDrawingTool::selected_pixels() const
 {
-	// NYI
-	return std::deque<Vector2i>();
+	std::vector<Vector2i> selectedPixels;
+	if(has_started())
+	{
+		int minX = std::min(m_anchor->x, m_other->x), minY = std::min(m_anchor->y, m_other->y);
+		int maxX = std::max(m_anchor->x, m_other->x), maxY = std::max(m_anchor->y, m_other->y);
+		selectedPixels.reserve((maxX + 1 - minX) * (maxY + 1 - minY));
+		for(int y=minY; y<=maxY; ++y)
+			for(int x=minX; x<=maxX; ++x)
+				selectedPixels.push_back(Vector2i(x,y));
+	}
+	return selectedPixels;
 }
 
 }

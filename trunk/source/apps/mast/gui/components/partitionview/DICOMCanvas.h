@@ -22,7 +22,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void finish_drawing();
 	void render_overlays(double left, double top, double right, double bottom) const;
 	Greyscale8SliceTextureSet_CPtr texture_set_to_display() const;
 

@@ -26,14 +26,6 @@ void DICOMCanvas::render(wxPaintDC& dc) const
 }
 
 //#################### PRIVATE METHODS ####################
-void DICOMCanvas::finish_drawing()
-{
-	// TODO
-
-	current_drawing_tool()->reset();
-	Refresh();
-}
-
 void DICOMCanvas::render_overlays(double left, double top, double right, double bottom) const
 {
 	if(overlay_manager())
@@ -76,24 +68,24 @@ void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 
 	if(current_drawing_tool()->has_started())
 	{
-		if(current_drawing_tool()->is_single_pass())
+		std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
+		// TODO: Convert the selected pixels to leaf indices.
+
+		if(e.ShiftDown())
 		{
-			finish_drawing();
+			// TODO
+		}
+		else if(e.ControlDown())
+		{
+			// TODO
 		}
 		else
 		{
-			DrawingTool::PassType passType = DrawingTool::REPLACE_PASS;
-			if(e.ShiftDown())
-			{
-				passType = DrawingTool::ADD_PASS;
-			}
-			else if(e.ControlDown())
-			{
-				passType = DrawingTool::REMOVE_PASS;
-			}
-
-			current_drawing_tool()->end_pass(passType);
+			// TODO
 		}
+
+		current_drawing_tool()->reset();
+		Refresh();
 	}
 }
 
