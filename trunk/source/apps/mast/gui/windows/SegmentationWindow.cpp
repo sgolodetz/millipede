@@ -510,8 +510,11 @@ void SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes(wxUpdateUIEv
 	if(m_model->selection())
 	{
 		int mergeLayer = m_model->selection()->merge_layer(m_view->camera()->slice_location().layer);
-		int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(mergeLayer), m_model->selection()->view_at_layer_cend(mergeLayer));
-		e.Enable(nodeCount > 1);
+		if(mergeLayer > 0)
+		{
+			int nodeCount = std::distance(m_model->selection()->view_at_layer_cbegin(mergeLayer), m_model->selection()->view_at_layer_cend(mergeLayer));
+			e.Enable(nodeCount > 1);
+		}
 	}
 	else e.Enable(false);
 }

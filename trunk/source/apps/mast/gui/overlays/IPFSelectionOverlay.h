@@ -34,7 +34,14 @@ public:
 			typedef typename VolumeIPFSelection<LeafLayer,BranchLayer>::ViewNodeConstIterator Iter;
 			for(Iter it=selection->view_at_layer_cbegin(sliceLocation.layer), iend=selection->view_at_layer_cend(sliceLocation.layer); it!=iend; ++it)
 			{
-				IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fillColour, boundaryColour, boost::none);
+				if(it->layer() != 0)
+				{
+					IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fillColour, boundaryColour, boost::none);
+				}
+				else
+				{
+					IPFOverlayTools::draw_node(volumeIPF, *it, image, sliceBegin, sliceEnd, sliceOrientation, fillColour, boost::none, boost::none);
+				}
 			}
 		}
 
