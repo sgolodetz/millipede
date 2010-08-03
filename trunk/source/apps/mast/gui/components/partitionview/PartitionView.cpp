@@ -835,12 +835,10 @@ void PartitionView::setup_gui(wxGLContext *context)
 		drawingToolTypes[DRAWINGTOOL_BOX] = wxT("Box Select");
 		drawingToolTypes[DRAWINGTOOL_LASSO] = wxT("Lasso");
 		drawingToolTypes[DRAWINGTOOL_LINELOOP] = wxT("Line Loop");
-		drawingToolTypes[DRAWINGTOOL_MAGICWAND] = wxT("Magic Wand");
 
 		m_drawingToolChoice = new wxChoice(this, CHOICEID_DRAWING_TOOL, wxDefaultPosition, wxDefaultSize, DRAWINGTOOL_COUNT, drawingToolTypes);
 		m_drawingToolChoice->SetSelection(0);
 		drawingToolsSizer->Add(m_drawingToolChoice, 0, wxALIGN_CENTRE_VERTICAL);
-		drawingToolsSizer->Add(new wxButton(this, wxID_ANY, wxT("Options...")), 0, wxALIGN_CENTRE_VERTICAL);
 	sizer->Add(drawingToolsSizer, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
 	// Bottom middle
