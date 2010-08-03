@@ -68,22 +68,38 @@ void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 
 	if(current_drawing_tool()->has_started())
 	{
+		typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
+		typedef PartitionModelT::VolumeIPFSelection_Ptr VolumeIPFSelection_Ptr;
+		VolumeIPFSelection_Ptr selectionDiff(new VolumeIPFSelectionT(model()->volume_ipf()));
+
 		std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
-		// TODO: Convert the selected pixels to leaf indices.
+		for(size_t i=0, size=selectedPixels.size(); i<size; ++i)
+		{
+			const Vector2i& p_Pixels = selectedPixels[i];
+			Vector3d p_Coords = pixels_to_3d_coords(Vector2d(p_Pixels));
+			itk::Index<3> position;
+			for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
+			selectionDiff->select_node(PFNodeID(0, model()->volume_ipf()->leaf_of_position(position)));
+		}
+
+		VolumeIPFSelection_Ptr newSelection;
 
 		if(e.ShiftDown())
 		{
-			// TODO
+			newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
+			newSelection->combine(model()->selection(), selectionDiff);
 		}
 		else if(e.ControlDown())
 		{
-			// TODO
+			newSelection.reset(new VolumeIPFSelectionT(model()->volume_ipf()));
+			newSelection->subtract(model()->selection(), selectionDiff);
 		}
 		else
 		{
-			// TODO
+			newSelection = selectionDiff;
 		}
 
+		model()->selection()->replace_with_selection(newSelection);
 		current_drawing_tool()->reset();
 		Refresh();
 	}
