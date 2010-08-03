@@ -23,11 +23,9 @@ public:
 	void mouse_dragged(const Vector2i& p);
 	void mouse_pressed(const Vector2i& p);
 	void mouse_released(const Vector2i& p);
+	void render() const;
+	void reset();
 	ToolStyle style() const;
-
-	//#################### PRIVATE METHODS ####################
-private:
-	void render_sub() const;
 };
 
 }

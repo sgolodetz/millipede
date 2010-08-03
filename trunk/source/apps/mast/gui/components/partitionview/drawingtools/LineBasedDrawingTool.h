@@ -18,10 +18,6 @@ class LineBasedDrawingTool : public DrawingTool
 protected:
 	std::list<Vector2i> m_drawnPixels;
 
-	//#################### PRIVATE ABSTRACT METHODS ####################
-private:
-	virtual void render_sub() const;
-
 	//#################### PUBLIC METHODS ####################
 public:
 	bool has_started() const;

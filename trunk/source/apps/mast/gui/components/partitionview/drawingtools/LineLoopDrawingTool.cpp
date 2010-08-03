@@ -20,17 +20,17 @@ void LineLoopDrawingTool::mouse_dragged(const Vector2i& p)
 
 void LineLoopDrawingTool::mouse_pressed(const Vector2i& p)
 {
-	const int MAX_DIST_SQUARED = 10*10;
+	const int MAX_DIST_SQUARED = 20*20;
 	for(std::list<Vector2i>::iterator it=m_drawnPixels.begin(), iend=m_drawnPixels.end(); it!=iend; ++it)
 	{
 		if(it->distance_squared(p) < MAX_DIST_SQUARED)
 		{
 			m_grabbedPoint = it;
-			break;
+			return;
 		}
 	}
 
-	if(!m_grabbedPoint) m_drawnPixels.push_back(p);
+	m_drawnPixels.push_back(p);
 }
 
 void LineLoopDrawingTool::mouse_released(const Vector2i& p)
@@ -38,17 +38,14 @@ void LineLoopDrawingTool::mouse_released(const Vector2i& p)
 	m_grabbedPoint.reset();
 }
 
-DrawingTool::ToolStyle LineLoopDrawingTool::style() const
+void LineLoopDrawingTool::render() const
 {
-	return TOOLSTYLE_MULTICLICK;
-}
+	LineBasedDrawingTool::render();
 
-//#################### PRIVATE METHODS ####################
-void LineLoopDrawingTool::render_sub() const
-{
+	// Render all the points in the line loop.
 	glPushAttrib(GL_POINT_BIT);
 
-	glPointSize(5.0f);
+	glPointSize(10.0f);
 	glEnable(GL_POINT_SMOOTH);
 
 	glColor3d(0.0, 1.0, 1.0);
@@ -60,6 +57,17 @@ void LineLoopDrawingTool::render_sub() const
 	glEnd();
 
 	glPopAttrib();
+}
+
+void LineLoopDrawingTool::reset()
+{
+	LineBasedDrawingTool::reset();
+	m_grabbedPoint.reset();
+}
+
+DrawingTool::ToolStyle LineLoopDrawingTool::style() const
+{
+	return TOOLSTYLE_MULTICLICK;
 }
 
 }
