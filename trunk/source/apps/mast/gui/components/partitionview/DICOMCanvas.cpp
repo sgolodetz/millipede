@@ -46,10 +46,10 @@ void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
 {
 	if(!model()->volume_ipf() || !current_drawing_tool()) return;
 
-	Vector2d p_Pixels(e.GetX(), e.GetY());
+	Vector2i p_Pixels(e.GetX(), e.GetY());
 	if(within_image_bounds(p_Pixels))
 	{
-		current_drawing_tool()->mouse_pressed(Vector2i(e.GetX(), e.GetY()));
+		current_drawing_tool()->mouse_pressed(p_Pixels);
 		Refresh();
 	}
 }
@@ -60,9 +60,9 @@ void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 
 	if(e.LeftIsDown())
 	{
-		Vector2d p_Pixels(e.GetX(), e.GetY());
+		Vector2i p_Pixels(e.GetX(), e.GetY());
 		p_Pixels = clamp_to_image_bounds(p_Pixels);
-		current_drawing_tool()->mouse_dragged(Vector2i(p_Pixels));
+		current_drawing_tool()->mouse_dragged(p_Pixels);
 		Refresh();
 	}
 }

@@ -51,7 +51,7 @@ void BaseCanvas::render(wxPaintDC&) const
 
 	if(texture)
 	{
-		Vector2d tl_Pixels, br_Pixels;
+		Vector2i tl_Pixels, br_Pixels;
 		calculate_image_bounds(tl_Pixels, br_Pixels);
 
 		// Render the image.
@@ -60,10 +60,10 @@ void BaseCanvas::render(wxPaintDC&) const
 		texture->bind();
 		glColor3d(1,1,1);
 		glBegin(GL_QUADS);
-			glTexCoord2d(0,0);	glVertex2d(tl_Pixels.x, tl_Pixels.y);
-			glTexCoord2d(1,0);	glVertex2d(br_Pixels.x + 1, tl_Pixels.y);
-			glTexCoord2d(1,1);	glVertex2d(br_Pixels.x + 1, br_Pixels.y + 1);
-			glTexCoord2d(0,1);	glVertex2d(tl_Pixels.x, br_Pixels.y + 1);
+			glTexCoord2d(0,0);	glVertex2i(tl_Pixels.x, tl_Pixels.y);
+			glTexCoord2d(1,0);	glVertex2i(br_Pixels.x + 1, tl_Pixels.y);
+			glTexCoord2d(1,1);	glVertex2i(br_Pixels.x + 1, br_Pixels.y + 1);
+			glTexCoord2d(0,1);	glVertex2i(tl_Pixels.x, br_Pixels.y + 1);
 		glEnd();
 		glPopAttrib();
 
@@ -121,7 +121,7 @@ void BaseCanvas::setup(PartitionView *partitionView)
 void BaseCanvas::zoom_to_fit()
 {
 	// Step 1:	Calculate the sizes of the image and canvas.
-	Vector2d tl_Pixels, br_Pixels;
+	Vector2i tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
 	double imageWidth = br_Pixels.x + 1 - tl_Pixels.x, imageHeight = br_Pixels.y + 1 - tl_Pixels.y;
 	wxSize canvasSize = GetSize();
@@ -168,13 +168,13 @@ void BaseCanvas::zoom_to_fit()
 }
 
 //#################### PROTECTED METHODS ####################
-void BaseCanvas::calculate_image_bounds(Vector2d& tl_Pixels, Vector2d& br_Pixels) const
+void BaseCanvas::calculate_image_bounds(Vector2i& tl_Pixels, Vector2i& br_Pixels) const
 {
 	itk::Size<3> volumeSize = m_partitionView->model()->dicom_volume()->size();
 	Vector3d tl_Coords(0,0,0);
 	Vector3d br_Coords(volumeSize[0] - 1, volumeSize[1] - 1, volumeSize[2] - 1);
-	tl_Pixels = coords_to_pixels(tl_Coords);
-	br_Pixels = coords_to_pixels(br_Coords);
+	tl_Pixels = Vector2i(coords_to_pixels(tl_Coords));
+	br_Pixels = Vector2i(coords_to_pixels(br_Coords));
 }
 
 PartitionCamera_Ptr BaseCanvas::camera()
@@ -202,11 +202,11 @@ Vector2d BaseCanvas::centre_pixels() const
 	return Vector2d(width * 0.5, height * 0.5);
 }
 
-Vector2d BaseCanvas::clamp_to_image_bounds(const Vector2d& p_Pixels) const
+Vector2i BaseCanvas::clamp_to_image_bounds(const Vector2i& p_Pixels) const
 {
-	Vector2d tl_Pixels, br_Pixels;
+	Vector2i tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
-	return Vector2d(std::min(std::max(p_Pixels.x, tl_Pixels.x), br_Pixels.x), std::min(std::max(p_Pixels.y, tl_Pixels.y), br_Pixels.y));
+	return Vector2i(std::min(std::max(p_Pixels.x, tl_Pixels.x), br_Pixels.x), std::min(std::max(p_Pixels.y, tl_Pixels.y), br_Pixels.y));
 }
 
 Vector2d BaseCanvas::coord_to_pixel_offset(const Vector2d& offset_Coords) const
@@ -325,9 +325,9 @@ Vector3d BaseCanvas::project_to_3d(const Vector2d& p) const
 	throw Exception("Bad slice orientation");
 }
 
-bool BaseCanvas::within_image_bounds(const Vector2d& p_Pixels) const
+bool BaseCanvas::within_image_bounds(const Vector2i& p_Pixels) const
 {
-	Vector2d tl_Pixels, br_Pixels;
+	Vector2i tl_Pixels, br_Pixels;
 	calculate_image_bounds(tl_Pixels, br_Pixels);
 	for(int i=0; i<2; ++i)
 	{
@@ -351,7 +351,7 @@ void BaseCanvas::zoom_on(const Vector2d& zoomCentre_Pixels, int zoomLevelDelta)
 	Vector2d newCentre_Pixels = zoomCentre_Pixels - zoomCentreOffset_Pixels / zoomFactor;
 
 	// Clamp it to the image bounds.
-	newCentre_Pixels = clamp_to_image_bounds(newCentre_Pixels);
+	newCentre_Pixels = Vector2d(clamp_to_image_bounds(Vector2i(newCentre_Pixels)));
 
 	// Calculate the new centre in Coords.
 	Vector2d newCentre_Coords = pixels_to_coords(newCentre_Pixels);

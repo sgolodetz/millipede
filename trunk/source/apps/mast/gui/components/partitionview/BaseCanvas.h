@@ -58,12 +58,12 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
-	void calculate_image_bounds(Vector2d& tl_Pixels, Vector2d& br_Pixels) const;
+	void calculate_image_bounds(Vector2i& tl_Pixels, Vector2i& br_Pixels) const;
 	PartitionCamera_Ptr camera();
 	PartitionCamera_CPtr camera() const;
 	Vector2d centre_coords() const;
 	Vector2d centre_pixels() const;
-	Vector2d clamp_to_image_bounds(const Vector2d& p_Pixels) const;
+	Vector2i clamp_to_image_bounds(const Vector2i& p_Pixels) const;
 	Vector2d coord_to_pixel_offset(const Vector2d& offset_Coords) const;
 	Vector2d coords_to_pixels(const Vector2d& p_Coords) const;
 	Vector2d coords_to_pixels(const Vector3d& p_Coords) const;
@@ -78,7 +78,7 @@ protected:
 	Vector2d pixels_to_coords(const Vector2d& p_Pixels) const;
 	Vector2d project_to_2d(const Vector3d& p) const;
 	Vector3d project_to_3d(const Vector2d& p) const;
-	bool within_image_bounds(const Vector2d& p_Pixels) const;
+	bool within_image_bounds(const Vector2i& p_Pixels) const;
 
 	//#################### PRIVATE METHODS ####################
 private:
