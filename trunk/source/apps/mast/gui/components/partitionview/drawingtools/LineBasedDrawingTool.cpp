@@ -12,22 +12,22 @@ namespace mp {
 //#################### PUBLIC METHODS ####################
 bool LineBasedDrawingTool::has_started() const
 {
-	return !m_drawnPixels.empty();
+	return !m_drawnLocations.empty();
 }
 
 void LineBasedDrawingTool::render() const
 {
 	glColor3d(1.0, 1.0, 1.0);
 	glBegin(GL_LINE_STRIP);
-		for(std::list<Vector2i>::const_iterator it=m_drawnPixels.begin(), iend=m_drawnPixels.end(); it!=iend; ++it)
+		for(std::list<std::pair<Vector2i,itk::Index<2> > >::const_iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
 		{
-			glVertex2i(it->x, it->y);
+			glVertex2i(it->first.x, it->first.y);
 		}
 	glEnd();
 
-	if(m_drawnPixels.size() >= 2)
+	if(m_drawnLocations.size() >= 2)
 	{
-		const Vector2i& first = m_drawnPixels.front(), last = m_drawnPixels.back();
+		const Vector2i& first = m_drawnLocations.front().first, last = m_drawnLocations.back().first;
 		glColor3d(1.0, 0.0, 1.0);
 		glBegin(GL_LINES);
 			glVertex2i(first.x, first.y);
@@ -38,13 +38,13 @@ void LineBasedDrawingTool::render() const
 
 void LineBasedDrawingTool::reset()
 {
-	m_drawnPixels.clear();
+	m_drawnLocations.clear();
 }
 
-std::vector<Vector2i> LineBasedDrawingTool::selected_pixels() const
+std::vector<itk::Index<2> > LineBasedDrawingTool::selected_positions() const
 {
 	// NYI
-	return std::vector<Vector2i>();
+	return std::vector<itk::Index<2> >();
 }
 
 }

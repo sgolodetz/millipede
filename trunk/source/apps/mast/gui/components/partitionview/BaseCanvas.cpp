@@ -297,6 +297,17 @@ Vector2d BaseCanvas::pixels_to_coords(const Vector2d& p_Pixels) const
 	return centre_Coords + offset_Coords;
 }
 
+itk::Index<2> BaseCanvas::pixels_to_position(const Vector2d& p_Pixels) const
+{
+	Vector2d p_Coords = pixels_to_coords(p_Pixels);
+	itk::Index<2> position;
+	for(int i=0; i<2; ++i)
+	{
+		position[i] = NumericUtil::round_to_nearest<long>(p_Coords[i]);
+	}
+	return position;
+}
+
 Vector2d BaseCanvas::project_to_2d(const Vector3d& p) const
 {
 	switch(camera()->slice_orientation())
@@ -304,6 +315,19 @@ Vector2d BaseCanvas::project_to_2d(const Vector3d& p) const
 		case ORIENT_XY:	return Vector2d(p.x, p.y);
 		case ORIENT_XZ:	return Vector2d(p.x, p.z);
 		case ORIENT_YZ:	return Vector2d(p.y, p.z);
+	}
+
+	// This should never happen.
+	throw Exception("Bad slice orientation");
+}
+
+itk::Index<3> BaseCanvas::project_to_3d(const itk::Index<2>& position) const
+{
+	switch(camera()->slice_orientation())
+	{
+		case ORIENT_XY:	return ITKImageUtil::make_index(position[0], position[1], camera()->slice_location().z);
+		case ORIENT_XZ:	return ITKImageUtil::make_index(position[0], camera()->slice_location().y, position[1]);
+		case ORIENT_YZ:	return ITKImageUtil::make_index(camera()->slice_location().x, position[0], position[1]);
 	}
 
 	// This should never happen.

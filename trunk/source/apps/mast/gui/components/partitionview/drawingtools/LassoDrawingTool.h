@@ -14,8 +14,8 @@ class LassoDrawingTool : public LineBasedDrawingTool
 {
 	//#################### PUBLIC METHODS ####################
 public:
-	void mouse_dragged(const Vector2i& p);
-	void mouse_pressed(const Vector2i& p);
+	void mouse_dragged(const Vector2i& p_Pixels, const itk::Index<2>& position);
+	void mouse_pressed(const Vector2i& p_Pixels, const itk::Index<2>& position);
 	ToolStyle style() const;
 };
 

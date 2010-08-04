@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_LINEBASEDDRAWINGTOOL
 
 #include <list>
+#include <utility>
 
 #include "DrawingTool.h"
 
@@ -16,14 +17,14 @@ class LineBasedDrawingTool : public DrawingTool
 {
 	//#################### PROTECTED VARIABLES ####################
 protected:
-	std::list<Vector2i> m_drawnPixels;
+	std::list<std::pair<Vector2i,itk::Index<2> > > m_drawnLocations;
 
 	//#################### PUBLIC METHODS ####################
 public:
 	bool has_started() const;
 	void render() const;
 	void reset();
-	std::vector<Vector2i> selected_pixels() const;
+	std::vector<itk::Index<2> > selected_positions() const;
 };
 
 }

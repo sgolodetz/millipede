@@ -28,15 +28,11 @@ void DICOMCanvas::render(wxPaintDC& dc) const
 //#################### PRIVATE METHODS ####################
 void DICOMCanvas::finish_drawing(wxMouseEvent& e)
 {
-	std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
+	std::vector<itk::Index<2> > selectedPositions = current_drawing_tool()->selected_positions();
 	std::set<int> uniqueLeaves;
-	for(size_t i=0, size=selectedPixels.size(); i<size; ++i)
+	for(size_t i=0, size=selectedPositions.size(); i<size; ++i)
 	{
-		const Vector2i& p_Pixels = selectedPixels[i];
-		Vector3d p_Coords = pixels_to_3d_coords(Vector2d(p_Pixels));
-		itk::Index<3> position;
-		for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
-		uniqueLeaves.insert(model()->volume_ipf()->leaf_of_position(position));
+		uniqueLeaves.insert(model()->volume_ipf()->leaf_of_position(project_to_3d(selectedPositions[i])));
 	}
 
 	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
@@ -96,7 +92,7 @@ void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
 	Vector2i p_Pixels(e.GetX(), e.GetY());
 	if(within_image_bounds(p_Pixels))
 	{
-		current_drawing_tool()->mouse_pressed(p_Pixels);
+		current_drawing_tool()->mouse_pressed(p_Pixels, pixels_to_position(Vector2d(p_Pixels)));
 
 		if(current_drawing_tool()->style() == DrawingTool::TOOLSTYLE_INSTANTANEOUS)
 		{
@@ -110,7 +106,8 @@ void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 {
 	if(!model()->volume_ipf() || !current_drawing_tool() || !current_drawing_tool()->has_started()) return;
 
-	current_drawing_tool()->mouse_released(Vector2i(e.GetX(), e.GetY()));
+	Vector2i p_Pixels(e.GetX(), e.GetY());
+	current_drawing_tool()->mouse_released(p_Pixels, pixels_to_position(Vector2d(p_Pixels)));
 
 	if(current_drawing_tool()->style() != DrawingTool::TOOLSTYLE_MULTICLICK)
 	{
@@ -128,7 +125,7 @@ void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 		{
 			Vector2i p_Pixels(e.GetX(), e.GetY());
 			p_Pixels = clamp_to_image_bounds(p_Pixels);
-			current_drawing_tool()->mouse_dragged(p_Pixels);
+			current_drawing_tool()->mouse_dragged(p_Pixels, pixels_to_position(Vector2d(p_Pixels)));
 			Refresh();
 		}
 		else OnLeftDown(e);

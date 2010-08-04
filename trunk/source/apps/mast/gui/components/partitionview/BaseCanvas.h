@@ -79,7 +79,9 @@ protected:
 	Vector2d pixel_to_coord_offset(const Vector2d& offset_Pixels) const;
 	Vector3d pixels_to_3d_coords(const Vector2d& p_Pixels) const;
 	Vector2d pixels_to_coords(const Vector2d& p_Pixels) const;
+	itk::Index<2> pixels_to_position(const Vector2d& p_Pixels) const;
 	Vector2d project_to_2d(const Vector3d& p) const;
+	itk::Index<3> project_to_3d(const itk::Index<2>& position) const;
 	Vector3d project_to_3d(const Vector2d& p) const;
 	bool within_image_bounds(const Vector2i& p_Pixels) const;
 
