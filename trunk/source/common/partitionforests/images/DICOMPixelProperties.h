@@ -7,6 +7,8 @@
 #define H_MILLIPEDE_DICOMPIXELPROPERTIES
 
 #include <iosfwd>
+#include <map>
+#include <string>
 
 namespace mp {
 
@@ -27,6 +29,7 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	int base_value() const;
+	std::map<std::string,std::string> branch_property_map() const;
 	short gradient_magnitude_value() const;
 	unsigned char grey_value() const;
 };

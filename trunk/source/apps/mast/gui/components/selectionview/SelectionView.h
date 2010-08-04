@@ -24,6 +24,7 @@ class SelectionView : public wxListCtrl
 	//#################### TYPEDEFS ####################
 private:
 	typedef typename BranchLayer::NodeProperties BranchProperties;
+	typedef typename LeafLayer::NodeProperties LeafProperties;
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 
@@ -103,7 +104,7 @@ public:
 		// Set up the columns.
 		add_column("Node ID");
 		add_column("Features");
-		std::vector<std::string> propertyNames = BranchProperties::property_names();
+		std::vector<std::string> propertyNames = BranchProperties::branch_property_names();
 		for(size_t i=0, size=propertyNames.size(); i<size; ++i)
 		{
 			add_column(propertyNames[i]);
@@ -159,14 +160,14 @@ private:
 			}
 			SetItem(index, m_columnMap.find("Features")->second, string_to_wxString(oss.str()));
 
-			if(it->layer() > 0)
+			std::map<std::string,std::string> propertyMap;
+			if(it->layer() > 0)	propertyMap = m_model->volume_ipf()->branch_properties(*it).branch_property_map();
+			else				propertyMap = m_model->volume_ipf()->leaf_properties(it->index()).branch_property_map();
+
+			for(std::map<std::string,std::string>::const_iterator jt=propertyMap.begin(), jend=propertyMap.end(); jt!=jend; ++jt)
 			{
-				std::map<std::string,std::string> propertyMap = m_model->volume_ipf()->branch_properties(*it).property_map();
-				for(std::map<std::string,std::string>::const_iterator jt=propertyMap.begin(), jend=propertyMap.end(); jt!=jend; ++jt)
-				{
-					int column = m_columnMap.find(jt->first)->second;
-					SetItem(index, column, string_to_wxString(jt->second));
-				}
+				int column = m_columnMap.find(jt->first)->second;
+				SetItem(index, column, string_to_wxString(jt->second));
 			}
 		}
 

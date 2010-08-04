@@ -33,13 +33,19 @@ void DICOMCanvas::finish_drawing(wxMouseEvent& e)
 	VolumeIPFSelection_Ptr selectionDiff(new VolumeIPFSelectionT(model()->volume_ipf()));
 
 	std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
+	std::set<int> uniqueLeaves;
 	for(size_t i=0, size=selectedPixels.size(); i<size; ++i)
 	{
 		const Vector2i& p_Pixels = selectedPixels[i];
 		Vector3d p_Coords = pixels_to_3d_coords(Vector2d(p_Pixels));
 		itk::Index<3> position;
 		for(int i=0; i<3; ++i) position[i] = NumericUtil::round_to_nearest<int>(p_Coords[i]);
-		selectionDiff->select_node(PFNodeID(0, model()->volume_ipf()->leaf_of_position(position)));
+		uniqueLeaves.insert(model()->volume_ipf()->leaf_of_position(position));
+	}
+
+	for(std::set<int>::const_iterator it=uniqueLeaves.begin(), iend=uniqueLeaves.end(); it!=iend; ++it)
+	{
+		selectionDiff->select_node(PFNodeID(0, *it));
 	}
 
 	VolumeIPFSelection_Ptr newSelection;

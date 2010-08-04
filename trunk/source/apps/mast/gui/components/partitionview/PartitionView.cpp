@@ -839,7 +839,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 		drawingToolsSizer->Add(new wxStaticText(this, wxID_ANY, wxT("Drawing Tool:")), 0, wxALIGN_CENTRE_VERTICAL);
 
 		wxString drawingToolTypes[DRAWINGTOOL_COUNT];
-		drawingToolTypes[DRAWINGTOOL_BOX] = wxT("Box Select");
+		drawingToolTypes[DRAWINGTOOL_BOX] = wxT("Box");
 		drawingToolTypes[DRAWINGTOOL_LASSO] = wxT("Lasso");
 		drawingToolTypes[DRAWINGTOOL_LINELOOP] = wxT("Line Loop");
 

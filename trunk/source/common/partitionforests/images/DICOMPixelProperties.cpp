@@ -7,6 +7,8 @@
 
 #include <ostream>
 
+#include <boost/lexical_cast.hpp>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -23,9 +25,28 @@ DICOMPixelProperties::DICOMPixelProperties(int baseValue, short gradientMagnitud
 {}
 
 //#################### PUBLIC METHODS ####################
-int DICOMPixelProperties::base_value() const					{ return m_baseValue; }
-short DICOMPixelProperties::gradient_magnitude_value() const	{ return m_gradientMagnitudeValue; }
-unsigned char DICOMPixelProperties::grey_value() const			{ return m_greyValue; }
+int DICOMPixelProperties::base_value() const
+{
+	return m_baseValue;
+}
+
+std::map<std::string,std::string> DICOMPixelProperties::branch_property_map() const
+{
+	std::map<std::string,std::string> m;
+	m.insert(std::make_pair("Mean Grey Value", boost::lexical_cast<std::string,int>(m_greyValue)));
+	m.insert(std::make_pair("Voxel Count", "1"));
+	return m;
+}
+
+short DICOMPixelProperties::gradient_magnitude_value() const
+{
+	return m_gradientMagnitudeValue;
+}
+
+unsigned char DICOMPixelProperties::grey_value() const
+{
+	return m_greyValue;
+}
 
 //#################### GLOBAL OPERATORS ####################
 std::ostream& operator<<(std::ostream& os, const DICOMPixelProperties& rhs)
