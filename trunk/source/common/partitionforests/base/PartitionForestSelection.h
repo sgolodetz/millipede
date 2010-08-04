@@ -284,20 +284,7 @@ public:
 	{
 		m_nodes.resize(m_forest->highest_layer() + 1);
 		m_nodes[0] = leaves;
-
-		for(int i=0; i<m_forest->highest_layer(); ++i)
-		{
-			std::set<PFNodeID> parents;
-			for(std::set<int>::const_iterator jt=m_nodes[i].begin(), jend=m_nodes[i].end(); jt!=jend; ++jt)
-			{
-				parents.insert(m_forest->parent_of(PFNodeID(i, *jt)));
-			}
-
-			for(std::set<PFNodeID>::const_iterator jt=parents.begin(), jend=parents.end(); jt!=jend; ++jt)
-			{
-				consolidate_node(*jt, boost::none);
-			}
-		}
+		consolidate_all();
 	}
 
 	//#################### DESTRUCTOR ####################
@@ -346,15 +333,32 @@ public:
 		// Note: This method should only be invoked on newly-created selections.
 		assert(empty());
 
-		for(NodeConstIterator it=lhs->nodes_cbegin(), iend=lhs->nodes_cend(); it!=iend; ++it)
-		{
-			select_node_impl(*it, -1);
-		}
+		*this = *lhs;
 
 		for(NodeConstIterator it=rhs->nodes_cbegin(), iend=rhs->nodes_cend(); it!=iend; ++it)
 		{
 			select_node_impl(*it, -1);
 		}
+	}
+
+	void combine_using_leaves(const PartitionForestSelection_CPtr& lhs, const PartitionForestSelection_CPtr& rhs)
+	{
+		// Note: This method should only be invoked on newly-created selections.
+		assert(empty());
+
+		for(NodeConstIterator it=lhs->nodes_cbegin(), iend=lhs->nodes_cend(); it!=iend; ++it)
+		{
+			std::deque<int> receptiveRegion = m_forest->receptive_region_of(*it);
+			std::copy(receptiveRegion.begin(), receptiveRegion.end(), std::inserter(m_nodes[0], m_nodes[0].begin()));
+		}
+
+		for(NodeConstIterator it=rhs->nodes_cbegin(), iend=rhs->nodes_cend(); it!=iend; ++it)
+		{
+			std::deque<int> receptiveRegion = m_forest->receptive_region_of(*it);
+			std::copy(receptiveRegion.begin(), receptiveRegion.end(), std::inserter(m_nodes[0], m_nodes[0].begin()));
+		}
+
+		consolidate_all();
 	}
 
 	void command_sequence_execution_ended(const std::string& description, int commandDepth)
@@ -547,15 +551,35 @@ public:
 		// Note: This method should only be invoked on newly-created selections.
 		assert(empty());
 
-		for(NodeConstIterator it=lhs->nodes_cbegin(), iend=lhs->nodes_cend(); it!=iend; ++it)
-		{
-			select_node_impl(*it, -1);
-		}
+		*this = *lhs;
 
 		for(NodeConstIterator it=rhs->nodes_cbegin(), iend=rhs->nodes_cend(); it!=iend; ++it)
 		{
 			deselect_node_impl(*it, -1);
 		}
+	}
+
+	void subtract_using_leaves(const PartitionForestSelection_CPtr& lhs, const PartitionForestSelection_CPtr& rhs)
+	{
+		// Note: This method should only be invoked on newly-created selections.
+		assert(empty());
+
+		for(NodeConstIterator it=lhs->nodes_cbegin(), iend=lhs->nodes_cend(); it!=iend; ++it)
+		{
+			std::deque<int> receptiveRegion = m_forest->receptive_region_of(*it);
+			std::copy(receptiveRegion.begin(), receptiveRegion.end(), std::inserter(m_nodes[0], m_nodes[0].begin()));
+		}
+
+		for(NodeConstIterator it=rhs->nodes_cbegin(), iend=rhs->nodes_cend(); it!=iend; ++it)
+		{
+			std::deque<int> receptiveRegion = m_forest->receptive_region_of(*it);
+			for(std::deque<int>::const_iterator jt=receptiveRegion.begin(), jend=receptiveRegion.end(); jt!=jend; ++jt)
+			{
+				m_nodes[0].erase(*jt);
+			}
+		}
+
+		consolidate_all();
 	}
 
 	void toggle_node(const PFNodeID& node)
@@ -589,6 +613,23 @@ private:
 		}
 		m_listeners->selection_was_cleared(commandDepth);
 		return modification;
+	}
+
+	void consolidate_all()
+	{
+		for(int i=0; i<m_forest->highest_layer(); ++i)
+		{
+			std::set<PFNodeID> parents;
+			for(std::set<int>::const_iterator jt=m_nodes[i].begin(), jend=m_nodes[i].end(); jt!=jend; ++jt)
+			{
+				parents.insert(m_forest->parent_of(PFNodeID(i, *jt)));
+			}
+
+			for(std::set<PFNodeID>::const_iterator jt=parents.begin(), jend=parents.end(); jt!=jend; ++jt)
+			{
+				consolidate_node(*jt, boost::none);
+			}
+		}
 	}
 
 	bool consolidate_node(const PFNodeID& node, boost::optional<Modification&> modification)
