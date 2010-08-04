@@ -25,6 +25,10 @@ public:
 	void render() const;
 	void reset();
 	std::vector<itk::Index<2> > selected_positions() const;
+
+	//#################### PRIVATE METHODS ####################
+private:
+	static std::list<itk::Index<2> > line_positions(const itk::Index<2>& start, const itk::Index<2>& end);
 };
 
 }
