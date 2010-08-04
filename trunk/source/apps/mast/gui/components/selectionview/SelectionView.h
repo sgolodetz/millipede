@@ -149,6 +149,9 @@ private:
 		typedef typename PartitionModelT::VolumeIPFSelectionT::NodeConstIterator Iter;
 		for(Iter it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it, ++index)
 		{
+			// Don't display selected pixels - it's far too slow!
+			if(it->layer() == 0) continue;
+
 			InsertItem(index, string_to_wxString(boost::lexical_cast<std::string>(*it)));
 
 			std::vector<Feature> features = multiFeatureSelection->features_of(*it);

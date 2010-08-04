@@ -28,10 +28,6 @@ void DICOMCanvas::render(wxPaintDC& dc) const
 //#################### PRIVATE METHODS ####################
 void DICOMCanvas::finish_drawing(wxMouseEvent& e)
 {
-	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
-	typedef PartitionModelT::VolumeIPFSelection_Ptr VolumeIPFSelection_Ptr;
-	VolumeIPFSelection_Ptr selectionDiff(new VolumeIPFSelectionT(model()->volume_ipf()));
-
 	std::vector<Vector2i> selectedPixels = current_drawing_tool()->selected_pixels();
 	std::set<int> uniqueLeaves;
 	for(size_t i=0, size=selectedPixels.size(); i<size; ++i)
@@ -43,10 +39,9 @@ void DICOMCanvas::finish_drawing(wxMouseEvent& e)
 		uniqueLeaves.insert(model()->volume_ipf()->leaf_of_position(position));
 	}
 
-	for(std::set<int>::const_iterator it=uniqueLeaves.begin(), iend=uniqueLeaves.end(); it!=iend; ++it)
-	{
-		selectionDiff->select_node(PFNodeID(0, *it));
-	}
+	typedef PartitionModelT::VolumeIPFSelectionT VolumeIPFSelectionT;
+	typedef PartitionModelT::VolumeIPFSelection_Ptr VolumeIPFSelection_Ptr;
+	VolumeIPFSelection_Ptr selectionDiff(new VolumeIPFSelectionT(model()->volume_ipf(), uniqueLeaves));
 
 	VolumeIPFSelection_Ptr newSelection;
 

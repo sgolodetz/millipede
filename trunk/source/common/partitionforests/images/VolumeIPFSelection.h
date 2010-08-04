@@ -30,6 +30,10 @@ public:
 	:	PartitionForestSelection<LeafLayer,BranchLayer>(volumeIPF), m_volumeIPF(volumeIPF)
 	{}
 
+	VolumeIPFSelection(const VolumeIPF_Ptr& volumeIPF, const std::set<int>& leaves)
+	:	PartitionForestSelection<LeafLayer,BranchLayer>(volumeIPF, leaves), m_volumeIPF(volumeIPF)
+	{}
+
 	//#################### PUBLIC METHODS ####################
 public:
 	VolumeIPF_CPtr volume_ipf() const

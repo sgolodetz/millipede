@@ -277,6 +277,29 @@ public:
 		m_nodes.resize(m_forest->highest_layer() + 1);
 	}
 
+	PartitionForestSelection(const PartitionForest_Ptr& forest, const std::set<int>& leaves)
+	:	m_commandManager(new BasicCommandManager),
+		m_forest(forest),
+		m_listeners(new CompositeListener)
+	{
+		m_nodes.resize(m_forest->highest_layer() + 1);
+		m_nodes[0] = leaves;
+
+		for(int i=0; i<m_forest->highest_layer(); ++i)
+		{
+			std::set<PFNodeID> parents;
+			for(std::set<int>::const_iterator jt=m_nodes[i].begin(), jend=m_nodes[i].end(); jt!=jend; ++jt)
+			{
+				parents.insert(m_forest->parent_of(PFNodeID(i, *jt)));
+			}
+
+			for(std::set<PFNodeID>::const_iterator jt=parents.begin(), jend=parents.end(); jt!=jend; ++jt)
+			{
+				consolidate_node(*jt, boost::none);
+			}
+		}
+	}
+
 	//#################### DESTRUCTOR ####################
 public:
 	virtual ~PartitionForestSelection()
@@ -589,7 +612,7 @@ private:
 		return true;
 	}
 
-	void consolidate_upwards_from_node(const PFNodeID& node, Modification& modification)
+	void consolidate_upwards_from_node(const PFNodeID& node, boost::optional<Modification&> modification)
 	{
 		PFNodeID cur = node;
 		while(cur != PFNodeID::invalid() && consolidate_node(cur, modification))
