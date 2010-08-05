@@ -119,8 +119,6 @@ std::list<itk::Index<2> > LineBasedDrawingTool::line_positions(const itk::Index<
 	const long dy = y1 - y0;
 	const bool swapXY = abs(dy) > abs(dx);
 
-	const long& a0 = swapXY ? y0 : x0;
-	const long& b0 = swapXY ? x0 : y0;
 	const long& a1 = swapXY ? y1 : x1;
 	const long& da = swapXY ? dy : dx;
 	const long& db = swapXY ? dx : dy;
