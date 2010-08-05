@@ -28,17 +28,18 @@ that must satisfy the following properties:
 
 \end{enumerate}
 
-We define a regional-minima to be an edge that is surrounded by edges of geater weight, i.e.
+Define a regional-minima to be an edge that is surrounded by edges of geater weight, i.e.
 An edge $e = (a,b,k)$ is a regional minima iff
 $\forall c \in E, l \in \mathbb{N} :
   (c,b,l) \in E \implies l \geq k\ and\
   (a,c,l) \in E \implies l \geq k $
+Equivalently, $e$ is the edge of smallest weight conneted to nodes $a$ and similarly for node $b$.
 
 ??? example.
 
-A path between to regional minima is then a sequence of $n$ edges $e_1 ... e_n$
-such that $e_1$ and $e_n$ are the only two regional minima
-and for each $ 0 \leq i \le n,\ e_i = (a,b,w_1) , e_{i+1} = (b,c,w_2)$
+A path between to regional minima is then a sequence of $n$ edges $e_0 ... e_{n-1}$
+such that $e_0$ and $e_n$ are the only two regional minima
+and for each $ 0 leq i < n,\ , \exists a,b,c \in N \colon e_i = (a,b,w_1) , e_{i+1} = (b,c,w_2)$
 
 \noindent An edge is path-maximal if it is the edge with greatest weight along a path.
 The waterfall algorithm then elides all but those edges that are of maximal weight along some path.
@@ -47,20 +48,20 @@ The waterfall algorithm then elides all but those edges that are of maximal weig
 
 \begin{proof}:
 
-\noindent "$\Rightarrow$"
+\noindent `$\Rightarrow$'
 \indent
   Let $e$ be an edge in the graph and suppose it is path-maximal.
-  By definition there exists a sequence of edges $e_1 ... e_n$
+  By definition there exists a sequence of edges $e_0 ... e_{n-1}$
   with $c = e_i$ for some $ 0 \leq i leq n$. Clearly $i \neq 0$ and $i \neq n$ since
   $e_i$ and $e_n$ must be regional minima. Therefore at each end of $c$ there is another edge
   leading from that node with weight smaller than that of $c$, so $c$ is
   not the minimum edge away from either of its endpoints.
-
-"$\Leftarrow$"
+\noindent
+`$\Leftarrow$'
+\indent
   Let $e = (n_1,n_2,w_e)$ be an edge such that it is not the minimum edge away from either of its endpoints.
-  Let  $a$ be the minimum edge connected to $n_1$ and $b$ be the minimum edge connected to $n_2$
+  Let  $a_0$ be the minimum edge connected to $n_1$ and $b_0$ be the minimum edge connected to $n_2$
 
-  ...
   Create a sequence of edges from $n_1$ by always picking the smallest edge from the current vertex until
   you the smallest edge is already in the sequence.
   Do  the same for $n_2$

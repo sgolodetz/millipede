@@ -192,53 +192,123 @@ conventional iterative transformations.
 
 \subsection{How it works}
 
- MST (only briefly)
+ 
+The algorithm is now simply a case of identifying the minimum edge
+of each node and eliding it. Working recursively down the tree,
+there are four cases to consider for an edge $e$ between a parent node
+$p$ and a child node $c$.
+\begin{enumerate}
+\item e is     the minimum edge of p and not the minimum edge of c
+\item e is     the minimum edge of p and     the minimum edge of c
+\item e is not the minimum edge of p and not the minimum edge of c
+\item e is not the minimum edge of p and     the minimum edge of c
+\end{enumerate}
+
+
+Let's see this on an example:
+@@@ insert example.
+
+
+Some thigns to note:
+\begin{enumerate}
+\item Precisely one edge from each node will satisfy case 1 or case 2. All other nodes must be an istance of case 3 or case 4.
+\item If $e$ satisfies case 2 or case 4 then we have identified the minimum edge of $c$ already so none of $c$'s children can satisfy cases 1 or 2.
+\item For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3 will they remain unmerged.
+\end{enumerate}
+
+For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3 will they remain unmerged and is thus the simplest case to manage.
+We can simply make a recursive call on $c$ having eliminated one of its children.
+
+
+We define two functions of the same type,  (Tree a -> Tree a)
+The first function operates on a parent node and a list of (some of) its children and we asume the minimum child is in that list.
+The second operates on a node and a list of children without,...
+
+
+The tree structure is origionally defied as
+
+> data Tree a = Node a [Edge a]
+>
+> data  Edge a = Edge Int (Tree a)
+
+That is a tree is rooted at a node and a node is a region and a list of weighted edges to its children.
+
+We also define a labelled tree that identifies each edge with one of the cases above
+
+> data LTree a = LNode a [LEdge a]
+>
+> data  LEdge a = LEdge Label Int (Tree a)
+>
+> data Label = Case1 | Case2 | Case3 | Case4
+
+Since the waterfall algortihm works by merging together, we will need a merge operation on each region of the graph. To do this we define a type class mergeable.
+
+> class Mergeable a where
+>   union :: a -> a -> a
+>   unions :: [a] -> a
+>   unions = foldl union empty
+>   empty :: a
+>   empty = unions []
+
+
+The waterfall algorith will then consist of a pair of functions,
+
+> label :: Mergeable a => Tree a -> LTree a
+> elide :: Mergeable a => LTree a -> Tree a
+
+The function elide is simple to define, it walks the tree and merges each pair of nodes not joined by a Case3 edge because of lemma 3.
 
 \begin{verbatim}
- Eliding edges - cases I to IV
+elide (LNode a []) = Node a []
+elide (LNode a ((LEdge l w child):children))  = case l of
+    Case3     -> addChild w child' r
+    _ -> mergeNodes child' r
+    where
+      r = elide (LNode a children)
+      child' = elide child
 
- Case I     parent -> child ->
+addChild :: Int ->Tree a ->Tree a ->Tree a
+addChild w child (Node a children) = Node a ((Edge w child):children)
 
-   Recurse on child first, as there's bound to be a minimum further
-   down, then combine parent with the result of that operation.
+mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
+mergeNodes (Node r1 cs1) (Node r2 cs2) = Node (union r1 r2) (union cs1 cs2)
 
- Case II    parent <-> child
+\end{verbatim}
 
-   Can't just elide the edge between parent and child and merge the
-   two into one node, because there may be other children of the
-   parent which need to be recursed on separately from the children of
-   the child. (NB Illustrate this on the sample tree.)  Well, after
-   further discussion it seems that we could, in fact, just elide that
-   edge, but we want to think about it more.
-   
-   Use the recurseWithNoDownMerging function, which recurses without
-   looking for a minimum first. (Children can merge up with the
-   current node, but the current node does not attempt to merge down
-   with its children.)
+It now remains only to define the function $mark$. This function starts at the root of an unlabelled tree and walks through, labelling each edge. The only edges of the root are its children, so we know th minimum edge of the root is its smallest child. By lemma 1, we know that the minimum child will satisfy either case 1 or case 2 and the other nodes will satisfy either case 3 or case 4.
 
- Case III   parent -> ? (where '?' can be above or below the parent)
-            |
-            child ->
+\begin{verbatim}
 
-   This is similar to Case I. After recursing there is no need to
-   combine the parent with the result of the recursion on the
-   child. Simply keep in place the edge between the parent and child.
+mark (Node a []) = LNode a []
+mark (Node r cs) = LNode r (case1and2 minChild : map case3and4 cs')
+  where
+   (minChild,cs') = findMinChild cs
 
- Case IV    parent -> ? (where '?' can be above or below the parent)
-            ^
-            |
-            child
+\end{verbatim}
 
-    Use the recurseWithNodownMerging but do combine the result
-    afterwards, as in Case II. (This is semantically identical to Case
-    II but is treated separately for clarity of cases considered.)
+Given an edge $e = Edge w t$ that we know to satisfy either case 1 or case 2, it if fairly easy to tell which sincr $w$ is the smallest edge from t if and only if each edge to a child of t has weight larger than w (or t has no children).
+If $s$ is a case 2 edge, then all of its chldren bust be case 3 or case 4 edges.
+Otherwise $e$ is a case 1 edge and $t$'s children may satisfy any case.
+
+Distinguishing between cases 3 and 4 is identical, except for the actual labelling.
+
+\begin{verbatim}
+case1and2 :: Mergeable a => Edge a -> LEdge a
+case1and2 (Edge w t)
+  | hasChildren t && w > minVal t = LEdge Case1 w (mark t)
+  | childless t || w <= minVal t = LEdge Case2 w (mapE case3and4 t)
+  | otherwise = error "pattern match failure in case1and2"
+  where
+    mapE f (Node a es) = (LNode a (map f es))
 
 
-[In the actual paper, consider cases II and III swapped, and explain
-that it's more important what the child "wants" than what the parent
-"wants". No, scrap that.]
-
-Then for each parent iterate through each child...
+case3and4 :: Mergeable a => Edge a -> LEdge a
+case3and4  (Edge w t)
+  | hasChildren t && w > minVal t = LEdge Case3 w (mark t)
+  | childless t || w <= minVal t = LEdge Case4 w (mapE case3and4 t)
+  | otherwise = error "pattern match failure in case3and4"
+  where
+    mapE f (Node a es) = (LNode a (map f es))
 \end{verbatim}
 
 \subsection{Correctness?}
