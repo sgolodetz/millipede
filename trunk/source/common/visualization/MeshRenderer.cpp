@@ -4,6 +4,7 @@
  ***/
 
 #include <cassert>
+#include <climits>
 
 #include "MeshRenderer.h"
 #include "MeshUtil.h"
