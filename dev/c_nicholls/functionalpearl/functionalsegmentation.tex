@@ -192,7 +192,7 @@ conventional iterative transformations.
 
 \subsection{How it works}
 
- 
+
 The algorithm is now simply a case of identifying the minimum edge
 of each node and eliding it. Working recursively down the tree,
 there are four cases to consider for an edge $e$ between a parent node
@@ -227,34 +227,38 @@ The second operates on a node and a list of children without,...
 
 The tree structure is origionally defied as
 
-> data Tree a = Node a [Edge a]
->
-> data  Edge a = Edge Int (Tree a)
+\begin{verbatim}
+data Tree a = Node a [Edge a]
+data  Edge a = Edge Int (Tree a)
+\end{verbatim}
 
 That is a tree is rooted at a node and a node is a region and a list of weighted edges to its children.
 
 We also define a labelled tree that identifies each edge with one of the cases above
 
-> data LTree a = LNode a [LEdge a]
->
-> data  LEdge a = LEdge Label Int (Tree a)
->
-> data Label = Case1 | Case2 | Case3 | Case4
+\begin{verbatim}
+data LTree a = LNode a [LEdge a]
+data  LEdge a = LEdge Label Int (Tree a)
+data Label = Case1 | Case2 | Case3 | Case4
+\end{verbatim}
 
 Since the waterfall algortihm works by merging together, we will need a merge operation on each region of the graph. To do this we define a type class mergeable.
 
-> class Mergeable a where
->   union :: a -> a -> a
->   unions :: [a] -> a
->   unions = foldl union empty
->   empty :: a
->   empty = unions []
-
+\begin{verbatim}
+class Mergeable a where
+  union :: a -> a -> a
+  unions :: [a] -> a
+  unions = foldl union empty
+  empty :: a
+  empty = unions []
+\end{verbatim}
 
 The waterfall algorith will then consist of a pair of functions,
 
-> label :: Mergeable a => Tree a -> LTree a
-> elide :: Mergeable a => LTree a -> Tree a
+\begin{verbatim}
+label :: Mergeable a => Tree a -> LTree a
+elide :: Mergeable a => LTree a -> Tree a
+\end{verbatim}
 
 The function elide is simple to define, it walks the tree and merges each pair of nodes not joined by a Case3 edge because of lemma 3.
 
@@ -284,6 +288,14 @@ mark (Node r cs) = LNode r (case1and2 minChild : map case3and4 cs')
   where
    (minChild,cs') = findMinChild cs
 
+
+findMinChild :: [Edge a] -> (Edge a,[Edge a])
+findMinChild [] = undefined
+findMinChild [x]  = (x,[])
+findMinChild (x:xs)
+   | y < x = (y,x:ys)
+   | otherwise = (x,y:ys)
+   where (y,ys) = findMinChild xs
 \end{verbatim}
 
 Given an edge $e = Edge w t$ that we know to satisfy either case 1 or case 2, it if fairly easy to tell which sincr $w$ is the smallest edge from t if and only if each edge to a child of t has weight larger than w (or t has no children).
@@ -311,17 +323,106 @@ case3and4  (Edge w t)
     mapE f (Node a es) = (LNode a (map f es))
 \end{verbatim}
 
+It would be good to avoid creating the intermediate LTree structure. Currently the LTree is created by mark and consumed directly by elide, so it should be possible to fude the two functions into one pass.
+Indeed, by rewriting elide, we can see that the function mark acts as a tree-map and elide acts as a fold.
+
+\begin{verbatim}
+elide :: Mergeable a => LTree a -> Tree a
+elide (LNode a xs) = foldr f (Node a []) xs
+  where
+    f (LEdge Case3 w child) = addChild w (elide child)
+    f (LEdge _ _ child)     = mergeNodes (elide child)
+\end{verbatim}
+
+Equational reasoning ....
+
+\begin{verbatim}
+elide (mark (Node r cs))
+elide (LNode r ) (case1and2 minChild : map case3and4 cs')
+foldr f (Node r []) (case1and2 minChild : map case3and4 cs')
+f (case1and2 minChild) (foldr f (Node r []) (map case3and4 cs'))
+f (case1and2 minChild) (foldr (f.case3and4) (Node r []) cs')
+(f.case1and2) minChild (foldr (f.case3and4) (Node r []) cs')
+\end{verbatim}
+
+Next, see if (f.case3and4) can be simplified.
+There sre two cases to concider...
+\begin{verbatim}
+
+(f.case3and4) (Edge w t)
+----------
+(a)
+f (case3and4 (Edge w t)
+f (LEdge Case3 w (mark t)
+addChild w (elide(mark t))
+
+(b) (t = Node a cs)
+f (case3and4 (Edge w t))
+f (Ledge Case4 w (mapE case3and4 t))
+mergeNodes (elide (mapE case3and4 t))
+mergeNodes (elide (mapE case3and4 (Node a cs)))
+mergeNodes (elide (LNode a (map case3and4 cs)))
+mergeNodes (foldr f (Node a []) (map case3and4 cs))
+mergeNodes (foldr (f.case3and4) (Node a []) cs)
+
+\end{verbatim}
+
+f.case1and2 is very similar:
+
+\begin{verbatim}
+f.case1and2
+(a)
+f (case1and2 (Edge w t)
+f (LEdge Case1 w (mark t))
+mergeNodes (elide (mark t))
+
+(b)(t = Node a cs)
+f (case1and2 (Edge w t))
+f (LEgde Case2 w (mapE case3and4 t))
+mergeNodes (elide (mapE case3and4 t))
+mergeNodes (elide (mapE case3and4 (Node a cs)))
+mergeNodes (elide (LNode a (map case3and4 cs)))
+mergeNodes (foldr f (Node a []) (map case3and4 cs))
+mergeNodes (foldr (f.case3and4) (Node a []) cs)
+
+\end{verbatim}
+This gives us the following refinement
+
+\begin{verbatim}
+elideMark :: Mergeable a => Tree a -> Tree a
+elideMark (Node a []) = (Node a [])
+elideMark (Node r cs) = fcase1and2 minChild (foldr fcase3and4 (Node r []) cs')
+    where
+   (minChild,cs') = findMinChild cs
+
+fcase3and4 :: Mergeable a => Edge a ->Tree a -> Tree a
+fcase3and4 (Edge w t@(Node a cs))
+  | hasChildren t && w > minVal t = addChild w (elideMark t)
+  | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
+
+fcase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
+fcase1and2 (Edge w t@(Node a cs))
+  | hasChildren t && w > minVal t = mergeNodes (elideMark t)
+  | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
+
+\end{verbatim}
+\begin{verbatim}
+\end{verbatim}
+\begin{verbatim}
+\end{verbatim}
+
+
 \subsection{Correctness?}
 
 Define a graph as $G = (N,E)$
-where $N$ is the set of nodes and $E :: N\times N \times \mathbb{N}$ is the set 
+where $N$ is the set of nodes and $E :: N\times N \times \mathbb{N}$ is the set
 of weighted edges
 that must satisfy the following properties:
 \begin{enumerate}
 \item Transitivity. $(a,b,k) \in E  \iff (b,a,k) \in E$, if there is an edge fro
 m node a to node b, then there is an edge from node b to node a of the same weig
 ht.
-\item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there 
+\item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there
 is at most one edge between two nodes.
 \item We also require that no two edges are of equal weight, $(a_1,b_1,k) \in E\
  and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? prov
@@ -329,7 +430,7 @@ ide details.
 
 \end{enumerate}
 
-We define a regional minimum to be an edge that is surrounded by edges of geater 
+We define a regional minimum to be an edge that is surrounded by edges of geater
 weight, i.e.
 An edge $e = (a,b,k)$ is a regional minimum iff
 $\forall c \in E, l \in \mathbb{N} :
