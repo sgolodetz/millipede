@@ -209,9 +209,9 @@ Let's see this on an example:
 @@@ insert example.
 
 
-Some thigns to note:
+Some things to note:
 \begin{enumerate}
-\item Precisely one edge from each node will satisfy case 1 or case 2. All other nodes must be an istance of case 3 or case 4.
+\item Precisely one edge from each node will satisfy case 1 or case 2. All other nodes must be an instance of case 3 or case 4.
 \item If $e$ satisfies case 2 or case 4 then we have identified the minimum edge of $c$ already so none of $c$'s children can satisfy cases 1 or 2.
 \item For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3 will they remain unmerged.
 \end{enumerate}
@@ -221,11 +221,11 @@ We can simply make a recursive call on $c$ having eliminated one of its children
 
 
 We define two functions of the same type,  (Tree a -> Tree a)
-The first function operates on a parent node and a list of (some of) its children and we asume the minimum child is in that list.
+The first function operates on a parent node and a list of (some of) its children and we assume the minimum child is in that list.
 The second operates on a node and a list of children without,...
 
 
-The tree structure is origionally defied as
+The tree structure is originally defied as
 
 \begin{verbatim}
 data Tree a = Node a [Edge a]
@@ -242,7 +242,7 @@ data  LEdge a = LEdge Label Int (Tree a)
 data Label = Case1 | Case2 | Case3 | Case4
 \end{verbatim}
 
-Since the waterfall algortihm works by merging together, we will need a merge operation on each region of the graph. To do this we define a type class mergeable.
+Since the waterfall algorithm works by merging together, we will need a merge operation on each region of the graph. To do this we define a type class mergeable.
 
 \begin{verbatim}
 class Mergeable a where
@@ -253,7 +253,7 @@ class Mergeable a where
   empty = unions []
 \end{verbatim}
 
-The waterfall algorith will then consist of a pair of functions,
+The waterfall algorithm will then consist of a pair of functions,
 
 \begin{verbatim}
 label :: Mergeable a => Tree a -> LTree a
@@ -279,7 +279,7 @@ mergeNodes (Node r1 cs1) (Node r2 cs2) = Node (union r1 r2) (union cs1 cs2)
 
 \end{verbatim}
 
-It now remains only to define the function $mark$. This function starts at the root of an unlabelled tree and walks through, labelling each edge. The only edges of the root are its children, so we know th minimum edge of the root is its smallest child. By lemma 1, we know that the minimum child will satisfy either case 1 or case 2 and the other nodes will satisfy either case 3 or case 4.
+It now remains only to define the function $mark$. This function starts at the root of an unlabelled tree and walks through, labelling each edge. The only edges of the root are its children, so we know the minimum edge of the root is its smallest child. By lemma 1, we know that the minimum child will satisfy either case 1 or case 2 and the other nodes will satisfy either case 3 or case 4.
 
 \begin{verbatim}
 
@@ -299,7 +299,7 @@ findMinChild (x:xs)
 \end{verbatim}
 
 Given an edge $e = Edge w t$ that we know to satisfy either case 1 or case 2, it if fairly easy to tell which sincr $w$ is the smallest edge from t if and only if each edge to a child of t has weight larger than w (or t has no children).
-If $s$ is a case 2 edge, then all of its chldren bust be case 3 or case 4 edges.
+If $s$ is a case 2 edge, then all of its children must be case 3 or case 4 edges.
 Otherwise $e$ is a case 1 edge and $t$'s children may satisfy any case.
 
 Distinguishing between cases 3 and 4 is identical, except for the actual labelling.
@@ -323,7 +323,7 @@ case3and4  (Edge w t)
     mapE f (Node a es) = (LNode a (map f es))
 \end{verbatim}
 
-It would be good to avoid creating the intermediate LTree structure. Currently the LTree is created by mark and consumed directly by elide, so it should be possible to fude the two functions into one pass.
+It would be good to avoid creating the intermediate LTree structure. Currently the LTree is created by mark and consumed directly by elide, so it should be possible to fuse the two functions into one pass.
 Indeed, by rewriting elide, we can see that the function mark acts as a tree-map and elide acts as a fold.
 
 \begin{verbatim}
@@ -346,7 +346,7 @@ f (case1and2 minChild) (foldr (f.case3and4) (Node r []) cs')
 \end{verbatim}
 
 Next, see if (f.case3and4) can be simplified.
-There sre two cases to concider...
+There are two cases to consider...
 \begin{verbatim}
 
 (f.case3and4) (Edge w t)
@@ -420,17 +420,15 @@ of weighted edges
 that must satisfy the following properties:
 \begin{enumerate}
 \item Transitivity. $(a,b,k) \in E  \iff (b,a,k) \in E$, if there is an edge fro
-m node a to node b, then there is an edge from node b to node a of the same weig
-ht.
+m node a to node b, then there is an edge from node b to node a of the same weight.
 \item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there
 is at most one edge between two nodes.
 \item We also require that no two edges are of equal weight, $(a_1,b_1,k) \in E\
- and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? prov
-ide details.
+ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? provide details.
 
 \end{enumerate}
 
-We define a regional minimum to be an edge that is surrounded by edges of geater
+We define a regional minimum to be an edge that is surrounded by edges of greater
 weight, i.e.
 An edge $e = (a,b,k)$ is a regional minimum iff
 $\forall c \in E, l \in \mathbb{N} :
@@ -445,8 +443,7 @@ and for each $ 0 \leq i \le n,\ e_i = (a,b,w_1) , e_{i+1} = (b,c,w_2)$
 
 \noindent An edge is path-maximal if it is the edge with greatest weight along a
  path.
-The waterfall algorithm then elides all but those edges that are of maximal weig
-ht along some path.
+The waterfall algorithm then elides all but those edges that are of maximal weight along some path.
 
 \noindent Claim: An edge is path-maximal iff it is not the minimum edge away fro
 m either of its endpoints.
@@ -463,16 +460,16 @@ that must satisfy the following properties:
 
 \end{enumerate}
 
-Define a regional-minima to be an edge that is surrounded by edges of geater weight, i.e.
-An edge $e = (a,b,k)$ is a regional minima iff
+Define a regional-minimum to be an edge that is surrounded by edges of greater weight, i.e.
+An edge $e = (a,b,k)$ is a regional minimum iff
 $\forall c \in E, l \in \mathbb{N} :
   (c,b,l) \in E \implies l \geq k\ and\
   (a,c,l) \in E \implies l \geq k $
-Equivalently, $e$ is the edge of smallest weight conneted to nodes $a$ and similarly for node $b$.
+Equivalently, $e$ is the edge of smallest weight connoted to nodes $a$ and similarly for node $b$.
 
 ??? example.
 
-A path between to regional minima is then a sequence of $n$ edges $e_0 ... e_{n-1}$
+A path between two regional minima is then a sequence of $n$ edges $e_0 ... e_{n-1}$
 such that $e_0$ and $e_n$ are the only two regional minima
 and for each $ 0 leq i < n,\ , \exists a,b,c \in N \colon e_i = (a,b,w_1) , e_{i+1} = (b,c,w_2)$
 
@@ -521,6 +518,9 @@ The waterfall algorithm then elides all but those edges that are of maximal weig
 \section{Conclusions}
 
  - can be done in pure FP style
+
+(When implementing this in an imperative language, the four cases can
+ be reduced to just two, on nodes, but then two passes are necessary.)
 
  - clearer to write/code
 
