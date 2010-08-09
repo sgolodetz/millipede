@@ -1,4 +1,9 @@
+
+# compile the code 
 ghc -XFlexibleInstances -XFlexibleContexts -O2 --make run.hs
+ghc -O2 --make run.hs
+
+
 # make sure there is an `output' directory locally
 ./run test200x200.pgm 
 ./run test400.pgm 
