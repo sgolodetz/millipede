@@ -4,6 +4,7 @@ import Process(bounds,output,getAdjacencyList,arrayToNode,save,Voxel(Voxel) )
 import Waterfall(waterfalls,Edge(Edge))
 import Data.Time.Clock(getCurrentTime,diffUTCTime,NominalDiffTime,UTCTime)
 import PGM( pgmsFromFile)
+--import TreeScorer(kidneyScorer)
 import System.Environment(getArgs)
 
 main :: IO()
@@ -25,7 +26,7 @@ main = do
   putStrLn "Doing waterfall, converting output"
   let bs = bounds ar
   let trees = take 5 (waterfalls t)
-
+  --let kidneyScores = map kidneyScorer trees
 
   ars <- mapM (output bs) ( map (Edge 1000000000) trees)
 

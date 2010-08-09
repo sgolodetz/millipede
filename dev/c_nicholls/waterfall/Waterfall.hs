@@ -1,55 +1,52 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE  FlexibleInstances #-}
-module Waterfall(waterfalls,Edge(..),mkTree,Tree,Mergeable(union,unions),getRegion,getEdges) where
---import Data.Tree (Tree(..),Forest)
---import qualified Data.Foldable as F
+module Waterfall(waterfalls,Edge(..),mkTree,Tree(Node),Mergeable(union,unions),getRegion,getEdges,getNode) where
+
 import Data.List(sort)
 import qualified Data.Set  as Set
 
 data Tree a = Node a [Edge a]
 {- Invariant: The list of edges are sorted by weight (ascending) -}
 
-mkTree :: a -> [Edge a] -> Tree a
-mkTree r es = Node r (sort  es)
-
 data  Edge a = Edge Int (Tree a)
 
 waterfalls :: Mergeable a => Tree a -> [Tree a]
-waterfalls = takeWhile (hasChildren). iterate waterfall
+waterfalls = takeWhile hasChildren. iterate waterfall
+
+waterfall :: Mergeable a => Tree a -> Tree a
+waterfall (Node a []) = (Node a [])
+waterfall (Node r (c:cs)) = fcase1and2 c (foldr fcase3and4 (Node r []) cs)
 
 
-waterfall :: Mergeable a =>   Tree a -> Tree a
-waterfall  (Node r []) = Node r []
-waterfall  (Node r ((Edge w child):cs))
-  | hasChildren child && minVal child <  w
-               = mergeNodes (waterfall child) (wndm (Node r cs))  -- Case 1
-  -- | otherwise  = mergeNodes (wndm child )     (wndm (Node r cs))  -- Case 2
-  | otherwise  = wndm   (mergeNodes child  (Node r cs))   -- Case 2
+fcase3and4 :: Mergeable a => Edge a ->Tree a -> Tree a
+fcase3and4 (Edge w t@(Node a cs))
+  | hasChildren t && w > minVal t = addChild w (waterfall t)
+  | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
+
+fcase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
+fcase1and2 (Edge w t@(Node a cs))
+  | hasChildren t && w > minVal t = mergeNodes (waterfall t)
+  | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
 
 
-wndm :: Mergeable a =>   Tree a -> Tree a
-wndm  (Node r []) = Node r []
-wndm  (Node r ((Edge w child):cs))
-  | hasChildren child && minVal child <  w  -- Case 3
-               = isertAsChild (Edge w (waterfall child)) (wndm (Node r cs))
-  | otherwise  = mergeNodes (wndm child )      (wndm (Node r cs)) --Case 4
 
+-- Auxiliary functions
 
+addChild :: Int -> Tree a -> Tree a -> Tree a
+addChild w t (Node a cs) = Node a (Edge w t : cs)
+
+mkTree :: a -> [Edge a] -> Tree a
+mkTree r es = Node r (sort  es)
 
 mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
 mergeNodes (Node r1 cs1) (Node r2 cs2) = Node (union r1 r2) (merge cs1 cs2)
-
-isertAsChild :: Mergeable a => Edge a -> Tree a ->  Tree a
-isertAsChild e (Node r es)  =  Node r (e:es)
-
--- Auxiliary functions
 
 merge :: Ord a => [a] -> [a] -> [a]
 merge [] ys = ys
 merge xs [] = xs
 merge (x:xs) (y:ys)
-  | x <= y = x : merge xs (y:ys)
-  | otherwise = y : merge  (x:xs) ys
+  | x <= y = x :  xs ++ (y:ys)
+  | otherwise = y :  (x:xs) ++ ys
 
 hasChildren :: Tree a -> Bool
 hasChildren = not.childless
@@ -66,12 +63,17 @@ getEdges (Node  _ es) =  es
 getWeight :: Edge a -> Int
 getWeight (Edge w _ ) = w
 
+getNode :: Edge a -> Tree a
+getNode (Edge _ ns) = ns
+
 minVal :: Tree a  -> Int
 minVal = minimum.map getWeight.getEdges
 
 class Mergeable a where
   union :: a -> a -> a
   unions :: [a] -> a
+  empty :: a
+  empty = unions []
 
 instance Eq (Edge a) where
   (Edge w1 _) == (Edge w2 _) = w1 == w2
@@ -79,12 +81,10 @@ instance Eq (Edge a) where
 instance Ord (Edge a) where
   compare (Edge w1 _) (Edge w2 _) = compare w1 w2
 
-instance Mergeable [Char] where
+instance Mergeable [a] where
   union a b  = a ++ b
-  unions = foldr union ""
-
+  unions = foldr union []
 
 instance Ord a => Mergeable (Set.Set (Int,a)) where
   union = Set.union
   unions = Set.unions
-
