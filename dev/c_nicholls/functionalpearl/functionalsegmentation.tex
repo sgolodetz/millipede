@@ -188,10 +188,19 @@ The waterfall algorithm relies on identifying the edge of minimum
 weight which is adjacent to each node, and eliding it. This amounts to
 merging the two regions corresponding to the two node extremities of
 that edge.  (For brevity we will refer to such edges as `the minimum
-edge {\em of\/} that node'.)
+edge {\em of\/} that node'.) Figure~\ref{fig:merging} illustrates an
+example of merging.
 
-@@@ example illustrating the above
-
+\begin{figure}
+\centering
+\ifpdf
+        \epsfig{file=exampleplaceholder.pdf, width=.7\linewidth}%
+\else
+        % TODO
+\fi
+\caption{EXAMPLE PLACEHOLDER}
+\label{fig:merging}
+\end{figure}
 
 Since the waterfall algorithm works by merging edges, we will need a
 {\em merge} operation on each region of the graph. To do this we
@@ -220,8 +229,18 @@ for an edge $e$ between a parent node $p$ and a child node $c$.
 \end{enumerate}
 
 
-Let's see this on an example:
-@@@ insert example.
+This is illustrated with an example in Figure~\ref{fig:cases}.
+
+\begin{figure}
+\centering
+\ifpdf
+        \epsfig{file=exampleplaceholder.pdf, width=.7\linewidth}%
+\else
+        % TODO
+\fi
+\caption{EXAMPLE PLACEHOLDER}
+\label{fig:cases}
+\end{figure}
 
 
 Some things to note:
@@ -273,11 +292,12 @@ elide (LNode a ((LEdge l w child):children))  = case l of
       child' = elide child
 
 addChild :: Int -> Tree a -> Tree a -> Tree a
-addChild w child (Node a children) = Node a ((Edge w child):children)
+addChild w child (Node a children) = 
+                      Node a ((Edge w child):children)
 
 mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
-mergeNodes (Node r1 cs1) (Node r2 cs2) = Node (union r1 r2) (union cs1 cs2)
-
+mergeNodes (Node r1 cs1) (Node r2 cs2) = 
+                      Node (union r1 r2) (union cs1 cs2)
 \end{verbatim}
 
 It now remains only to define the function {\tt mark}. This function
@@ -407,9 +427,10 @@ This gives us the following refinement
 \begin{verbatim}
 elideMark :: Mergeable a => Tree a -> Tree a
 elideMark (Node a []) = (Node a [])
-elideMark (Node r cs) = fcase1and2 minChild (foldr fcase3and4 (Node r []) cs')
+elideMark (Node r cs) = 
+  fcase1and2 minChild (foldr fcase3and4 (Node r []) cs')
     where
-   (minChild,cs') = findMinChild cs
+    (minChild,cs') = findMinChild cs
 
 fcase3and4 :: Mergeable a => Edge a ->Tree a -> Tree a
 fcase3and4 (Edge w t@(Node a cs))
@@ -440,8 +461,11 @@ m node a to node b, then there is an edge from node b to node a of the same weig
 \item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there
 is at most one edge between two nodes.
 \item We also require that no two edges are of equal weight,
-  $(a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
-  b_2$. This restriction @@@ provide details.
+  \[
+  (a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
+  b_2
+  \]
+This restriction @@@ provide details.
 
 \end{enumerate}
 
@@ -452,7 +476,19 @@ $\forall c \in E, l \in \mathbb{N} :
   (c,b,l) \in E \implies l \geq k\ and\
   (a,c,l) \in E \implies l \geq k $
 
-@@@ example.
+
+This is illustrated with an example in Figure~\ref{fig:regmin}.
+
+\begin{figure}
+\centering
+\ifpdf
+        \epsfig{file=exampleplaceholder.pdf, width=.7\linewidth}%
+\else
+        % TODO
+\fi
+\caption{EXAMPLE PLACEHOLDER}
+\label{fig:regmin}
+\end{figure}
 
 A path between two regional minima is then a sequence of $n$ edges $e_1 ... e_n$
 such that $e_1$ and $e_n$ are the only two regional minima
@@ -480,8 +516,11 @@ that must satisfy the following properties:
   k_2$, there is at most one edge between two nodes.
 
 \item We also require that no two edges are of equal weight,
-  $(a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
-  b_2$. This restriction @@@ provide details.
+  \[
+  (a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
+  b_2
+  \] 
+  This restriction @@@ provide details.
 
 \end{enumerate}
 
@@ -492,7 +531,21 @@ k\ and\ (a,c,l) \in E \implies l \geq k $ Equivalently, $e$ is the
 edge of smallest weight connoted to nodes $a$ and similarly for node
 $b$.
 
-@@@ example.
+
+
+This is illustrated with an example in Figure~\ref{fig:surround}.
+
+\begin{figure}
+\centering
+\ifpdf
+        \epsfig{file=exampleplaceholder.pdf, width=.7\linewidth}%
+\else
+        % TODO
+\fi
+\caption{EXAMPLE PLACEHOLDER}
+\label{fig:surround}
+\end{figure}
+
 
 A path between two regional minima is then a sequence of $n$ edges $e_0 ... e_{n-1}$
 such that $e_0$ and $e_n$ are the only two regional minima
@@ -535,6 +588,13 @@ The waterfall algorithm then elides all but those edges that are of maximal weig
 (note that there is arbitrary choice about edges of same weight)
 
 
+\subsection{Plateaux}
+
+Discuss briefly the types of plateaux that can occur and their
+influence on the possible results.
+
+Point out that this issue went totally unspecified in the original
+algorithm.
 
 
 \section{Results}
