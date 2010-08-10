@@ -22,7 +22,6 @@ A simpler approach to waterfall
 \begin{document}
 
 \maketitle
-\pagestyle{empty}
 
 \begin{abstract}
 It is useful to be able to identify particular features in a set of
@@ -54,24 +53,15 @@ applications. SAY SOMETHING ABOUT FP APPROACH
  images originating from computerised tomography (CT) scanners. That
  is, we would like to fit contours around organ tissue featured in
  each image. A pair of algorithms called the watershed and waterfall
- algorithms have been shown to be effective for this
- purpose~\cite{golodetz}, although other approaches exist. This paper
+ algorithms -- proposed for the generic segmentation problem -- have
+ been shown to be effective for the purpose of CT
+ imaging~\cite{golodetz}, although other approaches exist. This paper
  presents a new, simplified, implementation of the {\em waterfall\/}
  algorithm.
 
 \section{Conventional imperative approach to waterfall}
 
- - it is `very imperative'
-
- - construct MST and consume it from any side
-
- - include refs
-
- - high-level description of waterfall (space permitting)
-
-
-
-The watershed algorithm, introduced by Beucher and
+The {\em watershed\/} algorithm, introduced by Beucher and
 Lantuejoul~\cite{beucher79}, produces a segmentation of an image,
 grouping together regions of pixels deemed to be similar. Usually,
 `similar' refers to similarity in the greyscale values, though other
@@ -98,16 +88,17 @@ Figure~\ref{fig:oversegmented}.
 \end{figure}
 %---
 %\vspace{-5mm}
-%
-The waterfall algorithm~\cite{beucher94,marcotegui} is an iterative process which can extract
-further structure from an initial watershed segmentation. The
-waterfall yields a partition forest hierarchy, which is a
-comprehensive data structure which  can subsequently be used  for
-feature identification.  Figure~\ref{fig:waterfall} illustrates the
-various layers that result from applying the waterfall algorithm to
-the segmentation shown in Figure~\ref{fig:oversegmented}.  Each
-iteration of the algorithm yields a higher-level grouping of the
-regions in the previous layer.
+% 
+
+The {\em waterfall\/} algorithm~\cite{beucher94,marcotegui} is an
+iterative process which can extract further structure from an initial
+watershed segmentation. The waterfall yields a partition forest
+hierarchy, which is a comprehensive data structure which can
+subsequently be used for feature identification.
+Figure~\ref{fig:waterfall} illustrates the various layers that result
+from applying the waterfall algorithm to the segmentation shown in
+Figure~\ref{fig:oversegmented}.  Each iteration of the algorithm
+yields a higher-level grouping of the regions in the previous layer.
 %\vspace{-5mm}
 %---
 \begin{figure}
@@ -150,53 +141,64 @@ becomes a single basin. The intermediate stages of the process can be
 regarded as intermediate segmentations of the image, with each basin
 representing a region.
 
-An implementation of this algorithm, proposed by Marcotegui and
-Beucher~\cite{marcotegui}, involves the construction of a Minimum
+An imperative implementation of this algorithm, proposed by Marcotegui
+and Beucher~\cite{marcotegui}, involves the construction of a Minimum
 Spanning Tree (MST) and the gradual elision of some of its edges.  Its
 nodes are initially the regions of the watershed output and its edges
 are the lowest pass points on the boundaries between these regions;
 the nodes and edges in subsequent layers are derived from these
-initial ones through a merging process.
+initial ones through a merging process. (As an aside, it is worth
+noting that the algorithm allows for the MST to be consumed starting
+at any of its nodes.)
 
-A regional minimum edge of a graph $G$ is part of a connected subgraph
-of $G$ whose edges have the same weight as each other, and whose
-adjacent edges in $G$ have strictly higher weights. The waterfall
-algorithm relies heavily on finding these regional minimum edges,
-eliding them and rebuilding the MST -- a process which not only
-requires careful implementation of the MST but, crucially, is
-relatively complex and hard to implement.
-
-\iffalse
-The collection of regional minimum edges of a graph $G$ is a connected
-subgraph of $G$ whose edges have the same weight as each other, and
-whose adjacent edges in $G$ have strictly higher weights. The
-waterfall algorithm relies heavily on finding these regional minimum
-edges, eliding them and rebuilding the MST -- a process which not only
-requires careful implementation of the MST but, more importantly, is
-relatively complex and hard to implement.
-\fi
+A regional minimum edge of any graph $G$ (and hence also of an MST) is
+part of a connected subgraph of $G$ whose edges have the same weight
+as each other, and whose adjacent edges in $G$ have strictly higher
+weights. The waterfall algorithm relies heavily on finding these
+regional minimum edges, eliding them and rebuilding the MST -- a
+process which not only requires careful implementation of the MST but,
+crucially, can be relatively complex and hard to implement.
 
 
 \section{Functional approach to waterfall}
 
- - single recursive pass (fairly opaque but no special cases for the
- detail)
 
+In this paper we present a refinement of the {\em waterfall\/}
+algorithm which, through introducing a new data structure, simplifies
+the process and improves efficiency compared to existing
+implementations. It is based on a recursive-tree data structure and a
+recursive relation on the nodes rather than the conventional iterative
+transformations. 
 
-In this paper we present a new data structure for the waterfall
-algorithm that simplifies the process and improves efficiency compared
-to current implementations. It is based on a recursive-tree data
-structure and a recursive relation on the nodes rather than the
-conventional iterative transformations.
+This also means that the algorithm can be written as a single
+recursive pass of the MST and hence lends itself to being expressed in
+pure functional style.
 
 
 \subsection{How it works}
 
+The tree structure is defined as
 
-The algorithm is now simply a case of identifying the minimum edge
-of each node and eliding it. Working recursively down the tree,
-there are four cases to consider for an edge $e$ between a parent node
-$p$ and a child node $c$.
+\begin{verbatim}
+data Tree a = Node a [Edge a]
+data Edge a = Edge Int (Tree a)
+\end{verbatim}
+
+That is a tree rooted at a {\tt Node}; a {\tt Node} is a region and a
+list of weighted edges to its children. Whilst this would be
+sufficient to define a tree structure, we find during the course of
+the algorithm it is useful to be able to refer to the same tree as a
+collection of {\tt Edge} of particular weights.
+
+
+
+The waterfall algorithm relies on identifying the edge of minimum
+weight which is adjacent to each node, and eliding it. This amounts to
+merging the two regions corresponding to the two node extremities of
+that edge. 
+
+Working recursively down the tree, there are four cases to consider
+for an edge $e$ between a parent node $p$ and a child node $c$.
 \begin{enumerate}
 \item e is     the minimum edge of p and not the minimum edge of c
 \item e is     the minimum edge of p and     the minimum edge of c
@@ -211,38 +213,42 @@ Let's see this on an example:
 
 Some things to note:
 \begin{enumerate}
-\item Precisely one edge from each node will satisfy case 1 or case 2. All other nodes must be an instance of case 3 or case 4.
-\item If $e$ satisfies case 2 or case 4 then we have identified the minimum edge of $c$ already so none of $c$'s children can satisfy cases 1 or 2.
-\item For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3 will they remain unmerged.
+
+\item Precisely one edge from each node will satisfy case 1 or case
+  2. All other nodes must be an instance of case 3 or case 4.
+
+\item If $e$ satisfies case 2 or case 4 then we have identified the
+  minimum edge of $c$ already so none of $c$'s children can satisfy
+  cases 1 or 2.
+
+\item For cases 1,2 and 4 node $p$ and $c$ will be merged and only in
+  case 3 will they remain unmerged.
+
 \end{enumerate}
 
-For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3 will they remain unmerged and is thus the simplest case to manage.
-We can simply make a recursive call on $c$ having eliminated one of its children.
+For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3
+will they remain unmerged and is thus the simplest case to manage.  We
+can simply make a recursive call on $c$ having eliminated one of its
+children.
 
 
-We define two functions of the same type,  (Tree a -> Tree a)
-The first function operates on a parent node and a list of (some of) its children and we assume the minimum child is in that list.
-The second operates on a node and a list of children without,...
+We define two functions of the same type, ({\tt Tree a -> Tree a}) The
+first function operates on a parent node and a list of (some of) its
+children and we assume the minimum child is in that list.  The second
+operates on a node and a list of children without,...
 
-
-The tree structure is originally defied as
-
-\begin{verbatim}
-data Tree a = Node a [Edge a]
-data  Edge a = Edge Int (Tree a)
-\end{verbatim}
-
-That is a tree is rooted at a node and a node is a region and a list of weighted edges to its children.
-
-We also define a labelled tree that identifies each edge with one of the cases above
+We also define a labelled tree that identifies each edge with one of
+the cases above.
 
 \begin{verbatim}
 data LTree a = LNode a [LEdge a]
-data  LEdge a = LEdge Label Int (Tree a)
+data LEdge a = LEdge Label Int (Tree a)
 data Label = Case1 | Case2 | Case3 | Case4
 \end{verbatim}
 
-Since the waterfall algorithm works by merging together, we will need a merge operation on each region of the graph. To do this we define a type class mergeable.
+Since the waterfall algorithm works by merging edges, we will need a
+{\em merge} operation on each region of the graph. To do this we
+define a type {\tt class Mergeable}.
 
 \begin{verbatim}
 class Mergeable a where
@@ -253,25 +259,25 @@ class Mergeable a where
   empty = unions []
 \end{verbatim}
 
-The waterfall algorithm will then consist of a pair of functions,
+The waterfall algorithm will then consist of a pair of functions
 
 \begin{verbatim}
 label :: Mergeable a => Tree a -> LTree a
 elide :: Mergeable a => LTree a -> Tree a
 \end{verbatim}
 
-The function elide is simple to define, it walks the tree and merges each pair of nodes not joined by a Case3 edge because of lemma 3.
+The function elide is simple to define, it walks the tree and merges each pair of nodes not joined by a Case3 edge because of Lemma 3.
 
 \begin{verbatim}
 elide (LNode a []) = Node a []
 elide (LNode a ((LEdge l w child):children))  = case l of
-    Case3     -> addChild w child' r
-    _ -> mergeNodes child' r
+    Case3 -> addChild w child' r
+    _     -> mergeNodes child' r
     where
       r = elide (LNode a children)
       child' = elide child
 
-addChild :: Int ->Tree a ->Tree a ->Tree a
+addChild :: Int -> Tree a -> Tree a -> Tree a
 addChild w child (Node a children) = Node a ((Edge w child):children)
 
 mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
@@ -279,7 +285,12 @@ mergeNodes (Node r1 cs1) (Node r2 cs2) = Node (union r1 r2) (union cs1 cs2)
 
 \end{verbatim}
 
-It now remains only to define the function $mark$. This function starts at the root of an unlabelled tree and walks through, labelling each edge. The only edges of the root are its children, so we know the minimum edge of the root is its smallest child. By lemma 1, we know that the minimum child will satisfy either case 1 or case 2 and the other nodes will satisfy either case 3 or case 4.
+It now remains only to define the function {\tt mark}. This function
+starts at the root of an unlabelled tree and walks through, labelling
+each edge. The only edges of the root are its children, so we know the
+minimum edge of the root is its smallest child. By Lemma 1, we know
+that the minimum child will satisfy either case 1 or case 2 and the
+other nodes will satisfy either case 3 or case 4.
 
 \begin{verbatim}
 
@@ -323,8 +334,12 @@ case3and4  (Edge w t)
     mapE f (Node a es) = (LNode a (map f es))
 \end{verbatim}
 
-It would be good to avoid creating the intermediate LTree structure. Currently the LTree is created by mark and consumed directly by elide, so it should be possible to fuse the two functions into one pass.
-Indeed, by rewriting elide, we can see that the function mark acts as a tree-map and elide acts as a fold.
+It would be good to avoid creating the intermediate {\tt LTree}
+structure. Currently the {\tt LTree} is created by {\tt mark} and
+consumed directly by {\tt elide}, so it should be possible to fuse the
+two functions into one pass.  Indeed, by rewriting {\tt elide}, we can
+see that the function {\tt mark} acts as a tree-map and {\tt elide}
+acts as a fold.
 
 \begin{verbatim}
 elide :: Mergeable a => LTree a -> Tree a
@@ -423,8 +438,9 @@ that must satisfy the following properties:
 m node a to node b, then there is an edge from node b to node a of the same weight.
 \item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there
 is at most one edge between two nodes.
-\item We also require that no two edges are of equal weight, $(a_1,b_1,k) \in E\
- and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? provide details.
+\item We also require that no two edges are of equal weight,
+  $(a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
+  b_2$. This restriction @@@ provide details.
 
 \end{enumerate}
 
@@ -435,7 +451,7 @@ $\forall c \in E, l \in \mathbb{N} :
   (c,b,l) \in E \implies l \geq k\ and\
   (a,c,l) \in E \implies l \geq k $
 
-??? example.
+@@@ example.
 
 A path between two regional minima is then a sequence of $n$ edges $e_1 ... e_n$
 such that $e_1$ and $e_n$ are the only two regional minima
@@ -454,20 +470,28 @@ Define a graph as $G = (N,E)$
 where $N$ is the set of nodes and $E :: N\times N \times \mathbb{N}$ is the set of weighted edges
 that must satisfy the following properties:
 \begin{enumerate}
-\item Transitivity. $(a,b,k) \in E  \iff (b,a,k) \in E$, if there is an edge from node a to node b, then there is an edge from node b to node a of the same weight.
-\item Uniqueness.   $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 = k_2$, there is at most one edge between two nodes.
-\item We also require that no two edges are of equal weight, $(a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 = b_2$. This restriction ??? provide details.
+
+\item Transitivity. $(a,b,k) \in E \iff (b,a,k) \in E$, if there is an
+  edge from node a to node b, then there is an edge from node b to
+  node a of the same weight.
+
+\item Uniqueness.  $(a,b,k_1) \in E\ and\ (a,b,k_2) \implies k_1 =
+  k_2$, there is at most one edge between two nodes.
+
+\item We also require that no two edges are of equal weight,
+  $(a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
+  b_2$. This restriction @@@ provide details.
 
 \end{enumerate}
 
-Define a regional-minimum to be an edge that is surrounded by edges of greater weight, i.e.
-An edge $e = (a,b,k)$ is a regional minimum iff
-$\forall c \in E, l \in \mathbb{N} :
-  (c,b,l) \in E \implies l \geq k\ and\
-  (a,c,l) \in E \implies l \geq k $
-Equivalently, $e$ is the edge of smallest weight connoted to nodes $a$ and similarly for node $b$.
+Define a regional-minimum to be an edge that is surrounded by edges of
+greater weight, i.e.  An edge $e = (a,b,k)$ is a regional minimum iff
+$\forall c \in E, l \in \mathbb{N} : (c,b,l) \in E \implies l \geq
+k\ and\ (a,c,l) \in E \implies l \geq k $ Equivalently, $e$ is the
+edge of smallest weight connoted to nodes $a$ and similarly for node
+$b$.
 
-??? example.
+@@@ example.
 
 A path between two regional minima is then a sequence of $n$ edges $e_0 ... e_{n-1}$
 such that $e_0$ and $e_n$ are the only two regional minima
