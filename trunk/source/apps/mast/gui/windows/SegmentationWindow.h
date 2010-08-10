@@ -92,6 +92,7 @@ public:
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
 	void OnMenuSelectionSelectMarked(wxCommandEvent& e);
 	void OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&);
+	void OnMenuToolsValidateFeatureSelection(wxCommandEvent&);
 	void OnMenuToolsVisualizeIn3D(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
@@ -113,6 +114,7 @@ public:
 	void OnUpdateMenuSegmentationSwitchParentSetNewParent(wxUpdateUIEvent& e);
 	void OnUpdateMenuSegmentationSwitchParentStartAgain(wxUpdateUIEvent& e);
 	void OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e);
+	void OnUpdateMenuToolsValidateFeatureSelection(wxUpdateUIEvent& e);
 	void OnUpdateForestNeeder(wxUpdateUIEvent& e);
 	void OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e);
 	void OnUpdateSingleNonHighestNodeSelectionNeeder(wxUpdateUIEvent& e);

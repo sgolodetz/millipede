@@ -96,6 +96,7 @@ gui/dialogs/FeatureVolumesDialog.h
 gui/dialogs/ManageFeatureSelectionsDialog.h
 gui/dialogs/SegmentDICOMVolumeDialog.h
 gui/dialogs/SegmentVolumeDialog.h
+gui/dialogs/ValidateFeatureSelectionDialog.h
 gui/dialogs/VisualizeIn3DDialog.h
 gui/dialogs/VolumeChooserDialog.h
 )

@@ -16,6 +16,7 @@
 #include <mast/gui/components/selectionview/SelectionView.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
 #include <mast/gui/dialogs/ManageFeatureSelectionsDialog.h>
+#include <mast/gui/dialogs/ValidateFeatureSelectionDialog.h>
 #include <mast/util/StringConversion.h>
 
 namespace {
@@ -61,6 +62,7 @@ enum
 	MENUID_SELECTION_SELECTMARKED_BASE,
 	MENUID_SELECTION_SELECTMARKED_LAST = (MENUID_SELECTION_SELECTMARKED_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_TOOLS_QUANTIFYFEATUREVOLUMES,
+	MENUID_TOOLS_VALIDATEFEATURESELECTION,
 	MENUID_TOOLS_VISUALIZEIN3D,
 };
 
@@ -217,8 +219,8 @@ void SegmentationWindow::setup_menus()
 	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
 
 	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->Append(wxID_ANY, wxT("&Compare Feature Selections..."));
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
+	toolsMenu->Append(MENUID_TOOLS_VALIDATEFEATURESELECTION, wxT("Validate Feature &Selection..."));
 	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+V"));
 
 	wxMenu *helpMenu = new wxMenu;
@@ -431,6 +433,12 @@ void SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 	dialog.ShowModal();
 }
 
+void SegmentationWindow::OnMenuToolsValidateFeatureSelection(wxCommandEvent&)
+{
+	ValidateFeatureSelectionDialog dialog(this);
+	dialog.ShowModal();
+}
+
 void SegmentationWindow::OnMenuToolsVisualizeIn3D(wxCommandEvent&)
 {
 	m_model->visualize_in_3d(this, get_context());
@@ -613,6 +621,11 @@ void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 	e.Enable(m_model->active_multi_feature_selection() && !m_model->active_multi_feature_selection()->selection(feature)->empty());
 }
 
+void SegmentationWindow::OnUpdateMenuToolsValidateFeatureSelection(wxUpdateUIEvent& e)
+{
+	// TODO
+}
+
 void SegmentationWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
 {
 	e.Enable(m_model->volume_ipf());
@@ -695,6 +708,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnMenuSegmentationUnzipSelectedNode)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
 	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes)
+	EVT_MENU(MENUID_TOOLS_VALIDATEFEATURESELECTION, SegmentationWindow::OnMenuToolsValidateFeatureSelection)
 	EVT_MENU(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnMenuToolsVisualizeIn3D)
 
 	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
@@ -722,6 +736,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_TOOLS_VALIDATEFEATURESELECTION, SegmentationWindow::OnUpdateMenuToolsValidateFeatureSelection)
 	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnUpdateForestNeeder)
 END_EVENT_TABLE()
 
