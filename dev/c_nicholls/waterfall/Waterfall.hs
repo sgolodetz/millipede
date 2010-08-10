@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE  FlexibleInstances #-}
-module Waterfall(waterfalls,Edge(..),mkTree,Tree(Node),Mergeable(union,unions),getRegion,getEdges,getNode) where
+module Waterfall(waterfalls,Edge(..),mkTree,Tree(Node),Mergeable(union,unions),getRegion,getEdges,getNode,getWeight) where
 
 import Data.List(sort)
 import qualified Data.Set  as Set
