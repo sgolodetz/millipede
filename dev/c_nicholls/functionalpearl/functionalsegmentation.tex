@@ -11,6 +11,8 @@
 \usepackage{epsfig}
 \usepackage{amssymb}
 %\usepackage{amsthm}
+\usepackage{enumerate}
+
 
 \title{\LARGE \bf
 A simpler approach to waterfall
@@ -29,35 +31,27 @@ images automatically. One application is in the treatment of cancer,
 where algorithms can be used to aid the detection and classification
 of organ and tumour tissue. This is the main motivation for this
 project, although the algorithm presented is a generic one, with many
-applications. SAY SOMETHING ABOUT FP APPROACH
+applications. 
+In this paper we present a refinement of the {\em waterfall\/}
+algorithm which simplifies the process and improves efficiency
+compared to existing implementations. 
+We also show how the algorithm can be written as a single recursive
+pass of the MST and how it can be written in a pure functional style.
+
+
 \end{abstract}
 
 \section{Introduction}
 
-@@@
-
- - segmentation is ...
-
- - waterfall algorithm for segmentation
-
- - existing implementation (arguably overly complicated)
-
- - we have a better, simpler one
-
- - we will illustrate it on CT scans
-
-
-\section{Motivation}
-
- This project is motivated by the need to {\em segment\/} greyscale
- images originating from computerised tomography (CT) scanners. That
- is, we would like to fit contours around organ tissue featured in
- each image. A pair of algorithms called the watershed and waterfall
- algorithms -- proposed for the generic segmentation problem -- have
- been shown to be effective for the purpose of CT
- imaging~\cite{golodetz}, although other approaches exist. This paper
- presents a new, simplified, implementation of the {\em waterfall\/}
- algorithm.
+This work has been motivated by the need to {\em segment\/} greyscale
+images originating from computerised tomography (CT) scanners. That
+is, we would like to fit contours around organ tissue featured in each
+image. A pair of algorithms called the {\em watershed\/} and {\em
+waterfall\/} algorithms -- proposed for the generic segmentation
+  problem -- have been shown to be effective for the purpose of CT
+  imaging~\cite{golodetz}, although other approaches exist. This paper
+  presents a new, simplified, implementation of the {\em waterfall\/}
+  algorithm.
 
 \section{Conventional imperative approach to waterfall}
 
@@ -163,19 +157,17 @@ crucially, can be relatively complex and hard to implement.
 \section{Functional approach to waterfall}
 
 
-In this paper we present a refinement of the {\em waterfall\/}
-algorithm which, through introducing a new data structure, simplifies
-the process and improves efficiency compared to existing
+We present a refinement of the {\em waterfall\/} algorithm which
+simplifies the process and improves efficiency compared to existing
 implementations. It is based on a recursive-tree data structure and a
 recursive relation on the nodes rather than the conventional iterative
-transformations. 
+transformations.
 
-This also means that the algorithm can be written as a single
-recursive pass of the MST and hence lends itself to being expressed in
-pure functional style.
+We also show how the algorithm can be written as a single recursive
+pass of the MST and how it can be written in a pure functional style.
 
 
-\subsection{How it works}
+\subsection{Data structure}
 
 The tree structure is defined as
 
@@ -195,56 +187,11 @@ collection of {\tt Edge} of particular weights.
 The waterfall algorithm relies on identifying the edge of minimum
 weight which is adjacent to each node, and eliding it. This amounts to
 merging the two regions corresponding to the two node extremities of
-that edge. 
+that edge.  (For brevity we will refer to such edges as `the minimum
+edge {\em of\/} that node'.)
 
-Working recursively down the tree, there are four cases to consider
-for an edge $e$ between a parent node $p$ and a child node $c$.
-\begin{enumerate}
-\item e is     the minimum edge of p and not the minimum edge of c
-\item e is     the minimum edge of p and     the minimum edge of c
-\item e is not the minimum edge of p and not the minimum edge of c
-\item e is not the minimum edge of p and     the minimum edge of c
-\end{enumerate}
+@@@ example illustrating the above
 
-
-Let's see this on an example:
-@@@ insert example.
-
-
-Some things to note:
-\begin{enumerate}
-
-\item Precisely one edge from each node will satisfy case 1 or case
-  2. All other nodes must be an instance of case 3 or case 4.
-
-\item If $e$ satisfies case 2 or case 4 then we have identified the
-  minimum edge of $c$ already so none of $c$'s children can satisfy
-  cases 1 or 2.
-
-\item For cases 1,2 and 4 node $p$ and $c$ will be merged and only in
-  case 3 will they remain unmerged.
-
-\end{enumerate}
-
-For cases 1,2 and 4 node $p$ and $c$ will be merged and only in case 3
-will they remain unmerged and is thus the simplest case to manage.  We
-can simply make a recursive call on $c$ having eliminated one of its
-children.
-
-
-We define two functions of the same type, ({\tt Tree a -> Tree a}) The
-first function operates on a parent node and a list of (some of) its
-children and we assume the minimum child is in that list.  The second
-operates on a node and a list of children without,...
-
-We also define a labelled tree that identifies each edge with one of
-the cases above.
-
-\begin{verbatim}
-data LTree a = LNode a [LEdge a]
-data LEdge a = LEdge Label Int (Tree a)
-data Label = Case1 | Case2 | Case3 | Case4
-\end{verbatim}
 
 Since the waterfall algorithm works by merging edges, we will need a
 {\em merge} operation on each region of the graph. To do this we
@@ -259,14 +206,62 @@ class Mergeable a where
   empty = unions []
 \end{verbatim}
 
+
+\subsection{Algorithm outline}
+
+
+Working recursively down the tree, there are four cases to consider
+for an edge $e$ between a parent node $p$ and a child node $c$.
+\begin{enumerate}[I]
+\item e is     the minimum edge of p and not the minimum edge of c
+\item e is     the minimum edge of p and     the minimum edge of c
+\item e is not the minimum edge of p and not the minimum edge of c
+\item e is not the minimum edge of p and     the minimum edge of c
+\end{enumerate}
+
+
+Let's see this on an example:
+@@@ insert example.
+
+
+Some things to note:
+\begin{enumerate}
+
+\item Precisely one edge from each node will satisfy Case~I or case
+  2. All other nodes must be an instance of Case~III or Case~IV.
+
+\item If $e$ satisfies Case~II or Case~IV then we have identified the
+  minimum edge of $c$ already so none of $c$'s children can satisfy
+  Cases~I or II.
+
+\item For Cases I, II and IV node $p$ and $c$ will be merged and only
+  in Case~III will they remain unmerged.
+
+\end{enumerate}
+
+For Cases~I, II and IV node $p$ and $c$ will be merged and only in Case~III
+will they remain unmerged and is thus the simplest case to manage.  We
+can simply make a recursive call on $c$ having eliminated one of its
+children.
+
+We also define a labelled tree that identifies each edge with one of
+the cases above.
+
+\begin{verbatim}
+data LTree a = LNode a [LEdge a]
+data LEdge a = LEdge Label Int (Tree a)
+data Label = Case1 | Case2 | Case3 | Case4
+\end{verbatim}
+
 The waterfall algorithm will then consist of a pair of functions
 
 \begin{verbatim}
-label :: Mergeable a => Tree a -> LTree a
+mark  :: Mergeable a => Tree a -> LTree a
 elide :: Mergeable a => LTree a -> Tree a
 \end{verbatim}
 
-The function elide is simple to define, it walks the tree and merges each pair of nodes not joined by a Case3 edge because of Lemma 3.
+The function elide is simple to define, it walks the tree and merges
+each pair of nodes not joined by a Case3 edge because of Lemma 3.
 
 \begin{verbatim}
 elide (LNode a []) = Node a []
@@ -289,8 +284,8 @@ It now remains only to define the function {\tt mark}. This function
 starts at the root of an unlabelled tree and walks through, labelling
 each edge. The only edges of the root are its children, so we know the
 minimum edge of the root is its smallest child. By Lemma 1, we know
-that the minimum child will satisfy either case 1 or case 2 and the
-other nodes will satisfy either case 3 or case 4.
+that the minimum child will satisfy either Case~I or Case~II and the
+other nodes will satisfy either Case~III or Case~IV.
 
 \begin{verbatim}
 
@@ -309,11 +304,12 @@ findMinChild (x:xs)
    where (y,ys) = findMinChild xs
 \end{verbatim}
 
-Given an edge $e = Edge w t$ that we know to satisfy either case 1 or case 2, it if fairly easy to tell which sincr $w$ is the smallest edge from t if and only if each edge to a child of t has weight larger than w (or t has no children).
-If $s$ is a case 2 edge, then all of its children must be case 3 or case 4 edges.
-Otherwise $e$ is a case 1 edge and $t$'s children may satisfy any case.
+Given an edge $e = Edge w t$ that we know to satisfy either Case~I or Case~II, it if fairly easy to tell which sincr $w$ is the smallest edge from t if and only if each edge to a child of t has weight larger than w (or t has no children).
+If $s$ is a Case~II edge, then all of its children must be Case~III or Case~IV edges.
+Otherwise $e$ is a Case~I edge and $t$'s children may satisfy any case.
 
-Distinguishing between cases 3 and 4 is identical, except for the actual labelling.
+Distinguishing between Cases~III and IV is identical to the above,
+except for the actual labelling.
 
 \begin{verbatim}
 case1and2 :: Mergeable a => Edge a -> LEdge a
@@ -401,6 +397,11 @@ mergeNodes (foldr f (Node a []) (map case3and4 cs))
 mergeNodes (foldr (f.case3and4) (Node a []) cs)
 
 \end{verbatim}
+
+
+\subsection{Single pass refinement}
+
+
 This gives us the following refinement
 
 \begin{verbatim}
