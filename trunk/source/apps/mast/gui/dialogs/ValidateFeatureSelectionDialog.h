@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_VALIDATEFEATURESELECTIONDIALOG
 #define H_MILLIPEDE_VALIDATEFEATURESELECTIONDIALOG
 
-#include <cassert>
+#include <sstream>
 
 #include <wx/button.h>
 #include <wx/choice.h>
@@ -150,12 +150,28 @@ public:
 			DataTable table(rows+1, cols);
 
 			// Fill in the header row.
-			for(int j=0; j<cols; ++j)
+			if(dialog->GetFilterIndex() == 0)
 			{
-				wxListItem item;
-				item.SetMask(wxLIST_MASK_TEXT);
-				m_table->GetColumn(j, item);
-				table(0,j) = wxString_to_string(item.GetText());
+				// Use the column headers from the table itself for CSV.
+				for(int j=0; j<cols; ++j)
+				{
+					wxListItem item;
+					item.SetMask(wxLIST_MASK_TEXT);
+					m_table->GetColumn(j, item);
+					table(0,j) = wxString_to_string(item.GetText());
+				}
+			}
+			else
+			{
+				// Manually define headers that are more likely to fit on a page for LaTeX.
+				table(0,0) = "Feature";
+				table(0,1) = "Target";
+				table(0,2) = "Gold";
+				table(0,3) = "T - G";
+				table(0,4) = "G - T";
+				table(0,5) = "T $\\cap$ G";
+				table(0,6) = "Dice";
+				table(0,7) = "Jaccard";
 			}
 
 			// Fill in the rest of the table.
@@ -185,10 +201,8 @@ public:
 			}
 			else
 			{
-				assert(dialog->GetFilterIndex() == 1);
-
-				// Save the validation table as a LaTeX table.
-				DataTableFile::save_latex(path, table);
+				// Save the validation table as a LaTeX table with a label row.
+				DataTableFile::save_latex(path, table, true, "\\scriptsize");
 			}
 		}
 	}
@@ -229,7 +243,12 @@ public:
 
 			if(voxelsT + voxelsGS != 0)
 			{
-				m_table->SetItem(f, 6, string_to_wxString(boost::lexical_cast<std::string>(2.0*voxelsTintersectGS / (voxelsT + voxelsGS))));
+				double diceSimilarityCoefficient = 2.0*voxelsTintersectGS / (voxelsT + voxelsGS);
+				std::ostringstream oss;
+				oss.setf(std::ios::fixed, std::ios::floatfield);
+				oss.precision(3);
+				oss << diceSimilarityCoefficient;
+				m_table->SetItem(f, 6, string_to_wxString(oss.str()));
 			}
 			else
 			{
@@ -238,7 +257,12 @@ public:
 
 			if(voxelsTunionGS != 0)
 			{
-				m_table->SetItem(f, 7, string_to_wxString(boost::lexical_cast<std::string>(static_cast<double>(voxelsTintersectGS) / voxelsTunionGS)));
+				double jaccardSimilarityCoefficient = static_cast<double>(voxelsTintersectGS) / voxelsTunionGS;
+				std::ostringstream oss;
+				oss.setf(std::ios::fixed, std::ios::floatfield);
+				oss.precision(3);
+				oss << jaccardSimilarityCoefficient;
+				m_table->SetItem(f, 7, string_to_wxString(oss.str()));
 			}
 			else
 			{

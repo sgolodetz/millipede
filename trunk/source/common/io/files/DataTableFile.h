@@ -17,7 +17,7 @@ struct DataTableFile
 {
 	//#################### SAVING METHODS ####################
 	static void save_csv(const std::string& filename, const DataTable& table);
-	static void save_latex(const std::string& filename, const DataTable& table);
+	static void save_latex(const std::string& filename, const DataTable& table, bool labelRow = false, const std::string& fontSize = "\\scriptsize");
 };
 
 }
