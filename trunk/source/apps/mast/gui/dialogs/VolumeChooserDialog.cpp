@@ -134,9 +134,12 @@ wxPanel *VolumeChooserDialog::create_basic_page(wxWindow *parent)
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	panel->SetSizer(sizer);
 
+	wxBoxSizer *innerSizer = new wxBoxSizer(wxVERTICAL);
+	sizer->Add(innerSizer, 0, wxALL, 10);
+
 	// Set up the tree control.
 	m_tree = new wxTreeCtrl(panel, wxID_ANY, wxDefaultPosition, wxSize(400,300), wxTR_HAS_BUTTONS|wxTR_SINGLE);
-	sizer->Add(m_tree, 0, wxALIGN_CENTRE_HORIZONTAL);
+	innerSizer->Add(m_tree, 0, wxALIGN_CENTRE_HORIZONTAL);
 	wxTreeItemId rootID = m_tree->AddRoot(wxT("DICOMDIR"));
 
 	// Add the DICOMDIR data to the tree control.
@@ -171,6 +174,9 @@ wxPanel *VolumeChooserDialog::create_advanced_page(wxWindow *parent)
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	panel->SetSizer(sizer);
 
+	wxBoxSizer *innerSizer = new wxBoxSizer(wxVERTICAL);
+	sizer->Add(innerSizer, 0, wxALL, 10);
+
 	// Set up the volume selectors.
 	wxPanel *volumeSelectors = new wxPanel(panel);
 	wxGridSizer *volumeSelectorsSizer = new wxGridSizer(0, 2, 0, 0);
@@ -188,21 +194,21 @@ wxPanel *VolumeChooserDialog::create_advanced_page(wxWindow *parent)
 			m_bounds[i] = new wxSpinCtrl(volumeSelectors, ids[i], wxT("999"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 999, 999, 999);
 			volumeSelectorsSizer->Add(m_bounds[i]);
 		}
-	sizer->Add(volumeSelectors);
+	innerSizer->Add(volumeSelectors);
 
 	// Set up the image window settings controls.
-	sizer->AddSpacer(10);
+	innerSizer->AddSpacer(10);
 
 	wxButton *aboutWindowsButton = new wxButton(panel, BUTTONID_ABOUTWINDOWS, wxT("About Windows..."));
-	sizer->Add(aboutWindowsButton);
+	innerSizer->Add(aboutWindowsButton);
 
-	sizer->AddSpacer(10);
+	innerSizer->AddSpacer(10);
 
 	m_autoWindowCheckbox = new wxCheckBox(panel, CHECKBOXID_AUTOWINDOW, wxT("Use Automatic Window Settings"));
 	m_autoWindowCheckbox->SetValue(true);
-	sizer->Add(m_autoWindowCheckbox);
+	innerSizer->Add(m_autoWindowCheckbox);
 
-	sizer->AddSpacer(10);
+	innerSizer->AddSpacer(10);
 
 	wxPanel *windowControls = new wxPanel(panel);
 	wxGridSizer *windowControlsSizer = new wxGridSizer(0, 2, 0, 0);
@@ -216,13 +222,13 @@ wxPanel *VolumeChooserDialog::create_advanced_page(wxWindow *parent)
 		windowControlsSizer->Add(windowWidthLabel);
 		m_windowWidth = new wxTextCtrl(windowControls, TEXTID_WINDOWWIDTH, wxT("400"));
 		windowControlsSizer->Add(m_windowWidth);
-	sizer->Add(windowControls);
+	innerSizer->Add(windowControls);
 
-	sizer->AddSpacer(10);
+	innerSizer->AddSpacer(10);
 
 	// Add the Save Volume Choice button.
 	wxButton *saveButton = new wxButton(panel, BUTTONID_SAVE, wxT("Save Volume Choice..."));
-	sizer->Add(saveButton);
+	innerSizer->Add(saveButton);
 
 	sizer->Fit(panel);
 	return panel;
