@@ -220,8 +220,8 @@ void SegmentationWindow::setup_menus()
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
-	toolsMenu->Append(MENUID_TOOLS_VALIDATEFEATURESELECTION, wxT("Validate Feature &Selection..."));
-	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+V"));
+	toolsMenu->Append(MENUID_TOOLS_VALIDATEFEATURESELECTION, wxT("Validate Feature &Selection...\tCtrl+V"));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+3"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(wxID_ANY, wxT("&Contents..."));
