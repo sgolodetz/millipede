@@ -194,11 +194,11 @@ example of merging.
 \begin{figure}
 \centering
 \ifpdf
-        \epsfig{file=exampleplaceholder.pdf, width=.7\linewidth}%
+        \epsfig{file=waterfallexampleofsetunion.pdf, width=.7\linewidth}%
 \else
         % TODO
 \fi
-\caption{EXAMPLE PLACEHOLDER}
+\caption{Merging nodes}
 \label{fig:merging}
 \end{figure}
 
@@ -234,11 +234,11 @@ This is illustrated with an example in Figure~\ref{fig:cases}.
 \begin{figure}
 \centering
 \ifpdf
-        \epsfig{file=tree\ example\ with\ cases.pdf, width=.7\linewidth}%
+        \epsfig{file=treeexamplewithcases.pdf, width=.7\linewidth}%
 \else
         % TODO
 \fi
-\caption{EXAMPLE PLACEHOLDER}
+\caption{Example of tree with cases}
 \label{fig:cases}
 \end{figure}
 
@@ -469,7 +469,7 @@ This restriction @@@ provide details.
 
 \end{enumerate}
 
-We define a regional minimum to be an edge that is surrounded by edges of greater
+We define a regional minimum to be an edge that is surrounded by edges of greater @@@
 weight, i.e.
 An edge $e = (a,b,k)$ is a regional minimum iff
 $\forall c \in E, l \in \mathbb{N} :
@@ -486,7 +486,7 @@ This is illustrated with an example in Figure~\ref{fig:regmin}.
 \else
         % TODO
 \fi
-\caption{EXAMPLE PLACEHOLDER}
+\caption{EXAMPLE PLACEHOLDER (point out a case II edge in the diagram)}
 \label{fig:regmin}
 \end{figure}
 
@@ -525,7 +525,7 @@ that must satisfy the following properties:
 \end{enumerate}
 
 Define a regional-minimum to be an edge that is surrounded by edges of
-greater weight, i.e.  An edge $e = (a,b,k)$ is a regional minimum iff
+greater @@@ weight, i.e.  An edge $e = (a,b,k)$ is a regional minimum iff
 $\forall c \in E, l \in \mathbb{N} : (c,b,l) \in E \implies l \geq
 k\ and\ (a,c,l) \in E \implies l \geq k $ Equivalently, $e$ is the
 edge of smallest weight connoted to nodes $a$ and similarly for node
@@ -597,7 +597,16 @@ Point out that this issue went totally unspecified in the original
 algorithm.
 
 
-\section{Results}
+\section{Discussion}
+
+\subsection{MST}
+
+generating the MST in grid mode, plus tricks
+
+\subsection{Results}
+
+Lack of gradient image, pre-processing and mosaic display may make the
+results look a bit simplistic, but here are some simple examples.
 
 
 \section{Conclusions}
@@ -635,6 +644,14 @@ is also true of larger test cases, such as axial slices of CT volumes.
 Production of partition forests in this manner is independent of this
 application and has many applications outside of the field of medical
 imaging.
+
+\subsection{Acknowledgements}
+
+John Fell
+
+Charles Bryant
+
+
 
 \bibstyle{plain}
 
