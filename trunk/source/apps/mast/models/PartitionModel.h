@@ -140,26 +140,13 @@ public:
 	@pre
 		-	active_multi_feature_selection() is non-null
 		-	dicom_volume() is non-null
-		-	volume_ipf() is non-null
 	@return	As described
 	*/
 	double calculate_feature_volume_mm3(const Feature& feature) const
 	{
-		typedef PartitionForestSelection<LeafLayer,BranchLayer> SelectionT;
-		typedef boost::shared_ptr<const SelectionT> Selection_CPtr;
-		Selection_CPtr featureSelection = active_multi_feature_selection()->selection(feature);
-
 		Vector3d spacing = m_dicomVolume->spacing();
 		double voxelVolume = spacing.x * spacing.y * spacing.z;
-
-		double volume = 0;
-		for(typename SelectionT::NodeConstIterator it=featureSelection->nodes_cbegin(), iend=featureSelection->nodes_cend(); it!=iend; ++it)
-		{
-			const PFNodeID& node = *it;
-			if(node.layer() > 0)	volume += m_volumeIPF->branch_properties(node).voxel_count() * voxelVolume;
-			else					volume += voxelVolume;
-		}
-		return volume;
+		return active_multi_feature_selection()->voxel_count(feature) * voxelVolume;
 	}
 
 	DICOMVolume_CPtr dicom_volume() const

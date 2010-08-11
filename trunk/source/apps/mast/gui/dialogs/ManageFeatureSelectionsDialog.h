@@ -90,11 +90,11 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void add_mfs_choice(const std::string& choiceName, wxWindow *parent, wxSizer *parentSizer)
+	void add_mfs_choice(const std::string& choiceName, wxWindow *parent, wxSizer *sizer)
 	{
 		wxChoice *choice = new wxChoice(parent, wxID_ANY, wxDefaultPosition, wxSize(150,25), wxArrayString());
 		m_mfsChoices.insert(std::make_pair(choiceName, choice));
-		parentSizer->Add(choice);
+		sizer->Add(choice);
 	}
 
 	std::string get_appropriate_name(const std::string& caption, const std::string& initialName)

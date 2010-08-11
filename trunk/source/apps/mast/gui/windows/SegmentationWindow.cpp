@@ -435,7 +435,8 @@ void SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuToolsValidateFeatureSelection(wxCommandEvent&)
 {
-	ValidateFeatureSelectionDialog dialog(this);
+	typedef ValidateFeatureSelectionDialog<PartitionModelT::VolumeIPFMultiFeatureSelectionT,PartitionModelT::VolumeIPFT> Dialog;
+	Dialog dialog(this, m_model->multi_feature_selection_manager(), m_model->volume_ipf());
 	dialog.ShowModal();
 }
 
@@ -623,7 +624,7 @@ void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 
 void SegmentationWindow::OnUpdateMenuToolsValidateFeatureSelection(wxUpdateUIEvent& e)
 {
-	// TODO
+	e.Enable(m_model->multi_feature_selection_manager() && m_model->multi_feature_selection_manager()->multi_feature_selections().size() >= 2);
 }
 
 void SegmentationWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
