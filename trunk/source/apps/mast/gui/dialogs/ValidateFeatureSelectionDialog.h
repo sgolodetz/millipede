@@ -6,21 +6,32 @@
 #ifndef H_MILLIPEDE_VALIDATEFEATURESELECTIONDIALOG
 #define H_MILLIPEDE_VALIDATEFEATURESELECTIONDIALOG
 
+#include <cassert>
+
 #include <wx/button.h>
 #include <wx/choice.h>
-#include <wx/dialog.h>
 #include <wx/listctrl.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
+#include <common/io/files/DataTableFile.h>
 #include <common/partitionforests/base/PartitionForestMFSManager.h>
+#include <common/util/DataTable.h>
 #include <mast/util/StringConversion.h>
+#include "DialogUtil.h"
 
 namespace mp {
 
 template <typename MFS, typename Forest>
 class ValidateFeatureSelectionDialog : public wxDialog
 {
+	//#################### ENUMERATIONS ####################
+private:
+	enum
+	{
+		BUTTONID_SAVE_TABLE
+	};
+
 	//#################### TYPEDEFS ####################
 private:
 	typedef typename MFS::Feature Feature;
@@ -72,7 +83,7 @@ public:
 		fit_table();
 
 		wxFlexGridSizer *bottomSizer = new wxFlexGridSizer(1, 0, 0, 5);
-			bottomSizer->Add(new wxButton(this, wxID_ANY, wxT("&Save Table...")));
+			bottomSizer->Add(new wxButton(this, BUTTONID_SAVE_TABLE, wxT("&Save Table...")));
 			bottomSizer->Add(new wxButton(this, wxID_CANCEL, wxT("&Close")));
 		innerSizer->Add(bottomSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
 
@@ -128,6 +139,61 @@ private:
 
 	//#################### EVENT HANDLERS ####################
 public:
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	void OnButtonSaveTable(wxCommandEvent&)
+	{
+		wxFileDialog_Ptr dialog = construct_save_dialog(this, "Save Validation Table", "Comma-Separated Table (*.csv)|*.csv|LaTeX Table (*.tex)|*.tex");
+		if(dialog->ShowModal() == wxID_OK)
+		{
+			// Construct the validation table.
+			int rows = m_table->GetItemCount(), cols = m_table->GetColumnCount();
+			DataTable table(rows+1, cols);
+
+			// Fill in the header row.
+			for(int j=0; j<cols; ++j)
+			{
+				wxListItem item;
+				item.SetMask(wxLIST_MASK_TEXT);
+				m_table->GetColumn(j, item);
+				table(0,j) = wxString_to_string(item.GetText());
+			}
+
+			// Fill in the rest of the table.
+			for(int i=0; i<rows; ++i)
+			{
+				for(int j=0; j<cols; ++j)
+				{
+					// Get the text of the relevant cell.
+					wxListItem item;
+					item.SetId(i);
+					item.SetColumn(j);
+					item.SetMask(wxLIST_MASK_TEXT);
+					m_table->GetItem(item);
+
+					// Store it in the DataTable.
+					table(i+1,j) = wxString_to_string(item.GetText());
+				}
+			}
+
+			// Save it to the specified file.
+			std::string path = wxString_to_string(dialog->GetPath());
+
+			if(dialog->GetFilterIndex() == 0)
+			{
+				// Save the validation table as a comma-separated table.
+				DataTableFile::save_csv(path, table);
+			}
+			else
+			{
+				assert(dialog->GetFilterIndex() == 1);
+
+				// Save the validation table as a LaTeX table.
+				DataTableFile::save_latex(path, table);
+			}
+		}
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
 	void OnChoiceMFS(wxCommandEvent&)
 	{
 		std::string targetName = get_mfs_choice("Target");
@@ -183,13 +249,26 @@ public:
 		fit_table();
 	}
 
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	void OnUpdateButtonSaveTable(wxUpdateUIEvent& e)
+	{
+		e.Enable(get_mfs_choice("Target") != "" && get_mfs_choice("Gold Standard") != "");
+	}
+
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()
 };
 
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE_TEMPLATE2(ValidateFeatureSelectionDialog, wxDialog, MFS, Forest)
+	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
+	EVT_BUTTON(BUTTONID_SAVE_TABLE, (ValidateFeatureSelectionDialog<MFS,Forest>::OnButtonSaveTable))
+
+	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
 	EVT_CHOICE(wxID_ANY, (ValidateFeatureSelectionDialog<MFS,Forest>::OnChoiceMFS))
+
+	//~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
+	EVT_UPDATE_UI(BUTTONID_SAVE_TABLE, (ValidateFeatureSelectionDialog<MFS,Forest>::OnUpdateButtonSaveTable))
 END_EVENT_TABLE()
 
 }

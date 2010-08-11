@@ -85,11 +85,13 @@ exceptions/FileNotFoundException.h
 
 ##
 SET(io_files_sources
+io/files/DataTableFile.cpp
 io/files/DICOMDIRFile.cpp
 io/files/VolumeChoiceFile.cpp
 )
 
 SET(io_files_headers
+io/files/DataTableFile.h
 io/files/DICOMDIRFile.h
 io/files/VolumeChoiceFile.h
 )
@@ -285,11 +287,13 @@ textures/TextureFactory.h
 
 ##
 SET(util_sources
+util/DataTable.cpp
 util/GridUtil.cpp
 util/ITKImageUtil.cpp
 )
 
 SET(util_headers
+util/DataTable.h
 util/EnumUtil.h
 util/GridUtil.h
 util/ITKImageUtil.h

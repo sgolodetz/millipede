@@ -13,7 +13,6 @@ using boost::lexical_cast;
 
 #include <wx/bookctrl.h>
 #include <wx/button.h>
-#include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
@@ -23,6 +22,7 @@ using boost::lexical_cast;
 #include <common/io/files/DICOMDIRFile.h>
 #include <common/io/files/VolumeChoiceFile.h>
 #include <mast/util/StringConversion.h>
+#include "DialogUtil.h"
 
 namespace {
 
@@ -263,12 +263,12 @@ void VolumeChooserDialog::OnButtonOK(wxCommandEvent&)
 
 void VolumeChooserDialog::OnButtonSave(wxCommandEvent&)
 {
-	wxFileDialog dialog(this, wxT("Save Volume Choice"), wxT("."), wxEmptyString, wxT("Volume Choice Files (*.vcf)|*.vcf"), wxSAVE | wxOVERWRITE_PROMPT);
+	wxFileDialog_Ptr dialog = construct_save_dialog(this, "Save Volume Choice", "Volume Choice Files (*.vcf)|*.vcf");
 	if(construct_volume_choice())
 	{
-		if(dialog.ShowModal() == wxID_OK)
+		if(dialog->ShowModal() == wxID_OK)
 		{
-			std::string path = wxString_to_string(dialog.GetPath());
+			std::string path = wxString_to_string(dialog->GetPath());
 			VolumeChoiceFile::save(path, *m_volumeChoice);
 		}
 
