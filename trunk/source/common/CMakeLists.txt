@@ -84,6 +84,15 @@ exceptions/FileNotFoundException.h
 )
 
 ##
+SET(graphics_sources
+graphics/PolylineRasterizer.cpp
+)
+
+SET(graphics_headers
+graphics/PolylineRasterizer.h
+)
+
+##
 SET(io_files_sources
 io/files/DataTableFile.cpp
 io/files/DICOMDIRFile.cpp
@@ -346,6 +355,7 @@ ${commands_sources}
 ${dicom_directories_sources}
 ${dicom_util_sources}
 ${dicom_volumes_sources}
+${graphics_sources}
 ${io_files_sources}
 ${io_sections_sources}
 ${io_util_sources}
@@ -369,6 +379,7 @@ ${dicom_directories_headers}
 ${dicom_util_headers}
 ${dicom_volumes_headers}
 ${exceptions_headers}
+${graphics_headers}
 ${io_files_headers}
 ${io_sections_headers}
 ${io_util_headers}
@@ -419,6 +430,10 @@ SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
 
 ##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
+
+##
+SOURCE_GROUP(graphics\\.cpp FILES ${graphics_sources})
+SOURCE_GROUP(graphics\\.h FILES ${graphics_headers})
 
 ##
 SOURCE_GROUP(io\\files\\.cpp FILES ${io_files_sources})

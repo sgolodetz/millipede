@@ -254,6 +254,20 @@ Vector2<T> operator/(const Vector2<T>& lhs, const Vector2<T>& rhs)
 }
 
 template <typename T>
+bool operator==(const Vector2<T>& lhs, const Vector2<T>& rhs)
+{
+	// Note: This operator should be used cautiously when T is not an integral type.
+	return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+template <typename T>
+bool operator!=(const Vector2<T>& lhs, const Vector2<T>& rhs)
+{
+	// Note: This operator should be used cautiously when T is not an integral type.
+	return !(lhs == rhs);
+}
+
+template <typename T>
 bool operator<(const Vector2<T>& lhs, const Vector2<T>& rhs)
 {
 	return	lhs.x < rhs.x ||
