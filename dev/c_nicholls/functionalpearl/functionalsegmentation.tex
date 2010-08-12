@@ -214,12 +214,16 @@ class Mergeable a where
   empty = unions []
 
 mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
-mergeNodes (Node r1 cs1) (Node r2 cs2) = Node  (union r1 r2) (cs1 ++ cs2)
+mergeNodes (Node r1 cs1) (Node r2 cs2)
+          = Node (union r1 r2) (cs1 ++ cs2)
 \end{verbatim}
 
 
 \subsection{Algorithm outline}
 
+As described in (@@@ somewhere) the algorithm runs over the tree and
+elides all edges that are of minimum weight from either of its end
+points.
 
 Working recursively down the tree, there are four cases to consider
 for an edge $e$ between a parent node $p$ and a child node $c$.
@@ -265,6 +269,8 @@ will they remain unmerged and is thus the simplest case to manage.  We
 can simply make a recursive call on $c$ having eliminated one of its
 children.
 
+
+
 We also define a labelled tree that identifies each edge with one of
 the cases above.
 
@@ -281,8 +287,12 @@ mark  :: Mergeable a => Tree a -> LTree a
 elide :: Mergeable a => LTree a -> Tree a
 \end{verbatim}
 
-The function elide is simple to define, it walks the tree and merges
-each pair of nodes not joined by a Case3 edge because of Lemma 3.
+The idea is to take two passes over the tree, one that lebels each
+edge with a case, and one that elides each node not marked as a
+Case~III edge (by lemma 3).
+
+The function elide is the simpler of the two to define, it walks the
+tree and merges each pair of nodes not joined by a Case3 edge.
 
 \begin{verbatim}
 elide (LNode a []) = Node a []
@@ -297,9 +307,6 @@ addChild :: Int -> Tree a -> Tree a -> Tree a
 addChild w child (Node a children) =
                       Node a ((Edge w child):children)
 
-mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
-mergeNodes (Node r1 cs1) (Node r2 cs2) =
-                      Node (union r1 r2) (union cs1 cs2)
 \end{verbatim}
 
 It now remains only to define the function {\tt mark}. This function
