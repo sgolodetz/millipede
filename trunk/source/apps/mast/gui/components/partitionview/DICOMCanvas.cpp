@@ -92,7 +92,7 @@ void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
 	Vector2i p_Pixels(e.GetX(), e.GetY());
 	if(within_image_bounds(p_Pixels))
 	{
-		current_drawing_tool()->mouse_pressed(p_Pixels, pixels_to_position(Vector2d(p_Pixels)));
+		current_drawing_tool()->mouse_pressed(p_Pixels, Vector2i(pixels_to_coords(Vector2d(p_Pixels))));
 
 		if(current_drawing_tool()->style() == DrawingTool::TOOLSTYLE_INSTANTANEOUS)
 		{
@@ -107,7 +107,7 @@ void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
 	if(!model()->volume_ipf() || !current_drawing_tool() || !current_drawing_tool()->has_started()) return;
 
 	Vector2i p_Pixels(e.GetX(), e.GetY());
-	current_drawing_tool()->mouse_released(p_Pixels, pixels_to_position(Vector2d(p_Pixels)));
+	current_drawing_tool()->mouse_released(p_Pixels, Vector2i(pixels_to_coords(Vector2d(p_Pixels))));
 
 	if(current_drawing_tool()->style() != DrawingTool::TOOLSTYLE_MULTICLICK)
 	{
@@ -125,7 +125,7 @@ void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
 		{
 			Vector2i p_Pixels(e.GetX(), e.GetY());
 			p_Pixels = clamp_to_image_bounds(p_Pixels);
-			current_drawing_tool()->mouse_dragged(p_Pixels, pixels_to_position(Vector2d(p_Pixels)));
+			current_drawing_tool()->mouse_dragged(p_Pixels, Vector2i(pixels_to_coords(Vector2d(p_Pixels))));
 			Refresh();
 		}
 		else OnLeftDown(e);

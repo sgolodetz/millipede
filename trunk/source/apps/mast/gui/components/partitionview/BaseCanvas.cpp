@@ -297,17 +297,6 @@ Vector2d BaseCanvas::pixels_to_coords(const Vector2d& p_Pixels) const
 	return centre_Coords + offset_Coords;
 }
 
-Vector2i BaseCanvas::pixels_to_position(const Vector2d& p_Pixels) const
-{
-	Vector2d p_Coords = pixels_to_coords(p_Pixels);
-	Vector2i position;
-	for(int i=0; i<2; ++i)
-	{
-		position[i] = NumericUtil::round_to_nearest<long>(p_Coords[i]);
-	}
-	return position;
-}
-
 Vector2d BaseCanvas::project_to_2d(const Vector3d& p) const
 {
 	switch(camera()->slice_orientation())
@@ -321,26 +310,26 @@ Vector2d BaseCanvas::project_to_2d(const Vector3d& p) const
 	throw Exception("Bad slice orientation");
 }
 
-itk::Index<3> BaseCanvas::project_to_3d(const Vector2i& position) const
+itk::Index<3> BaseCanvas::project_to_3d(const Vector2i& p_Coords) const
 {
 	switch(camera()->slice_orientation())
 	{
-		case ORIENT_XY:	return ITKImageUtil::make_index(position.x, position.y, camera()->slice_location().z);
-		case ORIENT_XZ:	return ITKImageUtil::make_index(position.x, camera()->slice_location().y, position.y);
-		case ORIENT_YZ:	return ITKImageUtil::make_index(camera()->slice_location().x, position.x, position.y);
+		case ORIENT_XY:	return ITKImageUtil::make_index(p_Coords.x, p_Coords.y, camera()->slice_location().z);
+		case ORIENT_XZ:	return ITKImageUtil::make_index(p_Coords.x, camera()->slice_location().y, p_Coords.y);
+		case ORIENT_YZ:	return ITKImageUtil::make_index(camera()->slice_location().x, p_Coords.x, p_Coords.y);
 	}
 
 	// This should never happen.
 	throw Exception("Bad slice orientation");
 }
 
-Vector3d BaseCanvas::project_to_3d(const Vector2d& p) const
+Vector3d BaseCanvas::project_to_3d(const Vector2d& p_Coords) const
 {
 	switch(camera()->slice_orientation())
 	{
-		case ORIENT_XY:	return Vector3d(p.x, p.y, camera()->slice_location().z);
-		case ORIENT_XZ:	return Vector3d(p.x, camera()->slice_location().y, p.y);
-		case ORIENT_YZ:	return Vector3d(camera()->slice_location().x, p.x, p.y);
+		case ORIENT_XY:	return Vector3d(p_Coords.x, p_Coords.y, camera()->slice_location().z);
+		case ORIENT_XZ:	return Vector3d(p_Coords.x, camera()->slice_location().y, p_Coords.y);
+		case ORIENT_YZ:	return Vector3d(camera()->slice_location().x, p_Coords.x, p_Coords.y);
 	}
 
 	// This should never happen.

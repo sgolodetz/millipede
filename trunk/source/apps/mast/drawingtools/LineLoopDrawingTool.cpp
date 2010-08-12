@@ -10,15 +10,15 @@
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
-void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& position)
+void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& p_Coords)
 {
 	if(m_grabbedPoint)
 	{
-		**m_grabbedPoint = std::make_pair(p_Pixels, position);
+		**m_grabbedPoint = std::make_pair(p_Pixels, p_Coords);
 	}
 }
 
-void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& position)
+void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& p_Coords)
 {
 	const int MAX_DIST_SQUARED = 20*20;
 	for(std::list<std::pair<Vector2i,Vector2i> >::iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
@@ -30,10 +30,10 @@ void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i
 		}
 	}
 
-	m_drawnLocations.push_back(std::make_pair(p_Pixels, position));
+	m_drawnLocations.push_back(std::make_pair(p_Pixels, p_Coords));
 }
 
-void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels, const Vector2i& position)
+void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels, const Vector2i& p_Coords)
 {
 	m_grabbedPoint.reset();
 }

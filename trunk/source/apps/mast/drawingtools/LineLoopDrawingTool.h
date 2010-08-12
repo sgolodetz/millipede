@@ -20,9 +20,9 @@ private:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	void mouse_dragged(const Vector2i& p_Pixels, const Vector2i& position);
-	void mouse_pressed(const Vector2i& p_Pixels, const Vector2i& position);
-	void mouse_released(const Vector2i& p_Pixels, const Vector2i& position);
+	void mouse_dragged(const Vector2i& p_Pixels, const Vector2i& p_Coords);
+	void mouse_pressed(const Vector2i& p_Pixels, const Vector2i& p_Coords);
+	void mouse_released(const Vector2i& p_Pixels, const Vector2i& p_Coords);
 	void render() const;
 	void reset();
 	ToolStyle style() const;
