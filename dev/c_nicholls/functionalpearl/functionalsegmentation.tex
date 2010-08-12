@@ -31,12 +31,13 @@ images automatically. One application is in the treatment of cancer,
 where algorithms can be used to aid the detection and classification
 of organ and tumour tissue. This is the main motivation for this
 project, although the algorithm presented is a generic one, with many
-applications. 
+applications.
 In this paper we present a refinement of the {\em waterfall\/}
 algorithm which simplifies the process and improves efficiency
-compared to existing implementations. 
-We also show how the algorithm can be written as a single recursive
-pass of the MST and how it can be written in a pure functional style.
+compared to existing implementations.
+We also show how the algorithm, although usually described in a very
+imperative manner, can be written as a single recursive pass of the MST
+and implemented in a pure functional style.
 
 
 \end{abstract}
@@ -82,7 +83,7 @@ Figure~\ref{fig:oversegmented}.
 \end{figure}
 %---
 %\vspace{-5mm}
-% 
+%
 
 The {\em waterfall\/} algorithm~\cite{beucher94,marcotegui} is an
 iterative process which can extract further structure from an initial
@@ -169,19 +170,16 @@ pass of the MST and how it can be written in a pure functional style.
 
 \subsection{Data structure}
 
-The tree structure is defined as
+The data structure over which the waterfall algorithm runs is a simple
+weighted tree. Ech node must contain the region at that node along
+with a list of all its children.  For the sake of clarity, we divide
+the definition up into nodes and edges, as the algorithm focuses
+heavily on the edges of the tree.
 
 \begin{verbatim}
 data Tree a = Node a [Edge a]
 data Edge a = Edge Int (Tree a)
 \end{verbatim}
-
-That is a tree rooted at a {\tt Node}; a {\tt Node} is a region and a
-list of weighted edges to its children. Whilst this would be
-sufficient to define a tree structure, we find during the course of
-the algorithm it is useful to be able to refer to the same tree as a
-collection of {\tt Edge} of particular weights.
-
 
 
 The waterfall algorithm relies on identifying the edge of minimum
@@ -202,9 +200,10 @@ example of merging.
 \label{fig:merging}
 \end{figure}
 
-Since the waterfall algorithm works by merging edges, we will need a
+Since the waterfall algorithm works by eliding particular edges and
+merging the regions found at either end of those edges, we will need a
 {\em merge} operation on each region of the graph. To do this we
-define a type {\tt class Mergeable}.
+define a type {\tt class Mergeable} and an operation mergeNodes.
 
 \begin{verbatim}
 class Mergeable a where
@@ -213,6 +212,9 @@ class Mergeable a where
   unions = foldl union empty
   empty :: a
   empty = unions []
+
+mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
+mergeNodes (Node r1 cs1) (Node r2 cs2) = Node  (union r1 r2) (cs1 ++ cs2)
 \end{verbatim}
 
 
@@ -292,11 +294,11 @@ elide (LNode a ((LEdge l w child):children))  = case l of
       child' = elide child
 
 addChild :: Int -> Tree a -> Tree a -> Tree a
-addChild w child (Node a children) = 
+addChild w child (Node a children) =
                       Node a ((Edge w child):children)
 
 mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
-mergeNodes (Node r1 cs1) (Node r2 cs2) = 
+mergeNodes (Node r1 cs1) (Node r2 cs2) =
                       Node (union r1 r2) (union cs1 cs2)
 \end{verbatim}
 
@@ -427,7 +429,7 @@ This gives us the following refinement
 \begin{verbatim}
 elideMark :: Mergeable a => Tree a -> Tree a
 elideMark (Node a []) = (Node a [])
-elideMark (Node r cs) = 
+elideMark (Node r cs) =
   fcase1and2 minChild (foldr fcase3and4 (Node r []) cs')
     where
     (minChild,cs') = findMinChild cs
@@ -519,7 +521,7 @@ that must satisfy the following properties:
   \[
   (a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
   b_2
-  \] 
+  \]
   This restriction @@@ provide details.
 
 \end{enumerate}
