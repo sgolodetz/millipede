@@ -5,7 +5,7 @@
 
 #include "DICOMCanvas.h"
 
-#include <mast/gui/components/partitionview/drawingtools/DrawingTool.h>
+#include <mast/drawingtools/DrawingTool.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 
 namespace mp {

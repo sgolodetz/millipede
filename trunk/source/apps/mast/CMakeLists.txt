@@ -20,6 +20,22 @@ Application.h
 )
 
 ##
+SET(drawingtools_sources
+drawingtools/BoxDrawingTool.cpp
+drawingtools/LassoDrawingTool.cpp
+drawingtools/LineBasedDrawingTool.cpp
+drawingtools/LineLoopDrawingTool.cpp
+)
+
+SET(drawingtools_headers
+drawingtools/BoxDrawingTool.h
+drawingtools/DrawingTool.h
+drawingtools/LassoDrawingTool.h
+drawingtools/LineBasedDrawingTool.h
+drawingtools/LineLoopDrawingTool.h
+)
+
+##
 SET(gui_components_canvas_sources
 gui/components/canvas/Canvas.cpp
 )
@@ -59,22 +75,6 @@ gui/components/partitionview/ParentSwitchManager.h
 gui/components/partitionview/PartitionCamera.h
 gui/components/partitionview/PartitionCanvas.h
 gui/components/partitionview/PartitionView.h
-)
-
-##
-SET(gui_components_partitionview_drawingtools_sources
-gui/components/partitionview/drawingtools/BoxDrawingTool.cpp
-gui/components/partitionview/drawingtools/LassoDrawingTool.cpp
-gui/components/partitionview/drawingtools/LineBasedDrawingTool.cpp
-gui/components/partitionview/drawingtools/LineLoopDrawingTool.cpp
-)
-
-SET(gui_components_partitionview_drawingtools_headers
-gui/components/partitionview/drawingtools/BoxDrawingTool.h
-gui/components/partitionview/drawingtools/DrawingTool.h
-gui/components/partitionview/drawingtools/LassoDrawingTool.h
-gui/components/partitionview/drawingtools/LineBasedDrawingTool.h
-gui/components/partitionview/drawingtools/LineLoopDrawingTool.h
 )
 
 ##
@@ -150,10 +150,10 @@ util/StringConversion.h
 
 SET(sources
 ${mast_sources}
+${drawingtools_sources}
 ${gui_components_canvas_sources}
 ${gui_components_meshview_sources}
 ${gui_components_partitionview_sources}
-${gui_components_partitionview_drawingtools_sources}
 ${gui_dialogs_sources}
 ${gui_overlays_sources}
 ${gui_windows_sources}
@@ -162,10 +162,10 @@ ${util_sources}
 
 SET(headers
 ${mast_headers}
+${drawingtools_headers}
 ${gui_components_canvas_headers}
 ${gui_components_meshview_headers}
 ${gui_components_partitionview_headers}
-${gui_components_partitionview_drawingtools_headers}
 ${gui_components_selectionview_headers}
 ${gui_dialogs_headers}
 ${gui_overlays_headers}
@@ -186,6 +186,10 @@ SOURCE_GROUP(.cpp FILES ${mast_sources})
 SOURCE_GROUP(.h FILES ${mast_headers})
 
 ##
+SOURCE_GROUP(drawingtools\\.cpp FILES ${drawingtools_sources})
+SOURCE_GROUP(drawingtools\\.h FILES ${drawingtools_headers})
+
+##
 SOURCE_GROUP(gui\\components\\canvas\\.cpp FILES ${gui_components_canvas_sources})
 SOURCE_GROUP(gui\\components\\canvas\\.h FILES ${gui_components_canvas_headers})
 
@@ -196,10 +200,6 @@ SOURCE_GROUP(gui\\components\\meshview\\.h FILES ${gui_components_meshview_heade
 ##
 SOURCE_GROUP(gui\\components\\partitionview\\.cpp FILES ${gui_components_partitionview_sources})
 SOURCE_GROUP(gui\\components\\partitionview\\.h FILES ${gui_components_partitionview_headers})
-
-##
-SOURCE_GROUP(gui\\components\\partitionview\\drawingtools\\.cpp FILES ${gui_components_partitionview_drawingtools_sources})
-SOURCE_GROUP(gui\\components\\partitionview\\drawingtools\\.h FILES ${gui_components_partitionview_drawingtools_headers})
 
 ##
 SOURCE_GROUP(gui\\components\\selectionview\\.h FILES ${gui_components_selectionview_headers})

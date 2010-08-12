@@ -20,9 +20,9 @@
 #include <common/partitionforests/images/MosaicImageCreator.h>
 #include <common/partitionforests/images/MosaicTextureSetUpdater.h>
 #include <common/slices/SliceTextureSetFiller.h>
-#include <mast/gui/components/partitionview/drawingtools/BoxDrawingTool.h>
-#include <mast/gui/components/partitionview/drawingtools/LassoDrawingTool.h>
-#include <mast/gui/components/partitionview/drawingtools/LineLoopDrawingTool.h>
+#include <mast/drawingtools/BoxDrawingTool.h>
+#include <mast/drawingtools/LassoDrawingTool.h>
+#include <mast/drawingtools/LineLoopDrawingTool.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
