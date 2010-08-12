@@ -188,7 +188,7 @@ std::vector<Vector2i> rasterize_polyline(const std::list<Vector2i>& polyline)
 		// (d) Remove any old edges from the active edge list.
 		for(std::set<ActiveEdge>::const_iterator it=activeEdges.begin(), iend=activeEdges.end(); it!=iend; /* No-op */)
 		{
-			if(it->e.v.y == y) it = activeEdges.erase(it);
+			if(it->e.v.y == y) activeEdges.erase(it++);
 			else ++it;
 		}
 	}
