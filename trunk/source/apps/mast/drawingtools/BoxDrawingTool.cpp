@@ -16,13 +16,13 @@ bool BoxDrawingTool::has_started() const
 	return m_anchor_Pixels;
 }
 
-void BoxDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const itk::Index<2>& position)
+void BoxDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& position)
 {
 	m_other_Pixels = p_Pixels;
 	m_otherPosition = position;
 }
 
-void BoxDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const itk::Index<2>& position)
+void BoxDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& position)
 {
 	m_anchor_Pixels = m_other_Pixels = p_Pixels;
 	m_anchorPosition = m_otherPosition = position;
@@ -69,9 +69,9 @@ void BoxDrawingTool::reset()
 	m_otherPosition.reset();
 }
 
-std::vector<itk::Index<2> > BoxDrawingTool::selected_positions() const
+std::vector<Vector2i> BoxDrawingTool::selected_positions() const
 {
-	std::vector<itk::Index<2> > selectedPositions;
+	std::vector<Vector2i> selectedPositions;
 	if(has_started())
 	{
 		int minX = std::min((*m_anchorPosition)[0], (*m_otherPosition)[0]), minY = std::min((*m_anchorPosition)[1], (*m_otherPosition)[1]);
@@ -79,7 +79,7 @@ std::vector<itk::Index<2> > BoxDrawingTool::selected_positions() const
 		selectedPositions.reserve((maxX + 1 - minX) * (maxY + 1 - minY));
 		for(int y=minY; y<=maxY; ++y)
 			for(int x=minX; x<=maxX; ++x)
-				selectedPositions.push_back(ITKImageUtil::make_index(x,y));
+				selectedPositions.push_back(Vector2i(x,y));
 	}
 	return selectedPositions;
 }

@@ -28,7 +28,7 @@ void DICOMCanvas::render(wxPaintDC& dc) const
 //#################### PRIVATE METHODS ####################
 void DICOMCanvas::finish_drawing(wxMouseEvent& e)
 {
-	std::vector<itk::Index<2> > selectedPositions = current_drawing_tool()->selected_positions();
+	std::vector<Vector2i> selectedPositions = current_drawing_tool()->selected_positions();
 	std::set<int> uniqueLeaves;
 	for(size_t i=0, size=selectedPositions.size(); i<size; ++i)
 	{

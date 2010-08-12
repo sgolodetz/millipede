@@ -10,7 +10,7 @@
 namespace mp {
 
 //#################### PUBLIC METHODS ####################
-void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const itk::Index<2>& position)
+void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& position)
 {
 	if(m_grabbedPoint)
 	{
@@ -18,10 +18,10 @@ void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const itk::Ind
 	}
 }
 
-void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const itk::Index<2>& position)
+void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& position)
 {
 	const int MAX_DIST_SQUARED = 20*20;
-	for(std::list<std::pair<Vector2i,itk::Index<2> > >::iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
+	for(std::list<std::pair<Vector2i,Vector2i> >::iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
 	{
 		if(it->first.distance_squared(p_Pixels) < MAX_DIST_SQUARED)
 		{
@@ -33,7 +33,7 @@ void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const itk::Ind
 	m_drawnLocations.push_back(std::make_pair(p_Pixels, position));
 }
 
-void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels, const itk::Index<2>& position)
+void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels, const Vector2i& position)
 {
 	m_grabbedPoint.reset();
 }
@@ -50,7 +50,7 @@ void LineLoopDrawingTool::render() const
 
 	glColor3d(0.0, 1.0, 1.0);
 	glBegin(GL_POINTS);
-		for(std::list<std::pair<Vector2i, itk::Index<2> > >::const_iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
+		for(std::list<std::pair<Vector2i,Vector2i> >::const_iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
 		{
 			glVertex2i(it->first.x, it->first.y);
 		}

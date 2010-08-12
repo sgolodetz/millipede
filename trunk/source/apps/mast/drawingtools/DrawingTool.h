@@ -8,8 +8,6 @@
 
 #include <vector>
 
-#include <itkIndex.h>
-
 #include <common/math/Vector2.h>
 
 namespace mp {
@@ -32,12 +30,12 @@ public:
 	//#################### PUBLIC ABSTRACT METHODS ####################
 public:
 	virtual bool has_started() const = 0;
-	virtual void mouse_dragged(const Vector2i& p_Pixels, const itk::Index<2>& position) {}
-	virtual void mouse_pressed(const Vector2i& p_Pixels, const itk::Index<2>& position) = 0;
-	virtual void mouse_released(const Vector2i& p_Pixels, const itk::Index<2>& position) {}
+	virtual void mouse_dragged(const Vector2i& p_Pixels, const Vector2i& position) {}
+	virtual void mouse_pressed(const Vector2i& p_Pixels, const Vector2i& position) = 0;
+	virtual void mouse_released(const Vector2i& p_Pixels, const Vector2i& position) {}
 	virtual void render() const = 0;
 	virtual void reset() = 0;
-	virtual std::vector<itk::Index<2> > selected_positions() const = 0;
+	virtual std::vector<Vector2i> selected_positions() const = 0;
 	virtual ToolStyle style() const = 0;
 };
 

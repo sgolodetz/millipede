@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <climits>
 #include <map>
 #include <set>
 #include <utility>
@@ -14,7 +15,6 @@
 #include <boost/optional.hpp>
 #include <boost/utility.hpp>
 
-#include <common/exceptions/Exception.h>
 #include <common/math/NumericUtil.h>
 
 namespace {
@@ -80,19 +80,24 @@ std::vector<Vector2i> rasterize_polyline(const std::list<Vector2i>& polyline)
 	std::vector<Vector2i> output;
 
 	// Step 1: Construct the edge set.
+	int minY = INT_MAX, maxY = INT_MIN;
 	std::set<Edge> edges;
 	for(std::list<Vector2i>::const_iterator it=polyline.begin(), iend=polyline.end(); it!=iend; ++it)
 	{
+		// Add the edge to the edge set (provided it isn't degenerate).
 		std::list<Vector2i>::const_iterator jt = boost::next(it);
 		if(jt == polyline.end()) jt = polyline.begin();
 		if(*it != *jt) edges.insert(Edge(*it, *jt));
+
+		// Take the opportunity to calculate the minimum and maximum scanlines here.
+		minY = std::min(minY, it->y);
+		maxY = std::max(maxY, it->y);
 	}
 
 	// Step 2: Rasterize each scanline in turn.
 	std::set<ActiveEdge> activeEdges;
 	std::set<Edge>::const_iterator nextEdge = edges.begin();
 
-	int minY = polyline.begin()->y, maxY = boost::prior(polyline.end())->y;
 	for(int y=minY; y<=maxY; ++y)
 	{
 		// (a) Add any new edges to the active edge list.
@@ -139,12 +144,6 @@ std::vector<Vector2i> rasterize_polyline(const std::list<Vector2i>& polyline)
 
 			switch(flag)
 			{
-				case DOWN+DOWN:
-				case HORIZONTAL+HORIZONTAL:
-				case UP+UP:
-				{
-					break;
-				}
 				case DOWN+UP:
 				case UP:
 				{
@@ -167,15 +166,16 @@ std::vector<Vector2i> rasterize_polyline(const std::list<Vector2i>& polyline)
 				}
 				default:
 				{
-					// This should never happen.
-					throw Exception("Bad edge point flag");
+					// This includes cases like DOWN+DOWN, HORIZONTAL+HORIZONTAL and UP+UP, as well as
+					// unusual cases that we don't try and handle.
+					break;
 				}
 			}
 
 			std::map<int,EdgePointFlag>::const_iterator jt = boost::next(it);
 			if(jt == iend) continue;
 
-			if(drawingOn || flag & HORIZONTAL || flag & (HORIZONTAL+HORIZONTAL))
+			if(drawingOn || beginHorizontalFlag != 0)
 			{
 				int nextX = jt->first;
 				for(int k=x+1; k<nextX; ++k)
