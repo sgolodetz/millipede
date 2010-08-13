@@ -157,11 +157,11 @@ protected:
 		wxString captions[] = {"X Size:", "Y Size:", "Z Size:"};
 		for(int i=0; i<3; ++i)
 		{
-			subvolumeSizer->Add(new wxStaticText(subvolumePanel, wxID_ANY, captions[i]));
+			subvolumeSizer->Add(new wxStaticText(subvolumePanel, wxID_ANY, captions[i]), 0, wxALIGN_CENTRE_VERTICAL);
 			int initial = m_volumeSize[i];
 			wxString initialValue = string_to_wxString(boost::lexical_cast<std::string>(initial));
 			m_subvolumeSizes[i] = new wxSpinCtrl(subvolumePanel, SPINID_GRIDSIZE, initialValue, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, m_volumeSize[i], initial);
-			subvolumeSizer->Add(m_subvolumeSizes[i]);
+			subvolumeSizer->Add(m_subvolumeSizes[i], 0, wxALIGN_CENTRE_VERTICAL);
 		}
 
 		sizer->Fit(panel);

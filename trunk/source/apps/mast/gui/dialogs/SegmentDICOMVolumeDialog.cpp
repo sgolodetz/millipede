@@ -59,16 +59,16 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	sizer->AddSpacer(10);
 
 	// Set up the controls that allow the user to set the parameters for anisotropic diffusion filtering.
-	wxGridSizer *filteringSizer = new wxGridSizer(0, 2, 0, 0);
+	wxGridSizer *filteringSizer = new wxGridSizer(0, 2, 0, 5);
 	sizer->Add(filteringSizer);
 
-	filteringSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("ADF Conductance:")));
+	filteringSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("ADF Conductance:")), 0, wxALIGN_CENTRE_VERTICAL);
 	m_adfConductance = new wxTextCtrl(panel, wxID_ANY, wxT("1.0"));
-	filteringSizer->Add(m_adfConductance);
+	filteringSizer->Add(m_adfConductance, 0, wxALIGN_CENTRE_VERTICAL);
 
-	filteringSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("ADF Iterations:")));
+	filteringSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("ADF Iterations:")), 0, wxALIGN_CENTRE_VERTICAL);
 	m_adfIterations = new wxSpinCtrl(panel, wxID_ANY, wxT("20"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 20);
-	filteringSizer->Add(m_adfIterations);
+	filteringSizer->Add(m_adfIterations, 0, wxALIGN_CENTRE_VERTICAL);
 
 	sizer->AddSpacer(10);
 
@@ -83,12 +83,12 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	sizer->AddSpacer(10);
 
 	// Set up the control that allows the user to set the waterfall layer limit.
-	wxGridSizer *waterfallSizer = new wxGridSizer(0, 2, 0, 0);
+	wxGridSizer *waterfallSizer = new wxGridSizer(0, 2, 0, 5);
 	sizer->Add(waterfallSizer);
 
-	waterfallSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("Waterfall Layer Limit:")));
+	waterfallSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("Waterfall Layer Limit:")), 0, wxALIGN_CENTRE_VERTICAL);
 	m_waterfallLayerLimit = new wxSpinCtrl(panel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 5);
-	waterfallSizer->Add(m_waterfallLayerLimit);
+	waterfallSizer->Add(m_waterfallLayerLimit, 0, wxALIGN_CENTRE_VERTICAL);
 
 	sizer->Fit(panel);
 	return panel;
