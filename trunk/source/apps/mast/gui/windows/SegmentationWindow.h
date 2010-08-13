@@ -63,6 +63,7 @@ public:
 	void OnMenuFeaturesManageFeatureSelections(wxCommandEvent&);
 	void OnMenuFeaturesToggle(wxCommandEvent& e);
 	void OnMenuFileExit(wxCommandEvent&);
+	void OnMenuHelpContents(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
 	void OnMenuNavigationFitToView(wxCommandEvent&);
 	void OnMenuNavigationGotoSlice(wxCommandEvent&);

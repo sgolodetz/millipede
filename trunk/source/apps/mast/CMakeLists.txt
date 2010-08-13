@@ -137,10 +137,12 @@ models/PartitionModel.h
 
 ##
 SET(util_sources
+util/HelpController.cpp
 util/StringConversion.cpp
 )
 
 SET(util_headers
+util/HelpController.h
 util/StringConversion.h
 )
 
@@ -286,6 +288,13 @@ testvolume2.vcf
 FOREACH(resource ${resources})
 	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
 ENDFOREACH(resource)
+
+#####################################
+# Copy help files to the build tree #
+#####################################
+
+CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.chm ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.chm COPYONLY)
+CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.htb ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.htb COPYONLY)
 
 #############################
 # Specify things to install #

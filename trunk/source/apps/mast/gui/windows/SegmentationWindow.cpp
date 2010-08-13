@@ -17,6 +17,7 @@
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
 #include <mast/gui/dialogs/ManageFeatureSelectionsDialog.h>
 #include <mast/gui/dialogs/ValidateFeatureSelectionDialog.h>
+#include <mast/util/HelpController.h>
 #include <mast/util/StringConversion.h>
 
 namespace {
@@ -32,6 +33,7 @@ enum
 	MENUID_FEATURES_TOGGLE_BASE,
 	MENUID_FEATURES_TOGGLE_LAST = (MENUID_FEATURES_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
+	MENUID_HELP_CONTENTS,
 	MENUID_NAVIGATION_CENTRECAMERA,
 	MENUID_NAVIGATION_FITTOVIEW,
 	MENUID_NAVIGATION_GOTOSLICE,
@@ -224,7 +226,7 @@ void SegmentationWindow::setup_menus()
 	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+3"));
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(wxID_ANY, wxT("&Contents..."));
+	helpMenu->Append(MENUID_HELP_CONTENTS, wxT("&Contents...\tF1"));
 
 	m_menuBar = new wxMenuBar;
 	m_menuBar->Append(fileMenu, wxT("&File"));
@@ -275,6 +277,11 @@ void SegmentationWindow::OnMenuFeaturesToggle(wxCommandEvent& e)
 void SegmentationWindow::OnMenuFileExit(wxCommandEvent&)
 {
 	Close();
+}
+
+void SegmentationWindow::OnMenuHelpContents(wxCommandEvent&)
+{
+	HelpController::instance().display_contents();
 }
 
 void SegmentationWindow::OnMenuNavigationCentreCamera(wxCommandEvent&)
@@ -681,6 +688,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
 	EVT_MENU(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnMenuFeaturesManageFeatureSelections)
 	EVT_MENU(MENUID_FILE_EXIT, SegmentationWindow::OnMenuFileExit)
+	EVT_MENU(MENUID_HELP_CONTENTS, SegmentationWindow::OnMenuHelpContents)
 	EVT_MENU(MENUID_NAVIGATION_CENTRECAMERA, SegmentationWindow::OnMenuNavigationCentreCamera)
 	EVT_MENU(MENUID_NAVIGATION_FITTOVIEW, SegmentationWindow::OnMenuNavigationFitToView)
 	EVT_MENU(MENUID_NAVIGATION_GOTOSLICE, SegmentationWindow::OnMenuNavigationGotoSlice)

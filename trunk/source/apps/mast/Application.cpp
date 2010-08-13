@@ -10,6 +10,7 @@
 #endif
 
 #include <mast/gui/windows/MainWindow.h>
+#include <mast/util/HelpController.h>
 
 namespace mp {
 
@@ -24,9 +25,17 @@ bool Application::OnInit()
 	SetFrontProcess(&PSN);
 #endif
 
+	HelpController::instance().initialize();
+
 	MainWindow *window = new MainWindow("MAST - Millipede Automatic Segmentation Tool");
 	window->Show();
 	return true;
+}
+
+int Application::OnExit()
+{
+	HelpController::instance().shutdown();
+	return 0;
 }
 
 }

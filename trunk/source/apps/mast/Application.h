@@ -14,6 +14,7 @@ class Application : public wxApp
 {
 	//#################### EVENT HANDLERS ####################
 public:
+	int OnExit();
 	bool OnInit();
 };
 
