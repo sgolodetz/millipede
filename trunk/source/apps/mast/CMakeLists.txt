@@ -302,3 +302,5 @@ CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.htb ${CMAKE_RUNTIME_OUT
 
 INSTALL(TARGETS ${targetname} DESTINATION bin/apps/${targetname}/bin)
 INSTALL(FILES ${resources} DESTINATION bin/apps/${targetname}/resources)
+INSTALL(FILES ${millipede_SOURCE_DIR}/../help/millipede.chm DESTINATION bin/apps/${targetname}/resources)
+INSTALL(FILES ${millipede_SOURCE_DIR}/../help/millipede.htb DESTINATION bin/apps/${targetname}/resources)
