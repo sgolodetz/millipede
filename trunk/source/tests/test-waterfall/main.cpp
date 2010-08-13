@@ -18,6 +18,7 @@ using boost::shared_ptr;
 #include <common/partitionforests/base/PartitionForest.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
+#include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 #include <common/util/ITKImageUtil.h>
@@ -133,7 +134,7 @@ void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int heig
 	writer->Update();
 }
 
-//#################### TEST FUNCTIONS ####################
+//#################### WATERFALL PASS LISTENERS ####################
 struct BasicListener : WaterfallPass<int>::Listener
 {
 	void merge_nodes(int u, int v)
@@ -142,6 +143,25 @@ struct BasicListener : WaterfallPass<int>::Listener
 	}
 };
 
+struct IPFConstructionListener : WaterfallPass<int>::Listener
+{
+	IPF_Ptr m_ipf;
+
+	explicit IPFConstructionListener(const IPF_Ptr& ipf)
+	:	m_ipf(ipf)
+	{}
+
+	void merge_nodes(int u, int v)
+	{
+		// Merge the corresponding nodes in the top-most layer of the IPF.
+		std::set<PFNodeID> mergees;
+		mergees.insert(PFNodeID(m_ipf->highest_layer(), u));
+		mergees.insert(PFNodeID(m_ipf->highest_layer(), v));
+		m_ipf->merge_sibling_nodes(mergees, IPF::DONT_CHECK_PRECONDITIONS);
+	}
+};
+
+//#################### TEST FUNCTIONS ####################
 void basic_test()
 {
 	// Create the graph in the Marcotegui waterfall paper.
@@ -176,23 +196,117 @@ void basic_test()
 	std::cout << '\n';
 }
 
-struct IPFConstructionListener : WaterfallPass<int>::Listener
+void golodetz_test_A()
 {
-	IPF_Ptr m_ipf;
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<8; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 4);
+		graph.set_edge_weight(1, 2, 4);
+			graph.set_edge_weight(2, 4, 4);
+				graph.set_edge_weight(4, 6, 1);
+			graph.set_edge_weight(2, 5, 4);
+				graph.set_edge_weight(5, 7, 1);
+		graph.set_edge_weight(1, 3, 4);
 
-	explicit IPFConstructionListener(const IPF_Ptr& ipf)
-	:	m_ipf(ipf)
-	{}
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
 
-	void merge_nodes(int u, int v)
-	{
-		// Merge the corresponding nodes in the top-most layer of the IPF.
-		std::set<PFNodeID> mergees;
-		mergees.insert(PFNodeID(m_ipf->highest_layer(), u));
-		mergees.insert(PFNodeID(m_ipf->highest_layer(), v));
-		m_ipf->merge_sibling_nodes(mergees, IPF::DONT_CHECK_PRECONDITIONS);
-	}
-};
+	// Run a Nicholls waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
+void golodetz_test_B()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<9; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 4);
+		graph.set_edge_weight(1, 3, 4);
+			graph.set_edge_weight(3, 5, 4);
+				graph.set_edge_weight(5, 7, 1);
+			graph.set_edge_weight(3, 6, 4);
+				graph.set_edge_weight(6, 8, 1);
+		graph.set_edge_weight(1, 4, 4);
+	graph.set_edge_weight(0, 2, 1);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Nicholls waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
+void golodetz_test_F()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<8; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 1);
+		graph.set_edge_weight(1, 2, 4);
+			graph.set_edge_weight(2, 3, 4);
+				graph.set_edge_weight(3, 5, 4);
+					graph.set_edge_weight(5, 7, 1);
+			graph.set_edge_weight(2, 4, 5);
+				graph.set_edge_weight(4, 6, 1);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Nicholls waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
+void golodetz_test_H()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<7; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 4);
+		graph.set_edge_weight(1, 3, 4);
+		graph.set_edge_weight(1, 4, 4);
+			graph.set_edge_weight(4, 5, 4);
+			graph.set_edge_weight(4, 6, 4);
+	graph.set_edge_weight(0, 2, 1);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Nicholls waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
 
 void real_image_test()
 {
@@ -282,7 +396,11 @@ int main()
 try
 {
 	//basic_test();
-	real_image_test();
+	//golodetz_test_A();
+	//golodetz_test_B();
+	//golodetz_test_F();
+	golodetz_test_H();
+	//real_image_test();
 	return 0;
 }
 catch(std::exception& e)

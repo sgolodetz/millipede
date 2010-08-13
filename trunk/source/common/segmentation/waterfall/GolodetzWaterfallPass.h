@@ -107,7 +107,7 @@ private:
 			}
 		}
 
-		// Determine whether the parent edge should be merged.
+		// Determine whether the parent edge (if any) should be merged.
 		if(parent != -1)
 		{
 			const NodeData& parentData = mst.node_data<NodeData>(parent);
@@ -216,22 +216,26 @@ private:
 		}
 
 		// Otherwise, consider all the lowest-valued child edges (i.e. ignore the parent for now,
-		// even if it is also a lowest-valued edge) which satisfy the condition that there is no
-		// arrow on the node at the other end of the edge pointing along the edge towards this
-		// node. If there are no such child edges, then this node is unescapable along a child
-		// edge and should be given a distance value of INT_MAX. Otherwise, each of these child
-		// edges can be assigned a distance value equal to 1 greater than the value on the node
-		// at the other end of the edge: this value on the node will be 0 for nodes from which
-		// there is a unique path of steepest descent, and non-zero otherwise. Pick all the child
-		// edges whose distance value is minimal and add arrows to this node pointing along them
-		// (these indicate the initial paths of steepest descent from this node). Store the minimum
-		// distance value as this node's value.
+		// even if it is also a lowest-valued edge) which satisfy the two conditions:
+		//
+		// (a)	There is no arrow on the node at the other end of the edge pointing along the
+		//		edge towards this node
+		// (b)	The node at the other end of the edge has a distance value not equal to INT_MAX
+		//
+		// If there are no such child edges, then this node is unescapable along a child edge and
+		// should be given a distance value of INT_MAX. Otherwise, each of these child edges can be
+		// assigned a distance value equal to 1 greater than the value on the node at the other end of
+		// the edge: this value on the node will be 0 for nodes from which there is a unique path of
+		// steepest descent, and non-zero otherwise. Pick all the child edges whose distance value is
+		// minimal and add arrows to this node pointing along them (these indicate the initial paths
+		// of steepest descent from this node). Store the minimum distance value as this node's value.
+
 		std::set<int> lowestChildEdges = lowestEdges;
 		lowestChildEdges.erase(parent);
 		for(std::set<int>::iterator it=lowestChildEdges.begin(), iend=lowestChildEdges.end(); it!=iend; /* No-op */)
 		{
 			const NodeData& childData = mst.node_data<NodeData>(*it);
-			if(childData.m_arrows.find(cur) != childData.m_arrows.end())
+			if(childData.m_arrows.find(cur) != childData.m_arrows.end() || childData.m_distance == INT_MAX)
 			{
 				lowestChildEdges.erase(it++);
 			}
