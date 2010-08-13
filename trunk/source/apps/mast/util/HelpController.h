@@ -6,6 +6,8 @@
 #ifndef H_MILLIPEDE_HELPCONTROLLER
 #define H_MILLIPEDE_HELPCONTROLLER
 
+#include <string>
+
 #include <wx/help.h>
 
 namespace mp {

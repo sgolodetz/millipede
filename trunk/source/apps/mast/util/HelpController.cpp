@@ -47,6 +47,7 @@ void HelpController::initialize()
 
 void HelpController::shutdown()
 {
+	m_base->Quit();
 	delete m_base;
 	m_base = NULL;
 }
