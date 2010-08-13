@@ -14,6 +14,7 @@
 #include <common/jobs/CompositeJob.h>
 #include <common/jobs/DataHook.h>
 #include <common/partitionforests/images/VolumeIPF.h>
+#include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/util/GridUtil.h>
 #include "ForestBuildingWaterfallPassListener.h"
@@ -221,11 +222,22 @@ private:
 			VolumeIPF_Ptr volumeIPF = base->m_volumeIPF;
 			itk::Size<3> subvolumeSize = base->m_segmentationOptions.subvolumeSize, volumeSize = base->m_volume->size();
 
-			std::vector<NichollsWaterfallPass<int> > waterfallPasses(subvolumeCount);
+			std::vector<boost::shared_ptr<WaterfallPass<int> > > waterfallPasses(subvolumeCount);
 			for(int i=0; i<subvolumeCount; ++i)
 			{
+				switch(base->m_segmentationOptions.waterfallAlgorithm)
+				{
+					case SegmentationOptions::WATERFALLALGORITHM_GOLODETZ:
+						waterfallPasses[i].reset(new GolodetzWaterfallPass<int>);
+						break;
+					case SegmentationOptions::WATERFALLALGORITHM_NICHOLLS:
+						waterfallPasses[i].reset(new NichollsWaterfallPass<int>);
+						break;
+					default:
+						throw Exception("Tried to use an invalid waterfall algorithm");
+				}
 				SubvolumeToVolumeIndexMapper indexMapper(i, subvolumeSize, volumeSize);
-				waterfallPasses[i].add_shared_listener(make_forest_building_waterfall_pass_listener(volumeIPF, indexMapper));
+				waterfallPasses[i]->add_shared_listener(make_forest_building_waterfall_pass_listener(volumeIPF, indexMapper));
 			}
 
 			while(volumeIPF->highest_layer() < base->m_segmentationOptions.waterfallLayerLimit)
@@ -237,7 +249,7 @@ private:
 				{
 					if(msts[i]->node_count() != 1)
 					{
-						waterfallPasses[i].run(*msts[i]);
+						waterfallPasses[i]->run(*msts[i]);
 					}
 				}
 				if(is_aborted()) return;

@@ -113,10 +113,7 @@ private:
 			const NodeData& parentData = mst.node_data<NodeData>(parent);
 			NodeClassifier curClassifier = classify_node(data, parent);
 			NodeClassifier parentClassifier = classify_node(parentData, cur);
-
-			data.m_parentWillMerge =	curClassifier == UNAMBIGUOUS_IN ||
-										parentClassifier == UNAMBIGUOUS_IN ||
-										(curClassifier == NO_FLOW && parentClassifier == NO_FLOW);
+			data.m_parentWillMerge = curClassifier == UNAMBIGUOUS_IN || parentClassifier == UNAMBIGUOUS_IN || (curClassifier == NO_FLOW && parentClassifier == NO_FLOW);
 		}
 
 		mst.set_node_data(cur, data);

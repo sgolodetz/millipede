@@ -22,6 +22,7 @@ private:
 	wxTextCtrl *m_adfConductance;
 	wxSpinCtrl *m_adfIterations;
 	wxRadioBox *m_inputType;
+	wxRadioBox *m_waterfallAlgorithm;
 	wxSpinCtrl *m_waterfallLayerLimit;
 
 	//#################### CONSTRUCTORS ####################

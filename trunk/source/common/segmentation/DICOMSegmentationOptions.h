@@ -22,16 +22,24 @@ struct DICOMSegmentationOptions
 		INPUTTYPE_COUNT,		// dummy value containing the number of input types
 	};
 
+	enum WaterfallAlgorithm
+	{
+		WATERFALLALGORITHM_GOLODETZ,
+		WATERFALLALGORITHM_NICHOLLS,
+		WATERFALLALGORITHM_COUNT,	// dummy value containing the number of waterfall algorithms
+	};
+
 	//#################### PUBLIC VARIABLES ####################
 	double adfConductance;
 	int adfIterations;
 	InputType inputType;
 	itk::Size<3> subvolumeSize;
+	WaterfallAlgorithm waterfallAlgorithm;
 	int waterfallLayerLimit;
 	WindowSettings windowSettings;
 
 	//#################### CONSTRUCTORS ####################
-	DICOMSegmentationOptions(double adfConductance_, int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
+	DICOMSegmentationOptions(double adfConductance_, int adfIterations_, InputType inputType_, const itk::Size<3>& subvolumeSize_, WaterfallAlgorithm waterfallAlgorithm_, int waterfallLayerLimit_, const WindowSettings& windowSettings_);
 };
 
 }
