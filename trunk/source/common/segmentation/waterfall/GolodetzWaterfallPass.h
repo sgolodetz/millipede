@@ -84,10 +84,10 @@ private:
 		int parent = mst.tree_parent(cur);
 
 		// Check for a better upwards route if necessary.
-		NodeData data = mst.node_data<NodeData>(cur);
+		NodeData data = mst.template node_data<NodeData>(cur);
 		if(data.m_checkParent)
 		{
-			const NodeData& parentData = mst.node_data<NodeData>(parent);
+			const NodeData& parentData = mst.template node_data<NodeData>(parent);
 			if(parentData.m_arrows.find(cur) == parentData.m_arrows.end())
 			{
 				// There is a potential upwards route.
@@ -110,7 +110,7 @@ private:
 		// Determine whether the parent edge (if any) should be merged.
 		if(parent != -1)
 		{
-			const NodeData& parentData = mst.node_data<NodeData>(parent);
+			const NodeData& parentData = mst.template node_data<NodeData>(parent);
 			NodeClassifier curClassifier = classify_node(data, parent);
 			NodeClassifier parentClassifier = classify_node(parentData, cur);
 			data.m_parentWillMerge = curClassifier == UNAMBIGUOUS_IN || parentClassifier == UNAMBIGUOUS_IN || (curClassifier == NO_FLOW && parentClassifier == NO_FLOW);
@@ -137,10 +137,10 @@ private:
 
 		// Merge the parent edge if necessary.
 		int parent = mst.tree_parent(cur);
-		const NodeData& data = mst.node_data<NodeData>(cur);
+		const NodeData& data = mst.template node_data<NodeData>(cur);
 		if(data.m_parentWillMerge)
 		{
-			NodeData parentData = mst.node_data<NodeData>(parent);
+			NodeData parentData = mst.template node_data<NodeData>(parent);
 			int oldParent = parent;
 			parent = this->merge_nodes(mst, parent, cur);
 
@@ -155,7 +155,7 @@ private:
 				int grandparent = mst.tree_parent(parent);
 				if(grandparent != -1)
 				{
-					NodeData grandparentData = mst.node_data<NodeData>(grandparent);
+					NodeData grandparentData = mst.template node_data<NodeData>(grandparent);
 					if(grandparentData.m_arrows.find(oldParent) != grandparentData.m_arrows.end())
 					{
 						grandparentData.m_arrows.erase(oldParent);
@@ -167,7 +167,7 @@ private:
 				std::set<int> children = mst.tree_children(parent);
 				for(std::set<int>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
 				{
-					NodeData childData = mst.node_data<NodeData>(*it);
+					NodeData childData = mst.template node_data<NodeData>(*it);
 					if(childData.m_arrows.find(oldParent) != childData.m_arrows.end())
 					{
 						childData.m_arrows.erase(oldParent);
@@ -234,7 +234,7 @@ private:
 		lowestChildEdges.erase(parent);
 		for(std::set<int>::iterator it=lowestChildEdges.begin(), iend=lowestChildEdges.end(); it!=iend; /* No-op */)
 		{
-			const NodeData& childData = mst.node_data<NodeData>(*it);
+			const NodeData& childData = mst.template node_data<NodeData>(*it);
 			if(childData.m_arrows.find(cur) != childData.m_arrows.end() || childData.m_distance == INT_MAX)
 			{
 				lowestChildEdges.erase(it++);
@@ -247,7 +247,7 @@ private:
 			std::map<int,std::set<int> > distanceToEdges;
 			for(std::set<int>::const_iterator it=lowestChildEdges.begin(), iend=lowestChildEdges.end(); it!=iend; ++it)
 			{
-				const NodeData& childData = mst.node_data<NodeData>(*it);
+				const NodeData& childData = mst.template node_data<NodeData>(*it);
 				distanceToEdges[childData.m_distance+1].insert(*it);
 			}
 
