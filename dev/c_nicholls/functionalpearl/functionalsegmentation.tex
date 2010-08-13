@@ -225,8 +225,8 @@ As described in (@@@ somewhere) the algorithm runs over the tree and
 elides all edges that are of minimum weight from either of its end
 points.
 
-Working recursively down the tree, there are four cases to consider
-for an edge $e$ between a parent node $p$ and a child node $c$.
+Working recursively down the tree, we can classify an edge $e$ between
+a parent node $p$ and a child node $c$ into one of four ways:
 \begin{enumerate}[I]
 \item e is     the minimum edge of p and not the minimum edge of c
 \item e is     the minimum edge of p and     the minimum edge of c
@@ -240,11 +240,12 @@ This is illustrated with an example in Figure~\ref{fig:cases}.
 \begin{figure}
 \centering
 \ifpdf
-        \epsfig{file=treeexamplewithcases.pdf, width=.7\linewidth}%
+        \epsfig{file=cases.pdf, width=.7\linewidth}%
 \else
         % TODO
 \fi
-\caption{Example of tree with cases}
+\caption{Each possible case. Each arrow represent the minimum edge of
+the node.}
 \label{fig:cases}
 \end{figure}
 
@@ -272,10 +273,14 @@ will they remain unmerged and is thus the simplest case to manage.  We
 can simply make a recursive call on $c$ having eliminated one of its
 children.
 
+To begin with we will define a two-pass algoorithm that firsly
+traverses the tree and labels each edge with the appropriate case,
+then secondly creates the new tree by eliding the edges that are not
+labelled with a Case~III.
 
+To do this we must define a labelled tree that identifies each edge
+with one of the cases above.
 
-We also define a labelled tree that identifies each edge with one of
-the cases above.
 
 \begin{verbatim}
 data LTree a = LNode a [LEdge a]
