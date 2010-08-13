@@ -276,7 +276,7 @@ children.
 To begin with we will define a two-pass algoorithm that firsly
 traverses the tree and labels each edge with the appropriate case,
 then secondly creates the new tree by eliding the edges that are not
-labelled with a Case~III.
+labelled with a Case~III (by Lemma~\ref{lemma3}).
 
 To do this we must define a labelled tree that identifies each edge
 with one of the cases above.
@@ -295,12 +295,9 @@ mark  :: Mergeable a => Tree a -> LTree a
 elide :: Mergeable a => LTree a -> Tree a
 \end{verbatim}
 
-The idea is to take two passes over the tree, one that lebels each
-edge with a case, and one that elides each node not marked as a
-Case~III edge (by Lemma~\ref{lemma3}).
 
 The function elide is the simpler of the two to define, it walks the
-tree and merges each pair of nodes not joined by a Case3 edge.
+tree and merges each pair of nodes not joined by a Case~III edge.
 
 \begin{verbatim}
 elide (LNode a []) = Node a []
