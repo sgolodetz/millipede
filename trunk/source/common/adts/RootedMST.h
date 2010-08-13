@@ -10,6 +10,7 @@
 #include <climits>
 #include <set>
 
+#include <boost/any.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <common/util/NullType.h>
@@ -21,9 +22,25 @@ namespace mp {
 template <typename EdgeWeight>
 class RootedMST
 {
+	//#################### NESTED CLASSES ####################
+private:
+	struct NodeProperties
+	{
+		int m_parent;
+		boost::any m_data;
+
+		NodeProperties()
+		:	m_parent(-1)
+		{}
+
+		explicit NodeProperties(int parent)
+		:	m_parent(parent)
+		{}
+	};
+
 	//#################### TYPEDEFS ####################
 private:
-	typedef AdjacencyGraph<int, EdgeWeight> BaseGraph;	// each node stores the index of its parent
+	typedef AdjacencyGraph<NodeProperties, EdgeWeight> BaseGraph;	// each node stores the index of its parent and (possibly) some auxiliary data
 public:
 	typedef typename BaseGraph::Edge Edge;
 	typedef typename BaseGraph::EdgeCIter EdgeConstIterator;
@@ -74,7 +91,7 @@ public:
 		for(typename BaseGraph::NodePropertiesCIter it=m_base.node_properties_cbegin(), iend=m_base.node_properties_cend(); it!=iend; ++it)
 		{
 			int u = it->first;
-			int v = it->second;
+			int v = it->second.m_parent;
 			if(v != -1)
 			{
 				EdgeWeight weight = graph.edge_weight(u, v);
@@ -125,8 +142,27 @@ public:
 		return survivingIndex;
 	}
 
-	int node_count() const								{ return m_base.node_count(); }
-	std::vector<int> node_indices() const				{ return m_base.node_indices(); }
+	int node_count() const
+	{
+		return m_base.node_count();
+	}
+
+	template <typename T>
+	const T& node_data(int n) const
+	{
+		return boost::any_cast<const T&>(m_base.node_properties(n).m_data);
+	}
+
+	std::vector<int> node_indices() const
+	{
+		return m_base.node_indices();
+	}
+
+	template <typename T>
+	void set_node_data(int n, const T& data)
+	{
+		m_base.node_properties(n).m_data = data;
+	}
 
 	std::set<int> tree_children(int n) const
 	{
@@ -136,12 +172,24 @@ public:
 		return children;
 	}
 
-	int tree_parent(int n) const						{ return m_base.node_properties(n); }
-	int tree_root() const								{ return m_root; }
+	int tree_parent(int n) const
+	{
+		return m_base.node_properties(n).m_parent;
+	}
+
+	int tree_root() const
+	{
+		return m_root;
+	}
 
 	//#################### PRIVATE METHODS ####################
 private:
-	void set_tree_parent(int n, int parent)				{ m_base.set_node_properties(n, parent); }
+	void set_tree_parent(int n, int parent)
+	{
+		// Note: set_tree_parent() intentionally creates node n if it doesn't already exist.
+		if(m_base.has_node(n))	m_base.node_properties(n).m_parent = parent;
+		else					m_base.set_node_properties(n, NodeProperties(parent));
+	}
 };
 
 }

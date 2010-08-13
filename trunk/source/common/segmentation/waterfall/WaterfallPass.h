@@ -48,6 +48,14 @@ public:
 	{
 		m_listeners.add_shared_listener(listener);
 	}
+
+	//#################### PROTECTED METHODS ####################
+protected:
+	int merge_nodes(RootedMST<EdgeWeight>& mst, int u, int v)
+	{
+		this->m_listeners.merge_nodes(u, v);
+		return mst.merge_nodes(u, v);
+	}
 };
 
 }

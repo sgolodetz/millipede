@@ -244,6 +244,7 @@ segmentation/VolumeIPFBuilder.h
 
 ##
 SET(segmentation_waterfall_headers
+segmentation/waterfall/GolodetzWaterfallPass.h
 segmentation/waterfall/NichollsWaterfallPass.h
 segmentation/waterfall/WaterfallPass.h
 )

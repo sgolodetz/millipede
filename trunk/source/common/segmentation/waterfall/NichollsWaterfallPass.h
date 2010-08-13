@@ -54,12 +54,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	int merge_nodes(RootedMST<EdgeWeight>& mst, int u, int v)
-	{
-		this->m_listeners.merge_nodes(u, v);
-		return mst.merge_nodes(u, v);
-	}
-
 	std::pair<int,Flag> run_sub(RootedMST<EdgeWeight>& mst, int parent, EdgeWeight parentWeight)
 	{
 		std::set<int> children = mst.tree_children(parent);
@@ -84,7 +78,7 @@ private:
 			// If the parent is a guard edge, merge the 'minimum' edge regardless of its own flag.
 			if(parentFlag == GUARD)
 			{
-				parent = merge_nodes(mst, parent, lowest.node);
+				parent = this->merge_nodes(mst, parent, lowest.node);
 				results.erase(lowestIt);
 			}
 
@@ -93,7 +87,7 @@ private:
 			{
 				if(it->flag == NON_GUARD)
 				{
-					parent = merge_nodes(mst, parent, it->node);
+					parent = this->merge_nodes(mst, parent, it->node);
 				}
 			}
 
