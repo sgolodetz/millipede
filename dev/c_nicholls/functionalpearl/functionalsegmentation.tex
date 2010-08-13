@@ -163,20 +163,19 @@ transformations.
 We also show how the algorithm can be written as a single recursive
 pass of the MST and how it can be written in a pure functional style.
 
-
 \subsection{MST}
 
 We build an MST of the grid of greyscale pixels in the image. (More
 often than not the gradient image is used instead, but this detail is
 somewhat irrelevant to the current discussion). Since both Kruskall's
 and Prim's algorithms are inherently imperative in style, the building
-of the MST is an interesting problem in itself. 
+of the MST is an interesting problem in itself.
 
 The details of this are sufficiently complex that they will be omitted
 from this paper.
 
 Suffice to say that we use an adaptation of Prim's algorithm which
-involves ... @@@  
+involves ... @@@
 
 Due to the use of the above artifice, the overall running time of the
 MST construction can be brought to the same order of magnitude as the
@@ -392,38 +391,64 @@ It would be good to avoid creating the intermediate {\tt LTree}
 structure. Currently the {\tt LTree} is created by {\tt mark} and
 consumed directly by {\tt elide}, so it should be possible to fuse the
 two functions into one pass.  Indeed, by rewriting {\tt elide}, we can
-see that the function {\tt mark} acts as a tree-{\tt map} and {\tt
-  elide} acts as a {\tt fold}.
+see that it acts as a tree-{\tt fold} whilst the function {\tt mark} acts as a
+tree-{\tt map}.
 
 \begin{verbatim}
 elide :: Mergeable a => LTree a -> Tree a
-elide (LNode a xs) = foldr f (Node a []) xs
-  where
-    f (LEdge Case3 w child) = addChild w (elide child)
-    f (LEdge _ _ child)     = mergeNodes (elide child)
+elide (LNode a xs) = foldr elideEdge (Node a []) xs
+
+elideEdge :: LEdge a -> Tree a
+elideEdge (LEdge Case3 w child) = addChild w (elide child)
+elideEdge (LEdge _ _ child)     = mergeNodes (elide child)
 \end{verbatim}
 
-Equational reasoning .... @@@
+We would like to use the foldr-map fusion law to define a function
+{\tt waterfall} equivalent to {\tt elide.map}.
+To try and derive the function {\tt waterfall}, we proceed by equational
+reasoning.
 
 \begin{verbatim}
+
+waterfall (Node r xs)
+case cs  = []
+------
+elide (mark (Node r []]))
+= {by definition of mark}
+elide (LNode r []])
+=
+Node r []
+
+case xs = (c:cs)
+-----
 elide (mark (Node r cs))
+= {by definition of mark}
 elide (LNode r ) (case1and2 minChild : map case3and4 cs')
-foldr f (Node r []) (case1and2 minChild : map case3and4 cs')
-f (case1and2 minChild) (foldr f (Node r []) (map case3and4 cs'))
-f (case1and2 minChild) (foldr (f.case3and4) (Node r []) cs')
-(f.case1and2) minChild (foldr (f.case3and4) (Node r []) cs')
+= {by definition of elide}
+foldr elideEdge (Node r []) (case1and2 minChild : map case3and4 cs')
+= {by definition of foldr}
+elideEdge (case1and2 minChild) (foldr elideEdge (Node r []) (map case3and4 cs'))
+= {by the foldr-map fusion law}
+elideEdge (case1and2 minChild) (foldr (elideEdge.case3and4) (Node r []) cs')
+= {by definition of (.)}
+(elideEdge.case1and2) minChild (foldr (elideEdge.case3and4) (Node r []) cs')
 \end{verbatim}
 
-Next, see whether {\tt f.case3and4} can be simplified.
+Next, see whether {\tt f.case3and4} can be rewritten to use {\tt
+waterfall} instead of {\tt mark} and {\tt elide}.
 There are two cases to consider... @@@
 \begin{verbatim}
 
 (f.case3and4) (Edge w t)
 ----------
 (a)
-f (case3and4 (Edge w t)
-f (LEdge Case3 w (mark t)
+elideEdge (case3and4 (Edge w t)
+= {by definition of case3and4}
+elideEdge (LEdge Case3 w (mark t)
+= {by definition of elideEdge}
 addChild w (elide(mark t))
+= {by hypothesis}
+addChild w (waterfall t)
 
 (b) (t = Node a cs)
 f (case3and4 (Edge w t))
@@ -552,7 +577,7 @@ edge away from either of its endpoints.
   not the minimum edge away from either of its endpoints.
 
 
-\noindent 
+\noindent
 `$\Leftarrow$'
 \indent
 
