@@ -175,11 +175,9 @@ The details of this are sufficiently complex that they will be omitted
 from this paper.
 
 Suffice to say that we use an adaptation of Prim's algorithm which
-involves ... @@@
-
-Due to the use of the above artifice, the overall running time of the
-MST construction can be brought to the same order of magnitude as the
-running time of the rest of the algorithm.
+involves ... @@@ Due to the use of this artifice, the overall running
+time of the MST construction can be brought to the same order of
+magnitude as the running time of the rest of the algorithm.
 
 
 \subsection{Data structure}
@@ -357,7 +355,7 @@ Case~II, it if fairly easy to tell which, since $w$ is the smallest
 edge from $t$, if and only if each edge to a child of $t$ has weight larger
 than $w$ (or $t$ has no children).
 
-If $s$ is a Case~II edge, then (by Lemma~\ref{lemma2}@@@) all of its
+If $s$ is a Case~II edge, then (by Lemma~\ref{lemma2}) all of its
 children must be Case~III or Case~IV edges.  Otherwise $e$ is a Case~I
 edge and $t$'s children may satisfy any case.
 
@@ -532,7 +530,7 @@ This restriction @@@ provide details.
 \end{enumerate}
 
 We define a regional minimum to be an edge that is surrounded by edges
-of greater @@@ weight, i.e.\ an edge $e = (a,b,k)$ is a regional
+of greater weight, i.e.\ an edge $e = (a,b,k)$ is a regional
 minimum iff $\forall c \in E, l \in \mathbb{N} : (c,b,l) \in E
 \implies l \geq k\ and\ (a,c,l) \in E \implies l \geq k $
 
@@ -588,8 +586,8 @@ edge away from either of its endpoints.
   minimum edge connected to $n_2$
 
   Create a sequence of edges from $n_1$ by always picking the smallest
-  edge from the current vertex until you @@@ the smallest edge is
-  already in the sequence.
+  edge from the current vertex until the smallest edge is already in
+  the sequence.
 
   Do the same for $n_2$ Show the endpoints of these sequences are
   regional minima.
