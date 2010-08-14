@@ -25,6 +25,7 @@ struct DICOMSegmentationOptions
 	enum WaterfallAlgorithm
 	{
 		WATERFALLALGORITHM_GOLODETZ,
+		WATERFALLALGORITHM_MARCOTEGUI,
 		WATERFALLALGORITHM_NICHOLLS,
 		WATERFALLALGORITHM_COUNT,	// dummy value containing the number of waterfall algorithms
 	};

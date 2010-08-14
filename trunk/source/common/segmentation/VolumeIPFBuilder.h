@@ -15,6 +15,7 @@
 #include <common/jobs/DataHook.h>
 #include <common/partitionforests/images/VolumeIPF.h>
 #include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
+#include <common/segmentation/waterfall/MarcoteguiWaterfallPass.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/util/GridUtil.h>
 #include "ForestBuildingWaterfallPassListener.h"
@@ -229,6 +230,9 @@ private:
 				{
 					case SegmentationOptions::WATERFALLALGORITHM_GOLODETZ:
 						waterfallPasses[i].reset(new GolodetzWaterfallPass<int>);
+						break;
+					case SegmentationOptions::WATERFALLALGORITHM_MARCOTEGUI:
+						waterfallPasses[i].reset(new MarcoteguiWaterfallPass<int>);
 						break;
 					case SegmentationOptions::WATERFALLALGORITHM_NICHOLLS:
 						waterfallPasses[i].reset(new NichollsWaterfallPass<int>);

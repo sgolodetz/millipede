@@ -75,6 +75,7 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	// Set up the radio box to choose between different waterfall algorithms.
 	wxString waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_COUNT];
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_GOLODETZ] = wxT("Use &Golodetz Waterfall Algorithm");
+	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_MARCOTEGUI] = wxT("Use &Marcotegui Waterfall Algorithm");
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS] = wxT("Use &Nicholls Waterfall Algorithm");
 	m_waterfallAlgorithm = new wxRadioBox(panel, wxID_ANY, wxT("Waterfall Algorithm"), wxDefaultPosition, wxDefaultSize, DICOMSegmentationOptions::WATERFALLALGORITHM_COUNT, waterfallStrings, 1, wxRA_SPECIFY_COLS);
 	m_waterfallAlgorithm->SetSelection(DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS);
