@@ -197,6 +197,37 @@ void basic_test()
 	std::cout << '\n';
 }
 
+void comparison_test()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<9; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 1);
+		graph.set_edge_weight(1, 2, 2);
+			graph.set_edge_weight(2, 3, 2);
+				graph.set_edge_weight(3, 6, 1);
+			graph.set_edge_weight(2, 4, 2);
+				graph.set_edge_weight(4, 7, 1);
+			graph.set_edge_weight(2, 5, 2);
+				graph.set_edge_weight(5, 8, 3);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	//MarcoteguiWaterfallPass<int> pass;
+	//NichollsWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
 void golodetz_test_A()
 {
 	// Create the graph.
@@ -431,11 +462,12 @@ int main()
 try
 {
 	//basic_test();
+	comparison_test();
 	//golodetz_test_A();
 	//golodetz_test_B();
 	//golodetz_test_F();
 	//golodetz_test_H();
-	marcotegui_test();
+	//marcotegui_test();
 	//real_image_test();
 	return 0;
 }
