@@ -313,6 +313,33 @@ void golodetz_test_F()
 	std::cout << '\n';
 }
 
+void golodetz_test_G()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<7; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 4);
+		graph.set_edge_weight(1, 3, 4);
+		graph.set_edge_weight(1, 4, 4);
+			graph.set_edge_weight(4, 5, 4);
+			graph.set_edge_weight(4, 6, 4);
+	graph.set_edge_weight(0, 2, 4);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Golodetz waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
 void golodetz_test_H()
 {
 	// Create the graph.
@@ -324,6 +351,38 @@ void golodetz_test_H()
 			graph.set_edge_weight(4, 5, 4);
 			graph.set_edge_weight(4, 6, 4);
 	graph.set_edge_weight(0, 2, 1);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Golodetz waterfall pass on the MST.
+	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
+void golodetz_test_J()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<12; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 1);
+		graph.set_edge_weight(1, 2, 5);
+			graph.set_edge_weight(2, 4, 4);
+				graph.set_edge_weight(4, 8, 1);
+			graph.set_edge_weight(2, 5, 4);
+				graph.set_edge_weight(5, 9, 1);
+		graph.set_edge_weight(1, 3, 5);
+			graph.set_edge_weight(3, 6, 4);
+				graph.set_edge_weight(6, 10, 1);
+			graph.set_edge_weight(3, 7, 4);
+				graph.set_edge_weight(7, 11, 1);
 
 	// Create a rooted MST from the graph.
 	RootedMST<int> mst(graph);
@@ -462,11 +521,13 @@ int main()
 try
 {
 	//basic_test();
-	comparison_test();
+	//comparison_test();
 	//golodetz_test_A();
 	//golodetz_test_B();
 	//golodetz_test_F();
+	//golodetz_test_G();
 	//golodetz_test_H();
+	golodetz_test_J();
 	//marcotegui_test();
 	//real_image_test();
 	return 0;
