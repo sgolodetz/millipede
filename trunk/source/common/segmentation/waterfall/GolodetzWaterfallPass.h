@@ -19,6 +19,7 @@ class GolodetzWaterfallPass : public WaterfallPass<EdgeWeight>
 private:
 	enum NodeClassifier
 	{
+		UNDETERMINED,
 		AMBIGUOUS_IN,
 		AMBIGUOUS_OUT,
 		NO_FLOW,
@@ -30,13 +31,14 @@ private:
 private:
 	struct NodeData
 	{
-		std::set<int> m_arrows;		// the nodes at the other ends of arrowed edges (ones along which water would flow)
-		bool m_checkParent;			// whether the parent route needs checking in the down pass
-		int m_distance;				// the node's distance value (see algorithm description)
-		bool m_parentWillMerge;		// whether the parent edge of this node will be merged
+		std::set<int> m_arrows;						// the nodes at the other ends of arrowed edges (ones along which water would flow)
+		bool m_checkParent;							// whether the parent route needs checking in the down pass
+		int m_distance;								// the node's distance value (see algorithm description)
+		NodeClassifier m_parentBottomClassifier;	// the classification of the node with regard to the node's parent edge
+		NodeClassifier m_parentTopClassifier;		// the classification of the node's parent with regard to the node's parent edge
 
 		NodeData()
-		:	m_checkParent(false), m_distance(0), m_parentWillMerge(false)
+		:	m_checkParent(false), m_distance(0), m_parentBottomClassifier(UNDETERMINED), m_parentTopClassifier(UNDETERMINED)
 		{}
 	};
 
@@ -107,13 +109,12 @@ private:
 			}
 		}
 
-		// Determine whether the parent edge (if any) should be merged.
+		// Classify the node and its parent with respect to the parent edge.
 		if(parent != -1)
 		{
 			const NodeData& parentData = mst.template node_data<NodeData>(parent);
-			NodeClassifier curClassifier = classify_node(data, parent);
-			NodeClassifier parentClassifier = classify_node(parentData, cur);
-			data.m_parentWillMerge = curClassifier == UNAMBIGUOUS_IN || parentClassifier == UNAMBIGUOUS_IN || (curClassifier == NO_FLOW && parentClassifier == NO_FLOW);
+			data.m_parentBottomClassifier = classify_node(data, parent);
+			data.m_parentTopClassifier = classify_node(parentData, cur);
 		}
 
 		mst.set_node_data(cur, data);
@@ -138,7 +139,8 @@ private:
 		// Merge the parent edge if necessary.
 		int parent = mst.tree_parent(cur);
 		const NodeData& data = mst.template node_data<NodeData>(cur);
-		if(data.m_parentWillMerge)
+		if(data.m_parentBottomClassifier == UNAMBIGUOUS_IN || data.m_parentTopClassifier == UNAMBIGUOUS_IN ||
+		   (data.m_parentBottomClassifier == NO_FLOW && data.m_parentTopClassifier == NO_FLOW))
 		{
 			NodeData parentData = mst.template node_data<NodeData>(parent);
 			int oldParent = parent;
