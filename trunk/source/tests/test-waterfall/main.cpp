@@ -399,6 +399,125 @@ void golodetz_test_J()
 	std::cout << '\n';
 }
 
+void large_test()
+{
+	// Create the graph.
+	AdjacencyGraph<int, int> graph;
+	graph.set_node_properties(0, 0);
+	graph.set_node_properties(6, 6);
+	graph.set_node_properties(13, 13);
+	graph.set_node_properties(17, 17);
+	graph.set_node_properties(21, 21);
+	graph.set_node_properties(24, 24);
+	graph.set_node_properties(30, 30);
+	graph.set_node_properties(33, 33);
+	graph.set_node_properties(62, 62);
+	graph.set_node_properties(87, 87);
+	graph.set_node_properties(100, 100);
+	graph.set_node_properties(108, 108);
+	graph.set_node_properties(130, 130);
+	graph.set_node_properties(136, 136);
+	graph.set_node_properties(179, 179);
+	graph.set_node_properties(183, 183);
+	graph.set_node_properties(201, 201);
+	graph.set_node_properties(256, 256);
+	graph.set_node_properties(272, 272);
+	graph.set_node_properties(294, 294);
+	graph.set_node_properties(311, 311);
+	graph.set_node_properties(335, 335);
+	graph.set_node_properties(357, 357);
+	graph.set_node_properties(362, 362);
+	graph.set_node_properties(381, 381);
+	graph.set_node_properties(384, 384);
+	graph.set_node_properties(403, 403);
+	graph.set_node_properties(448, 448);
+	graph.set_node_properties(454, 454);
+	graph.set_node_properties(461, 461);
+	graph.set_node_properties(473, 473);
+	graph.set_node_properties(509, 509);
+	graph.set_node_properties(570, 570);
+	graph.set_node_properties(572, 572);
+	graph.set_node_properties(601, 601);
+	graph.set_node_properties(693, 693);
+	graph.set_node_properties(700, 700);
+	graph.set_node_properties(703, 703);
+	graph.set_node_properties(729, 729);
+	graph.set_node_properties(789, 789);
+	graph.set_node_properties(799, 799);
+	graph.set_node_properties(841, 841);
+	graph.set_node_properties(845, 845);
+	graph.set_node_properties(850, 850);
+	graph.set_node_properties(858, 858);
+	graph.set_node_properties(862, 862);
+	graph.set_node_properties(886, 886);
+	graph.set_node_properties(914, 914);
+	graph.set_node_properties(938, 938);
+	graph.set_node_properties(959, 959);
+	graph.set_edge_weight(0, 33, 6);
+	graph.set_edge_weight(6, 13, 4);
+	graph.set_edge_weight(6, 108, 7);
+	graph.set_edge_weight(13, 17, 13);
+	graph.set_edge_weight(21, 24, 2);
+	graph.set_edge_weight(24, 62, 1);
+	graph.set_edge_weight(30, 62, 6);
+	graph.set_edge_weight(33, 130, 2);
+	graph.set_edge_weight(62, 87, 1);
+	graph.set_edge_weight(62, 183, 2);
+	graph.set_edge_weight(100, 130, 1);
+	graph.set_edge_weight(100, 136, 2);
+	graph.set_edge_weight(108, 201, 1);
+	graph.set_edge_weight(130, 256, 1);
+	graph.set_edge_weight(179, 311, 1);
+	graph.set_edge_weight(183, 311, 11);
+	graph.set_edge_weight(201, 362, 1);
+	graph.set_edge_weight(256, 357, 1);
+	graph.set_edge_weight(256, 384, 1);
+	graph.set_edge_weight(272, 403, 1);
+	graph.set_edge_weight(311, 381, 12);
+	graph.set_edge_weight(311, 473, 1);
+	graph.set_edge_weight(335, 362, 1);
+	graph.set_edge_weight(357, 294, 1);
+	graph.set_edge_weight(357, 448, 1);
+	graph.set_edge_weight(357, 454, 1);
+	graph.set_edge_weight(362, 461, 3);
+	graph.set_edge_weight(403, 473, 1);
+	graph.set_edge_weight(403, 601, 2);
+	graph.set_edge_weight(403, 693, 2);
+	graph.set_edge_weight(454, 362, 1);
+	graph.set_edge_weight(454, 403, 1);
+	graph.set_edge_weight(454, 841, 1);
+	graph.set_edge_weight(454, 938, 1);
+	graph.set_edge_weight(473, 509, 2);
+	graph.set_edge_weight(509, 572, 1);
+	graph.set_edge_weight(570, 572, 1);
+	graph.set_edge_weight(570, 700, 4);
+	graph.set_edge_weight(693, 789, 4);
+	graph.set_edge_weight(700, 703, 12);
+	graph.set_edge_weight(703, 799, 23);
+	graph.set_edge_weight(729, 789, 5);
+	graph.set_edge_weight(845, 914, 1);
+	graph.set_edge_weight(845, 938, 1);
+	graph.set_edge_weight(850, 914, 1);
+	graph.set_edge_weight(858, 886, 1);
+	graph.set_edge_weight(858, 862, 2);
+	graph.set_edge_weight(858, 959, 2);
+	graph.set_edge_weight(886, 914, 2);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Nicholls waterfall pass on the MST.
+	NichollsWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
 void marcotegui_test()
 {
 	// Create the graph in the Marcotegui waterfall paper.
@@ -527,7 +646,8 @@ try
 	//golodetz_test_F();
 	//golodetz_test_G();
 	//golodetz_test_H();
-	golodetz_test_J();
+	//golodetz_test_J();
+	large_test();
 	//marcotegui_test();
 	//real_image_test();
 	return 0;

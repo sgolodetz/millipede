@@ -26,8 +26,9 @@ struct DICOMSegmentationOptions
 	{
 		WATERFALLALGORITHM_GOLODETZ,
 		WATERFALLALGORITHM_MARCOTEGUI,
-		WATERFALLALGORITHM_NICHOLLS,
-		WATERFALLALGORITHM_COUNT,	// dummy value containing the number of waterfall algorithms
+		WATERFALLALGORITHM_NICHOLLS_CORRECT,
+		WATERFALLALGORITHM_NICHOLLS_TWEAKED,
+		WATERFALLALGORITHM_COUNT,			// dummy value containing the number of waterfall algorithms
 	};
 
 	//#################### PUBLIC VARIABLES ####################

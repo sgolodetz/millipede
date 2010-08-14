@@ -44,6 +44,16 @@ private:
 		}
 	};
 
+	//#################### PRIVATE VARIABLES ####################
+private:
+	bool m_useCorrectCondition;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	explicit NichollsWaterfallPass(bool useCorrectCondition = false)
+	:	m_useCorrectCondition(useCorrectCondition)
+	{}
+
 	//#################### PUBLIC METHODS ####################
 public:
 	RootedMST<EdgeWeight>& run(RootedMST<EdgeWeight>& mst)
@@ -73,7 +83,9 @@ private:
 			Result& lowest = *lowestIt;
 
 			// Calculate the parent flag.
-			Flag parentFlag = (parentWeight < lowest.weight) ? NON_GUARD : GUARD;
+			Flag parentFlag;
+			if(m_useCorrectCondition)	parentFlag = (parentWeight <= lowest.weight) ? NON_GUARD : GUARD;
+			else						parentFlag = (parentWeight < lowest.weight) ? NON_GUARD : GUARD;
 
 			// If the parent is a guard edge, merge the 'minimum' edge regardless of its own flag.
 			if(parentFlag == GUARD)

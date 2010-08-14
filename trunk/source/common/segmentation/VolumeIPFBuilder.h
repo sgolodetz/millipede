@@ -234,8 +234,11 @@ private:
 					case SegmentationOptions::WATERFALLALGORITHM_MARCOTEGUI:
 						waterfallPasses[i].reset(new MarcoteguiWaterfallPass<int>);
 						break;
-					case SegmentationOptions::WATERFALLALGORITHM_NICHOLLS:
-						waterfallPasses[i].reset(new NichollsWaterfallPass<int>);
+					case SegmentationOptions::WATERFALLALGORITHM_NICHOLLS_CORRECT:
+						waterfallPasses[i].reset(new NichollsWaterfallPass<int>(true));
+						break;
+					case SegmentationOptions::WATERFALLALGORITHM_NICHOLLS_TWEAKED:
+						waterfallPasses[i].reset(new NichollsWaterfallPass<int>(false));
 						break;
 					default:
 						throw Exception("Tried to use an invalid waterfall algorithm");

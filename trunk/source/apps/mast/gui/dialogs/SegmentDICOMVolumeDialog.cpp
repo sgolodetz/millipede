@@ -76,9 +76,10 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	wxString waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_COUNT];
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_GOLODETZ] = wxT("Use &Golodetz Waterfall Algorithm");
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_MARCOTEGUI] = wxT("Use &Marcotegui Waterfall Algorithm");
-	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS] = wxT("Use &Nicholls Waterfall Algorithm");
+	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS_CORRECT] = wxT("Use Nicholls Waterfall Algorithm (&Correct)");
+	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS_TWEAKED] = wxT("Use Nicholls Waterfall Algorithm (&Tweaked)");
 	m_waterfallAlgorithm = new wxRadioBox(panel, wxID_ANY, wxT("Waterfall Algorithm"), wxDefaultPosition, wxDefaultSize, DICOMSegmentationOptions::WATERFALLALGORITHM_COUNT, waterfallStrings, 1, wxRA_SPECIFY_COLS);
-	m_waterfallAlgorithm->SetSelection(DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS);
+	m_waterfallAlgorithm->SetSelection(DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS_TWEAKED);
 	sizer->Add(m_waterfallAlgorithm);
 
 	sizer->AddSpacer(10);
