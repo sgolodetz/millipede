@@ -16,7 +16,7 @@ template <typename EdgeWeight>
 class GolodetzWaterfallPass : public WaterfallPass<EdgeWeight>
 {
 	//#################### ENUMERATIONS ####################
-private:
+public:
 	enum NodeClassifier
 	{
 		UNDETERMINED,
@@ -28,7 +28,7 @@ private:
 	};
 
 	//#################### NESTED CLASSES ####################
-private:
+public:
 	struct NodeData
 	{
 		std::set<int> m_arrows;						// the nodes at the other ends of arrowed edges (ones along which water would flow)
@@ -38,7 +38,10 @@ private:
 		NodeClassifier m_parentTopClassifier;		// the classification of the node's parent with regard to the node's parent edge
 
 		NodeData()
-		:	m_checkParent(false), m_distance(0), m_parentBottomClassifier(UNDETERMINED), m_parentTopClassifier(UNDETERMINED)
+		:	m_checkParent(false),
+			m_distance(0),
+			m_parentBottomClassifier(UNDETERMINED),
+			m_parentTopClassifier(UNDETERMINED)
 		{}
 	};
 
@@ -51,6 +54,16 @@ public:
 			up_pass(mst, mst.tree_root());
 			down_pass(mst, mst.tree_root());
 			merge_pass(mst, mst.tree_root());
+		}
+		return mst;
+	}
+
+	RootedMST<EdgeWeight>& run_without_merge_pass(RootedMST<EdgeWeight>& mst)
+	{
+		if(mst.node_count() > 1)
+		{
+			up_pass(mst, mst.tree_root());
+			down_pass(mst, mst.tree_root());
 		}
 		return mst;
 	}
@@ -81,7 +94,7 @@ private:
 		return classifier;
 	}
 
-	void down_pass(RootedMST<EdgeWeight>& mst, int cur)
+	static void down_pass(RootedMST<EdgeWeight>& mst, int cur)
 	{
 		int parent = mst.tree_parent(cur);
 
@@ -183,7 +196,7 @@ private:
 		return parent;
 	}
 
-	void up_pass(RootedMST<EdgeWeight>& mst, int cur)
+	static void up_pass(RootedMST<EdgeWeight>& mst, int cur)
 	{
 		int parent = mst.tree_parent(cur);
 		NodeData data;

@@ -19,6 +19,7 @@ using boost::shared_ptr;
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
+#include <common/segmentation/waterfall/MarcoteguiWaterfallPass.h>
 #include <common/segmentation/waterfall/NichollsWaterfallPass.h>
 #include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
 #include <common/util/ITKImageUtil.h>
@@ -212,7 +213,7 @@ void golodetz_test_A()
 	// Create a rooted MST from the graph.
 	RootedMST<int> mst(graph);
 
-	// Run a Nicholls waterfall pass on the MST.
+	// Run a Golodetz waterfall pass on the MST.
 	GolodetzWaterfallPass<int> pass;
 	boost::shared_ptr<BasicListener> listener(new BasicListener);
 	pass.add_shared_listener(listener);
@@ -241,7 +242,7 @@ void golodetz_test_B()
 	// Create a rooted MST from the graph.
 	RootedMST<int> mst(graph);
 
-	// Run a Nicholls waterfall pass on the MST.
+	// Run a Golodetz waterfall pass on the MST.
 	GolodetzWaterfallPass<int> pass;
 	boost::shared_ptr<BasicListener> listener(new BasicListener);
 	pass.add_shared_listener(listener);
@@ -269,7 +270,7 @@ void golodetz_test_F()
 	// Create a rooted MST from the graph.
 	RootedMST<int> mst(graph);
 
-	// Run a Nicholls waterfall pass on the MST.
+	// Run a Golodetz waterfall pass on the MST.
 	GolodetzWaterfallPass<int> pass;
 	boost::shared_ptr<BasicListener> listener(new BasicListener);
 	pass.add_shared_listener(listener);
@@ -296,8 +297,42 @@ void golodetz_test_H()
 	// Create a rooted MST from the graph.
 	RootedMST<int> mst(graph);
 
-	// Run a Nicholls waterfall pass on the MST.
+	// Run a Golodetz waterfall pass on the MST.
 	GolodetzWaterfallPass<int> pass;
+	boost::shared_ptr<BasicListener> listener(new BasicListener);
+	pass.add_shared_listener(listener);
+	pass.run(mst);
+
+	// Output the remaining MST edges.
+	std::cout << "\nRemaining edges: ";
+	std::copy(mst.edges_cbegin(), mst.edges_cend(), std::ostream_iterator<WeightedEdge<int> >(std::cout, " "));
+	std::cout << '\n';
+}
+
+void marcotegui_test()
+{
+	// Create the graph in the Marcotegui waterfall paper.
+	AdjacencyGraph<int, int> graph;
+	for(int i=0; i<14; ++i) graph.set_node_properties(i, i);
+	graph.set_edge_weight(0, 1, 3);
+		graph.set_edge_weight(1, 2, 2);
+		graph.set_edge_weight(1, 3, 20);
+			graph.set_edge_weight(3, 4, 4);
+				graph.set_edge_weight(4, 5, 2);
+			graph.set_edge_weight(3, 6, 10);
+				graph.set_edge_weight(6, 7, 5);
+					graph.set_edge_weight(7, 8, 5);
+						graph.set_edge_weight(8, 9, 4);
+						graph.set_edge_weight(8, 10, 2);
+						graph.set_edge_weight(8, 11, 20);
+							graph.set_edge_weight(11, 12, 4);
+							graph.set_edge_weight(11, 13, 4);
+
+	// Create a rooted MST from the graph.
+	RootedMST<int> mst(graph);
+
+	// Run a Marcotegui waterfall pass on the MST.
+	MarcoteguiWaterfallPass<int> pass;
 	boost::shared_ptr<BasicListener> listener(new BasicListener);
 	pass.add_shared_listener(listener);
 	pass.run(mst);
@@ -399,7 +434,8 @@ try
 	//golodetz_test_A();
 	//golodetz_test_B();
 	//golodetz_test_F();
-	golodetz_test_H();
+	//golodetz_test_H();
+	marcotegui_test();
 	//real_image_test();
 	return 0;
 }
