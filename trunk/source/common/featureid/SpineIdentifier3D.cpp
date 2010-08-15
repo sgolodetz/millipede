@@ -34,22 +34,9 @@ int SpineIdentifier3D::length() const
 //#################### PRIVATE METHODS ####################
 void SpineIdentifier3D::execute_impl()
 {
+	set_status("Identifying the spine...");
+
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection(new VolumeIPFMultiFeatureSelectionT(m_volumeIPF));
-
-	std::list<PFNodeID> seeds = find_seeds();
-
-	// TEMPORARY
-	for(std::list<PFNodeID>::const_iterator it=seeds.begin(), iend=seeds.end(); it!=iend; ++it)
-	{
-		multiFeatureSelection->identify_node(*it, AbdominalFeature::VERTEBRA);
-	}
-
-	m_outputHook.set(multiFeatureSelection);
-}
-
-std::list<PFNodeID> SpineIdentifier3D::find_seeds() const
-{
-	std::list<PFNodeID> seeds;
 
 	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(m_dicomVolume->size());
 	int minSpineVoxels = 800 * volumeSize[2];
@@ -66,12 +53,12 @@ std::list<PFNodeID> SpineIdentifier3D::find_seeds() const
 				properties.voxel_count() >= minSpineVoxels &&										// and a reasonable size
 				properties.voxel_count() <= maxSpineVoxels)
 			{
-				seeds.push_back(PFNodeID(layer, it.index()));
+				multiFeatureSelection->identify_node(PFNodeID(layer, it.index()), AbdominalFeature::VERTEBRA);
 			}
 		}
 	}
 
-	return seeds;
+	m_outputHook.set(multiFeatureSelection);
 }
 
 }

@@ -11,6 +11,7 @@
 #include <wx/sizer.h>
 
 #include <common/commands/UndoableCommandManager.h>
+#include <common/featureid/MultiFeatureIdentifier3D.h>
 #include <common/featureid/SpineIdentifier3D.h>
 #include <mast/gui/components/partitionview/PartitionCamera.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
@@ -31,7 +32,7 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
-	MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D,
+	MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D,
 	MENUID_FEATURES_AUTOIDENTIFY_SPINE3D,
 	MENUID_FEATURES_CLEAR_ALL,
 	MENUID_FEATURES_CLEAR_BASE,
@@ -245,7 +246,7 @@ void SegmentationWindow::setup_menus()
 	featuresMenu->AppendSeparator();
 	wxMenu *autoIdentifyMenu = new wxMenu;
 	featuresMenu->AppendSubMenu(autoIdentifyMenu, wxT("&Automatically Identify Features"));
-		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, wxT("Using &Default 3D Identifier\tAlt+Shift+D"));
+		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, wxT("Using Multi-Feature 3D &Identifier\tAlt+Shift+I"));
 		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, wxT("Using &Spine 3D Identifier\tAlt+Shift+S"));
 #if NYI
 		autoIdentifyMenu->Append(wxID_ANY, wxT("&Using Script..."));
@@ -320,9 +321,11 @@ void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 	m_commandManager->undo();
 }
 
-void SegmentationWindow::OnMenuFeaturesAutoIdentifyDefault(wxCommandEvent&)
+void SegmentationWindow::OnMenuFeaturesAutoIdentifyMultiFeature(wxCommandEvent&)
 {
-	// TODO
+	boost::shared_ptr<MultiFeatureIdentifier3D> identifier(new MultiFeatureIdentifier3D(m_model->dicom_volume(), m_model->volume_ipf()));
+	execute_with_progress_dialog(identifier, this, "Identifying Features", false);
+	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_output());
 }
 
 void SegmentationWindow::OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&)
@@ -792,7 +795,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnMenuActionsClearHistory)
 	EVT_MENU(MENUID_ACTIONS_REDO, SegmentationWindow::OnMenuActionsRedo)
 	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
-	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, SegmentationWindow::OnMenuFeaturesAutoIdentifyDefault)
+	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, SegmentationWindow::OnMenuFeaturesAutoIdentifyMultiFeature)
 	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnMenuFeaturesAutoIdentifySpine)
 	EVT_MENU(MENUID_FEATURES_CLEAR_ALL, SegmentationWindow::OnMenuFeaturesClearAll)
 	EVT_MENU(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnMenuFeaturesManageFeatureSelections)
@@ -833,7 +836,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnUpdateMenuActionsClearHistory)
 	EVT_UPDATE_UI(MENUID_ACTIONS_REDO, SegmentationWindow::OnUpdateMenuActionsRedo)
 	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, SegmentationWindow::OnUpdateMenuActionsUndo)
-	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, SegmentationWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_FEATURES_CLEAR_ALL, SegmentationWindow::OnUpdateMenuFeaturesClearAll)
 	EVT_UPDATE_UI(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnUpdateForestNeeder)
