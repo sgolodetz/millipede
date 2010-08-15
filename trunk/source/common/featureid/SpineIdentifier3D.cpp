@@ -6,6 +6,7 @@
 #include "SpineIdentifier3D.h"
 
 #include <common/dicom/volumes/DICOMVolume.h>
+#include <common/util/ITKImageUtil.h>
 
 namespace mp {
 
@@ -50,7 +51,7 @@ std::list<PFNodeID> SpineIdentifier3D::find_seeds() const
 {
 	std::list<PFNodeID> seeds;
 
-	itk::Size<3> volumeSize = m_dicomVolume->size();
+	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(m_dicomVolume->size());
 	int minSpineVoxels = 800 * volumeSize[2];
 	int maxSpineVoxels = 8000 * volumeSize[2];
 	for(int layer=1, highestLayer=m_volumeIPF->highest_layer(); layer<=highestLayer; ++layer)
