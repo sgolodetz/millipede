@@ -33,6 +33,9 @@ enum
 	MENUID_ACTIONS_UNDO,
 	MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D,
 	MENUID_FEATURES_AUTOIDENTIFY_SPINE3D,
+	MENUID_FEATURES_CLEAR_ALL,
+	MENUID_FEATURES_CLEAR_BASE,
+	MENUID_FEATURES_CLEAR_LAST = (MENUID_FEATURES_CLEAR_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FEATURES_IDENTIFY_BASE,
 	MENUID_FEATURES_IDENTIFY_LAST = (MENUID_FEATURES_IDENTIFY_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FEATURES_MANAGEFEATURESELECTIONS,
@@ -100,6 +103,11 @@ void SegmentationWindow::connect_special_menu_items()
 	std::vector<Feature> featureTypes = enum_values<Feature>();
 	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 	{
+		{
+			int id = (MENUID_FEATURES_CLEAR_BASE+1) + i;
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeaturesClearFeature));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateMenuFeaturesClearFeature));
+		}
 		{
 			int id = (MENUID_FEATURES_IDENTIFY_BASE+1) + i;
 			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeaturesIdentify));
@@ -230,8 +238,13 @@ void SegmentationWindow::setup_menus()
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
 
 	wxMenu *featuresMenu = new wxMenu;
+	featuresMenu->Append(MENUID_FEATURES_MANAGEFEATURESELECTIONS, wxT("&Manage Feature Selections...\tCtrl+M"));
+#if NYI
+	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
+#endif
+	featuresMenu->AppendSeparator();
 	wxMenu *autoIdentifyMenu = new wxMenu;
-	featuresMenu->AppendSubMenu(autoIdentifyMenu, wxT("&Automatically Identify"));
+	featuresMenu->AppendSubMenu(autoIdentifyMenu, wxT("&Automatically Identify Features"));
 		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, wxT("Using &Default 3D Identifier\tAlt+Shift+D"));
 		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, wxT("Using &Spine 3D Identifier\tAlt+Shift+S"));
 #if NYI
@@ -239,29 +252,32 @@ void SegmentationWindow::setup_menus()
 #endif
 	featuresMenu->AppendSeparator();
 	wxMenu *identifyMenu = new wxMenu;
-	featuresMenu->AppendSubMenu(identifyMenu, wxT("&Identify Selected Nodes"));
+	featuresMenu->AppendSubMenu(identifyMenu, wxT("&Identify Selection As"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			identifyMenu->Append((MENUID_FEATURES_IDENTIFY_BASE+1) + i, make_feature_menu_item(featureTypes, i, false));
 		}
 	wxMenu *toggleMenu = new wxMenu;
-	featuresMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selected Nodes"));
+	featuresMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selection As"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, make_feature_menu_item(featureTypes, i, true));
 		}
 	wxMenu *unidentifyMenu = new wxMenu;
-	featuresMenu->AppendSubMenu(unidentifyMenu, wxT("&Unidentify Selected Nodes"));
+	featuresMenu->AppendSubMenu(unidentifyMenu, wxT("&Unidentify Selection As"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
 			unidentifyMenu->Append((MENUID_FEATURES_UNIDENTIFY_BASE+1) + i, make_feature_menu_item(featureTypes, i, false));
 		}
 	featuresMenu->AppendSeparator();
-	featuresMenu->Append(MENUID_FEATURES_MANAGEFEATURESELECTIONS, wxT("&Manage Feature Selections...\tCtrl+M"));
-#if NYI
-	featuresMenu->AppendSeparator();
-	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
-#endif
+	wxMenu *clearFeatureMenu = new wxMenu;
+	featuresMenu->AppendSubMenu(clearFeatureMenu, wxT("&Clear Feature"));
+		clearFeatureMenu->Append(MENUID_FEATURES_CLEAR_ALL, wxT("All Features"));
+		clearFeatureMenu->AppendSeparator();
+		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+		{
+			clearFeatureMenu->Append((MENUID_FEATURES_CLEAR_BASE+1) + i, make_feature_menu_item(featureTypes, i, false));
+		}
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
@@ -314,6 +330,17 @@ void SegmentationWindow::OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&)
 	boost::shared_ptr<SpineIdentifier3D> identifier(new SpineIdentifier3D(m_model->volume_ipf()));
 	execute_with_progress_dialog(identifier, this, "Identifying Spine", false);
 	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_output());
+}
+
+void SegmentationWindow::OnMenuFeaturesClearAll(wxCommandEvent&)
+{
+	m_model->active_multi_feature_selection()->clear_all();
+}
+
+void SegmentationWindow::OnMenuFeaturesClearFeature(wxCommandEvent& e)
+{
+	Feature feature = Feature(e.GetId() - (MENUID_FEATURES_CLEAR_BASE+1));
+	m_model->active_multi_feature_selection()->clear_feature(feature);
 }
 
 void SegmentationWindow::OnMenuFeaturesIdentify(wxCommandEvent& e)
@@ -553,6 +580,18 @@ void SegmentationWindow::OnUpdateMenuActionsUndo(wxUpdateUIEvent& e)
 	}
 }
 
+void SegmentationWindow::OnUpdateMenuFeaturesClearAll(wxUpdateUIEvent& e)
+{
+	e.Enable(m_model->active_multi_feature_selection() && !m_model->active_multi_feature_selection()->empty());
+}
+
+void SegmentationWindow::OnUpdateMenuFeaturesClearFeature(wxUpdateUIEvent& e)
+{
+	PartitionModelT::VolumeIPFMultiFeatureSelection_CPtr mfs = m_model->active_multi_feature_selection();
+	Feature feature = Feature(e.GetId() - (MENUID_FEATURES_CLEAR_BASE+1));
+	e.Enable(mfs && mfs->has_selection(feature) && !mfs->selection(feature)->empty());
+}
+
 void SegmentationWindow::OnUpdateMenuNavigationNextLayer(wxUpdateUIEvent& e)
 {
 	e.Enable(m_view->camera()->has_next_layer());
@@ -755,6 +794,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
 	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, SegmentationWindow::OnMenuFeaturesAutoIdentifyDefault)
 	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnMenuFeaturesAutoIdentifySpine)
+	EVT_MENU(MENUID_FEATURES_CLEAR_ALL, SegmentationWindow::OnMenuFeaturesClearAll)
 	EVT_MENU(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnMenuFeaturesManageFeatureSelections)
 	EVT_MENU(MENUID_FILE_EXIT, SegmentationWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_HELP_CONTENTS, SegmentationWindow::OnMenuHelpContents)
@@ -795,6 +835,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, SegmentationWindow::OnUpdateMenuActionsUndo)
 	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_FEATURES_CLEAR_ALL, SegmentationWindow::OnUpdateMenuFeaturesClearAll)
 	EVT_UPDATE_UI(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTLAYER, SegmentationWindow::OnUpdateMenuNavigationNextLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, SegmentationWindow::OnUpdateMenuNavigationNextSlice)
