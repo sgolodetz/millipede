@@ -61,6 +61,8 @@ public:
 	void OnMenuActionsClearHistory(wxCommandEvent&);
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
+	void OnMenuFeaturesAutoIdentifyDefault(wxCommandEvent&);
+	void OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&);
 	void OnMenuFeaturesIdentify(wxCommandEvent& e);
 	void OnMenuFeaturesManageFeatureSelections(wxCommandEvent&);
 	void OnMenuFeaturesToggle(wxCommandEvent& e);

@@ -84,6 +84,15 @@ exceptions/FileNotFoundException.h
 )
 
 ##
+SET(featureid_sources
+featureid/SpineIdentifier3D.cpp
+)
+
+SET(featureid_headers
+featureid/SpineIdentifier3D.h
+)
+
+##
 SET(graphics_sources
 graphics/PolylineRasterizer.cpp
 )
@@ -357,6 +366,7 @@ ${commands_sources}
 ${dicom_directories_sources}
 ${dicom_util_sources}
 ${dicom_volumes_sources}
+${featureid_sources}
 ${graphics_sources}
 ${io_files_sources}
 ${io_sections_sources}
@@ -381,6 +391,7 @@ ${dicom_directories_headers}
 ${dicom_util_headers}
 ${dicom_volumes_headers}
 ${exceptions_headers}
+${featureid_headers}
 ${graphics_headers}
 ${io_files_headers}
 ${io_sections_headers}
@@ -432,6 +443,10 @@ SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
 
 ##
 SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
+
+##
+SOURCE_GROUP(featureid\\.cpp FILES ${featureid_sources})
+SOURCE_GROUP(featureid\\.h FILES ${featureid_headers})
 
 ##
 SOURCE_GROUP(graphics\\.cpp FILES ${graphics_sources})

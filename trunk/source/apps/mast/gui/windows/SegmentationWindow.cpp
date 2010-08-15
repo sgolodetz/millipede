@@ -11,9 +11,11 @@
 #include <wx/sizer.h>
 
 #include <common/commands/UndoableCommandManager.h>
+#include <common/featureid/SpineIdentifier3D.h>
 #include <mast/gui/components/partitionview/PartitionCamera.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/gui/components/selectionview/SelectionView.h>
+#include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
 #include <mast/gui/dialogs/ManageFeatureSelectionsDialog.h>
 #include <mast/gui/dialogs/ValidateFeatureSelectionDialog.h>
@@ -29,6 +31,8 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
+	MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D,
+	MENUID_FEATURES_AUTOIDENTIFY_SPINE3D,
 	MENUID_FEATURES_IDENTIFY_BASE,
 	MENUID_FEATURES_IDENTIFY_LAST = (MENUID_FEATURES_IDENTIFY_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FEATURES_MANAGEFEATURESELECTIONS,
@@ -226,12 +230,14 @@ void SegmentationWindow::setup_menus()
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
 
 	wxMenu *featuresMenu = new wxMenu;
+	wxMenu *autoIdentifyMenu = new wxMenu;
+	featuresMenu->AppendSubMenu(autoIdentifyMenu, wxT("&Automatically Identify"));
+		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, wxT("Using &Default 3D Identifier\tAlt+Shift+D"));
+		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, wxT("Using &Spine 3D Identifier\tAlt+Shift+S"));
 #if NYI
-	wxMenu *autoMarkMenu = new wxMenu;
-	featuresMenu->AppendSubMenu(autoMarkMenu, wxT("&Automatically Mark"));
-		autoMarkMenu->Append(wxID_ANY, wxT("Using &Default Identifier"));
-		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
+		autoIdentifyMenu->Append(wxID_ANY, wxT("&Using Script..."));
 #endif
+	featuresMenu->AppendSeparator();
 	wxMenu *identifyMenu = new wxMenu;
 	featuresMenu->AppendSubMenu(identifyMenu, wxT("&Identify Selected Nodes"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
@@ -296,6 +302,18 @@ void SegmentationWindow::OnMenuActionsRedo(wxCommandEvent&)
 void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 {
 	m_commandManager->undo();
+}
+
+void SegmentationWindow::OnMenuFeaturesAutoIdentifyDefault(wxCommandEvent&)
+{
+	// TODO
+}
+
+void SegmentationWindow::OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&)
+{
+	boost::shared_ptr<SpineIdentifier3D> identifier(new SpineIdentifier3D(m_model->volume_ipf()));
+	execute_with_progress_dialog(identifier, this, "Identifying Spine", false);
+	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_output());
 }
 
 void SegmentationWindow::OnMenuFeaturesIdentify(wxCommandEvent& e)
@@ -735,6 +753,8 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnMenuActionsClearHistory)
 	EVT_MENU(MENUID_ACTIONS_REDO, SegmentationWindow::OnMenuActionsRedo)
 	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
+	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, SegmentationWindow::OnMenuFeaturesAutoIdentifyDefault)
+	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnMenuFeaturesAutoIdentifySpine)
 	EVT_MENU(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnMenuFeaturesManageFeatureSelections)
 	EVT_MENU(MENUID_FILE_EXIT, SegmentationWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_HELP_CONTENTS, SegmentationWindow::OnMenuHelpContents)
@@ -773,6 +793,8 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_ACTIONS_CLEARHISTORY, SegmentationWindow::OnUpdateMenuActionsClearHistory)
 	EVT_UPDATE_UI(MENUID_ACTIONS_REDO, SegmentationWindow::OnUpdateMenuActionsRedo)
 	EVT_UPDATE_UI(MENUID_ACTIONS_UNDO, SegmentationWindow::OnUpdateMenuActionsUndo)
+	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_DEFAULT3D, SegmentationWindow::OnUpdateForestNeeder)
+	EVT_UPDATE_UI(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTLAYER, SegmentationWindow::OnUpdateMenuNavigationNextLayer)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_NEXTSLICE, SegmentationWindow::OnUpdateMenuNavigationNextSlice)

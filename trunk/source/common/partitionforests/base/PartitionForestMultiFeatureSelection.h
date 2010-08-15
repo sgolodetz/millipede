@@ -219,6 +219,15 @@ public:
 		return m_selections.find(feature) != m_selections.end();
 	}
 
+	void identify_multi_feature_selection(const PartitionForestMultiFeatureSelection_CPtr& mfs)
+	{
+		SequenceGuard guard(m_commandManager, "Identify Multi-Feature Selection", m_listeners);
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::const_iterator it=mfs->m_selections.begin(), iend=mfs->m_selections.end(); it!=iend; ++it)
+		{
+			identify_selection(it->second, it->first);
+		}
+	}
+
 	void identify_node(const PFNodeID& node, const Feature& feature)
 	{
 		selection_internal(feature)->select_node(node);
