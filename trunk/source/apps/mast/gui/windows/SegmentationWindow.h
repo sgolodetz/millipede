@@ -51,6 +51,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void connect_special_menu_items();
+	static wxString make_feature_menu_item(const std::vector<Feature>& featureTypes, size_t i, bool useShortcut);
 	void setup_gui(wxGLContext *context);
 	void setup_menus();
 
@@ -60,8 +61,10 @@ public:
 	void OnMenuActionsClearHistory(wxCommandEvent&);
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
+	void OnMenuFeaturesIdentify(wxCommandEvent& e);
 	void OnMenuFeaturesManageFeatureSelections(wxCommandEvent&);
 	void OnMenuFeaturesToggle(wxCommandEvent& e);
+	void OnMenuFeaturesUnidentify(wxCommandEvent& e);
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuHelpContents(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);

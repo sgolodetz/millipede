@@ -136,21 +136,27 @@ void MainWindow::setup_menus()
 {
 	wxMenu *fileMenu = new wxMenu;
 	fileMenu->Append(MENUID_FILE_OPENDICOMDIR, wxT("Open &DICOMDIR...\tCtrl+O"));
+#if NYI
 	fileMenu->Append(wxID_ANY, wxT("Open &Volume...\tCtrl+Shift+O"));
+#endif
 	fileMenu->Append(MENUID_FILE_OPENVOLUMECHOICE, wxT("Open Volume &Choice...\tCtrl+Alt+O"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("&Exit\tAlt+F4"));
 
+#if NYI
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(wxID_ANY, wxT("&Anonymize Directory Tree...\tCtrl+A"));
 	toolsMenu->Append(wxID_ANY, wxT("&Replace Volume Choice Section...\tCtrl+R"));
+#endif
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MENUID_HELP_ABOUT, wxT("&About...\tF2"));
 
 	m_menuBar = new wxMenuBar;
 	m_menuBar->Append(fileMenu, wxT("&File"));
+#if NYI
 	m_menuBar->Append(toolsMenu, wxT("&Tools"));
+#endif
 	m_menuBar->Append(helpMenu, wxT("&Help"));
 
 	SetMenuBar(m_menuBar);

@@ -29,9 +29,13 @@ enum
 	MENUID_ACTIONS_CLEARHISTORY,
 	MENUID_ACTIONS_REDO,
 	MENUID_ACTIONS_UNDO,
+	MENUID_FEATURES_IDENTIFY_BASE,
+	MENUID_FEATURES_IDENTIFY_LAST = (MENUID_FEATURES_IDENTIFY_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FEATURES_MANAGEFEATURESELECTIONS,
 	MENUID_FEATURES_TOGGLE_BASE,
 	MENUID_FEATURES_TOGGLE_LAST = (MENUID_FEATURES_TOGGLE_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
+	MENUID_FEATURES_UNIDENTIFY_BASE,
+	MENUID_FEATURES_UNIDENTIFY_LAST = (MENUID_FEATURES_UNIDENTIFY_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FILE_EXIT,
 	MENUID_HELP_CONTENTS,
 	MENUID_NAVIGATION_CENTRECAMERA,
@@ -89,21 +93,46 @@ wxGLContext *SegmentationWindow::get_context() const
 //#################### PRIVATE METHODS ####################
 void SegmentationWindow::connect_special_menu_items()
 {
-	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
+	std::vector<Feature> featureTypes = enum_values<Feature>();
 	for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 	{
+		{
+			int id = (MENUID_FEATURES_IDENTIFY_BASE+1) + i;
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeaturesIdentify));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateNonEmptySelectionNeeder));
+		}
 		{
 			int id = (MENUID_FEATURES_TOGGLE_BASE+1) + i;
 			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeaturesToggle));
 			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateNonEmptySelectionNeeder));
 		}
-
+		{
+			int id = (MENUID_FEATURES_UNIDENTIFY_BASE+1) + i;
+			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuFeaturesUnidentify));
+			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateNonEmptySelectionNeeder));
+		}
 		{
 			int id = (MENUID_SELECTION_SELECTMARKED_BASE+1) + i;
 			Connect(id, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SegmentationWindow::OnMenuSelectionSelectMarked));
 			Connect(id, wxEVT_UPDATE_UI, wxUpdateUIEventHandler(SegmentationWindow::OnUpdateMenuSelectionSelectMarked));
 		}
 	}
+}
+
+wxString SegmentationWindow::make_feature_menu_item(const std::vector<Feature>& featureTypes, size_t i, bool useShortcut)
+{
+	std::ostringstream oss;
+	oss << feature_name(featureTypes[i]);
+	std::string key = feature_key(featureTypes[i]);
+	if(key != "") oss << " (&" << key << ")";
+
+	if(useShortcut)
+	{
+		std::string shortcut = feature_shortcut(featureTypes[i]);
+		if(shortcut != "") oss << '\t' << shortcut;
+	}
+
+	return string_to_wxString(oss.str());
 }
 
 void SegmentationWindow::setup_gui(wxGLContext *context)
@@ -128,12 +157,14 @@ void SegmentationWindow::setup_gui(wxGLContext *context)
 
 void SegmentationWindow::setup_menus()
 {
-	std::vector<AbdominalFeature::Enum> featureTypes = enum_values<AbdominalFeature::Enum>();
+	std::vector<Feature> featureTypes = enum_values<Feature>();
 
 	wxMenu *fileMenu = new wxMenu;
+#if NYI
 	fileMenu->Append(wxID_ANY, wxT("&Save\tCtrl+S"));
 	fileMenu->Append(wxID_ANY, wxT("Save &As..."));
 	fileMenu->AppendSeparator();
+#endif
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("E&xit\tAlt+F4"));
 
 	wxMenu *actionsMenu = new wxMenu;
@@ -165,14 +196,10 @@ void SegmentationWindow::setup_menus()
 	selectionMenu->AppendSubMenu(selectMarkedMenu, wxT("&Select Marked"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
-			std::ostringstream oss;
-			oss << feature_name(featureTypes[i]);
-			std::string key = feature_key(featureTypes[i]);
-			if(key != "") oss << " (&" << key << ")";
-			selectMarkedMenu->Append((MENUID_SELECTION_SELECTMARKED_BASE+1) + i, string_to_wxString(oss.str()));
+			selectMarkedMenu->Append((MENUID_SELECTION_SELECTMARKED_BASE+1) + i, make_feature_menu_item(featureTypes, i, false));
 		}
 	selectionMenu->AppendSeparator();
-	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection"));
+	selectionMenu->Append(MENUID_SELECTION_CLEARSELECTION, wxT("&Clear Selection\tCtrl+Shift+Z"));
 
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume...\tCtrl+Alt+Shift+S"));
@@ -199,31 +226,41 @@ void SegmentationWindow::setup_menus()
 		switchParentMenu->Append(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, wxT("&Start Again"));
 
 	wxMenu *featuresMenu = new wxMenu;
+#if NYI
 	wxMenu *autoMarkMenu = new wxMenu;
 	featuresMenu->AppendSubMenu(autoMarkMenu, wxT("&Automatically Mark"));
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Default Identifier"));
 		autoMarkMenu->Append(wxID_ANY, wxT("Using &Script..."));
+#endif
+	wxMenu *identifyMenu = new wxMenu;
+	featuresMenu->AppendSubMenu(identifyMenu, wxT("&Identify Selected Nodes"));
+		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+		{
+			identifyMenu->Append((MENUID_FEATURES_IDENTIFY_BASE+1) + i, make_feature_menu_item(featureTypes, i, false));
+		}
 	wxMenu *toggleMenu = new wxMenu;
 	featuresMenu->AppendSubMenu(toggleMenu, wxT("&Toggle Selected Nodes"));
 		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
 		{
-			std::ostringstream oss;
-			oss << feature_name(featureTypes[i]);
-			std::string key = feature_key(featureTypes[i]);
-			std::string shortcut = feature_shortcut(featureTypes[i]);
-			if(key != "") oss << " (&" << key << ")";
-			if(shortcut != "") oss << '\t' << shortcut;
-			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, string_to_wxString(oss.str()));
+			toggleMenu->Append((MENUID_FEATURES_TOGGLE_BASE+1) + i, make_feature_menu_item(featureTypes, i, true));
+		}
+	wxMenu *unidentifyMenu = new wxMenu;
+	featuresMenu->AppendSubMenu(unidentifyMenu, wxT("&Unidentify Selected Nodes"));
+		for(size_t i=0, size=featureTypes.size(); i<size; ++i)
+		{
+			unidentifyMenu->Append((MENUID_FEATURES_UNIDENTIFY_BASE+1) + i, make_feature_menu_item(featureTypes, i, false));
 		}
 	featuresMenu->AppendSeparator();
 	featuresMenu->Append(MENUID_FEATURES_MANAGEFEATURESELECTIONS, wxT("&Manage Feature Selections...\tCtrl+M"));
+#if NYI
 	featuresMenu->AppendSeparator();
 	featuresMenu->Append(wxID_ANY, wxT("&Customise Colour Scheme..."));
+#endif
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
-	toolsMenu->Append(MENUID_TOOLS_VALIDATEFEATURESELECTION, wxT("Validate Feature &Selection...\tCtrl+V"));
-	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("&Visualize in 3D...\tCtrl+3"));
+	toolsMenu->Append(MENUID_TOOLS_VALIDATEFEATURESELECTION, wxT("&Validate Feature Selection...\tCtrl+V"));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("Visualize in &3D...\tCtrl+3"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MENUID_HELP_CONTENTS, wxT("&Contents...\tF1"));
@@ -261,6 +298,12 @@ void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 	m_commandManager->undo();
 }
 
+void SegmentationWindow::OnMenuFeaturesIdentify(wxCommandEvent& e)
+{
+	Feature feature = Feature(e.GetId() - (MENUID_FEATURES_IDENTIFY_BASE+1));
+	m_model->active_multi_feature_selection()->identify_selection(m_model->selection(), feature);
+}
+
 void SegmentationWindow::OnMenuFeaturesManageFeatureSelections(wxCommandEvent&)
 {
 	typedef ManageFeatureSelectionsDialog<PartitionModelT::VolumeIPFMultiFeatureSelectionT,PartitionModelT::VolumeIPFT> Dialog;
@@ -270,8 +313,14 @@ void SegmentationWindow::OnMenuFeaturesManageFeatureSelections(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuFeaturesToggle(wxCommandEvent& e)
 {
-	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_FEATURES_TOGGLE_BASE+1));
+	Feature feature = Feature(e.GetId() - (MENUID_FEATURES_TOGGLE_BASE+1));
 	m_model->active_multi_feature_selection()->toggle_selection(m_model->selection(), feature);
+}
+
+void SegmentationWindow::OnMenuFeaturesUnidentify(wxCommandEvent& e)
+{
+	Feature feature = Feature(e.GetId() - (MENUID_FEATURES_UNIDENTIFY_BASE+1));
+	m_model->active_multi_feature_selection()->unidentify_selection(m_model->selection(), feature);
 }
 
 void SegmentationWindow::OnMenuFileExit(wxCommandEvent&)
@@ -430,7 +479,7 @@ void SegmentationWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
 {
-	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
+	Feature feature = Feature(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
 	m_model->selection()->replace_with_selection(m_model->active_multi_feature_selection()->selection(feature));
 }
 
@@ -625,7 +674,7 @@ void SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain(wxUpdate
 
 void SegmentationWindow::OnUpdateMenuSelectionSelectMarked(wxUpdateUIEvent& e)
 {
-	AbdominalFeature::Enum feature = AbdominalFeature::Enum(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
+	Feature feature = Feature(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
 	e.Enable(m_model->active_multi_feature_selection() && !m_model->active_multi_feature_selection()->selection(feature)->empty());
 }
 

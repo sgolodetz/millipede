@@ -224,6 +224,15 @@ public:
 		selection_internal(feature)->select_node(node);
 	}
 
+	void identify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
+	{
+		SequenceGuard guard(m_commandManager, "Identify Selection", m_listeners);
+		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+		{
+			identify_node(*it, feature);
+		}
+	}
+
 	shared_ptr<CompositeListener> listeners() const
 	{
 		return m_listeners;
@@ -297,6 +306,15 @@ public:
 	void unidentify_node(const PFNodeID& node, const Feature& feature)
 	{
 		selection_internal(feature)->deselect_node(node);
+	}
+
+	void unidentify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
+	{
+		SequenceGuard guard(m_commandManager, "Unidentify Selection", m_listeners);
+		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+		{
+			unidentify_node(*it, feature);
+		}
 	}
 
 	//#################### PRIVATE METHODS ####################
