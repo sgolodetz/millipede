@@ -15,6 +15,9 @@
 
 namespace mp {
 
+//#################### FORWARD DECLARATIONS ####################
+typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
+
 class SpineIdentifier3D : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
@@ -27,14 +30,18 @@ private:
 	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
 	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
 
+	typedef VolumeIPFT::BranchNodeConstIterator BranchNodeConstIterator;
+	typedef VolumeIPFT::BranchProperties BranchProperties;
+
 	//#################### PRIVATE VARIABLES ####################
 private:
+	DICOMVolume_CPtr m_dicomVolume;
 	DataHook<VolumeIPFMultiFeatureSelection_Ptr> m_outputHook;
 	VolumeIPF_Ptr m_volumeIPF;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	explicit SpineIdentifier3D(const VolumeIPF_Ptr& volumeIPF);
+	SpineIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF);
 
 	//#################### PUBLIC METHODS ####################
 public:

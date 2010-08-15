@@ -327,7 +327,7 @@ void SegmentationWindow::OnMenuFeaturesAutoIdentifyDefault(wxCommandEvent&)
 
 void SegmentationWindow::OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&)
 {
-	boost::shared_ptr<SpineIdentifier3D> identifier(new SpineIdentifier3D(m_model->volume_ipf()));
+	boost::shared_ptr<SpineIdentifier3D> identifier(new SpineIdentifier3D(m_model->dicom_volume(), m_model->volume_ipf()));
 	execute_with_progress_dialog(identifier, this, "Identifying Spine", false);
 	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_output());
 }

@@ -133,22 +133,6 @@ public:
 		m_listeners.add_shared_listener(listener);
 	}
 
-	/**
-	Calculates the total volume of the voxels marked as the specified feature (in cubic mm).
-
-	@param[in]	feature		The feature whose volume is to be calculated
-	@pre
-		-	active_multi_feature_selection() is non-null
-		-	dicom_volume() is non-null
-	@return	As described
-	*/
-	double calculate_feature_volume_mm3(const Feature& feature) const
-	{
-		Vector3d spacing = m_dicomVolume->spacing();
-		double voxelVolume = spacing.x * spacing.y * spacing.z;
-		return active_multi_feature_selection()->voxel_count(feature) * voxelVolume;
-	}
-
 	DICOMVolume_CPtr dicom_volume() const
 	{
 		return m_dicomVolume;

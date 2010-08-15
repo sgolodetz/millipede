@@ -38,6 +38,12 @@ Vector3d DICOMVolume::spacing() const
 	return Vector3d(v[0], v[1], v[2]);
 }
 
+double DICOMVolume::voxel_size_mm3() const
+{
+	itk::Vector<double,3> v = m_baseImage->GetSpacing();
+	return v[0] * v[1] * v[2];
+}
+
 DICOMVolume::WindowedImagePointer DICOMVolume::windowed_image(const WindowSettings& windowSettings) const
 {
 	typedef itk::IntensityWindowingImageFilter<BaseImage,WindowedImage> Windower;

@@ -42,7 +42,8 @@ public:
 
 		for(Feature feature=enum_begin<Feature>(), end=enum_end<Feature>(); feature!=end; ++feature)
 		{
-			add_feature_volume(feature, model->calculate_feature_volume_mm3(feature));
+			double volumeMM3 = model->active_multi_feature_selection()->voxel_count(feature) * model->dicom_volume()->voxel_size_mm3();
+			add_feature_volume(feature, volumeMM3);
 		}
 
 		m_list->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);

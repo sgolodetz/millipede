@@ -51,6 +51,7 @@ public:
 	Modality modality() const;
 	itk::Size<3> size() const;
 	Vector3d spacing() const;
+	double voxel_size_mm3() const;
 	WindowedImagePointer windowed_image(const WindowSettings& windowSettings) const;
 };
 
