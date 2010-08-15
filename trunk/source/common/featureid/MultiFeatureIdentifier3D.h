@@ -32,7 +32,7 @@ private:
 
 	//#################### PRIVATE VARIABLES ####################
 private:
-	DataHook<VolumeIPFMultiFeatureSelection_Ptr> m_outputHook;
+	DataHook<VolumeIPFMultiFeatureSelection_Ptr> m_mfsHook;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -41,7 +41,6 @@ public:
 	//#################### PUBLIC METHODS ####################
 public:
 	const VolumeIPFMultiFeatureSelection_Ptr& get_output() const;
-	const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& get_output_hook() const;
 };
 
 }

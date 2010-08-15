@@ -15,7 +15,8 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 DICOMRegionProperties::DICOMRegionProperties()
-:	m_meanGreyValue(0.0),
+:	m_centroid(0.0, 0.0, 0.0),
+	m_meanGreyValue(0.0),
 	m_xMin(INT_MAX), m_yMin(INT_MAX), m_zMin(INT_MAX), m_xMax(INT_MIN), m_yMax(INT_MIN), m_zMax(INT_MIN),
 	m_voxelCount(0)
 {}
@@ -24,6 +25,8 @@ DICOMRegionProperties::DICOMRegionProperties()
 std::map<std::string,std::string> DICOMRegionProperties::branch_property_map() const
 {
 	std::map<std::string,std::string> m;
+
+	m.insert(std::make_pair("Centroid", boost::lexical_cast<std::string>(m_centroid)));
 
 	{
 		std::ostringstream oss;
@@ -46,6 +49,7 @@ std::map<std::string,std::string> DICOMRegionProperties::branch_property_map() c
 std::vector<std::string> DICOMRegionProperties::branch_property_names()
 {
 	std::vector<std::string> names;
+	names.push_back("Centroid");
 	names.push_back("Mean Grey Value");
 	names.push_back("Voxel Count");
 	names.push_back("X Min");
@@ -57,6 +61,11 @@ std::vector<std::string> DICOMRegionProperties::branch_property_names()
 	return names;
 }
 
+const Vector3d& DICOMRegionProperties::centroid() const
+{
+	return m_centroid;
+}
+
 // Precondition: !properties.empty()
 DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std::vector<DICOMRegionProperties>& properties)
 {
@@ -64,6 +73,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
+		ret.m_centroid += properties[i].m_centroid * properties[i].m_voxelCount;
 		ret.m_meanGreyValue += properties[i].m_meanGreyValue * properties[i].m_voxelCount;
 		ret.m_voxelCount += properties[i].m_voxelCount;
 
@@ -71,6 +81,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std
 		ret.m_yMin = std::min(ret.m_yMin, properties[i].m_yMin);	ret.m_yMax = std::max(ret.m_yMax, properties[i].m_yMax);
 		ret.m_zMin = std::min(ret.m_zMin, properties[i].m_zMin);	ret.m_zMax = std::max(ret.m_zMax, properties[i].m_zMax);
 	}
+	ret.m_centroid /= ret.m_voxelCount;
 	ret.m_meanGreyValue /= ret.m_voxelCount;
 
 	return ret;
@@ -85,6 +96,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
+		ret.m_centroid += Vector3d(properties[i].first);
 		ret.m_meanGreyValue += properties[i].second.grey_value();
 
 		int x = properties[i].first.x, y = properties[i].first.y, z = properties[i].first.z;
@@ -92,6 +104,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::
 		ret.m_yMin = std::min(ret.m_yMin, y);	ret.m_yMax = std::max(ret.m_yMax, y);
 		ret.m_zMin = std::min(ret.m_zMin, z);	ret.m_zMax = std::max(ret.m_zMax, z);
 	}
+	ret.m_centroid /= ret.m_voxelCount;
 	ret.m_meanGreyValue /= ret.m_voxelCount;
 
 	return ret;

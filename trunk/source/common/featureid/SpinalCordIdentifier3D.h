@@ -1,10 +1,10 @@
 /***
- * millipede: SpineIdentifier3D.h
+ * millipede: SpinalCordIdentifier3D.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_SPINEIDENTIFIER3D
-#define H_MILLIPEDE_SPINEIDENTIFIER3D
+#ifndef H_MILLIPEDE_SPINALCORDIDENTIFIER3D
+#define H_MILLIPEDE_SPINALCORDIDENTIFIER3D
 
 #include <common/jobs/DataHook.h>
 #include <common/jobs/SimpleJob.h>
@@ -18,7 +18,7 @@ namespace mp {
 //#################### FORWARD DECLARATIONS ####################
 typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 
-class SpineIdentifier3D : public SimpleJob
+class SpinalCordIdentifier3D : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 private:
@@ -27,11 +27,14 @@ private:
 	typedef DICOMImageLeafLayer LeafLayer;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
+	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
+	typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
 	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
 
 	typedef VolumeIPFT::BranchNodeConstIterator BranchNodeConstIterator;
 	typedef VolumeIPFT::BranchProperties BranchProperties;
+	typedef VolumeIPFT::LeafProperties LeafProperties;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -41,18 +44,19 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	SpineIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF);
+	SpinalCordIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF);
 
 	//#################### PUBLIC METHODS ####################
 public:
 	const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& get_mfs_hook() const;
 	const VolumeIPFMultiFeatureSelection_Ptr& get_output() const;
 	int length() const;
+	void set_mfs_hook(const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& mfsHook);
 
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_impl();
-	bool is_spine(const BranchProperties& properties) const;
+	bool is_spinal_cord(const BranchProperties& properties, const BranchProperties& spineProperties) const;
 };
 
 }

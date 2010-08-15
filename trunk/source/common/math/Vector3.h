@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_VECTOR3
 
 #include <cmath>
+#include <ostream>
 
 #include <common/exceptions/Exception.h>
 #include "MathConstants.h"
@@ -332,6 +333,13 @@ bool operator<(const Vector3<T>& lhs, const Vector3<T>& rhs)
 	return	lhs.x < rhs.x ||
 			(lhs.x == rhs.x && lhs.y < rhs.y) ||
 			(lhs.x == rhs.x && lhs.y == rhs.y && lhs.z < rhs.z);
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vector3<T>& rhs)
+{
+	os << '(' << rhs.x << ',' << rhs.y << ',' << rhs.z << ')';
+	return os;
 }
 
 //#################### TYPEDEFS ####################

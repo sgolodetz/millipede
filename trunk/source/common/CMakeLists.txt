@@ -86,11 +86,14 @@ exceptions/FileNotFoundException.h
 ##
 SET(featureid_sources
 featureid/MultiFeatureIdentifier3D.cpp
+featureid/SpinalCordIdentifier3D.cpp
 featureid/SpineIdentifier3D.cpp
 )
 
 SET(featureid_headers
+featureid/FeatureIdentificationUtil.h
 featureid/MultiFeatureIdentifier3D.h
+featureid/SpinalCordIdentifier3D.h
 featureid/SpineIdentifier3D.h
 )
 

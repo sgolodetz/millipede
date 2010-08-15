@@ -5,8 +5,11 @@
 
 #include "SpineIdentifier3D.h"
 
+#include <boost/bind.hpp>
+
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/util/ITKImageUtil.h>
+#include "FeatureIdentificationUtil.h"
 
 namespace mp {
 
@@ -16,14 +19,14 @@ SpineIdentifier3D::SpineIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const 
 {}
 
 //#################### PUBLIC METHODS ####################
-const SpineIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr& SpineIdentifier3D::get_output() const
+const DataHook<SpineIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr>& SpineIdentifier3D::get_mfs_hook() const
 {
-	return m_outputHook.get();
+	return m_mfsHook;
 }
 
-const DataHook<SpineIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr>& SpineIdentifier3D::get_output_hook() const
+const SpineIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr& SpineIdentifier3D::get_output() const
 {
-	return m_outputHook;
+	return m_mfsHook.get();
 }
 
 int SpineIdentifier3D::length() const
@@ -38,27 +41,26 @@ void SpineIdentifier3D::execute_impl()
 
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection(new VolumeIPFMultiFeatureSelectionT(m_volumeIPF));
 
-	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(m_dicomVolume->size());
-	int minSpineVoxels = 800 * volumeSize[2];
-	int maxSpineVoxels = 8000 * volumeSize[2];
-	for(int layer=1, highestLayer=m_volumeIPF->highest_layer(); layer<=highestLayer; ++layer)
+	std::list<PFNodeID> nodes = FeatureIdentificationUtil::filter_branch_nodes(m_volumeIPF, boost::bind(&SpineIdentifier3D::is_spine, this, _1));
+	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{
-		for(BranchNodeConstIterator it=m_volumeIPF->branch_nodes_cbegin(layer), iend=m_volumeIPF->branch_nodes_cend(layer); it!=iend; ++it)
-		{
-			const BranchProperties& properties = it->properties();
-			if(	properties.x_min() < volumeSize[0]/2 && properties.x_max() > volumeSize[0]/2 &&		// it should straddle x = volumeSize[0] / 2
-				properties.y_max() > volumeSize[1]/2 &&												// its base should be below y = volumeSize[1]/2
-				properties.z_min() == 0 && properties.z_max() == volumeSize[2]-1 &&					// it should extend through all the slices we're looking at
-				properties.mean_grey_value() >= 180 &&												// it should have a reasonably white grey value
-				properties.voxel_count() >= minSpineVoxels &&										// and a reasonable size
-				properties.voxel_count() <= maxSpineVoxels)
-			{
-				multiFeatureSelection->identify_node(PFNodeID(layer, it.index()), AbdominalFeature::VERTEBRA);
-			}
-		}
+		multiFeatureSelection->identify_node(*it, AbdominalFeature::VERTEBRA);
 	}
 
-	m_outputHook.set(multiFeatureSelection);
+	m_mfsHook.set(multiFeatureSelection);
+}
+
+bool SpineIdentifier3D::is_spine(const BranchProperties& properties) const
+{
+	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(m_dicomVolume->size());
+	int minVoxels = 800 * volumeSize[2];
+	int maxVoxels = 8000 * volumeSize[2];
+
+	return	properties.x_min() < volumeSize[0]/2 && properties.x_max() > volumeSize[0]/2 &&		// it should straddle x = volumeSize[0] / 2
+			properties.y_max() > volumeSize[1]/2 &&												// its base should be below y = volumeSize[1]/2
+			properties.z_min() == 0 && properties.z_max() == volumeSize[2]-1 &&					// it should extend through all the slices we're looking at
+			properties.mean_grey_value() >= 180 &&												// it should have a reasonably high grey value
+			properties.voxel_count() >= minVoxels && properties.voxel_count() <= maxVoxels;		// and a reasonable size
 }
 
 }
