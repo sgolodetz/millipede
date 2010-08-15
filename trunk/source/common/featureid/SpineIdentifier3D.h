@@ -52,6 +52,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_impl();
+	PFNodeID find_seed() const;
 };
 
 }

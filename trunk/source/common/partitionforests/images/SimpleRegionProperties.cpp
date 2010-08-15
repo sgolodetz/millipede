@@ -37,7 +37,7 @@ SimpleRegionProperties SimpleRegionProperties::combine_branch_properties(const s
 }
 
 // Precondition: !properties.empty()
-SimpleRegionProperties SimpleRegionProperties::combine_leaf_properties(const std::vector<SimplePixelProperties>& properties)
+SimpleRegionProperties SimpleRegionProperties::combine_leaf_properties(const std::vector<std::pair<Vector3i,SimplePixelProperties> >& properties)
 {
 	SimpleRegionProperties ret;
 
@@ -45,9 +45,9 @@ SimpleRegionProperties SimpleRegionProperties::combine_leaf_properties(const std
 
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
-		ret.m_meanValue += properties[i].value();
+		ret.m_meanValue += properties[i].second.value();
 	}
-	ret.m_meanValue /= properties.size();
+	ret.m_meanValue /= ret.m_area;
 
 	return ret;
 }

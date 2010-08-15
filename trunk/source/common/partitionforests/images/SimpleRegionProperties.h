@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include <common/math/Vector3.h>
 #include "SimplePixelProperties.h"
 
 namespace mp {
@@ -27,7 +28,7 @@ public:
 public:
 	int area() const;
 	static SimpleRegionProperties combine_branch_properties(const std::vector<SimpleRegionProperties>& properties);
-	static SimpleRegionProperties combine_leaf_properties(const std::vector<SimplePixelProperties>& properties);
+	static SimpleRegionProperties combine_leaf_properties(const std::vector<std::pair<Vector3i,SimplePixelProperties> >& properties);
 	double mean_value() const;
 };
 

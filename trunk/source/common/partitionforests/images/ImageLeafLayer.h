@@ -10,6 +10,7 @@
 
 #include <common/adts/WeightedEdge.h>
 #include <common/exceptions/Exception.h>
+#include <common/math/Vector3.h>
 #include <common/partitionforests/base/IForestLayer.h>
 #include <common/util/GridUtil.h>
 
@@ -238,11 +239,11 @@ public:
 
 	BranchProperties combine_properties(const std::set<int>& nodeIndices) const
 	{
-		std::vector<LeafProperties> properties;
+		std::vector<std::pair<Vector3i,LeafProperties> > properties;
 		properties.reserve(nodeIndices.size());
 		for(std::set<int>::const_iterator it=nodeIndices.begin(), iend=nodeIndices.end(); it!=iend; ++it)
 		{
-			properties.push_back(node_properties(*it));
+			properties.push_back(std::make_pair(position_of(*it), node_properties(*it)));
 		}
 		return BranchProperties::combine_leaf_properties(properties);
 	}
@@ -363,9 +364,10 @@ protected:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	int x_of(int n) const	{ return GridUtil::x_of(n, m_sizeX); }
-	int y_of(int n) const	{ return GridUtil::y_of(n, m_sizeX, m_sizeY); }
-	int z_of(int n) const	{ return GridUtil::z_of(n, m_sizeXY); }
+	Vector3i position_of(int n) const	{ return Vector3i(x_of(n), y_of(n), z_of(n)); }
+	int x_of(int n) const				{ return GridUtil::x_of(n, m_sizeX); }
+	int y_of(int n) const				{ return GridUtil::y_of(n, m_sizeX, m_sizeY); }
+	int z_of(int n) const				{ return GridUtil::z_of(n, m_sizeXY); }
 };
 
 }
