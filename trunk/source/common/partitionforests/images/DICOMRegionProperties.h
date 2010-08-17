@@ -30,11 +30,13 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	double aspect_ratio() const;
 	std::map<std::string,std::string> branch_property_map() const;
 	static std::vector<std::string> branch_property_names();
 	const Vector3d& centroid() const;
 	static DICOMRegionProperties combine_branch_properties(const std::vector<DICOMRegionProperties>& properties);
 	static DICOMRegionProperties combine_leaf_properties(const std::vector<std::pair<Vector3i,DICOMPixelProperties> >& properties);
+	static DICOMRegionProperties convert_from_leaf_properties(const std::pair<Vector3i,DICOMPixelProperties>& properties);
 	double mean_grey_value() const;
 	int voxel_count() const;
 	int x_max() const;

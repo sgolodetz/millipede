@@ -55,7 +55,7 @@ bool SpineIdentifier3D::is_spine(const BranchProperties& properties) const
 	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(m_dicomVolume->size());
 	int minVoxels = 800 * volumeSize[2];
 	int maxVoxels = 8000 * volumeSize[2];
-	double aspectRatio = static_cast<double>(properties.y_max() - properties.y_min()) / (properties.x_max() - properties.x_min());
+	double aspectRatio = properties.aspect_ratio();
 
 	return	properties.x_min() < volumeSize[0]/2 && properties.x_max() > volumeSize[0]/2 &&		// it should straddle x = volumeSize[0] / 2
 			properties.y_max() > volumeSize[1]/2 &&												// its base should be below y = volumeSize[1]/2

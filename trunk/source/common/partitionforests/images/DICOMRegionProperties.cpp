@@ -22,6 +22,11 @@ DICOMRegionProperties::DICOMRegionProperties()
 {}
 
 //#################### PUBLIC METHODS ####################
+double DICOMRegionProperties::aspect_ratio() const
+{
+	return static_cast<double>(m_xMax - m_xMin) / (m_yMax - m_yMin);
+}
+
 std::map<std::string,std::string> DICOMRegionProperties::branch_property_map() const
 {
 	std::map<std::string,std::string> m;
@@ -107,6 +112,18 @@ DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::
 	ret.m_centroid /= ret.m_voxelCount;
 	ret.m_meanGreyValue /= ret.m_voxelCount;
 
+	return ret;
+}
+
+DICOMRegionProperties DICOMRegionProperties::convert_from_leaf_properties(const std::pair<Vector3i,DICOMPixelProperties>& properties)
+{
+	DICOMRegionProperties ret;
+	ret.m_centroid = Vector3d(properties.first);
+	ret.m_meanGreyValue = properties.second.grey_value();
+	ret.m_voxelCount = 1;
+	ret.m_xMin = ret.m_xMax = properties.first.x;
+	ret.m_yMin = ret.m_yMax = properties.first.y;
+	ret.m_zMin = ret.m_zMax = properties.first.z;
 	return ret;
 }
 

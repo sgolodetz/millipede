@@ -110,7 +110,7 @@ void BaseCanvas::setup(PartitionView *partitionView)
 	glEnable(GL_ALPHA_TEST);
 
 	// Set up the clear colour.
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
 
 	// Set up the projection matrix.
 	glMatrixMode(GL_PROJECTION);

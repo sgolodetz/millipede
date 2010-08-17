@@ -47,23 +47,7 @@ void SpinalCordIdentifier3D::execute_impl()
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = m_mfsHook.get();
 
 	// Step 1: Calculate the combined properties of all the nodes marked as part of the spine.
-	PartitionForestSelection_CPtr spineSelection = multiFeatureSelection->selection(AbdominalFeature::VERTEBRA);
-	std::vector<BranchProperties> spineComponentProperties;
-	for(PartitionForestSelectionT::NodeConstIterator it=spineSelection->nodes_cbegin(), iend=spineSelection->nodes_cend(); it!=iend; ++it)
-	{
-		if(it->layer() != 0)
-		{
-			spineComponentProperties.push_back(m_volumeIPF->branch_properties(*it));
-		}
-		else
-		{
-			std::vector<std::pair<Vector3i,LeafProperties> > leafProperties;
-			itk::Index<3> p = m_volumeIPF->position_of_leaf(it->index());
-			leafProperties.push_back(std::make_pair(Vector3i(p[0], p[1], p[2]), m_volumeIPF->leaf_properties(it->index())));
-			spineComponentProperties.push_back(BranchProperties::combine_leaf_properties(leafProperties));
-		}
-	}
-	BranchProperties spineProperties = BranchProperties::combine_branch_properties(spineComponentProperties);
+	BranchProperties spineProperties = multiFeatureSelection->properties_of(AbdominalFeature::VERTEBRA);
 
 	// Step 2: Filter for spinal cord nodes based on the location of the spine.
 	std::list<PFNodeID> nodes = FeatureIdentificationUtil::filter_branch_nodes(m_volumeIPF, boost::bind(&SpinalCordIdentifier3D::is_spinal_cord, this, _1, spineProperties));

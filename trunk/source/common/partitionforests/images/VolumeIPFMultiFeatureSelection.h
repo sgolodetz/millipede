@@ -16,6 +16,8 @@ class VolumeIPFMultiFeatureSelection : public PartitionForestMultiFeatureSelecti
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef typename BranchLayer::NodeProperties BranchProperties;
+	typedef typename LeafLayer::NodeProperties LeafProperties;
 	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
 	typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
@@ -34,6 +36,27 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
+	BranchProperties properties_of(const Feature& feature) const
+	{
+		PartitionForestSelection_CPtr selection = this->selection(feature);
+		std::vector<BranchProperties> componentProperties;
+		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
+		{
+			const PFNodeID& node = *it;
+			if(node.layer() != 0)
+			{
+				componentProperties.push_back(m_volumeIPF->branch_properties(node));
+			}
+			else
+			{
+				itk::Index<3> p = m_volumeIPF->position_of_leaf(node.index());
+				std::pair<Vector3i,LeafProperties> leafProperties = std::make_pair(Vector3i(p[0], p[1], p[2]), m_volumeIPF->leaf_properties(node.index()));
+				componentProperties.push_back(BranchProperties::convert_from_leaf_properties(leafProperties));
+			}
+		}
+		return BranchProperties::combine_branch_properties(componentProperties);
+	}
+
 	VolumeIPF_CPtr volume_ipf() const
 	{
 		return m_volumeIPF;
