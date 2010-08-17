@@ -27,6 +27,12 @@ DICOMVolume::Modality DICOMVolume::modality() const
 	return m_modality;
 }
 
+Vector3d DICOMVolume::origin() const
+{
+	itk::Point<double,3> p = m_baseImage->GetOrigin();
+	return Vector3d(p[0], p[1], p[2]);
+}
+
 itk::Size<3> DICOMVolume::size() const
 {
 	return m_baseImage->GetLargestPossibleRegion().GetSize();

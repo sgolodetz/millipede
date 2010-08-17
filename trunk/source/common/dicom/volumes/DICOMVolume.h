@@ -49,6 +49,7 @@ public:
 public:
 	BaseImagePointer base_image() const;
 	Modality modality() const;
+	Vector3d origin() const;
 	itk::Size<3> size() const;
 	Vector3d spacing() const;
 	double voxel_size_mm3() const;
