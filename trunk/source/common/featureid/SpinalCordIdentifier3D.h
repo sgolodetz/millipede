@@ -24,7 +24,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_impl();
-	bool is_spinal_cord(const BranchProperties& properties, const BranchProperties& spineProperties) const;
+	bool is_spinal_cord(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const;
 };
 
 }

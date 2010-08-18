@@ -16,6 +16,7 @@ namespace mp {
 //#################### CONSTRUCTORS ####################
 DICOMRegionProperties::DICOMRegionProperties()
 :	m_centroid(0.0, 0.0, 0.0),
+	m_maxGreyValue(0),
 	m_meanGreyValue(0.0),
 	m_xMin(INT_MAX), m_yMin(INT_MAX), m_zMin(INT_MAX), m_xMax(INT_MIN), m_yMax(INT_MIN), m_zMax(INT_MIN),
 	m_voxelCount(0)
@@ -32,6 +33,7 @@ std::map<std::string,std::string> DICOMRegionProperties::branch_property_map() c
 	std::map<std::string,std::string> m;
 
 	m.insert(std::make_pair("Centroid", boost::lexical_cast<std::string>(m_centroid)));
+	m.insert(std::make_pair("Max Grey Value", boost::lexical_cast<std::string,int>(m_maxGreyValue)));
 
 	{
 		std::ostringstream oss;
@@ -55,6 +57,7 @@ std::vector<std::string> DICOMRegionProperties::branch_property_names()
 {
 	std::vector<std::string> names;
 	names.push_back("Centroid");
+	names.push_back("Max Grey Value");
 	names.push_back("Mean Grey Value");
 	names.push_back("Voxel Count");
 	names.push_back("X Min");
@@ -79,6 +82,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_branch_properties(const std
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
 		ret.m_centroid += properties[i].m_centroid * properties[i].m_voxelCount;
+		ret.m_maxGreyValue = std::max(ret.m_maxGreyValue, properties[i].m_maxGreyValue);
 		ret.m_meanGreyValue += properties[i].m_meanGreyValue * properties[i].m_voxelCount;
 		ret.m_voxelCount += properties[i].m_voxelCount;
 
@@ -102,6 +106,7 @@ DICOMRegionProperties DICOMRegionProperties::combine_leaf_properties(const std::
 	for(size_t i=0, size=properties.size(); i<size; ++i)
 	{
 		ret.m_centroid += Vector3d(properties[i].first);
+		ret.m_maxGreyValue = std::max(ret.m_maxGreyValue, properties[i].second.grey_value());
 		ret.m_meanGreyValue += properties[i].second.grey_value();
 
 		int x = properties[i].first.x, y = properties[i].first.y, z = properties[i].first.z;
@@ -119,6 +124,7 @@ DICOMRegionProperties DICOMRegionProperties::convert_from_leaf_properties(const 
 {
 	DICOMRegionProperties ret;
 	ret.m_centroid = Vector3d(properties.first);
+	ret.m_maxGreyValue = properties.second.grey_value();
 	ret.m_meanGreyValue = properties.second.grey_value();
 	ret.m_voxelCount = 1;
 	ret.m_xMin = ret.m_xMax = properties.first.x;
@@ -127,14 +133,15 @@ DICOMRegionProperties DICOMRegionProperties::convert_from_leaf_properties(const 
 	return ret;
 }
 
-double DICOMRegionProperties::mean_grey_value() const	{ return m_meanGreyValue; }
-int DICOMRegionProperties::voxel_count() const			{ return m_voxelCount; }
-int DICOMRegionProperties::x_max() const				{ return m_xMax; }
-int DICOMRegionProperties::x_min() const				{ return m_xMin; }
-int DICOMRegionProperties::y_max() const				{ return m_yMax; }
-int DICOMRegionProperties::y_min() const				{ return m_yMin; }
-int DICOMRegionProperties::z_max() const				{ return m_zMax; }
-int DICOMRegionProperties::z_min() const				{ return m_zMin; }
+unsigned char DICOMRegionProperties::max_grey_value() const		{ return m_maxGreyValue; }
+double DICOMRegionProperties::mean_grey_value() const			{ return m_meanGreyValue; }
+int DICOMRegionProperties::voxel_count() const					{ return m_voxelCount; }
+int DICOMRegionProperties::x_max() const						{ return m_xMax; }
+int DICOMRegionProperties::x_min() const						{ return m_xMin; }
+int DICOMRegionProperties::y_max() const						{ return m_yMax; }
+int DICOMRegionProperties::y_min() const						{ return m_yMin; }
+int DICOMRegionProperties::z_max() const						{ return m_zMax; }
+int DICOMRegionProperties::z_min() const						{ return m_zMin; }
 
 //#################### GLOBAL OPERATORS ####################
 std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)

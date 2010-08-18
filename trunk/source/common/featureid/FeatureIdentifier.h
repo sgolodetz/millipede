@@ -70,9 +70,10 @@ protected:
 		{
 			for(BranchNodeConstIterator it=m_volumeIPF->branch_nodes_cbegin(layer), iend=m_volumeIPF->branch_nodes_cend(layer); it!=iend; ++it)
 			{
-				if(pred(it->properties()))
+				PFNodeID node(layer, it.index());
+				if(pred(node, it->properties()))
 				{
-					result.push_back(PFNodeID(layer, it.index()));
+					result.push_back(node);
 				}
 			}
 		}

@@ -21,6 +21,10 @@ int LiverIdentifier3D::length() const
 //#################### PRIVATE METHODS ####################
 void LiverIdentifier3D::execute_impl()
 {
+	set_status("Identifying liver...");
+
+	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
+
 	// TODO
 }
 

@@ -88,6 +88,7 @@ SET(featureid_sources
 featureid/FeatureIdentifier.cpp
 featureid/LiverIdentifier3D.cpp
 featureid/MultiFeatureIdentifier3D.cpp
+featureid/RibsIdentifier3D.cpp
 featureid/SpinalCordIdentifier3D.cpp
 featureid/SpineIdentifier3D.cpp
 )
@@ -96,6 +97,7 @@ SET(featureid_headers
 featureid/FeatureIdentifier.h
 featureid/LiverIdentifier3D.h
 featureid/MultiFeatureIdentifier3D.h
+featureid/RibsIdentifier3D.h
 featureid/SpinalCordIdentifier3D.h
 featureid/SpineIdentifier3D.h
 )

@@ -30,14 +30,14 @@ void SpineIdentifier3D::execute_impl()
 
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
 
-	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&SpineIdentifier3D::is_spine, this, _1));
+	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&SpineIdentifier3D::is_spine, this, _1, _2));
 	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{
 		multiFeatureSelection->identify_node(*it, AbdominalFeature::VERTEBRA);
 	}
 }
 
-bool SpineIdentifier3D::is_spine(const BranchProperties& properties) const
+bool SpineIdentifier3D::is_spine(const PFNodeID& node, const BranchProperties& properties) const
 {
 	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(dicom_volume()->size());
 	int minVoxels = 800 * volumeSize[2];

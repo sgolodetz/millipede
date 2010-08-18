@@ -34,7 +34,7 @@ void SpinalCordIdentifier3D::execute_impl()
 	BranchProperties spineProperties = multiFeatureSelection->properties_of(AbdominalFeature::VERTEBRA);
 
 	// Step 2: Filter for spinal cord nodes based on the location of the spine.
-	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&SpinalCordIdentifier3D::is_spinal_cord, this, _1, spineProperties));
+	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&SpinalCordIdentifier3D::is_spinal_cord, this, _1, _2, spineProperties));
 
 	// Step 3: Mark the resulting nodes as spinal cord (and unmark them as spine if necessary).
 	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
@@ -44,7 +44,7 @@ void SpinalCordIdentifier3D::execute_impl()
 	}
 }
 
-bool SpinalCordIdentifier3D::is_spinal_cord(const BranchProperties& properties, const BranchProperties& spineProperties) const
+bool SpinalCordIdentifier3D::is_spinal_cord(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const
 {
 	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(dicom_volume()->size());
 	int minVoxels = 450 * volumeSize[2];

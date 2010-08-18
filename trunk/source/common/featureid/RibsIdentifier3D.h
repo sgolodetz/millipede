@@ -1,21 +1,21 @@
 /***
- * millipede: SpineIdentifier3D.h
+ * millipede: RibsIdentifier3D.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#ifndef H_MILLIPEDE_SPINEIDENTIFIER3D
-#define H_MILLIPEDE_SPINEIDENTIFIER3D
+#ifndef H_MILLIPEDE_RIBSIDENTIFIER3D
+#define H_MILLIPEDE_RIBSIDENTIFIER3D
 
 #include <common/jobs/SimpleJob.h>
 #include "FeatureIdentifier.h"
 
 namespace mp {
 
-class SpineIdentifier3D : public SimpleJob, public FeatureIdentifier
+class RibsIdentifier3D : public SimpleJob, public FeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:
-	SpineIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF);
+	RibsIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF);
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -24,7 +24,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_impl();
-	bool is_spine(const PFNodeID& node, const BranchProperties& properties) const;
+	bool is_rib(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const;
 };
 
 }
