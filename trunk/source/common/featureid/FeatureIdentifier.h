@@ -61,6 +61,23 @@ public:
 protected:
 	DICOMVolume_CPtr dicom_volume() const;
 	VolumeIPF_CPtr volume_ipf() const;
+
+	template <typename Pred>
+	std::list<PFNodeID> filter_branch_nodes(Pred pred)
+	{
+		std::list<PFNodeID> result;
+		for(int layer=1, highestLayer=m_volumeIPF->highest_layer(); layer<=highestLayer; ++layer)
+		{
+			for(BranchNodeConstIterator it=m_volumeIPF->branch_nodes_cbegin(layer), iend=m_volumeIPF->branch_nodes_cend(layer); it!=iend; ++it)
+			{
+				if(pred(it->properties()))
+				{
+					result.push_back(PFNodeID(layer, it.index()));
+				}
+			}
+		}
+		return result;
+	}
 };
 
 }

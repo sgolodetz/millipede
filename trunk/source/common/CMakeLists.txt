@@ -93,7 +93,6 @@ featureid/SpineIdentifier3D.cpp
 )
 
 SET(featureid_headers
-featureid/FeatureIdentificationUtil.h
 featureid/FeatureIdentifier.h
 featureid/LiverIdentifier3D.h
 featureid/MultiFeatureIdentifier3D.h
