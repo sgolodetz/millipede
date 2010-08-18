@@ -33,6 +33,8 @@ protected:
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<VolumeIPFT> VolumeIPF_Ptr;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
+	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
+	typedef boost::shared_ptr<PartitionForestSelectionT> PartitionForestSelection_Ptr;
 	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
 	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
 
@@ -60,7 +62,7 @@ public:
 	//#################### PROTECTED METHODS ####################
 protected:
 	DICOMVolume_CPtr dicom_volume() const;
-	VolumeIPF_CPtr volume_ipf() const;
+	VolumeIPF_Ptr volume_ipf() const;
 
 	template <typename Pred>
 	std::list<PFNodeID> filter_branch_nodes(Pred pred)

@@ -11,7 +11,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 RibsIdentifier3D::RibsIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	FeatureIdentifier(dicomVolume, volumeIPF)
+:	StratifiedRegionGrowingFeatureIdentifier(dicomVolume, volumeIPF)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -30,32 +30,34 @@ void RibsIdentifier3D::execute_impl()
 	// Step 1: Calculate the combined properties of all the nodes marked as part of the spine.
 	BranchProperties spineProperties = multiFeatureSelection->properties_of(AbdominalFeature::VERTEBRA);
 
-	// Step 2: Filter for rib nodes.
-	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&RibsIdentifier3D::is_rib, this, _1, _2, spineProperties));
+	// Step 2: Filter for the rib seed nodes.
+	std::list<PFNodeID> seeds = filter_branch_nodes(boost::bind(&RibsIdentifier3D::is_seed, this, _1, _2, spineProperties));
 
-#if 0
-	// Step 3: Mark the resulting nodes as rib (and unmark them as spine if necessary).
-	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
-	{
-		multiFeatureSelection->identify_node(*it, AbdominalFeature::RIB);
-		multiFeatureSelection->unidentify_node(*it, AbdominalFeature::VERTEBRA);
-	}
-#endif
+	// Step 3: Grow regions from the seed nodes.
+	PartitionForestSelection_Ptr regions = grow_regions(seeds, boost::bind(&RibsIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
+
+	// Step 4: (TEMPORARILY) Mark the resulting regions as rib (and unmark them as spine if necessary).
+	multiFeatureSelection->identify_selection(regions, AbdominalFeature::RIB);
+	multiFeatureSelection->unidentify_selection(regions, AbdominalFeature::VERTEBRA);
 }
 
-bool RibsIdentifier3D::is_rib(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const
+bool RibsIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties,
+									  const BranchProperties& seedProperties, const BranchProperties& overallProperties) const
 {
-	int minVoxelsPerSlice = 90;
+	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
+	return adjProperties.mean_grey_value() >= 180 && !multiFeatureSelection->selection(AbdominalFeature::VERTEBRA)->contains(adj);
+}
+
+bool RibsIdentifier3D::is_seed(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const
+{
 	int maxVoxelsPerSlice = 500;
 	int sliceCount = properties.z_max() + 1 - properties.z_min();
-	double aspectRatio = properties.aspect_ratio();
 
-	return	properties.mean_grey_value() >= 190 &&							// it should have a high grey value
-			0.25 <= aspectRatio && aspectRatio <= 4 &&						// it should have a reasonable aspect ratio
-			properties.voxel_count() >= minVoxelsPerSlice * sliceCount &&	// it should have a reasonable size
-			properties.voxel_count() <= maxVoxelsPerSlice * sliceCount &&
-			(properties.x_min() <= spineProperties.x_min() ||				// and it should not be strictly contained within the spine in the x axis
-			 properties.x_max() >= spineProperties.x_max());
+	return	properties.voxel_count() <= maxVoxelsPerSlice * sliceCount &&	// it should be a relatively small node
+			properties.mean_grey_value() >= 200 &&							// it should have a high grey value
+			properties.y_max() <= spineProperties.y_max() + 10 &&			// it should not be significantly below the spine (excludes things like the table)
+			(properties.x_min() < spineProperties.x_min() ||				// and it should not be contained within the spine in the x axis
+			 properties.x_max() > spineProperties.x_max());
 }
 
 }

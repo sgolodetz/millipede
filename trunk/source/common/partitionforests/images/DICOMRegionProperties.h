@@ -22,6 +22,7 @@ private:
 	Vector3d m_centroid;
 	unsigned char m_maxGreyValue;
 	double m_meanGreyValue;
+	unsigned char m_minGreyValue;
 	int m_xMin, m_yMin, m_zMin, m_xMax, m_yMax, m_zMax;
 	size_t m_voxelCount;
 
@@ -40,6 +41,7 @@ public:
 	static DICOMRegionProperties convert_from_leaf_properties(const std::pair<Vector3i,DICOMPixelProperties>& properties);
 	unsigned char max_grey_value() const;
 	double mean_grey_value() const;
+	unsigned char min_grey_value() const;
 	int voxel_count() const;
 	int x_max() const;
 	int x_min() const;

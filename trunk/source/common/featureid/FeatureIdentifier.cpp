@@ -36,7 +36,7 @@ DICOMVolume_CPtr FeatureIdentifier::dicom_volume() const
 	return m_dicomVolume;
 }
 
-FeatureIdentifier::VolumeIPF_CPtr FeatureIdentifier::volume_ipf() const
+FeatureIdentifier::VolumeIPF_Ptr FeatureIdentifier::volume_ipf() const
 {
 	return m_volumeIPF;
 }

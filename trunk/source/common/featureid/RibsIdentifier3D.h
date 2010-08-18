@@ -7,11 +7,11 @@
 #define H_MILLIPEDE_RIBSIDENTIFIER3D
 
 #include <common/jobs/SimpleJob.h>
-#include "FeatureIdentifier.h"
+#include "StratifiedRegionGrowingFeatureIdentifier.h"
 
 namespace mp {
 
-class RibsIdentifier3D : public SimpleJob, public FeatureIdentifier
+class RibsIdentifier3D : public SimpleJob, public StratifiedRegionGrowingFeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:
@@ -24,7 +24,8 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_impl();
-	bool is_rib(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const;
+	bool grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties, const BranchProperties& seedProperties, const BranchProperties& overallProperties) const;
+	bool is_seed(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const;
 };
 
 }
