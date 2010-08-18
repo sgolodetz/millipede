@@ -9,7 +9,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 SingleOutputFeatureIdentifier::SingleOutputFeatureIdentifier(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	m_dicomVolume(dicomVolume), m_volumeIPF(volumeIPF)
+:	FeatureIdentifier(dicomVolume, volumeIPF)
 {
 	m_mfsHook.set(VolumeIPFMultiFeatureSelection_Ptr(new VolumeIPFMultiFeatureSelectionT(volumeIPF)));
 }
@@ -26,19 +26,9 @@ const SingleOutputFeatureIdentifier::VolumeIPFMultiFeatureSelection_Ptr& SingleO
 }
 
 //#################### PROTECTED METHODS ####################
-DICOMVolume_CPtr SingleOutputFeatureIdentifier::dicom_volume() const
-{
-	return m_dicomVolume;
-}
-
 void SingleOutputFeatureIdentifier::set_mfs_hook(const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& mfsHook)
 {
 	m_mfsHook = mfsHook;
-}
-
-SingleOutputFeatureIdentifier::VolumeIPF_CPtr SingleOutputFeatureIdentifier::volume_ipf() const
-{
-	return m_volumeIPF;
 }
 
 }
