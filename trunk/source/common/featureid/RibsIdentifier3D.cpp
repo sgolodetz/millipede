@@ -88,11 +88,29 @@ RibsIdentifier3D::PartitionForestSelection_Ptr RibsIdentifier3D::postprocess_reg
 	// Step 3: Find the connected components of what remains.
 	std::vector<std::set<int> > connectedComponents = volume_ipf()->find_connected_components(indices, mergeLayer);
 
-	// Step 4: TODO
-
-	// Step 5: Add what remains of each connected component to the final regions.
-	for(std::vector<std::set<int> >::const_iterator it=connectedComponents.begin(), iend=connectedComponents.end(); it!=iend; ++it)
+	// Step 4:	Either keep or discard each connected component based on its properties.
+	int minVoxelsPerSlice = 90;
+	int maxVoxelsPerSlice = 500;
+	for(std::vector<std::set<int> >::iterator it=connectedComponents.begin(), iend=connectedComponents.end(); it!=iend; ++it)
 	{
+		// Calculate the properties of the connected component.
+		std::vector<BranchProperties> nodeProperties;
+		nodeProperties.reserve(it->size());
+		for(std::set<int>::const_iterator jt=it->begin(), jend=it->end(); jt!=jend; ++jt)
+		{
+			PFNodeID node(mergeLayer, *jt);
+			nodeProperties.push_back(volume_ipf()->branch_properties(node));
+		}
+		BranchProperties componentProperties = BranchProperties::combine_branch_properties(nodeProperties);
+
+		// Decide whether or not to discard the connected component.
+		int sliceCount = componentProperties.z_max() + 1 - componentProperties.z_min();
+		if(componentProperties.voxel_count() < minVoxelsPerSlice * sliceCount || componentProperties.voxel_count() > maxVoxelsPerSlice * sliceCount)
+		{
+			continue;
+		}
+
+		// Add any surviving connected component to the final regions.
 		for(std::set<int>::const_iterator jt=it->begin(), jend=it->end(); jt!=jend; ++jt)
 		{
 			PFNodeID node(mergeLayer, *jt);
