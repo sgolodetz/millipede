@@ -86,6 +86,7 @@ exceptions/FileNotFoundException.h
 ##
 SET(featureid_sources
 featureid/FeatureIdentifier.cpp
+featureid/LiverIdentifier3D.cpp
 featureid/MultiFeatureIdentifier3D.cpp
 featureid/SingleOutputFeatureIdentifier.cpp
 featureid/SpinalCordIdentifier3D.cpp
@@ -96,6 +97,7 @@ featureid/TransformFeatureIdentifier.cpp
 SET(featureid_headers
 featureid/FeatureIdentificationUtil.h
 featureid/FeatureIdentifier.h
+featureid/LiverIdentifier3D.h
 featureid/MultiFeatureIdentifier3D.h
 featureid/SingleOutputFeatureIdentifier.h
 featureid/SpinalCordIdentifier3D.h
