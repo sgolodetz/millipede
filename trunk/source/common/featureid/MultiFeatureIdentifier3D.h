@@ -7,11 +7,11 @@
 #define H_MILLIPEDE_MULTIFEATUREIDENTIFIER3D
 
 #include <common/jobs/CompositeJob.h>
-#include "SingleOutputFeatureIdentifier.h"
+#include "FeatureIdentifier.h"
 
 namespace mp {
 
-class MultiFeatureIdentifier3D : public CompositeJob, public SingleOutputFeatureIdentifier
+class MultiFeatureIdentifier3D : public CompositeJob, public FeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:

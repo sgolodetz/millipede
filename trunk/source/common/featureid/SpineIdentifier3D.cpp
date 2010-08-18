@@ -15,7 +15,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 SpineIdentifier3D::SpineIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	SingleOutputFeatureIdentifier(dicomVolume, volumeIPF)
+:	FeatureIdentifier(dicomVolume, volumeIPF)
 {}
 
 //#################### PUBLIC METHODS ####################

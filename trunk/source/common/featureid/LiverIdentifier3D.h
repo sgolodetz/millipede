@@ -7,11 +7,11 @@
 #define H_MILLIPEDE_LIVERIDENTIFIER3D
 
 #include <common/jobs/SimpleJob.h>
-#include "TransformFeatureIdentifier.h"
+#include "FeatureIdentifier.h"
 
 namespace mp {
 
-class LiverIdentifier3D : public TransformFeatureIdentifier
+class LiverIdentifier3D : public FeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:

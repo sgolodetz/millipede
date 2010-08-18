@@ -9,7 +9,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 LiverIdentifier3D::LiverIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	TransformFeatureIdentifier(dicomVolume, volumeIPF)
+:	FeatureIdentifier(dicomVolume, volumeIPF)
 {}
 
 //#################### PUBLIC METHODS ####################

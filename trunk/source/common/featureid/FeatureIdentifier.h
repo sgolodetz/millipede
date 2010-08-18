@@ -11,6 +11,7 @@
 	#pragma warning(disable:4250)
 #endif
 
+#include <common/jobs/DataHook.h>
 #include <common/jobs/Job.h>
 #include <common/partitionforests/images/AbdominalFeature.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
@@ -43,11 +44,18 @@ protected:
 	//#################### PRIVATE VARIABLES ####################
 private:
 	DICOMVolume_CPtr m_dicomVolume;
+	DataHook<VolumeIPFMultiFeatureSelection_Ptr> m_mfsHook;
 	VolumeIPF_Ptr m_volumeIPF;
 
 	//#################### CONSTRUCTORS ####################
 public:
 	FeatureIdentifier(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF);
+
+	//#################### PUBLIC METHODS ####################
+public:
+	const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& get_mfs_hook() const;
+	const VolumeIPFMultiFeatureSelection_Ptr& get_multi_feature_selection() const;
+	void set_mfs_hook(const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& mfsHook);
 
 	//#################### PROTECTED METHODS ####################
 protected:

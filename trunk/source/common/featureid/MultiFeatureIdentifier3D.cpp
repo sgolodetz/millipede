@@ -12,16 +12,15 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 MultiFeatureIdentifier3D::MultiFeatureIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	SingleOutputFeatureIdentifier(dicomVolume, volumeIPF)
+:	FeatureIdentifier(dicomVolume, volumeIPF)
 {
 	SpineIdentifier3D *spineIdentifier = new SpineIdentifier3D(dicomVolume, volumeIPF);
+	spineIdentifier->set_mfs_hook(get_mfs_hook());
 	add_subjob(spineIdentifier);
 
 	SpinalCordIdentifier3D *spinalCordIdentifier = new SpinalCordIdentifier3D(dicomVolume, volumeIPF);
-	spinalCordIdentifier->set_mfs_hook(spineIdentifier->get_mfs_hook());
+	spinalCordIdentifier->set_mfs_hook(get_mfs_hook());
 	add_subjob(spinalCordIdentifier);
-
-	set_mfs_hook(spinalCordIdentifier->get_mfs_hook());
 }
 
 }

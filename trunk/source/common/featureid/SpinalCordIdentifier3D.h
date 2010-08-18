@@ -7,11 +7,11 @@
 #define H_MILLIPEDE_SPINALCORDIDENTIFIER3D
 
 #include <common/jobs/SimpleJob.h>
-#include "TransformFeatureIdentifier.h"
+#include "FeatureIdentifier.h"
 
 namespace mp {
 
-class SpinalCordIdentifier3D : public SimpleJob, public TransformFeatureIdentifier
+class SpinalCordIdentifier3D : public SimpleJob, public FeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:
