@@ -15,28 +15,13 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 SpinalCordIdentifier3D::SpinalCordIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	m_dicomVolume(dicomVolume), m_volumeIPF(volumeIPF)
+:	TransformFeatureIdentifier(dicomVolume, volumeIPF)
 {}
 
 //#################### PUBLIC METHODS ####################
-const DataHook<SpinalCordIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr>& SpinalCordIdentifier3D::get_mfs_hook() const
-{
-	return m_mfsHook;
-}
-
-const SpinalCordIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr& SpinalCordIdentifier3D::get_output() const
-{
-	return m_mfsHook.get();
-}
-
 int SpinalCordIdentifier3D::length() const
 {
 	return 1;
-}
-
-void SpinalCordIdentifier3D::set_mfs_hook(const DataHook<VolumeIPFMultiFeatureSelection_Ptr>& mfsHook)
-{
-	m_mfsHook = mfsHook;
 }
 
 //#################### PRIVATE METHODS ####################
@@ -44,13 +29,13 @@ void SpinalCordIdentifier3D::execute_impl()
 {
 	set_status("Identifying spinal cord...");
 
-	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = m_mfsHook.get();
+	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
 
 	// Step 1: Calculate the combined properties of all the nodes marked as part of the spine.
 	BranchProperties spineProperties = multiFeatureSelection->properties_of(AbdominalFeature::VERTEBRA);
 
 	// Step 2: Filter for spinal cord nodes based on the location of the spine.
-	std::list<PFNodeID> nodes = FeatureIdentificationUtil::filter_branch_nodes(m_volumeIPF, boost::bind(&SpinalCordIdentifier3D::is_spinal_cord, this, _1, spineProperties));
+	std::list<PFNodeID> nodes = FeatureIdentificationUtil::filter_branch_nodes(volume_ipf(), boost::bind(&SpinalCordIdentifier3D::is_spinal_cord, this, _1, spineProperties));
 
 	// Step 3: Mark the resulting nodes as spinal cord (and unmark them as spine if necessary).
 	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
@@ -62,7 +47,7 @@ void SpinalCordIdentifier3D::execute_impl()
 
 bool SpinalCordIdentifier3D::is_spinal_cord(const BranchProperties& properties, const BranchProperties& spineProperties) const
 {
-	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(m_dicomVolume->size());
+	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(dicom_volume()->size());
 	int minVoxels = 450 * volumeSize[2];
 	int maxVoxels = 1000 * volumeSize[2];
 	const int X_TOLERANCE = -5;

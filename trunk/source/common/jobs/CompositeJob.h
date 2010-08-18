@@ -13,7 +13,7 @@
 
 namespace mp {
 
-class CompositeJob : public Job
+class CompositeJob : public virtual Job
 {
 	//#################### PRIVATE VARIABLES ####################
 private:

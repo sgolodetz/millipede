@@ -12,6 +12,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 MultiFeatureIdentifier3D::MultiFeatureIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
+:	SingleOutputFeatureIdentifier(dicomVolume, volumeIPF)
 {
 	SpineIdentifier3D *spineIdentifier = new SpineIdentifier3D(dicomVolume, volumeIPF);
 	add_subjob(spineIdentifier);
@@ -20,13 +21,7 @@ MultiFeatureIdentifier3D::MultiFeatureIdentifier3D(const DICOMVolume_CPtr& dicom
 	spinalCordIdentifier->set_mfs_hook(spineIdentifier->get_mfs_hook());
 	add_subjob(spinalCordIdentifier);
 
-	m_mfsHook = spinalCordIdentifier->get_mfs_hook();
-}
-
-//#################### PUBLIC METHODS ####################
-const MultiFeatureIdentifier3D::VolumeIPFMultiFeatureSelection_Ptr& MultiFeatureIdentifier3D::get_output() const
-{
-	return m_mfsHook.get();
+	set_mfs_hook(spinalCordIdentifier->get_mfs_hook());
 }
 
 }

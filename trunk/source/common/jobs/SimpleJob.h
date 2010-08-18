@@ -10,7 +10,7 @@
 
 namespace mp {
 
-class SimpleJob : public Job
+class SimpleJob : public virtual Job
 {
 	//#################### PRIVATE VARIABLES ####################
 private:

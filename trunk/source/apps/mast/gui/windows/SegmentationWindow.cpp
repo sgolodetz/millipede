@@ -325,14 +325,14 @@ void SegmentationWindow::OnMenuFeaturesAutoIdentifyMultiFeature(wxCommandEvent&)
 {
 	boost::shared_ptr<MultiFeatureIdentifier3D> identifier(new MultiFeatureIdentifier3D(m_model->dicom_volume(), m_model->volume_ipf()));
 	execute_with_progress_dialog(identifier, this, "Identifying Features", false);
-	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_output());
+	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_multi_feature_selection());
 }
 
 void SegmentationWindow::OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&)
 {
 	boost::shared_ptr<SpineIdentifier3D> identifier(new SpineIdentifier3D(m_model->dicom_volume(), m_model->volume_ipf()));
 	execute_with_progress_dialog(identifier, this, "Identifying Spine", false);
-	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_output());
+	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_multi_feature_selection());
 }
 
 void SegmentationWindow::OnMenuFeaturesClearAll(wxCommandEvent&)
