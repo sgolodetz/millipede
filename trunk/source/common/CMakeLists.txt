@@ -94,8 +94,6 @@ featureid/TransformFeatureIdentifier.cpp
 
 SET(featureid_headers
 featureid/FeatureIdentificationUtil.h
-featureid/ISingleOutputFeatureIdentifier.h
-featureid/ITransformFeatureIdentifier.h
 featureid/MultiFeatureIdentifier3D.h
 featureid/SingleOutputFeatureIdentifier.h
 featureid/SpinalCordIdentifier3D.h
