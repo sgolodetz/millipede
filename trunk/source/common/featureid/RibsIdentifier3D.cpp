@@ -34,11 +34,14 @@ void RibsIdentifier3D::execute_impl()
 	std::list<PFNodeID> seeds = filter_branch_nodes(boost::bind(&RibsIdentifier3D::is_seed, this, _1, _2, spineProperties));
 
 	// Step 3: Grow regions from the seed nodes.
-	PartitionForestSelection_Ptr regions = grow_regions(seeds, boost::bind(&RibsIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
+	PartitionForestSelection_Ptr preliminaryRegions = grow_regions(seeds, boost::bind(&RibsIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
 
-	// Step 4: (TEMPORARILY) Mark the resulting regions as rib (and unmark them as spine if necessary).
-	multiFeatureSelection->identify_selection(regions, AbdominalFeature::RIB);
-	multiFeatureSelection->unidentify_selection(regions, AbdominalFeature::VERTEBRA);
+	// Step 4: Post-process the regions to get rid of anything undesirable.
+	PartitionForestSelection_Ptr finalRegions = postprocess_regions(preliminaryRegions);
+
+	// Step 5: Mark the final regions as rib (and unmark them as spine if necessary).
+	multiFeatureSelection->identify_selection(finalRegions, AbdominalFeature::RIB);
+	multiFeatureSelection->unidentify_selection(finalRegions, AbdominalFeature::VERTEBRA);
 }
 
 bool RibsIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties,
@@ -58,6 +61,46 @@ bool RibsIdentifier3D::is_seed(const PFNodeID& node, const BranchProperties& pro
 			properties.y_max() <= spineProperties.y_max() + 10 &&			// it should not be significantly below the spine (excludes things like the table)
 			(properties.x_min() < spineProperties.x_min() ||				// and it should not be contained within the spine in the x axis
 			 properties.x_max() > spineProperties.x_max());
+}
+
+RibsIdentifier3D::PartitionForestSelection_Ptr RibsIdentifier3D::postprocess_regions(const PartitionForestSelection_Ptr& preliminaryRegions) const
+{
+	PartitionForestSelection_Ptr finalRegions(new PartitionForestSelectionT(volume_ipf()));
+
+	// Step 1: Build the set of preliminary regions at the level of their merge layer.
+	int mergeLayer = preliminaryRegions->merge_layer(volume_ipf()->highest_layer());
+	std::set<int> indices;
+	typedef PartitionForestSelectionT::ViewNodeConstIterator Iter;
+	for(Iter it=preliminaryRegions->view_at_layer_cbegin(mergeLayer), iend=preliminaryRegions->view_at_layer_cend(mergeLayer); it!=iend; ++it)
+	{
+		indices.insert(it->index());
+	}
+
+	// Step 2: Remove any darker regions.
+	for(std::set<int>::iterator it=indices.begin(), iend=indices.end(); it!=iend;)
+	{
+		PFNodeID node(mergeLayer, *it);
+		const BranchProperties& properties = volume_ipf()->branch_properties(node);
+		if(properties.mean_grey_value() < 150) indices.erase(it++);
+		else ++it;
+	}
+
+	// Step 3: Find the connected components of what remains.
+	std::vector<std::set<int> > connectedComponents = volume_ipf()->find_connected_components(indices, mergeLayer);
+
+	// Step 4: TODO
+
+	// Step 5: Add what remains of each connected component to the final regions.
+	for(std::vector<std::set<int> >::const_iterator it=connectedComponents.begin(), iend=connectedComponents.end(); it!=iend; ++it)
+	{
+		for(std::set<int>::const_iterator jt=it->begin(), jend=it->end(); jt!=jend; ++jt)
+		{
+			PFNodeID node(mergeLayer, *jt);
+			finalRegions->select_node(node);
+		}
+	}
+
+	return finalRegions;
 }
 
 }

@@ -26,6 +26,7 @@ private:
 	void execute_impl();
 	bool grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties, const BranchProperties& seedProperties, const BranchProperties& overallProperties) const;
 	bool is_seed(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const;
+	PartitionForestSelection_Ptr postprocess_regions(const PartitionForestSelection_Ptr& preliminaryRegions) const;
 };
 
 }
