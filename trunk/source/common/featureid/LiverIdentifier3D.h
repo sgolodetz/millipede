@@ -7,11 +7,11 @@
 #define H_MILLIPEDE_LIVERIDENTIFIER3D
 
 #include <common/jobs/SimpleJob.h>
-#include "FeatureIdentifier.h"
+#include "StratifiedRegionGrowingFeatureIdentifier.h"
 
 namespace mp {
 
-class LiverIdentifier3D : public FeatureIdentifier
+class LiverIdentifier3D : public SimpleJob, public StratifiedRegionGrowingFeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:
@@ -24,6 +24,7 @@ public:
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_impl();
+	bool is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const;
 };
 
 }

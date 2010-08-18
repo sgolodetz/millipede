@@ -17,7 +17,7 @@ RibsIdentifier3D::RibsIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const Vo
 //#################### PUBLIC METHODS ####################
 int RibsIdentifier3D::length() const
 {
-	return 1;
+	return 5;
 }
 
 //#################### PRIVATE METHODS ####################
@@ -29,15 +29,19 @@ void RibsIdentifier3D::execute_impl()
 
 	// Step 1: Calculate the combined properties of all the nodes marked as part of the spine.
 	BranchProperties spineProperties = multiFeatureSelection->properties_of(AbdominalFeature::VERTEBRA);
+	increment_progress();
 
 	// Step 2: Filter for the rib seed nodes.
 	std::list<PFNodeID> seeds = filter_branch_nodes(boost::bind(&RibsIdentifier3D::is_seed, this, _1, _2, spineProperties));
+	increment_progress();
 
 	// Step 3: Grow regions from the seed nodes.
 	PartitionForestSelection_Ptr preliminaryRegions = grow_regions(seeds, boost::bind(&RibsIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
+	increment_progress();
 
 	// Step 4: Post-process the regions to get rid of anything undesirable.
 	PartitionForestSelection_Ptr finalRegions = postprocess_regions(preliminaryRegions);
+	increment_progress();
 
 	// Step 5: Mark the final regions as rib (and unmark them as spine if necessary).
 	multiFeatureSelection->identify_selection(finalRegions, AbdominalFeature::RIB);

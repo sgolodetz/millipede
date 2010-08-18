@@ -5,6 +5,7 @@
 
 #include "MultiFeatureIdentifier3D.h"
 
+#include "LiverIdentifier3D.h"
 #include "RibsIdentifier3D.h"
 #include "SpinalCordIdentifier3D.h"
 #include "SpineIdentifier3D.h"
@@ -26,6 +27,10 @@ MultiFeatureIdentifier3D::MultiFeatureIdentifier3D(const DICOMVolume_CPtr& dicom
 	RibsIdentifier3D *ribsIdentifier = new RibsIdentifier3D(dicomVolume, volumeIPF);
 	ribsIdentifier->set_mfs_hook(get_mfs_hook());
 	add_subjob(ribsIdentifier);
+
+	LiverIdentifier3D *liverIdentifier = new LiverIdentifier3D(dicomVolume, volumeIPF);
+	liverIdentifier->set_mfs_hook(get_mfs_hook());
+	add_subjob(liverIdentifier);
 }
 
 }
