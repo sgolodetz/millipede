@@ -11,7 +11,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 RibsIdentifier3D::RibsIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	StratifiedRegionGrowingFeatureIdentifier(dicomVolume, volumeIPF)
+:	FeatureIdentifier(dicomVolume, volumeIPF)
 {}
 
 //#################### PUBLIC METHODS ####################

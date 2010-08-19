@@ -7,11 +7,11 @@
 #define H_MILLIPEDE_RIBSIDENTIFIER3D
 
 #include <common/jobs/SimpleJob.h>
-#include "StratifiedRegionGrowingFeatureIdentifier.h"
+#include "FeatureIdentifier.h"
 
 namespace mp {
 
-class RibsIdentifier3D : public SimpleJob, public StratifiedRegionGrowingFeatureIdentifier
+class RibsIdentifier3D : public SimpleJob, public FeatureIdentifier
 {
 	//#################### CONSTRUCTORS ####################
 public:

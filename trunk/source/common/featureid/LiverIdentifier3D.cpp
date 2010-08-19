@@ -14,7 +14,7 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 LiverIdentifier3D::LiverIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const VolumeIPF_Ptr& volumeIPF)
-:	StratifiedRegionGrowingFeatureIdentifier(dicomVolume, volumeIPF)
+:	FeatureIdentifier(dicomVolume, volumeIPF)
 {}
 
 //#################### PUBLIC METHODS ####################
@@ -49,8 +49,16 @@ void LiverIdentifier3D::execute_impl()
 	// If we can't find a candidate liver, exit.
 	if(bestCandidate == PFNodeID::invalid()) return;
 
-	// Step 3: (TEMPORARY) Identify it as liver.
-	multiFeatureSelection->identify_node(bestCandidate, AbdominalFeature::LIVER);
+	// Step 3: Use morphological operations to try and fill any holes.
+	std::set<PFNodeID> nodes;
+	nodes.insert(bestCandidate);
+	morphologically_close_nodes(nodes);
+
+	// Step 4: (TEMPORARY) Identify the results as liver.
+	for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+	{
+		multiFeatureSelection->identify_node(*it, AbdominalFeature::LIVER);
+	}
 }
 
 bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const

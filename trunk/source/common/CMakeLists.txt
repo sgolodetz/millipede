@@ -100,7 +100,6 @@ featureid/MultiFeatureIdentifier3D.h
 featureid/RibsIdentifier3D.h
 featureid/SpinalCordIdentifier3D.h
 featureid/SpineIdentifier3D.h
-featureid/StratifiedRegionGrowingFeatureIdentifier.h
 )
 
 ##
