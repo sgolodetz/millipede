@@ -7,6 +7,8 @@
 
 #include <climits>
 
+#include <boost/bind.hpp>
+
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/util/ITKImageUtil.h>
 
@@ -20,7 +22,7 @@ LiverIdentifier3D::LiverIdentifier3D(const DICOMVolume_CPtr& dicomVolume, const 
 //#################### PUBLIC METHODS ####################
 int LiverIdentifier3D::length() const
 {
-	return 1;
+	return 5;
 }
 
 //#################### PRIVATE METHODS ####################
@@ -32,6 +34,7 @@ void LiverIdentifier3D::execute_impl()
 
 	// Step 1: Filter for the liver candidates.
 	std::list<PFNodeID> candidates = filter_branch_nodes(boost::bind(&LiverIdentifier3D::is_liver_candidate, this, _1, _2));
+	increment_progress();
 
 	// Step 2: Pick the best candidate (namely, the one which stretches furthest to the left of the image).
 	PFNodeID bestCandidate;
@@ -49,10 +52,13 @@ void LiverIdentifier3D::execute_impl()
 	// If we can't find a candidate liver, exit.
 	if(bestCandidate == PFNodeID::invalid()) return;
 
+	increment_progress();
+
 	// Step 3: Grow a region from the candidate liver.
 	std::list<PFNodeID> bestCandidateList;
 	bestCandidateList.push_back(bestCandidate);
 	PartitionForestSelection_Ptr region = grow_regions(bestCandidateList, boost::bind(&LiverIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
+	increment_progress();
 
 	// Step 4: Use conditional morphological operations to try and fill any holes.
 	std::set<PFNodeID> nodes(region->view_at_layer_cbegin(1), region->view_at_layer_cend(1));
@@ -62,6 +68,7 @@ void LiverIdentifier3D::execute_impl()
 	{
 		filledRegion->select_node(*it);
 	}
+	increment_progress();
 
 	// Step 5: Mark the result as liver.
 	multiFeatureSelection->identify_selection(filledRegion, AbdominalFeature::LIVER);
@@ -72,6 +79,7 @@ bool LiverIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperti
 {
 	int sliceCount = adjProperties.z_max() + 1 - adjProperties.z_min();
 
+	// FIXME: The size condition is a hack to try and prevent excessive flooding (a better approach needs to be found).
 	return	adjProperties.x_min() >= seedProperties.x_min() &&									// it should be no further left than the original seed
 			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&	// it should be roughly the same grey value as the seed
 			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10 &&		// it should be roughly the same grey value as its generating region
