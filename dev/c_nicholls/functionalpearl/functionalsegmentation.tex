@@ -81,8 +81,8 @@ Figure~\ref{fig:oversegmented}.
 %\vspace{-5mm}
 %
 
-The {\em waterfall\/} algorithm~\cite{beucher94,marcotegui} is an
-iterative process which can extract further structure from an initial
+The {\em waterfall\/} algorithm~\cite{beucher94,marcotegui} can be
+used to extract further structure from an initial
 watershed segmentation. The waterfall yields a partition forest
 hierarchy, which is a comprehensive data structure which can
 subsequently be used for feature identification.
@@ -113,8 +113,9 @@ yields a higher-level grouping of the regions in the previous layer.
   (left to right).}
 \label{fig:waterfall}
 \end{figure}
-%---
-
+%---------------------------
+% @@@ These two paragraphs could be ommited if we need to cud down on
+% space
 Both the watershed and the waterfall algorithms are based on a
 geographical metaphor. The image is regarded as a landscape, with each
 grey value at representing the height of the terrain at given $(x,y)$
@@ -131,6 +132,8 @@ into adjacent regions. This process continues until the whole image
 becomes a single basin. The intermediate stages of the process can be
 regarded as intermediate segmentations of the image, with each basin
 representing a region.
+% --------------------------
+
 
 An implementation of this algorithm, proposed by Marcotegui and
 Beucher~\cite{marcotegui}, involves the construction of a Minimum
@@ -161,7 +164,8 @@ recursive relation on the nodes rather than the conventional iterative
 transformations.
 
 We also show how the algorithm can be written as a single recursive
-pass of the MST and how it can be written in a pure functional style.
+pass of the MST and how it can be implemented in a pure functional
+style.
 
 \subsection{MST}
 
@@ -183,7 +187,7 @@ magnitude as the running time of the rest of the algorithm.
 \subsection{Data structure}
 
 The data structure over which the waterfall algorithm runs is a simple
-weighted tree. Ech node must contain the region at that node along
+weighted tree. Each node must contain the region at that node along
 with a list of all its children.  For the sake of clarity, we divide
 the definition up into nodes and edges, as the algorithm focuses
 heavily on the edges of the tree.
@@ -195,8 +199,8 @@ data Edge a = Edge Int (Tree a)
 
 
 The waterfall algorithm relies on identifying the edge of minimum
-weight which is adjacent to each node, and eliding it. This amounts to
-merging the two regions corresponding to the two node extremities of
+weight which is adjacent to each node, before eliding it. This amounts
+to merging the two regions contained in the two node extremities of
 that edge.  (For brevity we will refer to such edges as `the minimum
 edge {\em of\/} that node'.) Figure~\ref{fig:merging} illustrates an
 example of merging.
@@ -204,7 +208,7 @@ example of merging.
 \begin{figure}
 \centering
 \ifpdf
-        \epsfig{file=waterfallexampleofsetunion.pdf, width=.5\linewidth}%
+      \epsfig{file=waterfallexampleofsetunion.pdf, width=.5\linewidth}%
 \else
         % TODO
 \fi
@@ -233,7 +237,8 @@ mergeNodes (Node r1 cs1) (Node r2 cs2)
 
 \subsection{Algorithm outline}
 
-As described in (@@@ somewhere) the algorithm runs over the MST and
+As described in section 2 %is there a better way to reference this? @@@
+the algorithm runs over the MST and
 elides all edges that are of minimum weight from either of its end
 points.
 
@@ -262,7 +267,8 @@ the node.}
 \end{figure}
 
 
-Some things to note, summarised in the following Lemmas:
+Dividing the cases in this way has some useful properties, as
+summarised in the following Lemmas:
 \begin{enumerate}
 
 \item Precisely one edge from each node will satisfy Case~I or
@@ -586,14 +592,16 @@ edge away from either of its endpoints.
   Let $a_0$ be the minimum edge connected to $n_1$ and $b_0$ be the
   minimum edge connected to $n_2$
 
-  Create a sequence of edges from $n_1$ by always picking the smallest
+  Create a sequence of edges $a_0 ... a_{k_a}$  from $n_1$ by always picking the smallest
   edge from the current vertex until the smallest edge is already in
-  the sequence.
+  the sequence. The last edge in the sequence is then the smallest
+  edge from both of its endpoints and is thus a regional minima.
 
-  Do the same for $n_2$ Show the endpoints of these sequences are
-  regional minima.
+  Similarly, we can create a sequence of edges $b_0 ... b_{k_b}$ from
+  $n_2$ that ends in a regional minima.
 
-  Therefore $e$ is path maximal.  ....@@@
+  By construction, we have a path between two regional minima along which
+  $e$ is maximal.
 
 
 \end{proof}
