@@ -179,7 +179,9 @@ The details of this are sufficiently complex that they will be omitted
 from this paper.
 
 Suffice to say that we use an adaptation of Prim's algorithm which
-involves ... @@@ Due to the use of this artifice, the overall running
+leaverages the fact that the data range of an image (and therefore the
+edges of the graph) are bounded in a known range. Due to the use of
+this artifice, the overall running
 time of the MST construction can be brought to the same order of
 magnitude as the running time of the rest of the algorithm.
 
@@ -506,7 +508,73 @@ fcase1and2 (Edge w t@(Node a cs))
   | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
 
 \end{verbatim}
+
+There is one final optimisation that we make. In the above code, every
+recursive call searches through the entire list of children to find
+the smallest child. By introducing the invariant that the smallest
+child of a node should be kept at the head of the list, we can remove
+the need to search through the entire list of children.
+
+The final version of the code is given below.
+
 \begin{verbatim}
+
+data Tree a = Node a [Edge a]
+{- Invariant: The list of edges are sorted by weight (ascending) -}
+
+data  Edge a = Edge Int (Tree a)
+
+waterfalls :: Mergeable a => Tree a -> [Tree a]
+waterfalls = takeWhile hasChildren. iterate waterfall
+
+waterfall :: Mergeable a => Tree a -> Tree a
+waterfall (Node a []) = (Node a [])
+waterfall (Node r (c:cs)) =
+  fcase1and2 c (foldr fcase3and4 (Node r []) cs)
+
+fcase3and4 :: Mergeable a => Edge a ->Tree a -> Tree a
+fcase3and4 (Edge w t@(Node a cs))
+  | hasChildren t && w > minVal t = addChild w (waterfall t)
+  | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
+
+fcase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
+fcase1and2 (Edge w t@(Node a cs))
+  | hasChildren t && w > minVal t = mergeNodes (waterfall t)
+  | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
+
+
+mergeNodes :: Mergeable a => Tree a -> Tree a -> Tree a
+mergeNodes (Node r1 cs1) (Node r2 cs2) = Node  (union r1 r2) (merge cs1 cs2)
+
+merge :: Ord a => [a] -> [a] -> [a]
+merge [] ys = ys
+merge xs [] = xs
+merge (x:xs) (y:ys)
+  | x < y     = x :     xs ++ (y:ys)
+  | otherwise = y : (x:xs) ++ ys
+
+hasChildren :: Tree a -> Bool
+hasChildren = not.childless
+
+childless :: Tree a ->  Bool
+childless (Node _ cs) = null cs
+
+getRegion :: Tree a -> a
+getRegion (Node  r _ ) = r
+
+getEdges :: Tree a  -> [Edge a]
+getEdges (Node  _ es) =  es
+
+getWeight :: Edge a -> Int
+getWeight (Edge w _ ) = w
+
+getNode :: Edge a -> Tree a
+getNode (Edge _ ns) = ns
+
+minVal :: Tree a  -> Int
+minVal = head.map getWeight.getEdges
+
+\end{verbatim}
 \end{verbatim}
 \begin{verbatim}
 \end{verbatim}
@@ -596,7 +664,6 @@ edge away from either of its endpoints.
   edge from the current vertex until the smallest edge is already in
   the sequence. The last edge in the sequence is then the smallest
   edge from both of its endpoints and is thus a regional minima.
-
   Similarly, we can create a sequence of edges $b_0 ... b_{k_b}$ from
   $n_2$ that ends in a regional minima.
 
@@ -605,7 +672,6 @@ edge away from either of its endpoints.
 
 
 \end{proof}
-(Note that there is arbitrary choice about edges of same weight.)
 
 
 \subsection{Plateaux}
