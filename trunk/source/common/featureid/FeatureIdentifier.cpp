@@ -5,6 +5,8 @@
 
 #include "FeatureIdentifier.h"
 
+#include <boost/bind.hpp>
+
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
@@ -38,50 +40,28 @@ DICOMVolume_CPtr FeatureIdentifier::dicom_volume() const
 
 void FeatureIdentifier::morphologically_close_nodes(std::set<PFNodeID>& nodes, int n) const
 {
-	morphologically_dilate_nodes(nodes, n);
-	morphologically_erode_nodes(nodes, n);
+	morphologically_close_nodes(nodes, boost::bind(&FeatureIdentifier::morphological_condition_accept_all, this, _1));
 }
 
 void FeatureIdentifier::morphologically_dilate_nodes(std::set<PFNodeID>& nodes, int n) const
 {
-	for(int k=0; k<n; ++k)
-	{
-		std::set<PFNodeID> initialNodes = nodes;
-		for(std::set<PFNodeID>::const_iterator it=initialNodes.begin(), iend=initialNodes.end(); it!=iend; ++it)
-		{
-			std::vector<int> adjNodes = volume_ipf()->adjacent_nodes(*it);
-			for(std::vector<int>::const_iterator jt=adjNodes.begin(), jend=adjNodes.end(); jt!=jend; ++jt)
-			{
-				nodes.insert(PFNodeID(it->layer(), *jt));
-			}
-		}
-	}
+	morphologically_dilate_nodes(nodes, boost::bind(&FeatureIdentifier::morphological_condition_accept_all, this, _1));
 }
 
 void FeatureIdentifier::morphologically_erode_nodes(std::set<PFNodeID>& nodes, int n) const
 {
-	for(int k=0; k<n; ++k)
-	{
-		std::set<PFNodeID> initialNodes = nodes;
-		for(std::set<PFNodeID>::const_iterator it=initialNodes.begin(), iend=initialNodes.end(); it!=iend; ++it)
-		{
-			std::vector<int> adjNodes = volume_ipf()->adjacent_nodes(*it);
-			for(std::vector<int>::const_iterator jt=adjNodes.begin(), jend=adjNodes.end(); jt!=jend; ++jt)
-			{
-				PFNodeID adjNode(it->layer(), *jt);
-				if(initialNodes.find(adjNode) == initialNodes.end())	// *it has an adjacent node that wasn't marked initially
-				{
-					nodes.erase(*it);
-					break;
-				}
-			}
-		}
-	}
+	morphologically_erode_nodes(nodes, boost::bind(&FeatureIdentifier::morphological_condition_accept_all, this, _1));
 }
 
 FeatureIdentifier::VolumeIPF_Ptr FeatureIdentifier::volume_ipf() const
 {
 	return m_volumeIPF;
+}
+
+//#################### PRIVATE METHODS ####################
+bool FeatureIdentifier::morphological_condition_accept_all(const BranchProperties&) const
+{
+	return true;
 }
 
 }

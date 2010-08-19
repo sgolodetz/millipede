@@ -100,8 +100,60 @@ protected:
 		return result;
 	}
 
+	template <typename Condition>
+	void morphologically_close_nodes(std::set<PFNodeID>& nodes, Condition condition, int n = 1) const
+	{
+		morphologically_dilate_nodes(nodes, condition, n);
+		morphologically_erode_nodes(nodes, condition, n);
+	}
+
+	template <typename Condition>
+	void morphologically_dilate_nodes(std::set<PFNodeID>& nodes, Condition condition, int n = 1) const
+	{
+		for(int k=0; k<n; ++k)
+		{
+			std::set<PFNodeID> initialNodes = nodes;
+			for(std::set<PFNodeID>::const_iterator it=initialNodes.begin(), iend=initialNodes.end(); it!=iend; ++it)
+			{
+				std::vector<int> adjNodes = volume_ipf()->adjacent_nodes(*it);
+				for(std::vector<int>::const_iterator jt=adjNodes.begin(), jend=adjNodes.end(); jt!=jend; ++jt)
+				{
+					PFNodeID adjNode(it->layer(), *jt);
+					if(condition(volume_ipf()->branch_properties(adjNode)))
+					{
+						nodes.insert(adjNode);
+					}
+				}
+			}
+		}
+	}
+
+	template <typename Condition>
+	void morphologically_erode_nodes(std::set<PFNodeID>& nodes, Condition condition, int n = 1) const
+	{
+		for(int k=0; k<n; ++k)
+		{
+			std::set<PFNodeID> initialNodes = nodes;
+			for(std::set<PFNodeID>::const_iterator it=initialNodes.begin(), iend=initialNodes.end(); it!=iend; ++it)
+			{
+				std::vector<int> adjNodes = volume_ipf()->adjacent_nodes(*it);
+				for(std::vector<int>::const_iterator jt=adjNodes.begin(), jend=adjNodes.end(); jt!=jend; ++jt)
+				{
+					PFNodeID adjNode(it->layer(), *jt);
+					if(initialNodes.find(adjNode) == initialNodes.end() && condition(volume_ipf()->branch_properties(adjNode)))
+					{
+						nodes.erase(*it);
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	//#################### PRIVATE METHODS ####################
 private:
+	bool morphological_condition_accept_all(const BranchProperties&) const;
+
 	template <typename GrowCondition>
 	std::set<PFNodeID> grow_region(const PFNodeID& seed, GrowCondition growCondition) const
 	{

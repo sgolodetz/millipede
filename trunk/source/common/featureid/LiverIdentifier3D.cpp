@@ -49,16 +49,33 @@ void LiverIdentifier3D::execute_impl()
 	// If we can't find a candidate liver, exit.
 	if(bestCandidate == PFNodeID::invalid()) return;
 
-	// Step 3: Use morphological operations to try and fill any holes.
-	std::set<PFNodeID> nodes;
-	nodes.insert(bestCandidate);
-	morphologically_close_nodes(nodes);
+	// Step 3: Grow a region from the candidate liver.
+	std::list<PFNodeID> bestCandidateList;
+	bestCandidateList.push_back(bestCandidate);
+	PartitionForestSelection_Ptr region = grow_regions(bestCandidateList, boost::bind(&LiverIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
 
-	// Step 4: (TEMPORARY) Identify the results as liver.
+	// Step 4: Use conditional morphological operations to try and fill any holes.
+	std::set<PFNodeID> nodes(region->view_at_layer_cbegin(1), region->view_at_layer_cend(1));
+	morphologically_close_nodes(nodes, boost::bind(&LiverIdentifier3D::morphological_condition, this, _1));
+	PartitionForestSelection_Ptr filledRegion(new PartitionForestSelectionT(volume_ipf()));
 	for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{
-		multiFeatureSelection->identify_node(*it, AbdominalFeature::LIVER);
+		filledRegion->select_node(*it);
 	}
+
+	// Step 5: Mark the result as liver.
+	multiFeatureSelection->identify_selection(filledRegion, AbdominalFeature::LIVER);
+}
+
+bool LiverIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties,
+									   const BranchProperties& seedProperties, const BranchProperties& overallProperties) const
+{
+	int sliceCount = adjProperties.z_max() + 1 - adjProperties.z_min();
+
+	return	adjProperties.x_min() >= seedProperties.x_min() &&									// it should be no further left than the original seed
+			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&	// it should be roughly the same grey value as the seed
+			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10 &&		// it should be roughly the same grey value as its generating region
+			adjProperties.voxel_count() <= 150 * sliceCount;									// it shouldn't be too large
 }
 
 bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const
@@ -71,6 +88,11 @@ bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchPro
 			properties.voxel_count() >= minVoxelsPerSlice * sliceCount &&	// it should be reasonably-sized
 			properties.mean_grey_value() >= 150 &&							// it should be reasonably bright
 			properties.x_min() < volumeSize[0]/2;							// and at least part of it should be on the left-hand side of the image
+}
+
+bool LiverIdentifier3D::morphological_condition(const BranchProperties& properties) const
+{
+	return properties.mean_grey_value() >= 140;
 }
 
 }
