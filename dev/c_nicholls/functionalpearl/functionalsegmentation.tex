@@ -440,12 +440,17 @@ elideEdge (case1and2 minChild) (foldr (elideEdge.case3and4) (Node r []) cs')
 (elideEdge.case1and2) minChild (foldr (elideEdge.case3and4) (Node r []) cs')
 \end{verbatim}
 
-Next, see whether {\tt f.case3and4} can be rewritten to use {\tt
+Next, see whether {\tt elideEdge.case3and4} can be rewritten to use {\tt
 waterfall} instead of {\tt mark} and {\tt elide}.
-There are two cases to consider... @@@
+
+Using structural induction, there are two branches we need to concider
+for $elideEdge(case3and4 (Edge w t))$:
+(a) $hasChildren t \and w > minVal t == True$
+(a) $hasChildren t \and w > minVal t == False$
+
 \begin{verbatim}
 
-(f.case3and4) (Edge w t)
+(elideEdge.case3and4) (Edge w t)
 ----------
 (a)
 elideEdge (case3and4 (Edge w t)
@@ -453,37 +458,39 @@ elideEdge (case3and4 (Edge w t)
 elideEdge (LEdge Case3 w (mark t)
 = {by definition of elideEdge}
 addChild w (elide(mark t))
-= {by hypothesis}
+= {by previous hypothesis}
 addChild w (waterfall t)
 
 (b) (t = Node a cs)
-f (case3and4 (Edge w t))
-f (Ledge Case4 w (mapE case3and4 t))
+ (case3and4 (Edge w t))
+= {by definition of case3and4}
+elideEdge (Ledge Case4 w (mapE case3and4 t))
+= {by definition of elideedge}
 mergeNodes (elide (mapE case3and4 t))
+= {by expanding t  as  (Node a cs) }
 mergeNodes (elide (mapE case3and4 (Node a cs)))
+= {by definition of mapE}
 mergeNodes (elide (LNode a (map case3and4 cs)))
-mergeNodes (foldr f (Node a []) (map case3and4 cs))
-mergeNodes (foldr (f.case3and4) (Node a []) cs)
+= {by definition of elide}
+mergeNodes (foldr elideEdge (Node a []) (map case3and4 cs))
+= {by the fold-map fusion law}
+mergeNodes (foldr (elideEdge.case3and4) (Node a []) cs)
 
 \end{verbatim}
 
-f.case1and2 is very similar:
+elideEdge.case1and2 is very similar:
 
 \begin{verbatim}
-f.case1and2
+elideEdge.case1and2
 (a)
-f (case1and2 (Edge w t)
-f (LEdge Case1 w (mark t))
+elideEdge (case1and2 (Edge w t)
+= {...}
 mergeNodes (elide (mark t))
 
 (b)(t = Node a cs)
-f (case1and2 (Edge w t))
-f (LEgde Case2 w (mapE case3and4 t))
-mergeNodes (elide (mapE case3and4 t))
-mergeNodes (elide (mapE case3and4 (Node a cs)))
-mergeNodes (elide (LNode a (map case3and4 cs)))
-mergeNodes (foldr f (Node a []) (map case3and4 cs))
-mergeNodes (foldr (f.case3and4) (Node a []) cs)
+elideEdge (case1and2 (Edge w t))
+= {...}
+mergeNodes (foldr (elideEdge.case3and4) (Node a []) cs)
 
 \end{verbatim}
 
@@ -493,7 +500,7 @@ This gives us the following single pass refinement.
 elideMark :: Mergeable a => Tree a -> Tree a
 elideMark (Node a []) = (Node a [])
 elideMark (Node r cs) =
-  fcase1and2 minChild (foldr fcase3and4 (Node r []) cs')
+  elideCase1and2 minChild (foldr fcase3and4 (Node r []) cs')
     where
     (minChild,cs') = findMinChild cs
 
@@ -502,8 +509,8 @@ fcase3and4 (Edge w t@(Node a cs))
   | hasChildren t && w > minVal t = addChild w (elideMark t)
   | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
 
-fcase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
-fcase1and2 (Edge w t@(Node a cs))
+elideCase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
+elideCase1and2 (Edge w t@(Node a cs))
   | hasChildren t && w > minVal t = mergeNodes (elideMark t)
   | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
 
@@ -530,15 +537,15 @@ waterfalls = takeWhile hasChildren. iterate waterfall
 waterfall :: Mergeable a => Tree a -> Tree a
 waterfall (Node a []) = (Node a [])
 waterfall (Node r (c:cs)) =
-  fcase1and2 c (foldr fcase3and4 (Node r []) cs)
+  elideCase1and2 c (foldr fcase3and4 (Node r []) cs)
 
 fcase3and4 :: Mergeable a => Edge a ->Tree a -> Tree a
 fcase3and4 (Edge w t@(Node a cs))
   | hasChildren t && w > minVal t = addChild w (waterfall t)
   | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
 
-fcase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
-fcase1and2 (Edge w t@(Node a cs))
+elideCase1and2 :: Mergeable a => Edge a ->Tree a -> Tree a
+elideCase1and2 (Edge w t@(Node a cs))
   | hasChildren t && w > minVal t = mergeNodes (waterfall t)
   | otherwise = mergeNodes (foldr fcase3and4 (Node a []) cs)
 
@@ -575,7 +582,6 @@ minVal :: Tree a  -> Int
 minVal = head.map getWeight.getEdges
 
 \end{verbatim}
-\end{verbatim}
 \begin{verbatim}
 \end{verbatim}
 
@@ -599,7 +605,9 @@ that must satisfy the following properties:
   (a_1,b_1,k) \in E\ and\ (a_2,b_2,k) \implies a_1 = a_2\ and\ b_1 =
   b_2
   \]
-This restriction @@@ provide details.
+This restriction significantly simplifies reasoning about the
+waterfall algorithm and doesn't affect the results dramatically. It is
+possible to remove this assumption and we will address it later.
 
 \end{enumerate}
 
