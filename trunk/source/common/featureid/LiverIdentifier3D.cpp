@@ -79,10 +79,10 @@ bool LiverIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperti
 {
 	int sliceCount = adjProperties.z_max() + 1 - adjProperties.z_min();
 
-	return	adjProperties.x_min() >= seedProperties.x_min() &&									// it should be no further left than the original seed
-			adjProperties.mean_grey_value() >= 150 &&											// it should have a relatively high grey value
-			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&	// it should have roughly the same grey value as the seed
-			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10;		// it should have roughly the same grey value as its generating region
+	return	adjProperties.x_min() >= seedProperties.x_min() &&										// it should be no further left than the original seed
+			150 <= adjProperties.mean_grey_value() && adjProperties.mean_grey_value() <= 190 &&		// it should have a reasonable grey value
+			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&		// it should have roughly the same grey value as the seed
+			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10;			// it should have roughly the same grey value as its generating region
 }
 
 bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const
@@ -91,10 +91,10 @@ bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchPro
 	int minVoxelsPerSlice = 800;
 	int sliceCount = properties.z_max() + 1 - properties.z_min();
 
-	return	node.layer() == 1 &&											// it should be in the lowest branch layer (higher nodes generally stretch too far)
-			properties.voxel_count() >= minVoxelsPerSlice * sliceCount &&	// it should be reasonably-sized
-			properties.mean_grey_value() >= 150 &&							// it should be reasonably bright
-			properties.x_min() < volumeSize[0]/2;							// and at least part of it should be on the left-hand side of the image
+	return	node.layer() == 1 &&															// it should be in the lowest branch layer (higher nodes generally stretch too far)
+			properties.voxel_count() >= minVoxelsPerSlice * sliceCount &&					// it should be reasonably-sized
+			150 <= properties.mean_grey_value() && properties.mean_grey_value() <= 190 &&	// it should have a reasonable grey value
+			properties.x_min() < volumeSize[0]/2;											// and at least part of it should be on the left-hand side of the image
 }
 
 bool LiverIdentifier3D::morphological_condition(const BranchProperties& properties) const
