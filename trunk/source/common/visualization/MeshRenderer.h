@@ -13,7 +13,6 @@
 
 #include <common/ogl/WrappedGL.h>
 #include <common/util/ITKImageUtil.h>
-
 #include "Mesh.h"
 
 namespace mp {
@@ -71,6 +70,9 @@ private:
 	void render_submesh_solid(const Submesh& submesh, const RGBA32& colour) const;
 	void render_submesh_wireframe(const Submesh& submesh, const RGBA32& colour) const;
 };
+
+//#################### TYPEDEFS ####################
+typedef boost::shared_ptr<MeshRenderer> MeshRenderer_Ptr;
 
 }
 

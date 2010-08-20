@@ -24,7 +24,7 @@
 #include <common/visualization/LaplacianSmoother.h>
 #include <common/visualization/MeshBuilder.h>
 #include <common/visualization/MeshDecimator.h>
-#include <common/visualization/MeshRenderer.h>
+#include <common/visualization/MeshRendererCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/dialogs/VisualizeIn3DDialog.h>
@@ -70,33 +70,6 @@ private:
 		void forest_changed()
 		{
 			multicast(boost::bind(&Listener::forest_changed, _1));
-		}
-	};
-
-	//#################### JOBS ####################
-private:
-	struct CreateMeshRendererJob : SimpleJob
-	{
-		typedef boost::shared_ptr<Mesh<int> > Mesh_Ptr;
-
-		MeshRenderer_Ptr& meshRenderer;
-		DataHook<Mesh_Ptr> meshHook;
-		std::map<int,RGBA32> submeshColourMap;
-		std::map<std::string,int> submeshNameMap;
-
-		CreateMeshRendererJob(MeshRenderer_Ptr& meshRenderer_, const DataHook<Mesh_Ptr>& meshHook_, const std::map<int,RGBA32>& submeshColourMap_, const std::map<std::string,int>& submeshNameMap_)
-		:	meshRenderer(meshRenderer_), meshHook(meshHook_), submeshColourMap(submeshColourMap_), submeshNameMap(submeshNameMap_)
-		{}
-
-		void execute_impl()
-		{
-			set_status("Creating mesh renderer...");
-			meshRenderer.reset(new MeshRenderer(meshHook.get(), submeshColourMap, submeshNameMap));
-		}
-
-		int length() const
-		{
-			return 100;		// creating the mesh renderer can take substantial time for a large mesh
 		}
 	};
 
@@ -245,9 +218,7 @@ public:
 				job->add_subjob(meshDecimator);
 			}
 
-			// Set up the CreateMeshRendererJob.
-			MeshRenderer_Ptr meshRenderer;
-
+			// Set up the mesh renderer creator.
 			std::map<Feature,RGBA32> featureColourMap = feature_colour_map<Feature>();
 			std::map<int,RGBA32> submeshColourMap;
 			submeshColourMap.insert(std::make_pair(0, ITKImageUtil::make_rgba32(255,0,0,255)));
@@ -265,10 +236,12 @@ public:
 			}
 
 			// Note: The mesh in the builder is *shared* with the smoother and decimator (if used), so this mesh hook is the right one.
-			job->add_subjob(new CreateMeshRendererJob(meshRenderer, meshBuilder->get_mesh_hook(), submeshColourMap, submeshNameMap));
+			MeshRendererCreator *meshRendererCreator = new MeshRendererCreator(meshBuilder->get_mesh_hook(), submeshColourMap, submeshNameMap);
+			job->add_subjob(meshRendererCreator);
 
 			if(execute_with_progress_dialog(job, parent, "Building 3D Model"))
 			{
+				MeshRenderer_Ptr meshRenderer = meshRendererCreator->get_mesh_renderer();
 				meshRenderer->set_submesh_enabled("Internals", false);
 				std::string caption = "MAST Visualization - " + m_dicomVolumeChoice.description() + " - Untitled";
 

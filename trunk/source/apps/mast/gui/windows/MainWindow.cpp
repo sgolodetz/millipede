@@ -10,12 +10,19 @@
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
+// FIXME: This has to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
+#include <itkImageFileReader.h>
+
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
 #include <common/io/files/DICOMDIRFile.h>
 #include <common/io/files/VolumeChoiceFile.h>
+#include <common/visualization/LaplacianSmoother.h>
+#include <common/visualization/MeshBuilder.h>
+#include <common/visualization/MeshRendererCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
+#include <mast/gui/windows/VisualizationWindow.h>
 #include <mast/gui/windows/SegmentationWindow.h>
 #include <mast/util/StringConversion.h>
 
@@ -38,6 +45,7 @@ enum
 	MENUID_FILE_EXIT,
 	MENUID_FILE_OPENDICOMDIR,
 	MENUID_FILE_OPENVOLUMECHOICE,
+	MENUID_FILE_VISUALIZESTANDALONEIMAGEIN3D,
 	MENUID_HELP_ABOUT,
 };
 
@@ -141,6 +149,8 @@ void MainWindow::setup_menus()
 #endif
 	fileMenu->Append(MENUID_FILE_OPENVOLUMECHOICE, wxT("Open Volume &Choice...\tCtrl+Alt+O"));
 	fileMenu->AppendSeparator();
+	fileMenu->Append(MENUID_FILE_VISUALIZESTANDALONEIMAGEIN3D, wxT("Visualize Standalone Image in &3D...\tCtrl+3"));
+	fileMenu->AppendSeparator();
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("&Exit\tAlt+F4"));
 
 #if NYI
@@ -218,6 +228,58 @@ void MainWindow::OnCommonOpenVolumeChoice(wxCommandEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
+void MainWindow::OnMenuFileVisualizeStandaloneImageIn3D(wxCommandEvent&)
+try
+{
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone Image", "MetaIO Image Files (*.mhd)|*.mhd");
+	if(dialog->ShowModal() != wxID_OK) return;
+
+	std::string path = wxString_to_string(dialog->GetPath());
+
+	// Load the image.
+	typedef itk::Image<int,3> Image;
+	typedef itk::ImageFileReader<Image> Reader;
+	Reader::Pointer reader = Reader::New();
+	reader->SetFileName(path);
+	reader->Update();
+	Image::Pointer image = reader->GetOutput();
+
+	// Build the mesh.
+	CompositeJob_Ptr job(new CompositeJob);
+
+	MeshBuilder<int> *builder = new MeshBuilder<int>(image->GetLargestPossibleRegion().GetSize(), image);
+	job->add_subjob(builder);
+
+	LaplacianSmoother<int> *smoother = new LaplacianSmoother<int>(0.5, 6);
+	smoother->set_mesh_hook(builder->get_mesh_hook());
+	job->add_subjob(smoother);
+
+	std::map<int,RGBA32> submeshColourMap;
+	submeshColourMap.insert(std::make_pair(0, ITKImageUtil::make_rgba32(255, 0, 0, 255)));
+	submeshColourMap.insert(std::make_pair(80, ITKImageUtil::make_rgba32(0, 255, 0, 255)));
+	submeshColourMap.insert(std::make_pair(160, ITKImageUtil::make_rgba32(0, 0, 255, 255)));
+	submeshColourMap.insert(std::make_pair(208, ITKImageUtil::make_rgba32(255, 255, 0, 255)));
+	submeshColourMap.insert(std::make_pair(255, ITKImageUtil::make_rgba32(255, 255, 255, 255)));
+	std::map<std::string,int> submeshNameMap;
+	submeshNameMap.insert(std::make_pair("Internals", 0));
+	submeshNameMap.insert(std::make_pair("Top Left", 208));
+	submeshNameMap.insert(std::make_pair("Top Right", 80));
+	submeshNameMap.insert(std::make_pair("Bottom Left", 160));
+	submeshNameMap.insert(std::make_pair("Bottom Right", 255));
+	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook(), submeshColourMap, submeshNameMap);
+	job->add_subjob(creator);
+
+	if(!execute_with_progress_dialog(job, this, "Building 3D Model")) return;
+
+	// Visualize the mesh.
+	MeshRenderer_Ptr meshRenderer = creator->get_mesh_renderer();
+	new VisualizationWindow(this, "MAST Visualization - Standalone Image", meshRenderer, Vector3d(1,1,1), NULL);
+}
+catch(std::exception& e)
+{
+	wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+}
+
 void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 {
 	std::ostringstream oss;
@@ -246,6 +308,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnCommonExit)
 	EVT_MENU(MENUID_FILE_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
 	EVT_MENU(MENUID_FILE_OPENVOLUMECHOICE, MainWindow::OnCommonOpenVolumeChoice)
+	EVT_MENU(MENUID_FILE_VISUALIZESTANDALONEIMAGEIN3D, MainWindow::OnMenuFileVisualizeStandaloneImageIn3D)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
 END_EVENT_TABLE()
 

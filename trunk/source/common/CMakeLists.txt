@@ -338,6 +338,7 @@ visualization/CubeFace.cpp
 visualization/CubeFaceDesignator.cpp
 visualization/CubeTable.cpp
 visualization/MeshRenderer.cpp
+visualization/MeshRendererCreator.cpp
 visualization/VisualizationOptions.cpp
 )
 
@@ -358,6 +359,7 @@ visualization/MeshDecimator.h
 visualization/MeshNode.h
 visualization/MeshNodeDecimator.h
 visualization/MeshRenderer.h
+visualization/MeshRendererCreator.h
 visualization/MeshTransformer.h
 visualization/MeshTriangle.h
 visualization/MeshUtil.h
