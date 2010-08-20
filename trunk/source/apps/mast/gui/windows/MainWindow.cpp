@@ -290,7 +290,8 @@ try
 
 	// Visualize the mesh.
 	MeshRenderer_Ptr meshRenderer = creator->get_mesh_renderer();
-	new VisualizationWindow(this, "MAST Visualization - Standalone Image", meshRenderer, Vector3d(1,1,1), NULL);
+	itk::Vector<double,3> spacing = initialImage->GetSpacing();
+	new VisualizationWindow(this, "MAST Visualization - Standalone Image", meshRenderer, Vector3d(spacing[0],spacing[1],spacing[2]), NULL);
 }
 catch(std::exception& e)
 {
