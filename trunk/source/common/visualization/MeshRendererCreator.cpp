@@ -8,8 +8,8 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshRendererCreator::MeshRendererCreator(const DataHook<Mesh_Ptr>& meshHook, const std::map<int,RGBA32>& submeshColourMap,
-										 const std::map<std::string,int>& submeshNameMap)
+MeshRendererCreator::MeshRendererCreator(const DataHook<Mesh_Ptr>& meshHook, const boost::optional<std::map<int,RGBA32> >& submeshColourMap,
+										 const boost::optional<std::map<std::string,int> >& submeshNameMap)
 :	m_meshHook(meshHook), m_submeshColourMap(submeshColourMap), m_submeshNameMap(submeshNameMap)
 {}
 

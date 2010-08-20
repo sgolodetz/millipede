@@ -12,9 +12,10 @@
 namespace mp {
 
 //#################### CONSTRUCTORS ####################
-MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh, const std::map<int,RGBA32>& submeshColourMap, const boost::optional<std::map<std::string,int> >& submeshNameMap)
-:	m_submeshColourMap(submeshColourMap), m_wireframeEnabled(false)
+MeshRenderer::MeshRenderer(const Mesh_CPtr& mesh, const boost::optional<std::map<int,RGBA32> >& submeshColourMap, const boost::optional<std::map<std::string,int> >& submeshNameMap)
+:	m_wireframeEnabled(false)
 {
+	if(submeshColourMap) m_submeshColourMap = *submeshColourMap;
 	if(submeshNameMap) m_submeshNameMap = *submeshNameMap;
 
 	const std::vector<MeshNodeT>& nodes = mesh->nodes();
@@ -161,10 +162,33 @@ const Vector3d& MeshRenderer::mesh_upper_bound() const
 
 void MeshRenderer::render() const
 {
+	RGBA32 defaultColours[] =
+	{
+		ITKImageUtil::make_rgba32(255, 0, 0, 255),
+		ITKImageUtil::make_rgba32(0, 255, 0, 255),
+		ITKImageUtil::make_rgba32(0, 0, 255, 255),
+		ITKImageUtil::make_rgba32(255, 255, 0, 255),
+		ITKImageUtil::make_rgba32(255, 0, 255, 255),
+		ITKImageUtil::make_rgba32(0, 255, 255, 255),
+		ITKImageUtil::make_rgba32(255, 255, 255, 255),
+	};
+
+	const int defaultColourCount = sizeof(defaultColours) / sizeof(RGBA32);
+	int currentDefaultColour = 0;
+
 	for(std::map<int,Submesh_Ptr>::const_iterator it=m_submeshes.begin(), iend=m_submeshes.end(); it!=iend; ++it)
 	{
+		RGBA32 colour;
 		std::map<int,RGBA32>::const_iterator jt = m_submeshColourMap.find(it->first);
-		RGBA32 colour = jt != m_submeshColourMap.end() ? jt->second : ITKImageUtil::make_rgba32(255,0,255,255);
+		if(jt != m_submeshColourMap.end())
+		{
+			colour = jt->second;
+		}
+		else
+		{
+			colour = defaultColours[currentDefaultColour];
+			currentDefaultColour = (currentDefaultColour + 1) % defaultColourCount;
+		}
 
 		if(it->second->enabled)
 		{

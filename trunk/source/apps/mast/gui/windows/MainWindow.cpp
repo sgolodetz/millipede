@@ -254,19 +254,7 @@ try
 	smoother->set_mesh_hook(builder->get_mesh_hook());
 	job->add_subjob(smoother);
 
-	std::map<int,RGBA32> submeshColourMap;
-	submeshColourMap.insert(std::make_pair(0, ITKImageUtil::make_rgba32(255, 0, 0, 255)));
-	submeshColourMap.insert(std::make_pair(80, ITKImageUtil::make_rgba32(0, 255, 0, 255)));
-	submeshColourMap.insert(std::make_pair(160, ITKImageUtil::make_rgba32(0, 0, 255, 255)));
-	submeshColourMap.insert(std::make_pair(208, ITKImageUtil::make_rgba32(255, 255, 0, 255)));
-	submeshColourMap.insert(std::make_pair(255, ITKImageUtil::make_rgba32(255, 255, 255, 255)));
-	std::map<std::string,int> submeshNameMap;
-	submeshNameMap.insert(std::make_pair("Internals", 0));
-	submeshNameMap.insert(std::make_pair("Top Left", 208));
-	submeshNameMap.insert(std::make_pair("Top Right", 80));
-	submeshNameMap.insert(std::make_pair("Bottom Left", 160));
-	submeshNameMap.insert(std::make_pair("Bottom Right", 255));
-	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook(), submeshColourMap, submeshNameMap);
+	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook());
 	job->add_subjob(creator);
 
 	if(!execute_with_progress_dialog(job, this, "Building 3D Model")) return;

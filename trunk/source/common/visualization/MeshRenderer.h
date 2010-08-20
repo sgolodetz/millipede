@@ -51,7 +51,7 @@ private:
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MeshRenderer(const Mesh_CPtr& mesh, const std::map<int,RGBA32>& submeshColourMap, const boost::optional<std::map<std::string,int> >& submeshNameMap = boost::none);
+	MeshRenderer(const Mesh_CPtr& mesh, const boost::optional<std::map<int,RGBA32> >& submeshColourMap = boost::none, const boost::optional<std::map<std::string,int> >& submeshNameMap = boost::none);
 
 	//#################### PUBLIC METHODS ####################
 public:

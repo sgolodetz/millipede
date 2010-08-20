@@ -22,12 +22,12 @@ private:
 private:
 	DataHook<Mesh_Ptr> m_meshHook;
 	MeshRenderer_Ptr m_meshRenderer;
-	std::map<int,RGBA32> m_submeshColourMap;
-	std::map<std::string,int> m_submeshNameMap;
+	boost::optional<std::map<int,RGBA32> > m_submeshColourMap;
+	boost::optional<std::map<std::string,int> > m_submeshNameMap;
 
 	//#################### CONSTRUCTORS ####################
 public:
-	MeshRendererCreator(const DataHook<Mesh_Ptr>& meshHook, const std::map<int,RGBA32>& submeshColourMap, const std::map<std::string,int>& submeshNameMap);
+	MeshRendererCreator(const DataHook<Mesh_Ptr>& meshHook, const boost::optional<std::map<int,RGBA32> >& submeshColourMap = boost::none, const boost::optional<std::map<std::string,int> >& submeshNameMap = boost::none);
 
 	//#################### PUBLIC METHODS ####################
 public:
