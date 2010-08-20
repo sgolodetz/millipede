@@ -256,12 +256,13 @@ try
 	reader->SetFileName(path);
 	reader->Update();
 
-	// Add a black border round it.
+	// Add a border round it.
 	Image::Pointer initialImage = reader->GetOutput();
 	itk::Size<3> size = initialImage->GetLargestPossibleRegion().GetSize();
 	for(int i=0; i<3; ++i) size[i] += 2;
 	Image::Pointer image = ITKImageUtil::make_image<int>(size);
-	image->FillBuffer(0);
+	itk::Index<3> firstPixel = {{0,0,0}};
+	image->FillBuffer(initialImage->GetPixel(firstPixel));
 	typedef itk::PasteImageFilter<Image> Paster;
 	Paster::Pointer paster = Paster::New();
 	paster->InPlaceOn();
