@@ -12,7 +12,6 @@
 
 // FIXME: These have to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
 #include <itkImageFileReader.h>
-#include <itkPasteImageFilter.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
@@ -258,22 +257,10 @@ try
 
 	// Add a border round it.
 	Image::Pointer initialImage = reader->GetOutput();
-	itk::Size<3> size = initialImage->GetLargestPossibleRegion().GetSize();
-	for(int i=0; i<3; ++i) size[i] += 2;
-	Image::Pointer image = ITKImageUtil::make_image<int>(size);
-	itk::Index<3> firstPixel = {{0,0,0}};
-	int backgroundColour = initialImage->GetPixel(firstPixel);
-	image->FillBuffer(backgroundColour);
-	typedef itk::PasteImageFilter<Image> Paster;
-	Paster::Pointer paster = Paster::New();
-	paster->InPlaceOn();
-	paster->SetSourceImage(initialImage);
-	paster->SetSourceRegion(initialImage->GetLargestPossibleRegion());
-	paster->SetDestinationImage(image);
-	itk::Index<3> oneIn = {{1,1,1}};
-	paster->SetDestinationIndex(oneIn);
-	paster->Update();
-	image = paster->GetOutput();
+	itk::Index<3> firstVoxel = {{0,0,0}};
+	int borderColour = initialImage->GetPixel(firstVoxel);
+	itk::Index<3> borderSize = {{1,1,1}};
+	Image::Pointer image = ITKImageUtil::make_bordered_image(initialImage.GetPointer(), borderColour, borderSize);
 
 	// Build the mesh.
 	CompositeJob_Ptr job(new CompositeJob);
@@ -286,8 +273,9 @@ try
 	job->add_subjob(smoother);
 
 	std::map<int,RGBA32> submeshColourMap;
-	submeshColourMap.insert(std::make_pair(backgroundColour, ITKImageUtil::make_rgba32(255, 0, 0, 255)));
+	submeshColourMap.insert(std::make_pair(borderColour, ITKImageUtil::make_rgba32(255, 0, 0, 255)));
 	std::map<std::string,int> submeshNameMap;
+	itk::Size<3> size = image->GetLargestPossibleRegion().GetSize();
 	for(unsigned int z=0; z<size[2]; ++z)
 		for(unsigned int y=0; y<size[1]; ++y)
 			for(unsigned int x=0; x<size[0]; ++x)

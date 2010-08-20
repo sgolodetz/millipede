@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <itkImageRegionIterator.h>
+#include <itkPasteImageFilter.h>
 #include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
 
@@ -52,6 +53,33 @@ template <typename ImagePointer, typename TPixel>
 void fill_image(const ImagePointer& image, const TPixel *const pixels)
 {
 	fill_image(image, pixels, *image);
+}
+
+template <typename TPixel, unsigned int Dimension>
+typename itk::Image<TPixel,Dimension>::Pointer make_bordered_image(const itk::Image<TPixel,Dimension> *source, const TPixel& borderColour,
+																   const itk::Index<Dimension>& borderSize)
+{
+	// Calculate the destination image size.
+	itk::Size<Dimension> destSize = source->GetLargestPossibleRegion().GetSize();
+	for(int i=0; i<3; ++i) destSize[i] += 2 * borderSize[i];
+
+	// Create the destination image and fill it with the border colour.
+	typedef itk::Image<TPixel,Dimension> Image;
+	typename Image::Pointer dest = make_image<TPixel,Dimension>(destSize);
+	dest->FillBuffer(borderColour);
+
+	// Paste the source image into the destination image at the correct offset.
+	typedef itk::PasteImageFilter<Image> Paster;
+	Paster::Pointer paster = Paster::New();
+	paster->InPlaceOn();
+	paster->SetSourceImage(const_cast<Image*>(source));
+	paster->SetSourceRegion(source->GetLargestPossibleRegion());
+	paster->SetDestinationImage(dest);
+	paster->SetDestinationIndex(borderSize);
+	paster->Update();
+	dest = paster->GetOutput();
+
+	return dest;
 }
 
 template <typename TPixel, unsigned int Dimension>
