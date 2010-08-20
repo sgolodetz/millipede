@@ -65,6 +65,7 @@ protected:
 	void morphologically_close_nodes(std::set<PFNodeID>& nodes, int n = 1) const;
 	void morphologically_dilate_nodes(std::set<PFNodeID>& nodes, int n = 1) const;
 	void morphologically_erode_nodes(std::set<PFNodeID>& nodes, int n = 1) const;
+	void morphologically_open_nodes(std::set<PFNodeID>& nodes, int n = 1) const;
 	VolumeIPF_Ptr volume_ipf() const;
 
 	template <typename Pred>
@@ -148,6 +149,13 @@ protected:
 				}
 			}
 		}
+	}
+
+	template <typename Condition>
+	void morphologically_open_nodes(std::set<PFNodeID>& nodes, Condition condition, int n = 1) const
+	{
+		morphologically_erode_nodes(nodes, condition, n);
+		morphologically_dilate_nodes(nodes, condition, n);
 	}
 
 	//#################### PRIVATE METHODS ####################

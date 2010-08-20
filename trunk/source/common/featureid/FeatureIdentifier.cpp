@@ -53,6 +53,11 @@ void FeatureIdentifier::morphologically_erode_nodes(std::set<PFNodeID>& nodes, i
 	morphologically_erode_nodes(nodes, boost::bind(&FeatureIdentifier::morphological_condition_accept_all, this, _1));
 }
 
+void FeatureIdentifier::morphologically_open_nodes(std::set<PFNodeID>& nodes, int n) const
+{
+	morphologically_open_nodes(nodes, boost::bind(&FeatureIdentifier::morphological_condition_accept_all, this, _1));
+}
+
 FeatureIdentifier::VolumeIPF_Ptr FeatureIdentifier::volume_ipf() const
 {
 	return m_volumeIPF;

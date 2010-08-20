@@ -60,7 +60,7 @@ void LiverIdentifier3D::execute_impl()
 	PartitionForestSelection_Ptr region = grow_regions(bestCandidateList, boost::bind(&LiverIdentifier3D::grow_condition, this, _1, _2, _3, _4, _5));
 	increment_progress();
 
-	// Step 4: Use conditional morphological operations to try and fill any holes.
+	// Step 4: Use conditional morphological closing to try and fill any holes.
 	std::set<PFNodeID> nodes(region->view_at_layer_cbegin(1), region->view_at_layer_cend(1));
 	morphologically_close_nodes(nodes, boost::bind(&LiverIdentifier3D::morphological_condition, this, _1));
 	PartitionForestSelection_Ptr filledRegion(new PartitionForestSelectionT(volume_ipf()));

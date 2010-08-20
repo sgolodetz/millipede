@@ -47,7 +47,7 @@ void SpinalCordIdentifier3D::execute_impl()
 bool SpinalCordIdentifier3D::is_spinal_cord(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const
 {
 	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(dicom_volume()->size());
-	int minVoxels = 450 * volumeSize[2];
+	int minVoxels = 400 * volumeSize[2];
 	int maxVoxels = 1000 * volumeSize[2];
 	const int X_TOLERANCE = -5;
 	const int Y_TOLERANCE = -10;
