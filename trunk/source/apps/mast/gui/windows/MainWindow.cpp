@@ -274,17 +274,16 @@ try
 
 	std::map<int,RGBA32> submeshColourMap;
 	submeshColourMap.insert(std::make_pair(borderColour, ITKImageUtil::make_rgba32(255, 0, 0, 255)));
+
 	std::map<std::string,int> submeshNameMap;
-	itk::Size<3> size = image->GetLargestPossibleRegion().GetSize();
-	for(unsigned int z=0; z<size[2]; ++z)
-		for(unsigned int y=0; y<size[1]; ++y)
-			for(unsigned int x=0; x<size[0]; ++x)
-			{
-				itk::Index<3> index = {{x,y,z}};
-				int value = image->GetPixel(index);
-				submeshNameMap[boost::lexical_cast<std::string>(value)] = value;
-			}
+	itk::ImageRegionConstIterator<Image> it(image, image->GetLargestPossibleRegion());
+	for(it.GoToBegin(); !it.IsAtEnd(); ++it)
+	{
+		int value = it.Get();
+		submeshNameMap[boost::lexical_cast<std::string>(value)] = value;
+	}
 	if(submeshNameMap.size() > 10) submeshNameMap.clear();
+
 	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook(), submeshColourMap, submeshNameMap);
 	job->add_subjob(creator);
 
