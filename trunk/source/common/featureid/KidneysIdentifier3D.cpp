@@ -44,7 +44,7 @@ void KidneysIdentifier3D::execute_impl()
 bool KidneysIdentifier3D::is_kidney(const PFNodeID& node, const BranchProperties& properties, const BranchProperties& spineProperties) const
 {
 	int minVoxelsPerSlice = 2000;
-	int maxVoxelsPerSlice = 5000;
+	int maxVoxelsPerSlice = 6000;
 	int sliceCount = properties.z_max() + 1 - properties.z_min();
 	int minVoxels = minVoxelsPerSlice * sliceCount;
 	int maxVoxels = maxVoxelsPerSlice * sliceCount;
