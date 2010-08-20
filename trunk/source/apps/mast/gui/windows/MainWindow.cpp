@@ -262,15 +262,16 @@ try
 	for(int i=0; i<3; ++i) size[i] += 2;
 	Image::Pointer image = ITKImageUtil::make_image<int>(size);
 	itk::Index<3> firstPixel = {{0,0,0}};
-	image->FillBuffer(initialImage->GetPixel(firstPixel));
+	int backgroundColour = initialImage->GetPixel(firstPixel);
+	image->FillBuffer(backgroundColour);
 	typedef itk::PasteImageFilter<Image> Paster;
 	Paster::Pointer paster = Paster::New();
 	paster->InPlaceOn();
 	paster->SetSourceImage(initialImage);
 	paster->SetSourceRegion(initialImage->GetLargestPossibleRegion());
 	paster->SetDestinationImage(image);
-	itk::Index<3> index = {{1,1,1}};
-	paster->SetDestinationIndex(index);
+	itk::Index<3> oneIn = {{1,1,1}};
+	paster->SetDestinationIndex(oneIn);
 	paster->Update();
 	image = paster->GetOutput();
 
@@ -284,7 +285,19 @@ try
 	smoother->set_mesh_hook(builder->get_mesh_hook());
 	job->add_subjob(smoother);
 
-	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook());
+	std::map<int,RGBA32> submeshColourMap;
+	submeshColourMap.insert(std::make_pair(backgroundColour, ITKImageUtil::make_rgba32(255, 0, 0, 255)));
+	std::map<std::string,int> submeshNameMap;
+	for(unsigned int z=0; z<size[2]; ++z)
+		for(unsigned int y=0; y<size[1]; ++y)
+			for(unsigned int x=0; x<size[0]; ++x)
+			{
+				itk::Index<3> index = {{x,y,z}};
+				int value = image->GetPixel(index);
+				submeshNameMap[boost::lexical_cast<std::string>(value)] = value;
+			}
+	if(submeshNameMap.size() > 10) submeshNameMap.clear();
+	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook(), submeshColourMap, submeshNameMap);
 	job->add_subjob(creator);
 
 	if(!execute_with_progress_dialog(job, this, "Building 3D Model")) return;

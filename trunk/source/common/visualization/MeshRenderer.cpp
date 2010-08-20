@@ -164,7 +164,6 @@ void MeshRenderer::render() const
 {
 	RGBA32 defaultColours[] =
 	{
-		ITKImageUtil::make_rgba32(255, 0, 0, 255),
 		ITKImageUtil::make_rgba32(0, 255, 0, 255),
 		ITKImageUtil::make_rgba32(0, 0, 255, 255),
 		ITKImageUtil::make_rgba32(255, 255, 0, 255),
