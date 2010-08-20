@@ -79,11 +79,10 @@ bool LiverIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperti
 {
 	int sliceCount = adjProperties.z_max() + 1 - adjProperties.z_min();
 
-	// FIXME: The size condition is a hack to try and prevent excessive flooding (a better approach needs to be found).
 	return	adjProperties.x_min() >= seedProperties.x_min() &&									// it should be no further left than the original seed
-			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&	// it should be roughly the same grey value as the seed
-			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10 &&		// it should be roughly the same grey value as its generating region
-			adjProperties.voxel_count() <= 150 * sliceCount;									// it shouldn't be too large
+			adjProperties.mean_grey_value() >= 150 &&											// it should have a relatively high grey value
+			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&	// it should have roughly the same grey value as the seed
+			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10;		// it should have roughly the same grey value as its generating region
 }
 
 bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const
