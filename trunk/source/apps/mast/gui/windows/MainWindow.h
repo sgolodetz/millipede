@@ -47,8 +47,8 @@ public:
 	void OnCommonOpenVolumeChoice(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-	void OnMenuFileVisualizeStandaloneImageIn3D(wxCommandEvent&);
 	void OnMenuHelpAbout(wxCommandEvent&);
+	void OnMenuToolsVisualizeStandaloneImageIn3D(wxCommandEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

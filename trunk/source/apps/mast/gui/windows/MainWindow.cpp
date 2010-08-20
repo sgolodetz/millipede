@@ -45,8 +45,8 @@ enum
 	MENUID_FILE_EXIT,
 	MENUID_FILE_OPENDICOMDIR,
 	MENUID_FILE_OPENVOLUMECHOICE,
-	MENUID_FILE_VISUALIZESTANDALONEIMAGEIN3D,
 	MENUID_HELP_ABOUT,
+	MENUID_TOOLS_VISUALIZESTANDALONEIMAGEIN3D,
 };
 
 }
@@ -149,24 +149,21 @@ void MainWindow::setup_menus()
 #endif
 	fileMenu->Append(MENUID_FILE_OPENVOLUMECHOICE, wxT("Open Volume &Choice...\tCtrl+Alt+O"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(MENUID_FILE_VISUALIZESTANDALONEIMAGEIN3D, wxT("Visualize Standalone Image in &3D...\tCtrl+3"));
-	fileMenu->AppendSeparator();
 	fileMenu->Append(MENUID_FILE_EXIT, wxT("&Exit\tAlt+F4"));
 
-#if NYI
 	wxMenu *toolsMenu = new wxMenu;
+#if NYI
 	toolsMenu->Append(wxID_ANY, wxT("&Anonymize Directory Tree...\tCtrl+A"));
 	toolsMenu->Append(wxID_ANY, wxT("&Replace Volume Choice Section...\tCtrl+R"));
 #endif
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZESTANDALONEIMAGEIN3D, wxT("Visualize Standalone Image in &3D...\tCtrl+3"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MENUID_HELP_ABOUT, wxT("&About...\tF2"));
 
 	m_menuBar = new wxMenuBar;
 	m_menuBar->Append(fileMenu, wxT("&File"));
-#if NYI
 	m_menuBar->Append(toolsMenu, wxT("&Tools"));
-#endif
 	m_menuBar->Append(helpMenu, wxT("&Help"));
 
 	SetMenuBar(m_menuBar);
@@ -228,7 +225,22 @@ void MainWindow::OnCommonOpenVolumeChoice(wxCommandEvent&)
 }
 
 //~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
-void MainWindow::OnMenuFileVisualizeStandaloneImageIn3D(wxCommandEvent&)
+void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
+{
+	std::ostringstream oss;
+	oss << "MAST (the Millipede Automatic Segmentation Tool) is a program I am developing as part of "
+		<< "my computing doctorate at Oxford University, under the watchful guidance and supervision "
+		<< "of Dr Stephen Cameron and Dr Irina Voiculescu. I am extremely grateful to both of them for "
+		<< "their help and support throughout.\n"
+		<< '\n'
+		<< "MAST is the successor application to FAST, the automatic segmentation tool which I wrote "
+		<< "to accompany my centipede image processing library.\n"
+		<< '\n'
+		<< "- Stuart Golodetz, November 2009";
+	wxMessageBox(string_to_wxString(oss.str()), wxT("About MAST"), wxOK|wxCENTRE, this);
+}
+
+void MainWindow::OnMenuToolsVisualizeStandaloneImageIn3D(wxCommandEvent&)
 try
 {
 	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone Image", "MetaIO Image Files (*.mhd)|*.mhd");
@@ -268,21 +280,6 @@ catch(std::exception& e)
 	wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
 }
 
-void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
-{
-	std::ostringstream oss;
-	oss << "MAST (the Millipede Automatic Segmentation Tool) is a program I am developing as part of "
-		<< "my computing doctorate at Oxford University, under the watchful guidance and supervision "
-		<< "of Dr Stephen Cameron and Dr Irina Voiculescu. I am extremely grateful to both of them for "
-		<< "their help and support throughout.\n"
-		<< '\n'
-		<< "MAST is the successor application to FAST, the automatic segmentation tool which I wrote "
-		<< "to accompany my centipede image processing library.\n"
-		<< '\n'
-		<< "- Stuart Golodetz, November 2009";
-	wxMessageBox(string_to_wxString(oss.str()), wxT("About MAST"), wxOK|wxCENTRE, this);
-}
-
 //#################### EVENT TABLE ####################
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	//~~~~~~~~~~~~~~~~~~~~ BUTTONS ~~~~~~~~~~~~~~~~~~~~
@@ -296,8 +293,8 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	EVT_MENU(MENUID_FILE_EXIT, MainWindow::OnCommonExit)
 	EVT_MENU(MENUID_FILE_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
 	EVT_MENU(MENUID_FILE_OPENVOLUMECHOICE, MainWindow::OnCommonOpenVolumeChoice)
-	EVT_MENU(MENUID_FILE_VISUALIZESTANDALONEIMAGEIN3D, MainWindow::OnMenuFileVisualizeStandaloneImageIn3D)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
+	EVT_MENU(MENUID_TOOLS_VISUALIZESTANDALONEIMAGEIN3D, MainWindow::OnMenuToolsVisualizeStandaloneImageIn3D)
 END_EVENT_TABLE()
 
 }
