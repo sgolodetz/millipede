@@ -10,8 +10,9 @@
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
-// FIXME: This has to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
+// FIXME: These have to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
 #include <itkImageFileReader.h>
+#include <itkPasteImageFilter.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
 #include <common/dicom/volumes/DICOMVolumeLoader.h>
@@ -254,7 +255,23 @@ try
 	Reader::Pointer reader = Reader::New();
 	reader->SetFileName(path);
 	reader->Update();
-	Image::Pointer image = reader->GetOutput();
+
+	// Add a black border round it.
+	Image::Pointer initialImage = reader->GetOutput();
+	itk::Size<3> size = initialImage->GetLargestPossibleRegion().GetSize();
+	for(int i=0; i<3; ++i) size[i] += 2;
+	Image::Pointer image = ITKImageUtil::make_image<int>(size);
+	image->FillBuffer(0);
+	typedef itk::PasteImageFilter<Image> Paster;
+	Paster::Pointer paster = Paster::New();
+	paster->InPlaceOn();
+	paster->SetSourceImage(initialImage);
+	paster->SetSourceRegion(initialImage->GetLargestPossibleRegion());
+	paster->SetDestinationImage(image);
+	itk::Index<3> index = {{1,1,1}};
+	paster->SetDestinationIndex(index);
+	paster->Update();
+	image = paster->GetOutput();
 
 	// Build the mesh.
 	CompositeJob_Ptr job(new CompositeJob);
