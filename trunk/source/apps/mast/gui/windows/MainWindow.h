@@ -48,7 +48,7 @@ public:
 
 	//~~~~~~~~~~~~~~~~~~~~ MENUS ~~~~~~~~~~~~~~~~~~~~
 	void OnMenuHelpAbout(wxCommandEvent&);
-	void OnMenuToolsVisualizeStandaloneImageIn3D(wxCommandEvent&);
+	void OnMenuToolsVisualizeStandalone3DImage(wxCommandEvent&);
 
 	//#################### EVENT TABLE ####################
 	DECLARE_EVENT_TABLE()

@@ -10,7 +10,7 @@
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
-// FIXME: These have to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
+// FIXME: ITK headers have to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
 #include <itkImageFileReader.h>
 
 #include <common/dicom/volumes/DICOMVolumeChoice.h>
@@ -46,7 +46,7 @@ enum
 	MENUID_FILE_OPENDICOMDIR,
 	MENUID_FILE_OPENVOLUMECHOICE,
 	MENUID_HELP_ABOUT,
-	MENUID_TOOLS_VISUALIZESTANDALONEIMAGEIN3D,
+	MENUID_TOOLS_VISUALIZESTANDALONE3DIMAGE,
 };
 
 }
@@ -156,7 +156,7 @@ void MainWindow::setup_menus()
 	toolsMenu->Append(wxID_ANY, wxT("&Anonymize Directory Tree...\tCtrl+A"));
 	toolsMenu->Append(wxID_ANY, wxT("&Replace Volume Choice Section...\tCtrl+R"));
 #endif
-	toolsMenu->Append(MENUID_TOOLS_VISUALIZESTANDALONEIMAGEIN3D, wxT("Visualize Standalone Image in &3D...\tCtrl+3"));
+	toolsMenu->Append(MENUID_TOOLS_VISUALIZESTANDALONE3DIMAGE, wxT("Visualize Standalone &3D Image...\tCtrl+3"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MENUID_HELP_ABOUT, wxT("&About...\tF2"));
@@ -240,7 +240,7 @@ void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 	wxMessageBox(string_to_wxString(oss.str()), wxT("About MAST"), wxOK|wxCENTRE, this);
 }
 
-void MainWindow::OnMenuToolsVisualizeStandaloneImageIn3D(wxCommandEvent&)
+void MainWindow::OnMenuToolsVisualizeStandalone3DImage(wxCommandEvent&)
 try
 {
 	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone Image", "MetaIO Image Files (*.mhd)|*.mhd");
@@ -282,7 +282,8 @@ try
 		int value = it.Get();
 		submeshNameMap[boost::lexical_cast<std::string>(value)] = value;
 	}
-	if(submeshNameMap.size() > 10) submeshNameMap.clear();
+	const int MAX_SUBMESH_NAMES = 10;	// an conservative estimate of the number of submesh names that can fit in the visualization window
+	if(submeshNameMap.size() > MAX_SUBMESH_NAMES) submeshNameMap.clear();
 
 	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook(), submeshColourMap, submeshNameMap);
 	job->add_subjob(creator);
@@ -313,7 +314,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	EVT_MENU(MENUID_FILE_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
 	EVT_MENU(MENUID_FILE_OPENVOLUMECHOICE, MainWindow::OnCommonOpenVolumeChoice)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
-	EVT_MENU(MENUID_TOOLS_VISUALIZESTANDALONEIMAGEIN3D, MainWindow::OnMenuToolsVisualizeStandaloneImageIn3D)
+	EVT_MENU(MENUID_TOOLS_VISUALIZESTANDALONE3DIMAGE, MainWindow::OnMenuToolsVisualizeStandalone3DImage)
 END_EVENT_TABLE()
 
 }
