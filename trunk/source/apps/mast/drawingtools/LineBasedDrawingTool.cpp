@@ -24,7 +24,7 @@ bool LineBasedDrawingTool::has_started() const
 
 void LineBasedDrawingTool::render() const
 {
-	glColor3d(1.0, 1.0, 1.0);
+	glColor3d(0.0, 1.0, 0.0);
 	glBegin(GL_LINE_STRIP);
 		for(std::list<std::pair<Vector2i,Vector2i> >::const_iterator it=m_drawnLocations.begin(), iend=m_drawnLocations.end(); it!=iend; ++it)
 		{
