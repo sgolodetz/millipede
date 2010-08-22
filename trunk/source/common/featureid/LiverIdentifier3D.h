@@ -25,7 +25,7 @@ public:
 private:
 	void execute_impl();
 	bool grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties, const BranchProperties& seedProperties, const BranchProperties& overallProperties) const;
-	bool is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const;
+	bool is_candidate(const PFNodeID& node, const BranchProperties& properties) const;
 	bool morphological_condition(const BranchProperties& properties) const;
 };
 

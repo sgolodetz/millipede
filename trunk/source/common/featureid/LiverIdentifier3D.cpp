@@ -33,7 +33,7 @@ void LiverIdentifier3D::execute_impl()
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
 
 	// Step 1: Filter for the liver candidates.
-	std::list<PFNodeID> candidates = filter_branch_nodes(boost::bind(&LiverIdentifier3D::is_liver_candidate, this, _1, _2));
+	std::list<PFNodeID> candidates = filter_branch_nodes(boost::bind(&LiverIdentifier3D::is_candidate, this, _1, _2));
 	increment_progress();
 
 	// Step 2: Pick the best candidate (namely, the one which stretches furthest to the left of the image).
@@ -85,7 +85,7 @@ bool LiverIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperti
 			fabs(adjProperties.mean_grey_value() - curProperties.mean_grey_value()) < 10;			// it should have roughly the same grey value as its generating region
 }
 
-bool LiverIdentifier3D::is_liver_candidate(const PFNodeID& node, const BranchProperties& properties) const
+bool LiverIdentifier3D::is_candidate(const PFNodeID& node, const BranchProperties& properties) const
 {
 	itk::Index<3> volumeSize = ITKImageUtil::make_index_from_size(dicom_volume()->size());
 	int minVoxelsPerSlice = 800;

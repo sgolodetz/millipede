@@ -35,6 +35,7 @@ protected:
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 	typedef PartitionForestSelection<LeafLayer,BranchLayer> PartitionForestSelectionT;
 	typedef boost::shared_ptr<PartitionForestSelectionT> PartitionForestSelection_Ptr;
+	typedef boost::shared_ptr<const PartitionForestSelectionT> PartitionForestSelection_CPtr;
 	typedef VolumeIPFMultiFeatureSelection<LeafLayer,BranchLayer,Feature> VolumeIPFMultiFeatureSelectionT;
 	typedef boost::shared_ptr<VolumeIPFMultiFeatureSelectionT> VolumeIPFMultiFeatureSelection_Ptr;
 
@@ -61,7 +62,9 @@ public:
 
 	//#################### PROTECTED METHODS ####################
 protected:
+	BranchProperties calculate_component_properties(int layer, const std::set<int>& indices) const;
 	DICOMVolume_CPtr dicom_volume() const;
+	static std::pair<int,std::set<int> > extract_merge_layer_indices(const PartitionForestSelection_CPtr& selection, int viewLayer);
 	void morphologically_close_nodes(std::set<PFNodeID>& nodes, int n = 1) const;
 	void morphologically_dilate_nodes(std::set<PFNodeID>& nodes, int n = 1) const;
 	void morphologically_erode_nodes(std::set<PFNodeID>& nodes, int n = 1) const;

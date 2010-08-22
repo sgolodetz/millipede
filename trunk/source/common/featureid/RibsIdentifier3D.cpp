@@ -72,13 +72,9 @@ RibsIdentifier3D::PartitionForestSelection_Ptr RibsIdentifier3D::postprocess_reg
 	PartitionForestSelection_Ptr finalRegions(new PartitionForestSelectionT(volume_ipf()));
 
 	// Step 1: Build the set of preliminary regions at the level of their merge layer.
-	int mergeLayer = preliminaryRegions->merge_layer(volume_ipf()->highest_layer());
+	int mergeLayer;
 	std::set<int> indices;
-	typedef PartitionForestSelectionT::ViewNodeConstIterator Iter;
-	for(Iter it=preliminaryRegions->view_at_layer_cbegin(mergeLayer), iend=preliminaryRegions->view_at_layer_cend(mergeLayer); it!=iend; ++it)
-	{
-		indices.insert(it->index());
-	}
+	boost::tie(mergeLayer, indices) = extract_merge_layer_indices(preliminaryRegions, volume_ipf()->highest_layer());
 
 	// Step 2: Remove any darker regions.
 	for(std::set<int>::iterator it=indices.begin(), iend=indices.end(); it!=iend;)
@@ -98,14 +94,7 @@ RibsIdentifier3D::PartitionForestSelection_Ptr RibsIdentifier3D::postprocess_reg
 	for(std::vector<std::set<int> >::iterator it=connectedComponents.begin(), iend=connectedComponents.end(); it!=iend; ++it)
 	{
 		// Calculate the properties of the connected component.
-		std::vector<BranchProperties> nodeProperties;
-		nodeProperties.reserve(it->size());
-		for(std::set<int>::const_iterator jt=it->begin(), jend=it->end(); jt!=jend; ++jt)
-		{
-			PFNodeID node(mergeLayer, *jt);
-			nodeProperties.push_back(volume_ipf()->branch_properties(node));
-		}
-		BranchProperties componentProperties = BranchProperties::combine_branch_properties(nodeProperties);
+		BranchProperties componentProperties = calculate_component_properties(mergeLayer, *it);
 
 		// Decide whether or not to discard the connected component.
 		int sliceCount = componentProperties.z_max() + 1 - componentProperties.z_min();

@@ -33,9 +33,38 @@ void FeatureIdentifier::set_mfs_hook(const DataHook<VolumeIPFMultiFeatureSelecti
 }
 
 //#################### PROTECTED METHODS ####################
+FeatureIdentifier::BranchProperties FeatureIdentifier::calculate_component_properties(int layer, const std::set<int>& indices) const
+{
+	std::vector<BranchProperties> nodeProperties;
+	nodeProperties.reserve(indices.size());
+	for(std::set<int>::const_iterator it=indices.begin(), iend=indices.end(); it!=iend; ++it)
+	{
+		PFNodeID node(layer, *it);
+		nodeProperties.push_back(volume_ipf()->branch_properties(node));
+	}
+	return BranchProperties::combine_branch_properties(nodeProperties);
+}
+
 DICOMVolume_CPtr FeatureIdentifier::dicom_volume() const
 {
 	return m_dicomVolume;
+}
+
+std::pair<int,std::set<int> > FeatureIdentifier::extract_merge_layer_indices(const PartitionForestSelection_CPtr& selection, int viewLayer)
+{
+	std::pair<int,std::set<int> > ret;
+	int& mergeLayer = ret.first;
+	std::set<int>& indices = ret.second;
+
+	mergeLayer = selection->merge_layer(viewLayer);
+
+	typedef PartitionForestSelectionT::ViewNodeConstIterator Iter;
+	for(Iter it=selection->view_at_layer_cbegin(mergeLayer), iend=selection->view_at_layer_cend(mergeLayer); it!=iend; ++it)
+	{
+		indices.insert(it->index());
+	}
+
+	return ret;
 }
 
 void FeatureIdentifier::morphologically_close_nodes(std::set<PFNodeID>& nodes, int n) const

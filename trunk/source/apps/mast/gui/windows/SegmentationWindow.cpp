@@ -246,7 +246,7 @@ void SegmentationWindow::setup_menus()
 	featuresMenu->AppendSeparator();
 	wxMenu *autoIdentifyMenu = new wxMenu;
 	featuresMenu->AppendSubMenu(autoIdentifyMenu, wxT("&Automatically Identify Features"));
-		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, wxT("Using Multi-Feature 3D &Identifier\tAlt+Shift+I"));
+		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, wxT("Using Multi-Feature 3D &Identifier\tCtrl+I"));
 		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, wxT("Using &Spine 3D Identifier\tAlt+Shift+S"));
 #if NYI
 		autoIdentifyMenu->Append(wxID_ANY, wxT("&Using Script..."));
