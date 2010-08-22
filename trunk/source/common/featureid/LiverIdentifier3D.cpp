@@ -77,8 +77,6 @@ void LiverIdentifier3D::execute_impl()
 bool LiverIdentifier3D::grow_condition(const PFNodeID& adj, const BranchProperties& adjProperties, const BranchProperties& curProperties,
 									   const BranchProperties& seedProperties, const BranchProperties& overallProperties) const
 {
-	int sliceCount = adjProperties.z_max() + 1 - adjProperties.z_min();
-
 	return	adjProperties.x_min() >= seedProperties.x_min() &&										// it should be no further left than the original seed
 			150 <= adjProperties.mean_grey_value() && adjProperties.mean_grey_value() <= 190 &&		// it should have a reasonable grey value
 			fabs(adjProperties.mean_grey_value() - seedProperties.mean_grey_value()) < 15 &&		// it should have roughly the same grey value as the seed

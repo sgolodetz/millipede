@@ -56,33 +56,6 @@ void fill_image(const ImagePointer& image, const TPixel *const pixels)
 }
 
 template <typename TPixel, unsigned int Dimension>
-typename itk::Image<TPixel,Dimension>::Pointer make_bordered_image(const itk::Image<TPixel,Dimension> *source, const TPixel& borderColour,
-																   const itk::Index<Dimension>& borderSize)
-{
-	// Calculate the destination image size.
-	itk::Size<Dimension> destSize = source->GetLargestPossibleRegion().GetSize();
-	for(int i=0; i<3; ++i) destSize[i] += 2 * borderSize[i];
-
-	// Create the destination image and fill it with the border colour.
-	typedef itk::Image<TPixel,Dimension> Image;
-	typename Image::Pointer dest = make_image<TPixel,Dimension>(destSize);
-	dest->FillBuffer(borderColour);
-
-	// Paste the source image into the destination image at the correct offset.
-	typedef itk::PasteImageFilter<Image> Paster;
-	Paster::Pointer paster = Paster::New();
-	paster->InPlaceOn();
-	paster->SetSourceImage(const_cast<Image*>(source));
-	paster->SetSourceRegion(source->GetLargestPossibleRegion());
-	paster->SetDestinationImage(dest);
-	paster->SetDestinationIndex(borderSize);
-	paster->Update();
-	dest = paster->GetOutput();
-
-	return dest;
-}
-
-template <typename TPixel, unsigned int Dimension>
 typename itk::Image<TPixel,Dimension>::Pointer make_image(const itk::Size<Dimension>& size)
 {
 	typedef itk::Image<TPixel,Dimension> Image;
@@ -109,6 +82,33 @@ typename itk::Image<TPixel,3>::Pointer make_image(int sizeX, int sizeY, int size
 {
 	itk::Size<3> size = {{sizeX, sizeY, sizeZ}};
 	return make_image<TPixel,3>(size);
+}
+
+template <typename TPixel, unsigned int Dimension>
+typename itk::Image<TPixel,Dimension>::Pointer make_bordered_image(const itk::Image<TPixel,Dimension> *source, const TPixel& borderColour,
+																   const itk::Index<Dimension>& borderSize)
+{
+	// Calculate the destination image size.
+	itk::Size<Dimension> destSize = source->GetLargestPossibleRegion().GetSize();
+	for(int i=0; i<3; ++i) destSize[i] += 2 * borderSize[i];
+
+	// Create the destination image and fill it with the border colour.
+	typedef itk::Image<TPixel,Dimension> Image;
+	typename Image::Pointer dest = make_image<TPixel,Dimension>(destSize);
+	dest->FillBuffer(borderColour);
+
+	// Paste the source image into the destination image at the correct offset.
+	typedef itk::PasteImageFilter<Image> Paster;
+	typename Paster::Pointer paster = Paster::New();
+	paster->InPlaceOn();
+	paster->SetSourceImage(const_cast<Image*>(source));
+	paster->SetSourceRegion(source->GetLargestPossibleRegion());
+	paster->SetDestinationImage(dest);
+	paster->SetDestinationIndex(borderSize);
+	paster->Update();
+	dest = paster->GetOutput();
+
+	return dest;
 }
 
 template <typename TPixel, unsigned int Dimension>

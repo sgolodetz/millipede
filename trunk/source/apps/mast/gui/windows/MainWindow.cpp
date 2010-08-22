@@ -282,7 +282,7 @@ try
 		int value = it.Get();
 		submeshNameMap[boost::lexical_cast<std::string>(value)] = value;
 	}
-	const int MAX_SUBMESH_NAMES = 10;	// an conservative estimate of the number of submesh names that can fit in the visualization window
+	const size_t MAX_SUBMESH_NAMES = 10;		// an conservative estimate of the number of submesh names that can fit in the visualization window
 	if(submeshNameMap.size() > MAX_SUBMESH_NAMES) submeshNameMap.clear();
 
 	MeshRendererCreator *creator = new MeshRendererCreator(builder->get_mesh_hook(), submeshColourMap, submeshNameMap);
