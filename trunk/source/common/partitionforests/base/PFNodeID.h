@@ -20,6 +20,9 @@ forest. The index component of the pair simply specifies the node's index within
 */
 class PFNodeID
 {
+	//#################### FRIENDS ####################
+	friend std::istream& operator>>(std::istream& is, PFNodeID& rhs);
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	// Note:	Partition forests are shallow data structures - they will never have > 127 layers (so a larger type would be wasteful).
@@ -96,6 +99,7 @@ public:
 };
 
 //#################### GLOBAL OPERATORS ####################
+std::istream& operator>>(std::istream& is, PFNodeID& rhs);
 std::ostream& operator<<(std::ostream& os, const PFNodeID& rhs);
 
 }
