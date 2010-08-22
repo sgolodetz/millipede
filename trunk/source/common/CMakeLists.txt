@@ -93,6 +93,7 @@ featureid/MultiFeatureIdentifier3D.cpp
 featureid/RibsIdentifier3D.cpp
 featureid/SpinalCordIdentifier3D.cpp
 featureid/SpineIdentifier3D.cpp
+featureid/SpleenIdentifier3D.cpp
 )
 
 SET(featureid_headers
@@ -104,6 +105,7 @@ featureid/MultiFeatureIdentifier3D.h
 featureid/RibsIdentifier3D.h
 featureid/SpinalCordIdentifier3D.h
 featureid/SpineIdentifier3D.h
+featureid/SpleenIdentifier3D.h
 )
 
 ##
