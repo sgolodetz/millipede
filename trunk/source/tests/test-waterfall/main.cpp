@@ -655,20 +655,20 @@ try
 	//marcotegui_test();
 	//real_image_test<NichollsWaterfallPass>("../resources/test.bmp", "../resources/test-partition*.bmp");
 
-	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition*G.png");
-	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition*M.png");
-	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition*NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition*NT.png");
+	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
+	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition-*-M.png");
+	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NC.png", NichollsWaterfallPass<int>(true));
+	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NT.png");
 
-	real_image_test<GolodetzWaterfallPass>("lena.png", "lena-partition*G.png");
-	real_image_test<MarcoteguiWaterfallPass>("lena.png", "lena-partition*M.png");
-	real_image_test<NichollsWaterfallPass>("lena.png", "lena-partition*NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("lena.png", "lena-partition*NT.png");
+	real_image_test<GolodetzWaterfallPass>("lena.png", "lena-partition-*-G.png");
+	real_image_test<MarcoteguiWaterfallPass>("lena.png", "lena-partition-*-M.png");
+	real_image_test<NichollsWaterfallPass>("lena.png", "lena-partition-*-NC.png", NichollsWaterfallPass<int>(true));
+	real_image_test<NichollsWaterfallPass>("lena.png", "lena-partition-*-NT.png");
 
-	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition*G.png");
-	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition*M.png");
-	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition*NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition*NT.png");
+	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition-*-G.png");
+	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition-*-M.png");
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NC.png", NichollsWaterfallPass<int>(true));
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");
 
 	return 0;
 }

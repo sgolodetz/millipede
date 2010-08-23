@@ -51,6 +51,7 @@ INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
 
 SET(resources
 baboon.png
+compare_all.bat
 lena.png
 pepper.png
 test.bmp
