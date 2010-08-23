@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
@@ -121,7 +123,7 @@ make_mosaic_image_with_boundaries(const boost::shared_ptr<const PartitionForest<
 	return mosaicImage;
 }
 
-void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int height)
+void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int height, std::string outputSpecifier)
 {
 	typedef itk::Image<unsigned char,2> Image;
 	Image::Pointer image = layerIndex > 0 ?
@@ -131,7 +133,8 @@ void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int heig
 	typedef itk::ImageFileWriter<Image> Writer;
 	Writer::Pointer writer = Writer::New();
 	writer->SetInput(image);
-	writer->SetFileName(OSSWrapper() << "../resources/partition" << layerIndex << ".bmp");
+	boost::replace_all(outputSpecifier, "*", boost::lexical_cast<std::string>(layerIndex));
+	writer->SetFileName("../resources/" + outputSpecifier);
 	writer->Update();
 }
 
@@ -552,15 +555,17 @@ void marcotegui_test()
 	std::cout << '\n';
 }
 
-void real_image_test()
+template <template <typename> class WaterfallPassType>
+void real_image_test(const std::string& filename, const std::string& outputSpecifier,
+					 WaterfallPassType<int> pass = WaterfallPassType<int>())
 {
 	typedef itk::Image<unsigned char,2> UCImage;
 	typedef itk::ImageFileReader<UCImage> UCReader;
 
 	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
-	std::cout << "Loading input image...\n";
+	std::cout << "Loading input image ../resources/" << filename << "...\n";
 	UCReader::Pointer reader = UCReader::New();
-	reader->SetFileName("../resources/test.bmp");
+	reader->SetFileName("../resources/" + filename);
 	reader->Update();
 	UCImage::Pointer windowedImage = reader->GetOutput();
 
@@ -614,8 +619,7 @@ void real_image_test()
 	std::cout << "Creating rooted MST...\n";
 	RootedMST<int> mst(*lowestBranchLayer);
 
-	// Iteratively run a Nicholls waterfall pass on the MST until the forest is built.
-	NichollsWaterfallPass<int> pass;
+	// Iteratively run a waterfall pass on the MST until the forest is built.
 	boost::shared_ptr<IPFConstructionListener> listener(new IPFConstructionListener(ipf));
 	pass.add_shared_listener(listener);
 	while(mst.node_count() != 1)
@@ -632,7 +636,7 @@ void real_image_test()
 	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 	for(int i=0; i<=ipf->highest_layer(); ++i)
 	{
-		output_mosaic_image(ipf, i, imageSize[0], imageSize[1]);
+		output_mosaic_image(ipf, i, imageSize[0], imageSize[1], outputSpecifier);
 	}
 }
 
@@ -647,9 +651,25 @@ try
 	//golodetz_test_G();
 	//golodetz_test_H();
 	//golodetz_test_J();
-	large_test();
+	//large_test();
 	//marcotegui_test();
-	//real_image_test();
+	//real_image_test<NichollsWaterfallPass>("../resources/test.bmp", "../resources/test-partition*.bmp");
+
+	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition*G.png");
+	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition*M.png");
+	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition*NC.png", NichollsWaterfallPass<int>(true));
+	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition*NT.png");
+
+	real_image_test<GolodetzWaterfallPass>("lena.png", "lena-partition*G.png");
+	real_image_test<MarcoteguiWaterfallPass>("lena.png", "lena-partition*M.png");
+	real_image_test<NichollsWaterfallPass>("lena.png", "lena-partition*NC.png", NichollsWaterfallPass<int>(true));
+	real_image_test<NichollsWaterfallPass>("lena.png", "lena-partition*NT.png");
+
+	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition*G.png");
+	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition*M.png");
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition*NC.png", NichollsWaterfallPass<int>(true));
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition*NT.png");
+
 	return 0;
 }
 catch(std::exception& e)

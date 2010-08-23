@@ -49,7 +49,12 @@ INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
 # Specify resource files #
 ##########################
 
-SET(resources test.bmp)
+SET(resources
+baboon.png
+lena.png
+pepper.png
+test.bmp
+)
 
 #########################################
 # Copy resource files to the build tree #
