@@ -113,11 +113,18 @@ make_mosaic_image_with_boundaries(const boost::shared_ptr<const PartitionForest<
 			}
 		}
 
+#if 1
+		// Version which fills the mosaic regions with their mean grey values.
 		unsigned char mosaicValue;
 		if(regionBoundary)		mosaicValue = std::numeric_limits<unsigned char>::max();
 		else if(layerIndex > 0)	mosaicValue = static_cast<unsigned char>(ipf->branch_properties(it.GetCenterPixel()).mean_grey_value());
 		else					mosaicValue = ipf->leaf_properties(it.GetCenterPixel().index()).grey_value();
 		mosaicImage->SetPixel(it.GetIndex(), mosaicValue);
+#else
+		// Version which fills the mosaic regions with black (thereby just showing the mosaic borders).
+		if(regionBoundary)	mosaicImage->SetPixel(it.GetIndex(), std::numeric_limits<unsigned char>::max());
+		else				mosaicImage->SetPixel(it.GetIndex(), 0);
+#endif
 	}
 
 	return mosaicImage;
