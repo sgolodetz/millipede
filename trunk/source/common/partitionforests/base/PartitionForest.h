@@ -187,7 +187,7 @@ private:
 			if(m_splitGroups.empty())
 			{
 				// Construct the split groups for a later undo operation.
-				int layerIndex = m_nodes.begin()->layer();	// note that m_nodes is non-empty (see checks above)
+				int layerIndex = m_nodes.begin()->layer();	// note that m_nodes is non-empty (see the checks made prior to creating the command)
 				BranchLayer_Ptr layer = m_base->branch_layer(layerIndex);
 				for(std::set<PFNodeID>::const_iterator it=m_nodes.begin(), iend=m_nodes.end(); it!=iend; ++it)
 				{
