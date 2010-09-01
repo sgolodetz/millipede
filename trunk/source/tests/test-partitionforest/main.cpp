@@ -28,6 +28,7 @@ enum SimpleFeature
 typedef PartitionForest<SimpleImageLeafLayer, SimpleImageBranchLayer> IPF;
 typedef PartitionForestSelection<SimpleImageLeafLayer, SimpleImageBranchLayer> Selection;
 typedef PartitionForestMultiFeatureSelection<SimpleImageLeafLayer, SimpleImageBranchLayer, SimpleFeature> MFS;
+typedef PartitionForestGraphvizOutputter<SimpleImageLeafLayer,SimpleImageBranchLayer,SimpleFeature> GVO;
 
 typedef boost::shared_ptr<IPF> IPF_Ptr;
 typedef boost::shared_ptr<Selection> Selection_Ptr;
@@ -341,7 +342,6 @@ void graphviz_test()
 	selection->set_command_manager(manager);
 	ipf->add_weak_listener(selection);
 
-	typedef PartitionForestGraphvizOutputter<SimpleImageLeafLayer,SimpleImageBranchLayer,SimpleFeature> GVO;
 #if 1
 	boost::shared_ptr<GVO::StreamController> streamController(new GVO::StdOutputStreamController);
 #else
@@ -356,6 +356,62 @@ void graphviz_test()
 
 	gvo->output("Initial forest");
 	ipf->unzip_node(PFNodeID(0,1), ipf->highest_layer());
+}
+
+void graphviz_thesis_layercloning()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-layercloning", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf));
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	ipf->clone_layer(2);
+}
+
+void graphviz_thesis_layerdeletion()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-layerdeletion", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf));
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	ipf->delete_layer(1);
+}
+
+void graphviz_thesis_nodesplitting()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-nodesplitting", 'a'));
+	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+
+	std::vector<std::set<int> > groups(2);
+	groups[0].insert(0);
+	groups[0].insert(3);
+	groups[1].insert(1);
+	groups[1].insert(4);
+	ipf->split_node(PFNodeID(1,0), groups);
+}
+
+void graphviz_thesis_siblingnodemerging()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-siblingnodemerging", 'a'));
+	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+
+	std::set<PFNodeID> mergees;
+	mergees.insert(PFNodeID(2,0));
+	mergees.insert(PFNodeID(2,6));
+	ipf->merge_sibling_nodes(mergees);
 }
 
 void listener_test()
@@ -574,7 +630,11 @@ void unzip_zip_test()
 int main()
 {
 	//feature_selection_test();
-	graphviz_test();
+	//graphviz_test();
+	graphviz_thesis_layercloning();
+	graphviz_thesis_layerdeletion();
+	graphviz_thesis_nodesplitting();
+	graphviz_thesis_siblingnodemerging();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();

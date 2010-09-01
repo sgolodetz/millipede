@@ -43,8 +43,23 @@ INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
 
 TARGET_LINK_LIBRARIES(${targetname} common)
 
+##########################
+# Specify resource files #
+##########################
+
+SET(resources build-graphs.bat)
+
+#########################################
+# Copy resource files to the build tree #
+#########################################
+
+FOREACH(resource ${resources})
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
+ENDFOREACH(resource)
+
 #############################
 # Specify things to install #
 #############################
 
 INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
+INSTALL(FILES ${resources} DESTINATION bin/tests/${targetname}/resources)
