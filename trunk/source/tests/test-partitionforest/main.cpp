@@ -414,6 +414,19 @@ void graphviz_thesis_siblingnodemerging()
 	ipf->merge_sibling_nodes(mergees);
 }
 
+void graphviz_thesis_unzipping()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-unzipping", 'a'));
+	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
+	gvo->set_depth_interest(1);
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	ipf->unzip_node(PFNodeID(0,5), 3);
+}
+
 void listener_test()
 {
 	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
@@ -635,6 +648,7 @@ int main()
 	graphviz_thesis_layerdeletion();
 	graphviz_thesis_nodesplitting();
 	graphviz_thesis_siblingnodemerging();
+	graphviz_thesis_unzipping();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
