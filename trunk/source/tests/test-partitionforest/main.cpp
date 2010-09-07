@@ -427,6 +427,33 @@ void graphviz_thesis_unzipping()
 	ipf->unzip_node(PFNodeID(0,5), 3);
 }
 
+void graphviz_thesis_zipping()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	ipf->unzip_node(PFNodeID(0,5), 3);
+
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-zipping", 'a'));
+	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
+	gvo->set_depth_interest(1);
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+
+	std::vector<IPF::Chain> chains(4);
+	chains[0].push_back(PFNodeID(3,0));
+	chains[0].push_back(PFNodeID(2,6));
+	chains[0].push_back(PFNodeID(1,6));
+	chains[1].push_back(PFNodeID(3,2));
+	chains[1].push_back(PFNodeID(2,2));
+	chains[2].push_back(PFNodeID(3,5));
+	chains[2].push_back(PFNodeID(2,5));
+	chains[3].push_back(PFNodeID(3,8));
+	chains[3].push_back(PFNodeID(2,8));
+	chains[3].push_back(PFNodeID(1,8));
+	ipf->zip_chains(chains);
+}
+
 void listener_test()
 {
 	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
@@ -644,11 +671,12 @@ int main()
 {
 	//feature_selection_test();
 	//graphviz_test();
-	graphviz_thesis_layercloning();
-	graphviz_thesis_layerdeletion();
-	graphviz_thesis_nodesplitting();
-	graphviz_thesis_siblingnodemerging();
-	graphviz_thesis_unzipping();
+	//graphviz_thesis_layercloning();
+	//graphviz_thesis_layerdeletion();
+	//graphviz_thesis_nodesplitting();
+	//graphviz_thesis_siblingnodemerging();
+	//graphviz_thesis_unzipping();
+	graphviz_thesis_zipping();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
