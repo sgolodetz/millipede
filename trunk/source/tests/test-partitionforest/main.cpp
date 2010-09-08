@@ -312,6 +312,39 @@ IPF_Ptr default_ipf(const ICommandManager_Ptr& manager)
 	return ipf;
 }
 
+IPF_Ptr other_ipf(const ICommandManager_Ptr& manager)
+{
+	// Construct the forest.
+	SimplePixelProperties arr[] = {0,1,2,3,4,5,6,7,8};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 3, 3));
+
+	IPF_Ptr ipf(new IPF(leafLayer));
+
+	std::set<PFNodeID> mergees;
+
+	ipf->clone_layer(0);
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+		mergees.insert(PFNodeID(1,3));	mergees.insert(PFNodeID(1,4));	mergees.insert(PFNodeID(1,5));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+		mergees.insert(PFNodeID(1,6));	mergees.insert(PFNodeID(1,7));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(1);
+		mergees.insert(PFNodeID(2,2));	mergees.insert(PFNodeID(2,3));	mergees.insert(PFNodeID(2,8));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(2);
+		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,2));	mergees.insert(PFNodeID(3,6));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	// Make future forest operations undoable.
+	ipf->set_command_manager(manager);
+
+	return ipf;
+}
+
 //#################### TESTS ####################
 void feature_selection_test()
 {
@@ -396,6 +429,24 @@ void graphviz_thesis_nodesplitting()
 	groups[1].insert(1);
 	groups[1].insert(4);
 	ipf->split_node(PFNodeID(1,0), groups);
+}
+
+void graphviz_thesis_nonsiblingnodemerging()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = other_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-nonsiblingnodemerging", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf));
+	gvo->set_depth_interest(1);
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+
+	std::set<PFNodeID> mergees;
+	mergees.insert(PFNodeID(1,0));
+	mergees.insert(PFNodeID(1,2));
+	mergees.insert(PFNodeID(1,6));
+	mergees.insert(PFNodeID(1,8));
+	ipf->merge_nonsibling_nodes(mergees);
 }
 
 void graphviz_thesis_siblingnodemerging()
@@ -674,9 +725,10 @@ int main()
 	//graphviz_thesis_layercloning();
 	//graphviz_thesis_layerdeletion();
 	//graphviz_thesis_nodesplitting();
+	graphviz_thesis_nonsiblingnodemerging();
 	//graphviz_thesis_siblingnodemerging();
 	//graphviz_thesis_unzipping();
-	graphviz_thesis_zipping();
+	//graphviz_thesis_zipping();
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
