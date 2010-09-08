@@ -449,6 +449,19 @@ void graphviz_thesis_nonsiblingnodemerging()
 	ipf->merge_nonsibling_nodes(mergees);
 }
 
+void graphviz_thesis_parentswitching()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = other_ipf(manager);
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-parentswitch", 'a'));
+	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
+	gvo->set_depth_interest(1);
+	ipf->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	ipf->parent_switch(PFNodeID(0,4), 0);
+}
+
 void graphviz_thesis_siblingnodemerging()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
@@ -725,7 +738,8 @@ int main()
 	//graphviz_thesis_layercloning();
 	//graphviz_thesis_layerdeletion();
 	//graphviz_thesis_nodesplitting();
-	graphviz_thesis_nonsiblingnodemerging();
+	//graphviz_thesis_nonsiblingnodemerging();
+	graphviz_thesis_parentswitching();
 	//graphviz_thesis_siblingnodemerging();
 	//graphviz_thesis_unzipping();
 	//graphviz_thesis_zipping();
