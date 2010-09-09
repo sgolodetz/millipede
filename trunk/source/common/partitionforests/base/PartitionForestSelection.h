@@ -417,6 +417,11 @@ public:
 		m_listeners->selection_changed(0);
 	}
 
+	void layer_was_deleted(int index)
+	{
+		m_listeners->selection_changed(0);
+	}
+
 	void layer_was_undeleted(int index)
 	{
 		// Re-add the layer itself.
@@ -450,8 +455,6 @@ public:
 
 		// Delete the layer itself.
 		m_nodes.erase(m_nodes.begin() + index);
-
-		m_listeners->selection_changed(0);
 	}
 
 	shared_ptr<CompositeListener> listeners() const
