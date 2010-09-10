@@ -345,6 +345,37 @@ IPF_Ptr other_ipf(const ICommandManager_Ptr& manager)
 	return ipf;
 }
 
+IPF_Ptr small_ipf(const ICommandManager_Ptr& manager)
+{
+	// Construct the forest.
+	SimplePixelProperties arr[] = {0,1,2,3,4,5};
+	std::vector<SimplePixelProperties> leafProperties(&arr[0], &arr[sizeof(arr)/sizeof(SimplePixelProperties)]);
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(leafProperties, 2, 3));
+
+	IPF_Ptr ipf(new IPF(leafLayer));
+
+	std::set<PFNodeID> mergees;
+
+	ipf->clone_layer(0);
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+		mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,3));	mergees.insert(PFNodeID(1,4));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(1);
+		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,2));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	ipf->clone_layer(2);
+		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,5));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+
+	// Make future forest operations undoable.
+	ipf->set_command_manager(manager);
+
+	return ipf;
+}
+
 //#################### TESTS ####################
 void feature_selection_test()
 {
@@ -413,6 +444,99 @@ void graphviz_thesis_layerdeletion()
 	ipf->delete_layer(1);
 }
 
+void graphviz_thesis_layerwasundeleted()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = other_ipf(manager);
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_weak_listener(selection);
+
+	selection->select_node(PFNodeID(2,0));
+	selection->select_node(PFNodeID(1,2));
+	selection->select_node(PFNodeID(1,3));
+	selection->select_node(PFNodeID(0,6));
+
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-layerwasundeleted", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
+	selection->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	ipf->delete_layer(2);
+	manager->undo();
+}
+
+void graphviz_thesis_layerwillbedeleted()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = default_ipf(manager);
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_weak_listener(selection);
+
+	selection->select_node(PFNodeID(3,0));
+	selection->select_node(PFNodeID(1,2));
+
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-layerwillbedeleted", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
+	selection->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	ipf->delete_layer(3);
+}
+
+void graphviz_thesis_nodeselection()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = small_ipf(manager);
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_weak_listener(selection);
+
+	selection->select_node(PFNodeID(3,0));
+	selection->deselect_node(PFNodeID(0,3));
+
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-nodeselection", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
+	gvo->set_consolidation_interest(true);
+	selection->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+	selection->select_node(PFNodeID(0,3));
+}
+
+void graphviz_thesis_nodewassplit()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = small_ipf(manager);
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_weak_listener(selection);
+
+	ipf->clone_layer(0);
+	ipf->delete_layer(4);
+	selection->select_node(PFNodeID(2,0));
+	selection->select_node(PFNodeID(1,2));
+	selection->select_node(PFNodeID(1,3));
+
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-nodewassplit", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
+	selection->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+
+	{
+		std::vector<std::set<int> > groups(2);
+		groups[0].insert(0);
+		groups[1].insert(1);
+		ipf->split_node(PFNodeID(2,0), groups);
+	}
+
+	{
+		std::vector<std::set<int> > groups(2);
+		groups[0].insert(2);
+		groups[0].insert(3);
+		groups[1].insert(4);
+		ipf->split_node(PFNodeID(2,2), groups);
+	}
+}
+
 void graphviz_thesis_nodesplitting()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
@@ -429,6 +553,32 @@ void graphviz_thesis_nodesplitting()
 	groups[1].insert(1);
 	groups[1].insert(4);
 	ipf->split_node(PFNodeID(1,0), groups);
+}
+
+void graphviz_thesis_nodeswillbemerged()
+{
+	ICommandManager_Ptr manager(new UndoableCommandManager);
+	IPF_Ptr ipf = small_ipf(manager);
+	Selection_Ptr selection(new Selection(ipf));
+	selection->set_command_manager(manager);
+	ipf->add_weak_listener(selection);
+
+	ipf->delete_layer(3);
+	ipf->clone_layer(0);
+	selection->select_node(PFNodeID(1,0));
+	selection->select_node(PFNodeID(1,2));
+	selection->select_node(PFNodeID(1,3));
+
+	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-nodeswillbemerged", 'a'));
+	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
+	selection->add_shared_listener(gvo);
+	gvo->output("Initial forest");
+
+	std::set<PFNodeID> mergees;
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+		mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,3));
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 }
 
 void graphviz_thesis_nonsiblingnodemerging()
@@ -735,14 +885,22 @@ int main()
 {
 	//feature_selection_test();
 	//graphviz_test();
+
 	//graphviz_thesis_layercloning();
 	//graphviz_thesis_layerdeletion();
-	//graphviz_thesis_nodesplitting();
 	//graphviz_thesis_nonsiblingnodemerging();
-	graphviz_thesis_parentswitching();
-	//graphviz_thesis_siblingnodemerging();
+	//graphviz_thesis_nodesplitting();
 	//graphviz_thesis_unzipping();
 	//graphviz_thesis_zipping();
+	//graphviz_thesis_siblingnodemerging();
+	//graphviz_thesis_parentswitching();
+
+	//graphviz_thesis_nodeselection();
+	//graphviz_thesis_layerwillbedeleted();
+	//graphviz_thesis_layerwasundeleted();
+	//graphviz_thesis_nodeswillbemerged();
+	graphviz_thesis_nodewassplit();
+
 	//listener_test();
 	//lowest_branch_layer_test();
 	//nonsibling_node_merging_test();
