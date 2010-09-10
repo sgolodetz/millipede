@@ -520,7 +520,7 @@ public:
 
 	void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)
 	{
-		// Replace any selected nodes with their children in the layer below.
+		// Replace any of the nodes being merged that are selected with their children in the layer below.
 		for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 		{
 			if(in_representation(*it)) deconsolidate_node(*it, boost::none);
