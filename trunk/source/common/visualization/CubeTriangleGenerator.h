@@ -11,6 +11,8 @@
 #include <list>
 #include <utility>
 
+#include <boost/utility.hpp>
+
 #include <common/adts/Edge.h>
 #include <common/io/util/OSSWrapper.h>
 #include <common/jobs/SimpleJob.h>
@@ -97,20 +99,32 @@ private:
 
 		for(typename MeshTriangleList::iterator it=triangles.begin(), iend=triangles.end(); it!=iend; ++it)
 		{
-			// Find the smaller of the two labels for this triangle.
+			// Get the labels for this triangle.
 			const MeshTriangleT& tri = *it;
 			assert(tri.labels().size() == 2);
 			Label smallerLabel = *tri.labels().begin();
+			Label largerLabel = *boost::next(tri.labels().begin());
 
-			// Find a source corresponding to this label from the first triangle node (there is guaranteed to be one).
-			const MeshNodeT& node = globalNodeTable(tri.index(0));
-			Vector3d smallerLabelSource = Vector3d(node.find_source_of_label(smallerLabel));
-
-			// Classify the source against the triangle's plane, and flip the triangle's winding if it's not pointing away from the source.
-			Plane plane(MeshUtil::calculate_normal(tri, *globalNodeTable.master_array()), node.position());
-			if(plane.classify_point(smallerLabelSource) == PlaneClassification::FRONT)
+			// Search through each node in the triangle for a pair of sources that correspond to the triangle labels
+			// and are on opposite sides of the plane. If we find such a pair, classify the source corresponding to
+			// the smaller label against the triangle plane, and flip the triangle's winding if it's not pointing away
+			// from the source.
+			Plane plane(MeshUtil::calculate_normal(tri, *globalNodeTable.master_array()), globalNodeTable(tri.index(0)).position());
+			for(int j=0; j<3; ++j)
 			{
-				it->flip_winding();
+				const MeshNodeT& node = globalNodeTable(tri.index(j));
+				Vector3d smallerLabelSource = Vector3d(node.find_source_of_label(smallerLabel));
+				Vector3d largerLabelSource = Vector3d(node.find_source_of_label(largerLabel));
+
+				PlaneClassification::Enum cpS = plane.classify_point(smallerLabelSource), cpL = plane.classify_point(largerLabelSource);
+				if(cpS != cpL)
+				{
+					if(cpS == PlaneClassification::FRONT)
+					{
+						it->flip_winding();
+					}
+					break;
+				}
 			}
 		}
 	}
