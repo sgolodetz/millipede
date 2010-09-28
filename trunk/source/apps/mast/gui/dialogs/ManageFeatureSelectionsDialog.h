@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_MANAGEFEATURESELECTIONSDIALOG
 
 #include <cassert>
+#include <fstream>
 
 #include <boost/algorithm/string/trim.hpp>
 
@@ -23,6 +24,7 @@
 #include <common/io/util/OSSWrapper.h>
 #include <common/partitionforests/base/PartitionForestMFSManager.h>
 #include <mast/util/StringConversion.h>
+#include "DialogUtil.h"
 
 namespace mp {
 
@@ -35,7 +37,9 @@ enum
 	BUTTONID_CREATE_NEW,
 	BUTTONID_DELETE,
 	BUTTONID_INTERSECT,
+	BUTTONID_LOAD,
 	BUTTONID_RENAME,
+	BUTTONID_SAVE,
 	BUTTONID_SUBTRACT,
 	BUTTONID_SYMDIFF,
 	BUTTONID_UNION,
@@ -187,13 +191,16 @@ private:
 
 		unaryOperations->AddSpacer(10);
 
-		wxPanel *unaryButtons = new wxPanel(operations);
-		wxFlexGridSizer *unaryButtonsSizer = new wxFlexGridSizer(1, 0, 0, 5);
-		unaryButtons->SetSizer(unaryButtonsSizer);
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_CLONE, wxT("&Clone...")), 0, wxALL, 5);
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_DELETE, wxT("&Delete")), 0, wxALL, 5);
-			unaryButtonsSizer->Add(new wxButton(unaryButtons, BUTTONID_RENAME, wxT("&Rename...")), 0, wxALL, 5);
-		unaryOperations->Add(unaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
+		wxFlexGridSizer *unaryButtonsTopSizer = new wxFlexGridSizer(1, 0, 0, 5);
+			unaryButtonsTopSizer->Add(new wxButton(operations, BUTTONID_CLONE, wxT("&Clone...")), 0, wxALL, 5);
+			unaryButtonsTopSizer->Add(new wxButton(operations, BUTTONID_DELETE, wxT("&Delete")), 0, wxALL, 5);
+			unaryButtonsTopSizer->Add(new wxButton(operations, BUTTONID_RENAME, wxT("&Rename...")), 0, wxALL, 5);
+		unaryOperations->Add(unaryButtonsTopSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
+
+		wxFlexGridSizer *unaryButtonsBottomSizer = new wxFlexGridSizer(1, 0, 0, 5);
+			unaryButtonsBottomSizer->Add(new wxButton(operations, BUTTONID_SAVE, wxT("&Save...")), 0, wxALL, 5);
+			unaryButtonsBottomSizer->Add(new wxButton(operations, BUTTONID_LOAD, wxT("&Load...")), 0, wxALL, 5);
+		unaryOperations->Add(unaryButtonsBottomSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 		// Binary operations
 		wxStaticBoxSizer *binaryOperations = new wxStaticBoxSizer(wxVERTICAL, operations, wxT("Binary Operations"));
@@ -215,7 +222,7 @@ private:
 		binaryButtons->SetSizer(binaryButtonsSizer);
 			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_INTERSECT, wxT("&Intersect...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_UNION, wxT("&Union...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
-			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("&Subtract...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
+			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SUBTRACT, wxT("Su&btract...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 			binaryButtonsSizer->Add(new wxButton(binaryButtons, BUTTONID_SYMDIFF, wxT("Sym&Diff...")), 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 		binaryOperations->Add(binaryButtons, 0, wxALIGN_CENTRE_HORIZONTAL);
 
@@ -286,6 +293,22 @@ public:
 		}
 	}
 
+	void OnButtonLoad(wxCommandEvent&)
+	{
+		wxFileDialog_Ptr dialog = construct_open_dialog(this, "Load Feature Selection", "Multi-Feature Selections (*.mfs)|*.mfs|All Files|*.*");
+		if(dialog->ShowModal() == wxID_OK)
+		{
+			std::string name = get_appropriate_name("Name Feature Selection", "Feature Selection");
+			if(name != "")
+			{
+				MFS_Ptr mfs(new MFS(m_forest));
+				// TODO
+				m_mfsManager->add_multi_feature_selection(name, mfs);
+				m_mfsManager->set_active_multi_feature_selection(name);
+			}
+		}
+	}
+
 	void OnButtonRename(wxCommandEvent&)
 	{
 		std::string oldName = get_mfs_choice("UInput");
@@ -293,6 +316,18 @@ public:
 		if(newName != "")
 		{
 			m_mfsManager->rename_multi_feature_selection(oldName, newName);
+		}
+	}
+
+	void OnButtonSave(wxCommandEvent&)
+	{
+		wxFileDialog_Ptr dialog = construct_save_dialog(this, "Save Feature Selection", "Multi-Feature Selections (*.mfs)|*.mfs");
+		if(dialog->ShowModal() == wxID_OK)
+		{
+			std::string path = wxString_to_string(dialog->GetPath());
+			std::ofstream fs(path.c_str());
+			fs << "MFS Text 0\n";
+			m_mfsManager->multi_feature_selection(get_mfs_choice("UInput"))->write_text(fs);
 		}
 	}
 
@@ -360,7 +395,9 @@ BEGIN_EVENT_TABLE_TEMPLATE2(ManageFeatureSelectionsDialog, wxDialog, MFS, Forest
 	EVT_BUTTON(BUTTONID_CREATE_NEW, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonCreateNew))
 	EVT_BUTTON(BUTTONID_DELETE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonDelete))
 	EVT_BUTTON(BUTTONID_INTERSECT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonIntersect))
+	EVT_BUTTON(BUTTONID_LOAD, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonLoad))
 	EVT_BUTTON(BUTTONID_RENAME, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonRename))
+	EVT_BUTTON(BUTTONID_SAVE, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonSave))
 	EVT_BUTTON(BUTTONID_SUBTRACT, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonSubtract))
 	EVT_BUTTON(BUTTONID_SYMDIFF, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonSymDiff))
 	EVT_BUTTON(BUTTONID_UNION, (ManageFeatureSelectionsDialog<MFS,Forest>::OnButtonUnion))

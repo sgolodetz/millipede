@@ -326,6 +326,17 @@ public:
 		}
 	}
 
+	void write_text(std::ostream& os)
+	{
+		os << "{\n";
+		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
+		{
+			os << feature_name(it->first) << '\n';
+			it->second->write_text(os);
+		}
+		os << "}\n";
+	}
+
 	//#################### PRIVATE METHODS ####################
 private:
 	PartitionForestSelection_Ptr selection_internal(const Feature& feature)

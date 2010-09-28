@@ -601,6 +601,16 @@ public:
 		return ViewNodeConstIterator(this, layerIndex, true);
 	}
 
+	void write_text(std::ostream& os)
+	{
+		os << "{\n";
+		for(NodeConstIterator it=nodes_cbegin(), iend=nodes_cend(); it!=iend; ++it)
+		{
+			os << *it << '\n';
+		}
+		os << "}\n";
+	}
+
 	//#################### PRIVATE METHODS ####################
 private:
 	Modification clear_impl(int commandDepth)
