@@ -158,7 +158,7 @@ private:
 			std::ostringstream oss;
 			for(size_t j=0, size=features.size(); j<size; ++j)
 			{
-				oss << feature_name(features[j]);
+				oss << feature_to_name(features[j]);
 				if(j < size-1) oss << ", ";
 			}
 			SetItem(index, m_columnMap.find("Features")->second, string_to_wxString(oss.str()));

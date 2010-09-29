@@ -232,7 +232,7 @@ public:
 			submeshNameMap.insert(std::make_pair("Internals", 0));
 			for(int i=0, size=static_cast<int>(features.size()); i<size; ++i)
 			{
-				submeshNameMap.insert(std::make_pair(feature_name(features[i]), feature_to_int(i)));
+				submeshNameMap.insert(std::make_pair(feature_to_name(features[i]), feature_to_int(i)));
 			}
 
 			// Note: The mesh in the builder is *shared* with the smoother and decimator (if used), so this mesh hook is the right one.

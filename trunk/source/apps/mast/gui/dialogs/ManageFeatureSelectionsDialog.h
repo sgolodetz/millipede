@@ -21,6 +21,7 @@
 #include <wx/stattext.h>
 #include <wx/textdlg.h>
 
+#include <common/io/util/LineIO.h>
 #include <common/io/util/OSSWrapper.h>
 #include <common/partitionforests/base/PartitionForestMFSManager.h>
 #include <mast/util/StringConversion.h>
@@ -295,17 +296,27 @@ public:
 
 	void OnButtonLoad(wxCommandEvent&)
 	{
-		wxFileDialog_Ptr dialog = construct_open_dialog(this, "Load Feature Selection", "Multi-Feature Selections (*.mfs)|*.mfs|All Files|*.*");
-		if(dialog->ShowModal() == wxID_OK)
+		try
 		{
-			std::string name = get_appropriate_name("Name Feature Selection", "Feature Selection");
-			if(name != "")
+			wxFileDialog_Ptr dialog = construct_open_dialog(this, "Load Feature Selection", "Multi-Feature Selections (*.mfs)|*.mfs|All Files|*.*");
+			if(dialog->ShowModal() == wxID_OK)
 			{
-				MFS_Ptr mfs(new MFS(m_forest));
-				// TODO
-				m_mfsManager->add_multi_feature_selection(name, mfs);
-				m_mfsManager->set_active_multi_feature_selection(name);
+				std::string name = get_appropriate_name("Name Feature Selection", "Feature Selection");
+				if(name != "")
+				{
+					std::string path = wxString_to_string(dialog->GetPath());
+					std::ifstream fs(path.c_str());
+					LineIO::read_checked_line(fs, "MFS Text 0");
+					MFS_Ptr mfs(new MFS(m_forest));
+					mfs->read_text(fs);
+					m_mfsManager->add_multi_feature_selection(name, mfs);
+					m_mfsManager->set_active_multi_feature_selection(name);
+				}
 			}
+		}
+		catch(std::exception& e)
+		{
+			wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
 		}
 	}
 

@@ -234,7 +234,7 @@ public:
 				voxelsTunionGS = TunionGS->voxel_count(f),
 				voxelsTintersectGS = TintersectGS->voxel_count(f);
 
-			m_table->InsertItem(f, string_to_wxString(feature_name(f)));
+			m_table->InsertItem(f, string_to_wxString(feature_to_name(f)));
 			m_table->SetItem(f, 1, string_to_wxString(boost::lexical_cast<std::string>(voxelsT)));
 			m_table->SetItem(f, 2, string_to_wxString(boost::lexical_cast<std::string>(voxelsGS)));
 			m_table->SetItem(f, 3, string_to_wxString(boost::lexical_cast<std::string>(voxelsTsubGS)));

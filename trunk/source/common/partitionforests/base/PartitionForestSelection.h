@@ -12,6 +12,7 @@
 
 #include <boost/function.hpp>
 
+#include <common/io/util/LineIO.h>
 #include "PartitionForest.h"
 
 namespace mp {
@@ -524,6 +525,21 @@ public:
 		for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 		{
 			if(in_representation(*it)) deconsolidate_node(*it, boost::none);
+		}
+	}
+
+	void read_text(std::istream& is)
+	{
+		// Note: This method should only be invoked on newly-created selections.
+		assert(empty());
+
+		LineIO::read_checked_line(is, "{");
+		std::string line;
+		for(;;)
+		{
+			LineIO::read_line(is, line, "node ID");
+			if(line == "}") break;
+			select_node_impl(lexical_cast<PFNodeID>(line), -1);
 		}
 	}
 

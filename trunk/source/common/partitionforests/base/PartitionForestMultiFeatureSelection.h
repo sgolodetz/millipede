@@ -247,6 +247,30 @@ public:
 		return m_listeners;
 	}
 
+	void read_text(std::istream& is)
+	{
+		// Note: This method should only be invoked on newly-created multi-feature selections.
+		assert(empty());
+
+		LineIO::read_checked_line(is, "{");
+		std::string line;
+		for(;;)
+		{
+			LineIO::read_line(is, line, "partition forest selection");
+			if(line == "}") break;
+
+			PartitionForestSelection_Ptr sel(new PartitionForestSelectionT(m_forest));
+			sel->read_text(is);
+
+			try
+			{
+				Feature f = name_to_feature<Feature>(line);
+				selection_internal(f)->replace_with_selection(sel);
+			}
+			catch(std::exception&) {}
+		}
+	}
+
 	PartitionForestSelection_CPtr selection(const Feature& feature) const
 	{
 		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
@@ -331,7 +355,7 @@ public:
 		os << "{\n";
 		for(typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it=m_selections.begin(), iend=m_selections.end(); it!=iend; ++it)
 		{
-			os << feature_name(it->first) << '\n';
+			os << feature_to_name(it->first) << '\n';
 			it->second->write_text(os);
 		}
 		os << "}\n";

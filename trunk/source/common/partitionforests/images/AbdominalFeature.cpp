@@ -5,6 +5,8 @@
 
 #include "AbdominalFeature.h"
 
+#include <common/exceptions/Exception.h>
+
 namespace mp {
 
 template <> AbdominalFeature::Enum enum_begin()
@@ -58,7 +60,18 @@ std::string feature_key(AbdominalFeature::Enum e)
 	}
 }
 
-std::string feature_name(AbdominalFeature::Enum e)
+std::string feature_shortcut(AbdominalFeature::Enum e)
+{
+	using namespace AbdominalFeature;
+	switch(e)
+	{
+		case OTHER_ARTERY:	return "Shift+A";
+		case OTHER_VEIN:	return "Shift+V";
+		default:			return feature_key(e);
+	}
+}
+
+std::string feature_to_name(AbdominalFeature::Enum e)
 {
 	using namespace AbdominalFeature;
 	switch(e)
@@ -77,15 +90,22 @@ std::string feature_name(AbdominalFeature::Enum e)
 	}
 }
 
-std::string feature_shortcut(AbdominalFeature::Enum e)
+template <> AbdominalFeature::Enum name_to_feature(const std::string& name)
 {
 	using namespace AbdominalFeature;
-	switch(e)
-	{
-		case OTHER_ARTERY:	return "Shift+A";
-		case OTHER_VEIN:	return "Shift+V";
-		default:			return feature_key(e);
-	}
+
+	if(false)								; // No-op - done this way for reasons of consistency
+	else if(name == "Aorta")				return AORTA;
+	else if(name == "Inferior Vena Cava")	return INFERIOR_VENA_CAVA;
+	else if(name == "Kidney")				return KIDNEY;
+	else if(name == "Liver")				return LIVER;
+	else if(name == "Other Artery")			return OTHER_ARTERY;
+	else if(name == "Other Vein")			return OTHER_VEIN;
+	else if(name == "Rib")					return RIB;
+	else if(name == "Spinal Cord")			return SPINAL_CORD;
+	else if(name == "Spleen")				return SPLEEN;
+	else if(name == "Vertebra")				return VERTEBRA;
+	else									throw Exception("Unknown feature name");
 }
 
 }

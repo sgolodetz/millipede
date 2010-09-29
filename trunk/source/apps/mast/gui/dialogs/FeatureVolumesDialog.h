@@ -69,7 +69,7 @@ private:
 		oss.precision(3);
 		oss << (volumeMM3 / 1000.0);	// the / 1000.0 converts cubic mm to cubic cm
 		
-		m_list->InsertItem(m_index, string_to_wxString(feature_name(feature)));
+		m_list->InsertItem(m_index, string_to_wxString(feature_to_name(feature)));
 		m_list->SetItem(m_index, 1, string_to_wxString(oss.str()));
 		++m_index;
 	}

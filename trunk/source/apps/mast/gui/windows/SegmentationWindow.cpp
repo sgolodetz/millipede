@@ -135,7 +135,7 @@ void SegmentationWindow::connect_special_menu_items()
 wxString SegmentationWindow::make_feature_menu_item(const std::vector<Feature>& featureTypes, size_t i, bool useShortcut)
 {
 	std::ostringstream oss;
-	oss << feature_name(featureTypes[i]);
+	oss << feature_to_name(featureTypes[i]);
 	std::string key = feature_key(featureTypes[i]);
 	if(key != "") oss << " (&" << key << ")";
 
