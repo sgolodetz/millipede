@@ -539,7 +539,7 @@ public:
 		{
 			LineIO::read_line(is, line, "node ID");
 			if(line == "}") break;
-			select_node_impl(lexical_cast<PFNodeID>(line), -1);
+			insert_node(lexical_cast<PFNodeID>(line), boost::none);
 		}
 	}
 
