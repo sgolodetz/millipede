@@ -235,11 +235,11 @@ public:
 
 	void identify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
 	{
-		SequenceGuard guard(m_commandManager, "Identify Selection", m_listeners);
-		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
-		{
-			identify_node(*it, feature);
-		}
+		SequenceGuard guard(m_commandManager, "Identify Selection", m_listeners);	// only used in order to change the name of the command
+		PartitionForestSelection_Ptr oldSelection = selection_internal(feature);
+		PartitionForestSelection_Ptr newSelection(new PartitionForestSelectionT(m_forest));
+		newSelection->combine_using_leaves(oldSelection, selection);
+		oldSelection->replace_with_selection(newSelection);
 	}
 
 	shared_ptr<CompositeListener> listeners() const
@@ -343,11 +343,11 @@ public:
 
 	void unidentify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
 	{
-		SequenceGuard guard(m_commandManager, "Unidentify Selection", m_listeners);
-		for(typename PartitionForestSelectionT::NodeConstIterator it=selection->nodes_cbegin(), iend=selection->nodes_cend(); it!=iend; ++it)
-		{
-			unidentify_node(*it, feature);
-		}
+		SequenceGuard guard(m_commandManager, "Unidentify Selection", m_listeners);		// only used in order to change the name of the command
+		PartitionForestSelection_Ptr oldSelection = selection_internal(feature);
+		PartitionForestSelection_Ptr newSelection(new PartitionForestSelectionT(m_forest));
+		newSelection->subtract_using_leaves(oldSelection, selection);
+		oldSelection->replace_with_selection(newSelection);
 	}
 
 	void write_text(std::ostream& os)

@@ -33,6 +33,8 @@ template <> std::map<AbdominalFeature::Enum,RGBA32> feature_colour_map()
 	m.insert(std::make_pair(AORTA,				make_rgba32(255,0,0,50)));
 	m.insert(std::make_pair(INFERIOR_VENA_CAVA,	make_rgba32(0,0,255,50)));
 	m.insert(std::make_pair(KIDNEY,				make_rgba32(255,255,0,50)));
+	m.insert(std::make_pair(KIDNEY_LEFT,		make_rgba32(255,255,0,50)));
+	m.insert(std::make_pair(KIDNEY_RIGHT,		make_rgba32(255,255,0,50)));
 	m.insert(std::make_pair(LIVER,				make_rgba32(128,0,128,50)));
 	m.insert(std::make_pair(OTHER_ARTERY,		make_rgba32(128,0,0,50)));
 	m.insert(std::make_pair(OTHER_VEIN,			make_rgba32(0,0,128,50)));
@@ -79,6 +81,8 @@ std::string feature_to_name(AbdominalFeature::Enum e)
 		case AORTA:					return "Aorta";
 		case INFERIOR_VENA_CAVA:	return "Inferior Vena Cava";
 		case KIDNEY:				return "Kidney";
+		case KIDNEY_LEFT:			return "Kidney (Left)";
+		case KIDNEY_RIGHT:			return "Kidney (Right)";
 		case LIVER:					return "Liver";
 		case OTHER_ARTERY:			return "Other Artery";
 		case OTHER_VEIN:			return "Other Vein";
@@ -98,6 +102,8 @@ template <> AbdominalFeature::Enum name_to_feature(const std::string& name)
 	else if(name == "Aorta")				return AORTA;
 	else if(name == "Inferior Vena Cava")	return INFERIOR_VENA_CAVA;
 	else if(name == "Kidney")				return KIDNEY;
+	else if(name == "Kidney (Left)")		return KIDNEY_LEFT;
+	else if(name == "Kidney (Right)")		return KIDNEY_RIGHT;
 	else if(name == "Liver")				return LIVER;
 	else if(name == "Other Artery")			return OTHER_ARTERY;
 	else if(name == "Other Vein")			return OTHER_VEIN;
