@@ -42,7 +42,7 @@ void calculate_slice_parameters(const itk::Size<3>& volumeSize, const SliceLocat
 	}
 }
 
-void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer destImage, const RGBA32& colour)
+void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer destImage, const boost::optional<RGBA32>& colour, bool keepBackground)
 {
 	assert(sourceImage->GetLargestPossibleRegion().GetSize() == destImage->GetLargestPossibleRegion().GetSize());
 
@@ -79,14 +79,41 @@ void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer dest
 		}
 	}
 
-	// Write the specified colour into the destination image wherever there is a boundary.
+	itk::ImageRegionIterator<RGBA32Image> sourceIt(sourceImage, sourceImage->GetLargestPossibleRegion());
 	itk::ImageRegionIterator<RGBA32Image> destIt(destImage, destImage->GetLargestPossibleRegion());
 	itk::ImageRegionIterator<BoundaryImage> boundariesIt(boundariesImage, boundariesImage->GetLargestPossibleRegion());
-	for(destIt.GoToBegin(), boundariesIt.GoToBegin(); !destIt.IsAtEnd(); ++destIt, ++boundariesIt)
+	RGBA32 transparent = ITKImageUtil::make_rgba32(0, 0, 0, 0);
+
+	if(colour)
 	{
-		if(boundariesIt.Get() == true)
+		// Write the specified colour into the destination image wherever there is a boundary. If the rest of the destination image (the background)
+		// should not be kept, write a transparent colour into all non-boundary destination pixels.
+		for(sourceIt.GoToBegin(), destIt.GoToBegin(), boundariesIt.GoToBegin(); !sourceIt.IsAtEnd(); ++sourceIt, ++destIt, ++boundariesIt)
 		{
-			destIt.Set(colour);
+			if(boundariesIt.Get() == true)
+			{
+				destIt.Set(*colour);
+			}
+			else if(!keepBackground)
+			{
+				destIt.Set(transparent);
+			}
+		}
+	}
+	else
+	{
+		// Copy the pixel from the source image to the destination image wherever there is a boundary. If the rest of the destination image (the background)
+		// should not be kept, write a transparent colour into all non-boundary destination pixels.
+		for(sourceIt.GoToBegin(), destIt.GoToBegin(), boundariesIt.GoToBegin(); !sourceIt.IsAtEnd(); ++sourceIt, ++destIt, ++boundariesIt)
+		{
+			if(boundariesIt.Get() == true)
+			{
+				destIt.Set(sourceIt.Get());
+			}
+			else if(!keepBackground)
+			{
+				destIt.Set(transparent);
+			}
 		}
 	}
 }

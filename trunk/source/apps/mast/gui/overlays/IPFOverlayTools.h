@@ -40,11 +40,13 @@ The source and destination are allowed to be the same image. Whether they are or
 
 @param[in]	sourceImage		The source image
 @param[in]	destImage		The destination image
-@param[in]	colour			The colour with which to draw the boundaries
+@param[in]	colour			The colour with which to draw the boundaries (the region colours themselves are used if this is not specified)
+@param[in]	keepBackground	Whether or not to keep the remainder of the destination image intact (if not, it is overwritten with transparent pixels)
 @pre
 	-	sourceImage->GetLargestPossibleRegion().GetSize() == destImage->GetLargestPossibleRegion().GetSize()
 */
-void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer destImage, const RGBA32& colour);
+void draw_boundaries(RGBA32Image::Pointer sourceImage, RGBA32Image::Pointer destImage, const boost::optional<RGBA32>& colour = boost::none,
+					 bool keepBackground = false);
 
 //#################### TEMPLATE FUNCTIONS ####################
 /**
