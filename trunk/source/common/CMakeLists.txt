@@ -207,6 +207,7 @@ partitionforests/base/PFNodeID.cpp
 )
 
 SET(partitionforests_base_headers
+partitionforests/base/FeatureUtil.h
 partitionforests/base/IForestLayer.h
 partitionforests/base/PartitionForest.h
 partitionforests/base/PartitionForestMFSManager.h
