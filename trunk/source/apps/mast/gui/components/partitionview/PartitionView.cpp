@@ -746,7 +746,7 @@ void PartitionView::setup_drawing_tools()
 	m_drawingTools[DRAWINGTOOL_LINELOOP] = std::make_pair(DRAWINGTOOL_LINELOOP, DrawingTool_Ptr(new LineLoopDrawingTool));
 	// TODO: Other drawing tools.
 
-	m_currentDrawingTool = m_drawingTools[DRAWINGTOOL_BOX];
+	m_currentDrawingTool = m_drawingTools[DRAWINGTOOL_LASSO];
 }
 
 void PartitionView::setup_gui(wxGLContext *context)
@@ -844,7 +844,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 		drawingToolTypes[DRAWINGTOOL_LINELOOP] = wxT("Line Loop");
 
 		m_drawingToolChoice = new wxChoice(this, CHOICEID_DRAWING_TOOL, wxDefaultPosition, wxDefaultSize, DRAWINGTOOL_COUNT, drawingToolTypes);
-		m_drawingToolChoice->SetSelection(0);
+		m_drawingToolChoice->SetSelection(1);
 		drawingToolsSizer->Add(m_drawingToolChoice, 0, wxALIGN_CENTRE_VERTICAL);
 	sizer->Add(drawingToolsSizer, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
