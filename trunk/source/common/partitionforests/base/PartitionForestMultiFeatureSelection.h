@@ -9,6 +9,7 @@
 #include <map>
 
 #include <common/commands/ListenerAlertingCommandSequenceGuard.h>
+#include "FeatureUtil.h"
 #include "PartitionForestSelection.h"
 
 namespace mp {

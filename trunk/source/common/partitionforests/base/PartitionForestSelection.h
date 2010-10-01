@@ -11,6 +11,7 @@
 #include <stack>
 
 #include <boost/function.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <common/io/util/LineIO.h>
 #include "PartitionForest.h"
