@@ -32,7 +32,7 @@ public:
 
 	//#################### PUBLIC METHODS ####################
 public:
-	double aspect_ratio() const;
+	double aspect_ratio_xy() const;
 	std::map<std::string,std::string> branch_property_map() const;
 	static std::vector<std::string> branch_property_names();
 	const Vector3d& centroid() const;

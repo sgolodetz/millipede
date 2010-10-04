@@ -48,14 +48,14 @@ bool KidneysIdentifier3D::is_kidney(const PFNodeID& node, const BranchProperties
 	int sliceCount = properties.z_max() + 1 - properties.z_min();
 	int minVoxels = minVoxelsPerSlice * sliceCount;
 	int maxVoxels = maxVoxelsPerSlice * sliceCount;
-	double aspectRatio = properties.aspect_ratio();
+	double aspectRatioXY = properties.aspect_ratio_xy();
 
 	return	node.layer() >= 3 &&																// it should be in layer 3 or above (lower nodes aren't kidneys)
 			160 <= properties.mean_grey_value() && properties.mean_grey_value() <= 190 &&		// it should have a reasonably (but not excessively) high grey value
 			(properties.x_max() < spineProperties.centroid().x ||								// it should not cross the spine centroid in the x direction
 			 properties.x_min() > spineProperties.centroid().x) &&
 			properties.y_max() >= spineProperties.y_min() &&									// it should extend as far back as the spine in the y direction
-			0.25 <= aspectRatio && aspectRatio <= 4 &&											// it should have a reasonable aspect ratio
+			0.25 <= aspectRatioXY && aspectRatioXY <= 4 &&										// it should have a reasonable x-y aspect ratio
 			properties.voxel_count() >= minVoxels && properties.voxel_count() <= maxVoxels;		// it should be a reasonable size
 }
 

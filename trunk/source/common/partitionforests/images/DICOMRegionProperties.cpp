@@ -24,7 +24,7 @@ DICOMRegionProperties::DICOMRegionProperties()
 {}
 
 //#################### PUBLIC METHODS ####################
-double DICOMRegionProperties::aspect_ratio() const
+double DICOMRegionProperties::aspect_ratio_xy() const
 {
 	return static_cast<double>(m_xMax - m_xMin) / (m_yMax - m_yMin);
 }
