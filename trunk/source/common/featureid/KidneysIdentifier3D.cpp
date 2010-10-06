@@ -56,7 +56,7 @@ bool KidneysIdentifier3D::is_kidney(const PFNodeID& node, const BranchProperties
 			 properties.x_min() > spineProperties.centroid().x) &&
 			properties.y_max() >= spineProperties.y_min() &&									// it should extend as far back as the spine in the y direction
 			0.25 <= aspectRatioXY && aspectRatioXY <= 4 &&										// it should have a reasonable x-y aspect ratio
-			properties.voxel_count() >= minVoxels && properties.voxel_count() <= maxVoxels;		// it should be a reasonable size
+			minVoxels <= properties.voxel_count() && properties.voxel_count() <= maxVoxels;		// it should be a reasonable size
 }
 
 }
