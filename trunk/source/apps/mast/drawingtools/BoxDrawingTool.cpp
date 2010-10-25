@@ -74,8 +74,8 @@ std::vector<Vector2i> BoxDrawingTool::selected_positions() const
 	std::vector<Vector2i> selectedPositions;
 	if(has_started())
 	{
-		int minX = std::min((*m_anchor_Coords)[0], (*m_other_Coords)[0]), minY = std::min((*m_anchor_Coords)[1], (*m_other_Coords)[1]);
-		int maxX = std::max((*m_anchor_Coords)[0], (*m_other_Coords)[0]), maxY = std::max((*m_anchor_Coords)[1], (*m_other_Coords)[1]);
+		int minX = std::min(m_anchor_Coords->x, m_other_Coords->x), minY = std::min(m_anchor_Coords->y, m_other_Coords->y);
+		int maxX = std::max(m_anchor_Coords->x, m_other_Coords->x), maxY = std::max(m_anchor_Coords->y, m_other_Coords->y);
 		selectedPositions.reserve((maxX + 1 - minX) * (maxY + 1 - minY));
 		for(int y=minY; y<=maxY; ++y)
 			for(int x=minX; x<=maxX; ++x)
