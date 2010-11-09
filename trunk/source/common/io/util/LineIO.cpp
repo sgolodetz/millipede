@@ -47,6 +47,7 @@ Attempts to read a line from a std::istream into a string.
 void LineIO::read_line(std::istream& is, std::string& line, const std::string& description)
 {
 	if(!std::getline(is, line)) throw Exception("Unexpected EOF whilst trying to read " + description);
+	if(line[line.length()-1] == '\r') line = line.substr(0, line.length()-1);
 }
 
 /**

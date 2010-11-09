@@ -305,7 +305,7 @@ public:
 				if(name != "")
 				{
 					std::string path = wxString_to_string(dialog->GetPath());
-					std::ifstream fs(path.c_str());
+					std::ifstream fs(path.c_str(), std::ios_base::binary);
 					LineIO::read_checked_line(fs, "MFS Text 0");
 					MFS_Ptr mfs(new MFS(m_forest));
 					mfs->read_text(fs);
@@ -336,7 +336,7 @@ public:
 		if(dialog->ShowModal() == wxID_OK)
 		{
 			std::string path = wxString_to_string(dialog->GetPath());
-			std::ofstream fs(path.c_str());
+			std::ofstream fs(path.c_str(), std::ios_base::binary);
 			fs << "MFS Text 0\n";
 			m_mfsManager->multi_feature_selection(get_mfs_choice("UInput"))->write_text(fs);
 		}
