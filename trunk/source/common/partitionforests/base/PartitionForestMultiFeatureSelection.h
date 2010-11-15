@@ -187,7 +187,7 @@ public:
 
 			if(lhsSelIt == lhs->m_selections.end())			*selection = *rhsSelIt->second;
 			else if(rhsSelIt == rhs->m_selections.end())	*selection = *lhsSelIt->second;
-			else											selection->combine(lhsSelIt->second, rhsSelIt->second);
+			else											selection->combine_using_leaves(lhsSelIt->second, rhsSelIt->second);
 		}
 	}
 
@@ -318,7 +318,7 @@ public:
 			SelectionMapCIter lhsSelIt = lhs->m_selections.find(feature);
 			SelectionMapCIter rhsSelIt = rhs->m_selections.find(feature);
 
-			if(rhsSelIt != rhs->m_selections.end())		selection->subtract(lhsSelIt->second, rhsSelIt->second);
+			if(rhsSelIt != rhs->m_selections.end())		selection->subtract_using_leaves(lhsSelIt->second, rhsSelIt->second);
 			else										*selection = *lhsSelIt->second;
 		}
 	}
