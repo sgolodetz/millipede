@@ -347,6 +347,7 @@ public:
 		m_nodes[n].set_parent(parent);
 	}
 
+	Vector3i position_of(int n) const	{ return Vector3i(x_of(n), y_of(n), z_of(n)); }
 	//#################### PROTECTED METHODS ####################
 protected:
 	void initialise(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1)
@@ -364,7 +365,6 @@ protected:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	Vector3i position_of(int n) const	{ return Vector3i(x_of(n), y_of(n), z_of(n)); }
 	int x_of(int n) const				{ return GridUtil::x_of(n, m_sizeX); }
 	int y_of(int n) const				{ return GridUtil::y_of(n, m_sizeX, m_sizeY); }
 	int z_of(int n) const				{ return GridUtil::z_of(n, m_sizeXY); }

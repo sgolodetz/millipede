@@ -5,6 +5,8 @@
 
 #include "PartitionOverlayManager.h"
 
+#include<iostream>
+
 #include <common/exceptions/Exception.h>
 #include "PartitionOverlay.h"
 using namespace mp;
@@ -90,8 +92,13 @@ void PartitionOverlayManager::render_partition_overlays(double left, double top,
 
 void PartitionOverlayManager::replace_overlay(const std::string& name, PartitionOverlay *overlay)
 {
+	std::cout << "Finding overlay " + name << std::endl;
+	
 	OverlayIter it = find_overlay(name);
-	if(it == m_overlays.end()) throw Exception("No such overlay: " + name);
+	if(it == m_overlays.end()) {
+		std::cout << "No such overlay: " + name << std::endl;
+		throw Exception("No such overlay: " + name);
+	}
 	it->second = PartitionOverlay_Ptr(overlay);
 }
 

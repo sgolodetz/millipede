@@ -24,6 +24,8 @@
 #include "IForestLayer.h"
 #include "PFNodeID.h"
 
+#include <common/math/Vector3.h>
+
 namespace mp {
 
 namespace mp_PartitionForest {
@@ -707,6 +709,23 @@ public:
 	const LeafProperties& leaf_properties(int n) const
 	{
 		if(m_leafLayer->has_node(n)) return m_leafLayer->node_properties(n);
+		else throw Exception(OSSWrapper() << "Invalid leaf: " << n);
+	}
+	
+	/**
+	@brief	Returns the position of the specified leaf node.
+
+	@note	Since all leaf nodes are in layer 0, only the index of the leaf node
+			is passed in, rather than a full node ID.
+
+	@param[in]	n	The index of the leaf node
+	@throw Exception
+		-	If the specified ID does not refer to a valid node
+	@return The position of the leaf node, as described
+	*/
+	const Vector3i& position_of(int n) const
+	{
+		if(m_leafLayer->has_node(n)) return m_leafLayer->position_of(n);
 		else throw Exception(OSSWrapper() << "Invalid leaf: " << n);
 	}
 

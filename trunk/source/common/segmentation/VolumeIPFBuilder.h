@@ -21,6 +21,8 @@
 #include "ForestBuildingWaterfallPassListener.h"
 #include "SubvolumeToVolumeIndexMapper.h"
 
+#include <iostream>
+
 namespace mp {
 
 template <typename LowestLayersBuilder>
@@ -177,7 +179,9 @@ private:
 		void execute_impl()
 		{
 			set_status("Creating initial partition forest...");
+			std::cout << "job:Initialising m_volumeIPF" << std::endl;
 			base->m_volumeIPF.reset(new VolumeIPFT(base->m_volume->size(), base->m_combinedLeafLayer, base->m_combinedLowestBranchLayer));
+			std::cout << "job:base->m_volumeIPF = " << base->m_volumeIPF << std::endl;
 		}
 
 		int length() const
@@ -261,6 +265,8 @@ private:
 				}
 				if(is_aborted()) return;
 			}
+			std::cout << "job: &(base->m_volumeIPF) = " << &(base->m_volumeIPF) << std::endl;
+			std::cout << "job: volumeIPF = " << volumeIPF << std::endl;
 		}
 
 		int length() const
@@ -285,6 +291,7 @@ public:
 	VolumeIPFBuilder(const DICOMVolume_CPtr& volume, const SegmentationOptions& segmentationOptions, VolumeIPF_Ptr& volumeIPF)
 	:	m_segmentationOptions(segmentationOptions), m_volume(volume), m_volumeIPF(volumeIPF)
 	{
+		std::cout << "In job constructor" << std::endl;
 		itk::Size<3> volumeSize = volume->size();
 		itk::Size<3> subvolumeSize = segmentationOptions.subvolumeSize;
 
@@ -311,6 +318,8 @@ public:
 		add_subjob(new CombineLowestBranchLayersJob(this));
 		add_subjob(new CreateForestJob(this));
 		add_subjob(new WaterfallJob(this));
+		std::cout << "Leaving job constructor" << std::endl;
+		
 	}
 };
 

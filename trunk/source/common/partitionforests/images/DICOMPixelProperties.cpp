@@ -6,6 +6,7 @@
 #include "DICOMPixelProperties.h"
 
 #include <ostream>
+#include <iostream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -27,6 +28,7 @@ DICOMPixelProperties::DICOMPixelProperties(int baseValue, short gradientMagnitud
 //#################### PUBLIC METHODS ####################
 int DICOMPixelProperties::base_value() const
 {
+	//std::cout << "DICOMPixelProperties.cpp " << m_baseValue <<std::endl;
 	return m_baseValue;
 }
 
@@ -34,6 +36,7 @@ std::map<std::string,std::string> DICOMPixelProperties::branch_property_map() co
 {
 	std::map<std::string,std::string> m;
 	m.insert(std::make_pair("Mean Grey Value", boost::lexical_cast<std::string,int>(m_greyValue)));
+	m.insert(std::make_pair("Mean Houndsfield Value", boost::lexical_cast<std::string,int>(m_baseValue)));
 	m.insert(std::make_pair("Voxel Count", "1"));
 	return m;
 }

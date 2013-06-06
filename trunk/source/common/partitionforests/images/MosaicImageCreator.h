@@ -34,6 +34,7 @@ private:
 	SliceOrientation m_sliceOrientation;
 	VolumeIPF_CPtr m_volumeIPF;
 	bool m_withBoundaries;
+	wxColour wxc;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -114,8 +115,12 @@ private:
 			}
 			else
 			{
-				if(m_layerIndex > 0)	mosaicValue = static_cast<unsigned char>(m_volumeIPF->branch_properties(it.GetCenterPixel()).mean_grey_value());
-				else					mosaicValue = m_volumeIPF->leaf_properties(it.GetCenterPixel().index()).grey_value();
+				if(m_layerIndex > 0) {
+					mosaicValue = static_cast<unsigned char>(m_volumeIPF->branch_properties(it.GetCenterPixel()).mean_grey_value());
+				}
+				else {
+					mosaicValue = m_volumeIPF->leaf_properties(it.GetCenterPixel().index()).grey_value();
+				}
 			}
 			mosaicImage->SetPixel(it.GetIndex(), mosaicValue);
 		}

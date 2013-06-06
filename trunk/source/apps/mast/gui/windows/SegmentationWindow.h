@@ -15,6 +15,7 @@
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <mast/models/PartitionModel.h>
+#include <common/featureid/FIOptions.h>
 
 namespace mp {
 
@@ -39,6 +40,7 @@ private:
 	wxMenuBar *m_menuBar;
 	PartitionModel_Ptr m_model;
 	PartitionView *m_view;
+	FIOptions m_map;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -54,6 +56,7 @@ private:
 	static wxString make_feature_menu_item(const std::vector<Feature>& featureTypes, size_t i, bool useShortcut);
 	void setup_gui(wxGLContext *context);
 	void setup_menus();
+	void construct_options();
 
 	//#################### EVENT HANDLERS ####################
 public:
@@ -62,6 +65,7 @@ public:
 	void OnMenuActionsRedo(wxCommandEvent&);
 	void OnMenuActionsUndo(wxCommandEvent&);
 	void OnMenuFeaturesAutoIdentifyMultiFeature(wxCommandEvent&);
+	void OnMenuFeaturesAutoIdentifyTesting(wxCommandEvent&);
 	void OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&);
 	void OnMenuFeaturesClearAll(wxCommandEvent&);
 	void OnMenuFeaturesClearFeature(wxCommandEvent& e);
@@ -69,6 +73,7 @@ public:
 	void OnMenuFeaturesManageFeatureSelections(wxCommandEvent&);
 	void OnMenuFeaturesToggle(wxCommandEvent& e);
 	void OnMenuFeaturesUnidentify(wxCommandEvent& e);
+	void OnMenuFeaturesCaptureSettings(wxCommandEvent& e);
 	void OnMenuFileExit(wxCommandEvent&);
 	void OnMenuHelpContents(wxCommandEvent&);
 	void OnMenuNavigationCentreCamera(wxCommandEvent&);
@@ -88,6 +93,7 @@ public:
 	void OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&);
 	void OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
+	void OnMenuSegmentationSegmentMultiple(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeFinalizeSplit(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeRemoveSubgroup(wxCommandEvent&);

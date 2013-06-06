@@ -1,0 +1,2 @@
+/usr/bin/ar cr /auto/ecslab/m09jp/millipede/trunk/build/lib/plugins/libplugins.a  CMakeFiles/plugins.dir/PluginMultiFeatureIdentifier3D.o
+/usr/bin/ranlib /auto/ecslab/m09jp/millipede/trunk/build/lib/plugins/libplugins.a

@@ -10,6 +10,8 @@
 #include <numeric>
 #include <stack>
 
+#include <iostream>
+
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -57,6 +59,7 @@ public:
 
 		void insert_node(const PFNodeID& node)
 		{
+			//std::cout << "Inserting node (from selection class)" << std::endl;
 			std::set<PFNodeID>::iterator it = m_erased.find(node);
 			if(it != m_erased.end()) m_erased.erase(it);
 			else m_inserted.insert(node);
@@ -156,6 +159,7 @@ public:
 		}
 	};
 
+	//iterates over ..?
 	class ViewNodeConstIterator : public std::iterator<std::input_iterator_tag, PFNodeID>
 	{
 	private:

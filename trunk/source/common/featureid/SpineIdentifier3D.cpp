@@ -6,6 +6,7 @@
 #include "SpineIdentifier3D.h"
 
 #include <boost/bind.hpp>
+#include <iostream>
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/util/ITKImageUtil.h>
@@ -28,11 +29,16 @@ void SpineIdentifier3D::execute_impl()
 {
 	set_status("Identifying the spine...");
 
+	std::cout << "Identifying the spine..." << std::endl;
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
 
+	std::cout << "filtering nodes" << std::endl;
 	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&SpineIdentifier3D::is_spine, this, _1, _2));
+	
+	std::cout << "idenitfying nodes" << std::endl;
 	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{
+		std::cout << "Added node" << std::endl;
 		multiFeatureSelection->identify_node(*it, AbdominalFeature::VERTEBRA);
 	}
 }

@@ -86,6 +86,7 @@ gui/components/selectionview/SelectionView.h
 SET(gui_dialogs_sources
 gui/dialogs/DialogUtil.cpp
 gui/dialogs/SegmentDICOMVolumeDialog.cpp
+gui/dialogs/SegmentMultipleDialog.cpp
 gui/dialogs/VisualizeIn3DDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
 )
@@ -93,8 +94,10 @@ gui/dialogs/VolumeChooserDialog.cpp
 SET(gui_dialogs_headers
 gui/dialogs/DialogUtil.h
 gui/dialogs/FeatureVolumesDialog.h
+gui/dialogs/FeatureIdDialog.h
 gui/dialogs/ManageFeatureSelectionsDialog.h
 gui/dialogs/SegmentDICOMVolumeDialog.h
+gui/dialogs/SegmentMultipleDialog.h
 gui/dialogs/SegmentVolumeDialog.h
 gui/dialogs/ValidateFeatureSelectionDialog.h
 gui/dialogs/VisualizeIn3DDialog.h
@@ -133,6 +136,8 @@ gui/windows/VisualizationWindow.h
 ##
 SET(models_headers
 models/PartitionModel.h
+models/SegmentationRun.h
+models/IPFSetListener.h
 )
 
 ##

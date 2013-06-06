@@ -12,16 +12,20 @@
 
 #include <common/commands/UndoableCommandManager.h>
 #include <common/featureid/MultiFeatureIdentifier3D.h>
+#include <common/featureid/JMultiFeatureIdentifier3D.h>
+#include <common/featureid/extractsettings/SettingsCapturer.h>
 #include <common/featureid/SpineIdentifier3D.h>
 #include <mast/gui/components/partitionview/PartitionCamera.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/gui/components/selectionview/SelectionView.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
+#include <mast/gui/dialogs/FeatureIdDialog.h>
 #include <mast/gui/dialogs/ManageFeatureSelectionsDialog.h>
 #include <mast/gui/dialogs/ValidateFeatureSelectionDialog.h>
 #include <mast/util/HelpController.h>
 #include <mast/util/StringConversion.h>
+
 
 namespace {
 
@@ -34,7 +38,9 @@ enum
 	MENUID_ACTIONS_UNDO,
 	MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D,
 	MENUID_FEATURES_AUTOIDENTIFY_SPINE3D,
+	MENUID_FEATURES_AUTOIDENTIFY_TESTING,
 	MENUID_FEATURES_CLEAR_ALL,
+	MENUID_FEATURES_CAPTURESETTINGS,
 	MENUID_FEATURES_CLEAR_BASE,
 	MENUID_FEATURES_CLEAR_LAST = (MENUID_FEATURES_CLEAR_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
 	MENUID_FEATURES_IDENTIFY_BASE,
@@ -63,6 +69,7 @@ enum
 	MENUID_SEGMENTATION_DELETECURRENTLAYER,
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
+	MENUID_SEGMENTATION_SEGMENTMULTIPLE,
 	MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP,
 	MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT,
 	MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP,
@@ -90,6 +97,7 @@ SegmentationWindow::SegmentationWindow(wxWindow *parent, const std::string& titl
 {
 	setup_menus();
 	setup_gui(context);
+	construct_options();
 }
 
 //#################### PUBLIC METHODS ####################
@@ -99,6 +107,47 @@ wxGLContext *SegmentationWindow::get_context() const
 }
 
 //#################### PRIVATE METHODS ####################
+void SegmentationWindow::construct_options() {
+		
+		m_map[std::string("KMaxVox")] = 6000;
+		m_map[std::string("KMinVox")] = 1500;
+		m_map[std::string("KMaxH")] = 110;
+		m_map[std::string("KMinH")] = 80;
+		m_map[std::string("KMaxAspect")] = 12;
+		m_map[std::string("KMinAspect")] = 9;
+		m_map[std::string("KSeedTolerance")] = 10;
+		m_map[std::string("KAdjTolerance")] = 10;
+		m_map[std::string("KSpineClose")] = 180;
+		m_map[std::string("KRibDist")] = 20;
+		m_map[std::string("AMaxVox")] = 750;
+		m_map[std::string("AMinVox")] = 150;
+		m_map[std::string("AMaxH")] = 175;
+		m_map[std::string("AMinH")] = 125;
+		m_map[std::string("LMinVox")] = 800;
+		m_map[std::string("LRibDist")] = 40;
+		m_map[std::string("LMinH")] = 80;
+		m_map[std::string("LSeedTolerance")] = 10;
+		m_map[std::string("LAdjTolerance")] = 10;
+		m_map[std::string("LMaxH")] = 110;
+		m_map[std::string("LMorphMinH")] = 80;
+		m_map[std::string("RMinSeedH")] = 200;
+		m_map[std::string("RMaxVox")] = 500;
+		m_map[std::string("RMinGrowH")] = 200;
+		m_map[std::string("RBoundaryScale")] = 13;
+		m_map[std::string("ROutsideMaxH")] = 10;
+		m_map[std::string("RPPMinH")] = 200;
+		m_map[std::string("RPPMinVox")] = 90;
+		m_map[std::string("RPPMaxVox")] = 500;
+		m_map[std::string("DoSpine")] = 1;
+		m_map[std::string("DoSpinal")] = 1;
+		m_map[std::string("DoRibs")] = 1;
+		m_map[std::string("DoAorta")] = 1;
+		m_map[std::string("DoLiver")] = 1;
+		m_map[std::string("DoKidneys")] = 1;
+		m_map[std::string("DoSpleen")] = 1;
+	}
+
+
 void SegmentationWindow::connect_special_menu_items()
 {
 	std::vector<Feature> featureTypes = enum_values<Feature>();
@@ -216,6 +265,7 @@ void SegmentationWindow::setup_menus()
 
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume...\tCtrl+Alt+Shift+S"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTMULTIPLE, wxT("&Run multiple segmentations...\tCtrl+Alt+Shift+M"));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_CLONECURRENTLAYER, wxT("&Clone Current Layer\tCtrl+Shift+C"));
 	segmentationMenu->Append(MENUID_SEGMENTATION_DELETECURRENTLAYER, wxT("&Delete Current Layer\tCtrl+Shift+D"));
@@ -248,9 +298,11 @@ void SegmentationWindow::setup_menus()
 	featuresMenu->AppendSubMenu(autoIdentifyMenu, wxT("&Automatically Identify Features"));
 		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, wxT("Using Multi-Feature 3D &Identifier\tCtrl+I"));
 		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, wxT("Using &Spine 3D Identifier\tAlt+Shift+S"));
+		autoIdentifyMenu->Append(MENUID_FEATURES_AUTOIDENTIFY_TESTING, wxT("Using &Jess's testing version\tAlt+J"));
 #if NYI
 		autoIdentifyMenu->Append(wxID_ANY, wxT("&Using Script..."));
 #endif
+	featuresMenu->Append(MENUID_FEATURES_CAPTURESETTINGS, wxT("Capture settings"));
 	featuresMenu->AppendSeparator();
 	wxMenu *identifyMenu = new wxMenu;
 	featuresMenu->AppendSubMenu(identifyMenu, wxT("&Identify Selection As"));
@@ -324,8 +376,46 @@ void SegmentationWindow::OnMenuActionsUndo(wxCommandEvent&)
 void SegmentationWindow::OnMenuFeaturesAutoIdentifyMultiFeature(wxCommandEvent&)
 {
 	boost::shared_ptr<MultiFeatureIdentifier3D> identifier(new MultiFeatureIdentifier3D(m_model->dicom_volume(), m_model->volume_ipf()));
+		std::cout << "built identifier, running" << std::endl;
 	execute_with_progress_dialog(identifier, this, "Identifying Features", false);
+		std::cout << "run identifier, setting mfs" << std::endl;
 	m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_multi_feature_selection());
+		std::cout << "set mfs" << std::endl;
+}
+
+void SegmentationWindow::OnMenuFeaturesAutoIdentifyTesting(wxCommandEvent&)
+{
+	
+	FeatureIdDialog dialog(this, m_map);
+	dialog.ShowModal();
+	
+	if (dialog.returnedSomething()) {
+	
+		m_map = *dialog.get_options();
+		
+		boost::shared_ptr<JMultiFeatureIdentifier3D> identifier(new JMultiFeatureIdentifier3D(m_model->dicom_volume(), m_model->volume_ipf(), m_map));
+		std::cout << "built identifier, running" << std::endl;
+		execute_with_progress_dialog(identifier, this, "Identifying Features", true);
+		std::cout << "run identifier, setting mfs" << std::endl;
+		m_model->active_multi_feature_selection()->identify_multi_feature_selection(identifier->get_multi_feature_selection());
+		std::cout << "set mfs" << std::endl;
+	
+	}
+	/*PluginManager * pm = new PluginManager(m_model->dicom_volume(), m_model->volume_ipf());
+
+	pm->load_plugin("lib/plugins/libplugins.a");
+	
+	//execute_with_progress_dialog(pm.feature_id_job(), this, "Identifying Features", false);
+	pm->print_string;
+	//m_model->active_multi_feature_selection()->identify_multi_feature_selection(pm.multifeature_selection());*/
+}
+
+void SegmentationWindow::OnMenuFeaturesCaptureSettings(wxCommandEvent&)
+{
+	
+	std::cout << "";
+	boost::shared_ptr<SettingsCapturer> identifier(new SettingsCapturer(m_model->dicom_volume(), m_model->volume_ipf(), &m_map, m_model->active_multi_feature_selection()));
+	execute_with_progress_dialog(identifier, this, "Capturing Settings", false);
 }
 
 void SegmentationWindow::OnMenuFeaturesAutoIdentifySpine(wxCommandEvent&)
@@ -464,6 +554,11 @@ void SegmentationWindow::OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&)
 void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
 	m_model->segment_volume(this);
+}
+
+void SegmentationWindow::OnMenuSegmentationSegmentMultiple(wxCommandEvent&)
+{
+	m_model->multiple_segment(this);
 }
 
 void SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&)
@@ -797,7 +892,9 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_ACTIONS_UNDO, SegmentationWindow::OnMenuActionsUndo)
 	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_MULTIFEATURE3D, SegmentationWindow::OnMenuFeaturesAutoIdentifyMultiFeature)
 	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_SPINE3D, SegmentationWindow::OnMenuFeaturesAutoIdentifySpine)
+	EVT_MENU(MENUID_FEATURES_AUTOIDENTIFY_TESTING, SegmentationWindow::OnMenuFeaturesAutoIdentifyTesting)
 	EVT_MENU(MENUID_FEATURES_CLEAR_ALL, SegmentationWindow::OnMenuFeaturesClearAll)
+	EVT_MENU(MENUID_FEATURES_CAPTURESETTINGS, SegmentationWindow::OnMenuFeaturesCaptureSettings)
 	EVT_MENU(MENUID_FEATURES_MANAGEFEATURESELECTIONS, SegmentationWindow::OnMenuFeaturesManageFeatureSelections)
 	EVT_MENU(MENUID_FILE_EXIT, SegmentationWindow::OnMenuFileExit)
 	EVT_MENU(MENUID_HELP_CONTENTS, SegmentationWindow::OnMenuHelpContents)
@@ -818,6 +915,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
+	EVT_MENU(MENUID_SEGMENTATION_SEGMENTMULTIPLE, SegmentationWindow::OnMenuSegmentationSegmentMultiple)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, SegmentationWindow::OnMenuSegmentationSplitNodeFinalizeSplit)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeRemoveSubgroup)

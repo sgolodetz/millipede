@@ -5,6 +5,8 @@
 
 #include "PartitionView.h"
 
+#include <set>
+
 #include <boost/tuple/tuple.hpp>
 
 #include <wx/button.h>
@@ -24,14 +26,19 @@
 #include <mast/drawingtools/LassoDrawingTool.h>
 #include <mast/drawingtools/LineLoopDrawingTool.h>
 #include <mast/gui/dialogs/DialogUtil.h>
+#include <mast/gui/dialogs/DifferenceDialog.h>
 #include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include <mast/util/StringConversion.h>
+#include <mast/models/IPFSetListener.h>
+#include <mast/models/DifferenceOptions.h>
 #include "DICOMCanvas.h"
 #include "PartitionCamera.h"
 #include "PartitionCanvas.h"
+
+#include <common/analysis/DICOMIPFDifference.h>
 using namespace mp;
 
 namespace {
@@ -44,7 +51,13 @@ enum
 	BUTTONID_VIEW_XY,
 	BUTTONID_VIEW_XZ,
 	BUTTONID_VIEW_YZ,
+	BUTTONID_SEGMENT_MULTIPLE,
 	BUTTONID_VISUALIZE_IN_3D,
+	BUTTONID_DIFFERENCEU,
+	BUTTONID_DIFFERENCEN,
+	BUTTONID_DIFFERENCEAB,
+	BUTTONID_DIFFERENCEBA,
+	BUTTONID_DIFFERENCEDIALOG,
 	CHOICEID_DRAWING_TOOL,
 	CHOICEID_MULTI_FEATURE_SELECTION,
 	SLIDERID_X,
@@ -52,12 +65,13 @@ enum
 	SLIDERID_Z,
 	SLIDERID_LAYER,
 	SLIDERID_ZOOM,
+	RADIOID_CHOOSEIPF,
 };
 
 }
 
 namespace mp {
-
+	
 //#################### LISTENERS ####################
 struct PartitionView::CameraListener : PartitionCamera::Listener
 {
@@ -69,13 +83,18 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 
 	void slice_location_changed(bool sliceChanged, bool layerChanged)
 	{
+		//std::cout << "updating sliders" << std::endl;
 		base->update_sliders();
 		if(sliceChanged || layerChanged)
 		{
+			//std::cout << "recreating overlays" << std::endl;
 			base->recreate_overlays();
+			//std::cout << "resetting drawing tool" << std::endl;
 			base->current_drawing_tool()->reset();
 		}
+		//std::cout << "refreshing canvasses" << std::endl;
 		base->refresh_canvases();
+		//std::cout << "done" << std::endl;
 	}
 
 	void slice_orientation_changed()
@@ -90,6 +109,32 @@ struct PartitionView::CameraListener : PartitionCamera::Listener
 		base->update_sliders();
 		base->current_drawing_tool()->reset();
 		base->refresh_canvases();
+	}
+};
+
+struct PartitionView::IPFListListener : IPFSetListener
+{
+	PartitionView *base;
+	
+	explicit IPFListListener(PartitionView *base_)
+	:	base(base_)
+	{}
+	
+	void generated(unsigned n)
+	{
+		std::cout << "" << std::endl;
+		//std::cout << "ipfsetlistener.generated" << std::endl;
+		base->add_ipf_options(n);
+		//std::cout << "added options panel" << std::endl;
+		
+		base->cache_partition_textures(n);
+		std::cout << "cached textures" << std::endl;
+	}
+	
+	void swapped(unsigned i) {
+		//std::cout << "ipfsetlistener.swapped" << std::endl;
+		base->use_partiton_textures(i);
+		//std::cout << "used textures" << std::endl;
 	}
 };
 
@@ -327,10 +372,14 @@ PartitionView::PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, 
 	m_camera->add_shared_listener(boost::shared_ptr<CameraListener>(new CameraListener(this)));
 	m_model->add_shared_listener(boost::shared_ptr<ModelListener>(new ModelListener(this)));
 	m_model->set_command_manager(commandManager);
+	m_model->add_ipfset_listener(new IPFListListener(this));
+	
+	m_partitionTextureSetCache = new std::vector<TexSet>();
 
 	setup_drawing_tools();
 
 	calculate_canvas_size();
+	
 	setup_gui(context);
 
 	m_dicomCanvas->setup(this);
@@ -498,8 +547,37 @@ void PartitionView::create_overlays()
 	m_overlayManager->insert_overlay_at_top("ParentSwitch", parent_switch_overlay());
 }
 
+void PartitionView::use_partiton_textures(unsigned i)
+{
+	typedef VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> CTVolumeIPF;
+	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
+
+	CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(!volumeIPF) return;
+	int highestLayer = volumeIPF->highest_layer();
+
+	//std::cout << "choosing texture set " << i << std::endl;
+	m_partitionTextureSets = (*m_partitionTextureSetCache)[i];
+	//std::cout << "&(*m_partitionTextureSetCache)[i] = " << &(*m_partitionTextureSetCache)[i] << std::endl;
+
+	/*Job_Ptr job = reload_texture_job(m_camera->slice_orientation());
+	execute_with_progress_dialog(job, this, "Reloading Partition Texture Sets", false);*/
+
+	m_layerSlider->SetRange(1, highestLayer);
+	m_camera->set_highest_layer(highestLayer);
+	SliceLocation loc = m_camera->slice_location();
+	
+	//std::cout << "refreshing" << std::endl;
+	refresh_canvases();
+	
+	if (m_camera->getLayer() > highestLayer) {
+		m_camera->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, highestLayer));
+	}
+}
+
 void PartitionView::create_partition_textures()
 {
+	//std::cout << "in create_partition_textures" << std::endl;
 	typedef VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> CTVolumeIPF;
 	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
 
@@ -517,6 +595,37 @@ void PartitionView::create_partition_textures()
 	m_camera->set_highest_layer(highestLayer);
 	SliceLocation loc = m_camera->slice_location();
 	m_camera->set_slice_location(SliceLocation(loc.x, loc.y, loc.z, (1+highestLayer)/2));
+}
+
+void PartitionView::cache_partition_textures(unsigned n)
+{
+	typedef VolumeIPF<DICOMImageLeafLayer,DICOMImageBranchLayer> CTVolumeIPF;
+	typedef boost::shared_ptr<const CTVolumeIPF> CTVolumeIPF_CPtr;
+
+
+	for (unsigned i = 0; i < n; i++) {
+		
+		
+	//	std::cout << "finding ipf " << i << std::endl;
+		CTVolumeIPF_CPtr volumeIPF = m_model->volume_ipf(i);
+	//	std::cout << "checking " << std::endl;
+		if(!volumeIPF) return;
+	//	std::cout << "finding highest_layer " << std::endl;
+		
+		int highestLayer = volumeIPF->highest_layer();
+		
+	//	std::cout << "creating texture set " << i << std::endl;
+		m_partitionTextureSetCache->push_back(std::vector<Greyscale8SliceTextureSet_Ptr>(highestLayer));
+	//	std::cout << "resetting layers" << std::endl;
+		for(int layer=1; layer<=highestLayer; ++layer) (((*m_partitionTextureSetCache)[i])[layer-1]).reset(new Greyscale8SliceTextureSet);
+
+	//	std::cout << "making job" << std::endl;
+		Job_Ptr job = cache_partition_textures_job(m_camera->slice_orientation(), i, volumeIPF);
+	//	std::cout << "executing cache job" << std::endl;
+		execute_with_progress_dialog(job, this, "Caching Partition Texture Sets", false);
+	}
+	
+	use_partiton_textures(0);
 }
 
 DrawingTool_Ptr PartitionView::current_drawing_tool()
@@ -559,6 +668,48 @@ Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 	}
 	return job;
 }
+Job_Ptr PartitionView::cache_partition_textures_job(SliceOrientation ori, unsigned i, VolumeIPF_CPtr volumeIPF) const
+{
+
+	//	std::cout << "creating cache job" << std::endl;
+	int highestLayer = volumeIPF->highest_layer();
+
+	CompositeJob_Ptr job(new CompositeJob);
+	for(int layer=1; layer<=highestLayer; ++layer)
+	{
+		typedef MosaicImageCreator<LeafLayer,BranchLayer> MIC;
+		typedef SliceTextureSetFiller<unsigned char> TSF;
+
+		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
+		TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), ((*m_partitionTextureSetCache)[i][layer-1]));
+		textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
+
+		job->add_subjob(mosaicImageCreator);
+		job->add_subjob(textureSetFiller);
+	}
+	return job;
+}
+
+/*Job_Ptr PartitionView::reload_texture_job(SliceOrientation ori) const
+{
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
+	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
+
+	VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	int highestLayer = volumeIPF->highest_layer();
+
+	CompositeJob_Ptr job(new CompositeJob);
+	for(int layer=1; layer<=highestLayer; ++layer)
+	{
+		typedef SliceTextureSetFiller<unsigned char> TSF;
+
+		TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), m_partitionTextureSets[layer-1]);
+		textureSetFiller->set_volume_image_hook(DataHook<itk::Image<unsigned char,3>::Pointer>(m_partitionTextureSets[layer - 1]));
+
+		job->add_subjob(textureSetFiller);
+	}
+	return job;
+}*/
 
 void PartitionView::fill_textures(SliceOrientation ori)
 {
@@ -718,7 +869,39 @@ void PartitionView::recreate_parent_switch_overlay()
 
 void PartitionView::recreate_selection_overlay()
 {
+	//std::cout << "replacing selection overlay" <<std::endl;
 	m_overlayManager->replace_overlay("IPFSelection", selection_overlay());
+}
+
+void PartitionView::add_ipf_options(unsigned n)
+{
+	wxBoxSizer * sizer = new wxBoxSizer(wxHORIZONTAL);
+	m_ipfoptions->SetSizer(sizer);
+	//sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(wxT("IPF options %i"), n)));
+	
+	wxString rbStrings[n];
+	for (unsigned i = 0; i < n; i++) {
+		rbStrings[i] = wxString::Format(wxT("Method %i"), i + 1);
+	}
+	m_ipfchoice = new wxRadioBox(m_ipfoptions, RADIOID_CHOOSEIPF, wxT("Segmentation displayed"), wxDefaultPosition, wxDefaultSize, n, rbStrings, 1, wxRA_SPECIFY_ROWS);
+	m_ipfchoice->SetSelection(0);
+	sizer->Add(m_ipfchoice);
+	
+	
+	sizer->Fit(m_ipfoptions);
+	/*wxBoxSizer * topLeftSizer = new wxBoxSizer(wxHORIZONTAL);
+	
+	m_segmentVolumeButton = new wxButton(m_topLeftPanel, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume"));
+	
+	topLeftSizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTRE_HORIZONTAL);
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_SEGMENT_MULTIPLE, wxT("Segment Multiple")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEAB, wxT("A - B")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEBA, wxT("B - A")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEN, wxT("Intersection")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEU, wxT("Union")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEDIALOG, wxT("Dialog")));
+	
+	m_topLeftPanel->SetSizer(topLeftSizer);*/
 }
 
 void PartitionView::refresh_canvases()
@@ -729,12 +912,18 @@ void PartitionView::refresh_canvases()
 
 PartitionOverlay *PartitionView::selection_overlay() const
 {
+	
+	//std::cout << "getting selection overlay" <<std::endl;
 	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
 	if(selection)
 	{
+		//std::cout << "found selection, getting location + orientation" <<std::endl;
 		SliceLocation loc = m_camera->slice_location();
 		SliceOrientation ori = m_camera->slice_orientation();
-		return new IPFSelectionOverlay(selection, loc, ori);
+		//std::cout << "making overlay" << std::endl;
+		PartitionOverlay * ipfso = new IPFSelectionOverlay(selection, loc, ori);
+		//std::cout << "returning overlay" << std::endl;
+		return ipfso;
 	}
 	else return NULL;
 }
@@ -765,10 +954,26 @@ void PartitionView::setup_gui(wxGLContext *context)
 		0
 	};
 
+	//std::cout << "top left" << std::endl;
+	
 	// Top left
-	m_segmentVolumeButton = new wxButton(this, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume..."));
-	sizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTRE_HORIZONTAL);
-
+	wxBoxSizer * topLeftSizer = new wxBoxSizer(wxHORIZONTAL);
+	
+	m_topLeftPanel = new wxPanel(this);
+	m_topLeftPanel->SetSizer(topLeftSizer);
+	
+	m_segmentVolumeButton = new wxButton(m_topLeftPanel, BUTTONID_SEGMENT_VOLUME, wxT("Segment Volume"));
+	
+	topLeftSizer->Add(m_segmentVolumeButton, 0, wxALIGN_CENTRE_HORIZONTAL);
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_SEGMENT_MULTIPLE, wxT("Segment Multiple")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEAB, wxT("A - B")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEBA, wxT("B - A")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEN, wxT("Intersection")));
+	topLeftSizer->Add(new wxButton(m_topLeftPanel, BUTTONID_DIFFERENCEU, wxT("Union")));
+	
+	sizer->Add(m_topLeftPanel);
+	
+	//std::cout << "top left" << std::endl;
 	// Top middle
 	sizer->Add(new wxPanel(this));
 
@@ -849,7 +1054,8 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(drawingToolsSizer, 0, wxALIGN_CENTRE_HORIZONTAL|wxALL, 5);
 
 	// Bottom middle
-	sizer->Add(new wxPanel(this));
+	m_ipfoptions = new wxPanel(this);
+	sizer->Add(m_ipfoptions);
 
 	// Bottom right
 	wxFlexGridSizer *bottomRightSizer = new wxFlexGridSizer(0, 2, 0, 0);
@@ -911,11 +1117,151 @@ void PartitionView::OnButtonViewYZ(wxCommandEvent&)
 	zoom_to_fit();
 }
 
+void PartitionView::OnButtonSegmentMultiple(wxCommandEvent&)
+{
+	m_model->multiple_segment(this);
+}
+
 void PartitionView::OnButtonVisualizeIn3D(wxCommandEvent&)
 {
 	m_model->visualize_in_3d(this, get_context());
 }
 
+typedef VolumeIPFSelection<DICOMImageLeafLayer,DICOMImageBranchLayer> VolumeIPFSelectionT;
+typedef boost::shared_ptr<VolumeIPFSelectionT> VolumeIPFSelection_Ptr;
+	
+void PartitionView::OnButtonDiffIntersection(wxCommandEvent&)
+{	
+	
+	DICOMIPFDifference diff = DICOMIPFDifference(m_model->volume_ipf(0), m_model->volume_ipf(1), m_camera->slice_location().layer, m_camera->slice_location().layer);
+	
+	//std::cout << "selecting defference" << std::endl;
+	
+	VolumeIPFSelection_Ptr p = diff.select_intersection();
+	
+	model()->swap_ipf(0);
+	//std::cout << "setting as selection" << std::endl;
+	model()->selection()->replace_with_selection(p);
+	
+	
+	//std::cout << "selection set" << std::endl;
+	
+	//std::cout << "recreating overlays" << std::endl;
+	recreate_overlays();
+	//std::cout << "refreshing canvases" << std::endl;
+	refresh_canvases();
+	std::cout << "diff comlete" << std::endl;
+}
+
+void PartitionView::OnButtonDiffDialog(wxCommandEvent&)
+{	
+	
+	DifferenceDialog dialog(this, model()->volume_ipf_count());
+	dialog.ShowModal();
+	
+	DifferenceOptions options = *(dialog.get_options());
+	
+	
+	DICOMIPFDifference diff = DICOMIPFDifference(m_model->volume_ipf(options.ipfA), m_model->volume_ipf(options.ipfB), options.layerA, options.layerB);
+	
+	//std::cout << "selecting defference" << std::endl;
+	
+	VolumeIPFSelection_Ptr p;
+	
+	switch(options.type) {
+		case 0:
+			p = diff.select_differenceAB();
+			break;
+		case 1:
+			p = diff.select_union();
+			break;
+		case 2:
+			p = diff.select_intersection();
+			break;
+	}
+	
+	//std::cout << "setting as selection" << std::endl;
+	model()->selection()->replace_with_selection(p);
+	model()->swap_ipf(options.ipfA);
+	
+	//std::cout << "selection set" << std::endl;
+	
+	//std::cout << "recreating overlays" << std::endl;
+	recreate_overlays();
+	//std::cout << "refreshing canvases" << std::endl;
+	refresh_canvases();
+	std::cout << "diff comlete" << std::endl;
+}
+
+void PartitionView::OnButtonDiffBA(wxCommandEvent&)
+{	
+	
+	DICOMIPFDifference diff = DICOMIPFDifference(m_model->volume_ipf(0), m_model->volume_ipf(1), m_camera->slice_location().layer, m_camera->slice_location().layer);
+	
+	//std::cout << "selecting defference" << std::endl;
+	
+	VolumeIPFSelection_Ptr p = diff.select_differenceBA();
+	
+	
+	//std::cout << "setting as selection" << std::endl;
+	
+	model()->swap_ipf(1);
+	model()->selection()->replace_with_selection(p);
+	
+	//std::cout << "selection set" << std::endl;
+	
+	//std::cout << "recreating overlays" << std::endl;
+	recreate_overlays();
+	//std::cout << "refreshing canvases" << std::endl;
+	refresh_canvases();
+	std::cout << "diff comlete" << std::endl;
+}
+
+void PartitionView::OnButtonDiffAB(wxCommandEvent&)
+{	
+	
+	DICOMIPFDifference diff = DICOMIPFDifference(m_model->volume_ipf(0), m_model->volume_ipf(1), m_camera->slice_location().layer, m_camera->slice_location().layer);
+	
+	//std::cout << "selecting defference" << std::endl;
+	
+	VolumeIPFSelection_Ptr p = diff.select_differenceAB();
+	
+	
+	//std::cout << "setting as selection" << std::endl;
+	model()->swap_ipf(0);
+	
+	model()->selection()->replace_with_selection(p);
+	
+	//std::cout << "selection set" << std::endl;
+	
+	//std::cout << "recreating overlays" << std::endl;
+	recreate_overlays();
+	//std::cout << "refreshing canvases" << std::endl;
+	refresh_canvases();
+	std::cout << "diff comlete" << std::endl;
+}
+
+void PartitionView::OnButtonDiffUnion(wxCommandEvent&)
+{	
+	
+	DICOMIPFDifference diff = DICOMIPFDifference(m_model->volume_ipf(0), m_model->volume_ipf(1), m_camera->slice_location().layer, m_camera->slice_location().layer);
+	
+	//std::cout << "selecting defference" << std::endl;
+	
+	VolumeIPFSelection_Ptr p = diff.select_union();
+	model()->swap_ipf(0);
+	
+	//std::cout << "setting as selection" << std::endl;
+	model()->selection()->replace_with_selection(p);
+	
+	//std::cout << "selection set" << std::endl;
+	
+	//std::cout << "recreating overlays" << std::endl;
+	recreate_overlays();
+	//std::cout << "refreshing canvases" << std::endl;
+	refresh_canvases();
+	std::cout << "diff comlete" << std::endl;
+}
 //~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnChoiceDrawingTool(wxCommandEvent&)
 {
@@ -926,6 +1272,11 @@ void PartitionView::OnChoiceMultiFeatureSelection(wxCommandEvent&)
 {
 	std::string name = wxString_to_string(m_multiFeatureSelectionChoice->GetStringSelection());
 	m_model->multi_feature_selection_manager()->set_active_multi_feature_selection(name);
+}
+
+void PartitionView::OnRadioChooseIPF(wxCommandEvent& e) {
+	//std::cout << "Radio button pressed" << std::endl;
+	m_model->swap_ipf(m_ipfchoice->GetSelection());
 }
 
 //~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
@@ -976,8 +1327,17 @@ BEGIN_EVENT_TABLE(PartitionView, wxPanel)
 	EVT_BUTTON(BUTTONID_VIEW_XY, PartitionView::OnButtonViewXY)
 	EVT_BUTTON(BUTTONID_VIEW_XZ, PartitionView::OnButtonViewXZ)
 	EVT_BUTTON(BUTTONID_VIEW_YZ, PartitionView::OnButtonViewYZ)
+	EVT_BUTTON(BUTTONID_SEGMENT_MULTIPLE, PartitionView::OnButtonSegmentMultiple)
+	EVT_BUTTON(BUTTONID_DIFFERENCEU, PartitionView::OnButtonDiffUnion)
+	EVT_BUTTON(BUTTONID_DIFFERENCEN, PartitionView::OnButtonDiffIntersection)
+	EVT_BUTTON(BUTTONID_DIFFERENCEAB, PartitionView::OnButtonDiffAB)
+	EVT_BUTTON(BUTTONID_DIFFERENCEBA, PartitionView::OnButtonDiffBA)
+	EVT_BUTTON(BUTTONID_DIFFERENCEDIALOG, PartitionView::OnButtonDiffDialog)
 	EVT_BUTTON(BUTTONID_VISUALIZE_IN_3D, PartitionView::OnButtonVisualizeIn3D)
 
+	//~~~~~~~~~~~~~~~~~~~~ RADIO ~~~~~~~~~~~~~~~~~~~~~~
+	EVT_RADIOBOX(RADIOID_CHOOSEIPF, PartitionView::OnRadioChooseIPF)
+	
 	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
 	EVT_CHOICE(CHOICEID_DRAWING_TOOL, PartitionView::OnChoiceDrawingTool)
 	EVT_CHOICE(CHOICEID_MULTI_FEATURE_SELECTION, PartitionView::OnChoiceMultiFeatureSelection)

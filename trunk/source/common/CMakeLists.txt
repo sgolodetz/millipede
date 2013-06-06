@@ -20,6 +20,11 @@ adts/WeightedEdge.h
 )
 
 ##
+SET(analysis_headers
+analysis/DICOMIPFDifference.h
+)
+
+##
 SET(commands_sources
 commands/BasicCommandManager.cpp
 commands/Command.cpp
@@ -94,6 +99,15 @@ featureid/RibsIdentifier3D.cpp
 featureid/SpinalCordIdentifier3D.cpp
 featureid/SpineIdentifier3D.cpp
 featureid/SpleenIdentifier3D.cpp
+featureid/JAortaIdentifier3D.cpp
+featureid/JKidneysIdentifier3D.cpp
+featureid/JLiverIdentifier3D.cpp
+featureid/JMultiFeatureIdentifier3D.cpp
+featureid/JRibsIdentifier3D.cpp
+featureid/JSpinalCordIdentifier3D.cpp
+featureid/JSpineIdentifier3D.cpp
+featureid/JSpleenIdentifier3D.cpp
+featureid/extractsettings/SettingsCapturer.cpp
 )
 
 SET(featureid_headers
@@ -106,6 +120,16 @@ featureid/RibsIdentifier3D.h
 featureid/SpinalCordIdentifier3D.h
 featureid/SpineIdentifier3D.h
 featureid/SpleenIdentifier3D.h
+featureid/JAortaIdentifier3D.h
+featureid/JKidneysIdentifier3D.h
+featureid/JLiverIdentifier3D.h
+featureid/JMultiFeatureIdentifier3D.h
+featureid/JRibsIdentifier3D.h
+featureid/JSpinalCordIdentifier3D.h
+featureid/JSpineIdentifier3D.h
+featureid/JSpleenIdentifier3D.h
+featureid/FIOptions.h
+featureid/extractsettings/SettingsCapturer.h
 )
 
 ##

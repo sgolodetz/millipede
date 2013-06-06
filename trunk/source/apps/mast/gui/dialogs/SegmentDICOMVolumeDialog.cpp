@@ -67,7 +67,7 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	filteringSizer->Add(m_adfConductance, 0, wxALIGN_CENTRE_VERTICAL);
 
 	filteringSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("ADF Iterations:")), 0, wxALIGN_CENTRE_VERTICAL);
-	m_adfIterations = new wxSpinCtrl(panel, wxID_ANY, wxT("20"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 20);
+	m_adfIterations = new wxSpinCtrl(panel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 30, 5);
 	filteringSizer->Add(m_adfIterations, 0, wxALIGN_CENTRE_VERTICAL);
 
 	sizer->AddSpacer(10);

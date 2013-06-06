@@ -29,6 +29,7 @@ enum Enum
 	SPINAL_CORD,
 	SPLEEN,
 	VERTEBRA,
+	//MARKER,
 	COUNT,
 };
 

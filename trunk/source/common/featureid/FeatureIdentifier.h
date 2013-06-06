@@ -18,6 +18,8 @@
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 
+#include <iostream>
+
 namespace mp {
 
 //#################### FORWARD DECLARATIONS ####################
@@ -26,7 +28,7 @@ typedef boost::shared_ptr<const class DICOMVolume> DICOMVolume_CPtr;
 class FeatureIdentifier : public virtual Job
 {
 	//#################### TYPEDEFS ####################
-protected:
+public:
 	typedef DICOMImageBranchLayer BranchLayer;
 	typedef AbdominalFeature::Enum Feature;
 	typedef DICOMImageLeafLayer LeafLayer;
@@ -202,6 +204,8 @@ private:
 				componentProperties[1] = adjProperties;
 				overallProperties = BranchProperties::combine_branch_properties(componentProperties);
 
+				std::cout << "Reached " << adjProperties.centroid() << std::endl;
+				
 				grow_region_from(adj, region, growCondition, seen, seedProperties, overallProperties);
 			}
 		}

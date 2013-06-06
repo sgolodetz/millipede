@@ -80,6 +80,7 @@ public:
 	double zoom_factor() const;
 	double zoom_factor(int zoomLevel) const;
 	int zoom_level() const;
+	int getLayer();
 
 	//#################### PRIVATE METHODS ####################
 private:

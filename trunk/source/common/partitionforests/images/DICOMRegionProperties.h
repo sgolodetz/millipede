@@ -21,9 +21,11 @@ class DICOMRegionProperties
 private:
 	Vector3d m_centroid;
 	unsigned char m_maxGreyValue;
+	Vector3i m_pointInside;
 	double m_meanGreyValue;
+	double m_meanHoundsfieldValue;
 	unsigned char m_minGreyValue;
-	int m_xMin, m_yMin, m_zMin, m_xMax, m_yMax, m_zMax;
+	int m_xMin, m_yMin, m_zMin, m_xMax, m_yMax, m_zMax, m_voxPerSlice;
 	size_t m_voxelCount;
 
 	//#################### CONSTRUCTORS ####################
@@ -41,7 +43,9 @@ public:
 	static DICOMRegionProperties convert_from_leaf_properties(const std::pair<Vector3i,DICOMPixelProperties>& properties);
 	unsigned char max_grey_value() const;
 	double mean_grey_value() const;
+	double mean_houndsfield_value() const;
 	unsigned char min_grey_value() const;
+	const Vector3i& point_inside() const;
 	int voxel_count() const;
 	int x_max() const;
 	int x_min() const;
@@ -49,6 +53,7 @@ public:
 	int y_min() const;
 	int z_max() const;
 	int z_min() const;
+	int voxels_per_slice() const;
 };
 
 //#################### GLOBAL OPERATORS ####################

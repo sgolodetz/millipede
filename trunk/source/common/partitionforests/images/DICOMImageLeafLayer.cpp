@@ -4,6 +4,7 @@
  ***/
 
 #include "DICOMImageLeafLayer.h"
+#include <iostream>
 
 namespace mp {
 
@@ -69,6 +70,7 @@ DICOMImageLeafLayer::DICOMImageLeafLayer(const itk::Image<int,3>::Pointer& baseI
 				baseIndex[0] = gradientMagnitudeIndex[0] = windowedIndex[0] = x;
 				baseIndex[1] = gradientMagnitudeIndex[1] = windowedIndex[1] = y;
 				baseIndex[2] = gradientMagnitudeIndex[2] = windowedIndex[2] = z;
+				//std::cout << baseImage->GetPixel(baseIndex) << std::endl;
 				nodeProperties.push_back(DICOMPixelProperties(baseImage->GetPixel(baseIndex),
 															  gradientMagnitudeImage->GetPixel(gradientMagnitudeIndex),
 															  windowedImage->GetPixel(windowedIndex)));
