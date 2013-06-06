@@ -592,7 +592,6 @@ public:
 	*/
 	BranchLayer_Ptr branch_layer(int index) const	/* */
 	{
-		// Only the access specifier for this method was changed from private to public.
 		return m_branchLayers[index-1];
 	}	/* */
 

@@ -1,0 +1,16 @@
+/***
+ * millipede: ImageBranchLayerSection.cpp
+ * Added by Varduhi Yeghiazaryan, 2013.
+ ***/
+
+#include "ImageBranchLayerSection.h"
+
+namespace mp {
+
+//#################### LOADING METHODS ####################
+DICOMImageBranchLayer ImageBranchLayerSection::load(std::istream& is);
+
+//#################### SAVING METHODS ####################
+void ImageBranchLayerSection::save(std::ostream& os, const DICOMImageBranchLayer& imageLeafLayer);
+
+}

@@ -134,15 +134,15 @@ io/files/VolumeIPFFile.h	###
 
 ##
 SET(io_sections_sources
-io/sections/ImageBranchLayerSection.cpp	###
-io/sections/ImageLeafLayerSection.cpp	###
+io/sections/ImageBranchLayer.cpp	###
+io/sections/ImageLeafLayer.cpp	###
 io/sections/VolumeChoiceSection.cpp
 io/sections/VolumeIPFSection.cpp	###
 )
 
 SET(io_sections_headers
-io/sections/ImageBranchLayerSection.h	###
-io/sections/ImageLeafLayerSection.h	###
+io/sections/ImageBranchLayer.h	###
+io/sections/ImageLeafLayer.h	###
 io/sections/VolumeChoiceSection.h
 io/sections/VolumeIPFSection.h	###
 )
