@@ -16,7 +16,7 @@ namespace mp {
 class DICOMPixelProperties
 {
 	//#################### FRIENDS ####################
-	friend std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs);	//*
+	friend std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs);
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -39,7 +39,7 @@ public:
 };
 
 //#################### GLOBAL OPERATORS ####################
-std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs);	//*
+std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs);
 std::ostream& operator<<(std::ostream& os, const DICOMPixelProperties& rhs);
 
 }

@@ -140,9 +140,9 @@ DICOMRegionProperties DICOMRegionProperties::convert_from_leaf_properties(const 
 	return ret;
 }
 
-int DICOMRegionProperties::max_grey_value() const		{ return m_maxGreyValue; }	//*
+int DICOMRegionProperties::max_grey_value() const		{ return m_maxGreyValue; }
 double DICOMRegionProperties::mean_grey_value() const			{ return m_meanGreyValue; }
-int DICOMRegionProperties::min_grey_value() const		{ return m_minGreyValue; }	//*
+int DICOMRegionProperties::min_grey_value() const		{ return m_minGreyValue; }
 int DICOMRegionProperties::voxel_count() const					{ return m_voxelCount; }
 int DICOMRegionProperties::x_max() const						{ return m_xMax; }
 int DICOMRegionProperties::x_min() const						{ return m_xMin; }
@@ -152,7 +152,7 @@ int DICOMRegionProperties::z_max() const						{ return m_zMax; }
 int DICOMRegionProperties::z_min() const						{ return m_zMin; }
 
 //#################### GLOBAL OPERATORS ####################
-std::istream& operator>>(std::istream& is, DICOMRegionProperties& rhs)	/* */
+std::istream& operator>>(std::istream& is, DICOMRegionProperties& rhs)
 {
 	char dummy;
 	int maxGreyValue, minGreyValue;
@@ -172,9 +172,9 @@ std::istream& operator>>(std::istream& is, DICOMRegionProperties& rhs)	/* */
 	rhs.m_maxGreyValue = static_cast<unsigned char>(maxGreyValue);
 	rhs.m_minGreyValue = static_cast<unsigned char>(minGreyValue);
 	return is;
-}	/* */
+}
 
-std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)	/* */
+std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)
 {
 	// The behaviour of this method was altered by Varduhi Yeghiazaryan. The original method contained only one line which is now commented.
 	os 	<< "<<" 
@@ -192,6 +192,6 @@ std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)	/* 
 		<< ">>";
 //	os << "<<" << rhs.voxel_count() << " | " << rhs.mean_grey_value() << ">>";
 	return os;
-}	/* */
+}
 
 }

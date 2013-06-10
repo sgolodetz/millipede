@@ -8,7 +8,7 @@
 #define H_MILLIPEDE_VECTOR3
 
 #include <cmath>
-#include <iostream>	//*
+#include <iostream>
 
 #include <common/exceptions/Exception.h>
 #include "MathConstants.h"
@@ -336,13 +336,13 @@ bool operator<(const Vector3<T>& lhs, const Vector3<T>& rhs)
 			(lhs.x == rhs.x && lhs.y == rhs.y && lhs.z < rhs.z);
 }
 
-template <typename T>	/* */
+template <typename T>
 std::istream& operator>>(std::istream& is, Vector3<T>& rhs)
 {
 	char dummy;
 	is >> dummy >> rhs.x >> dummy >> rhs.y >> dummy >> rhs.z >> dummy; 
 	return is;
-}	/* */
+}
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Vector3<T>& rhs)

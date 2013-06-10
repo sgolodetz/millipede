@@ -50,7 +50,7 @@ unsigned char DICOMPixelProperties::grey_value() const
 }
 
 //#################### GLOBAL OPERATORS ####################
-std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs)	/* */
+std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs)
 {
 	char dummy;
 	int baseValue, greyValue;
@@ -60,7 +60,7 @@ std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs)	/* */
 	rhs.m_gradientMagnitudeValue = gradientMagnitudeValue;
 	rhs.m_greyValue = static_cast<unsigned char>(greyValue);
 	return is;
-}	/* */
+}
 
 std::ostream& operator<<(std::ostream& os, const DICOMPixelProperties& rhs)
 {

@@ -14,7 +14,7 @@
 #include <common/commands/UndoableCommandManager.h>
 #include <common/featureid/MultiFeatureIdentifier3D.h>
 #include <common/featureid/SpineIdentifier3D.h>
-#include <common/io/files/VolumeIPFFile.h>	//*
+#include <common/io/files/VolumeIPFFile.h>
 #include <mast/gui/components/partitionview/PartitionCamera.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/gui/components/selectionview/SelectionView.h>
@@ -63,9 +63,9 @@ enum
 	MENUID_NAVIGATION_ZOOMOUT,
 	MENUID_SEGMENTATION_CLONECURRENTLAYER,
 	MENUID_SEGMENTATION_DELETECURRENTLAYER,
-	MENUID_SEGMENTATION_LOADSEGMENTATION,	//*
+	MENUID_SEGMENTATION_LOADSEGMENTATION,
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
-	MENUID_SEGMENTATION_SAVESEGMENTATION,	//*
+	MENUID_SEGMENTATION_SAVESEGMENTATION,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP,
 	MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT,
@@ -221,9 +221,9 @@ void SegmentationWindow::setup_menus()
 	wxMenu *segmentationMenu = new wxMenu;
 	segmentationMenu->Append(MENUID_SEGMENTATION_SEGMENTVOLUME, wxT("Segment &Volume...\tCtrl+Alt+Shift+S"));
 	segmentationMenu->AppendSeparator();
-	segmentationMenu->Append(MENUID_SEGMENTATION_LOADSEGMENTATION, wxT("&Load Segmentation...\tCtrl+Shift+L"));	//*
-	segmentationMenu->Append(MENUID_SEGMENTATION_SAVESEGMENTATION, wxT("&Save Segmentation...\tCtrl+Shift+S"));	//*
-	segmentationMenu->AppendSeparator();	//*	
+	segmentationMenu->Append(MENUID_SEGMENTATION_LOADSEGMENTATION, wxT("&Load Segmentation...\tCtrl+Shift+L"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_SAVESEGMENTATION, wxT("&Save Segmentation...\tCtrl+Shift+S"));
+	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_CLONECURRENTLAYER, wxT("&Clone Current Layer\tCtrl+Shift+C"));
 	segmentationMenu->Append(MENUID_SEGMENTATION_DELETECURRENTLAYER, wxT("&Delete Current Layer\tCtrl+Shift+D"));
 	segmentationMenu->Append(MENUID_SEGMENTATION_MERGESELECTEDNODES, wxT("&Merge Selected Nodes\tCtrl+Shift+M"));
@@ -463,7 +463,7 @@ void SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&)
 	m_view->delete_current_layer();
 }
 
-void SegmentationWindow::OnMenuSegmentationLoadSegmentation(wxCommandEvent&)	/* */
+void SegmentationWindow::OnMenuSegmentationLoadSegmentation(wxCommandEvent&)
 {
 	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Load Segmentation", "Image Partition Forest Files (*.ipf)|*.ipf|All Files|*.*");
 	if(dialog->ShowModal() == wxID_OK)
@@ -480,14 +480,14 @@ void SegmentationWindow::OnMenuSegmentationLoadSegmentation(wxCommandEvent&)	/* 
 			wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
 		}
 	}
-}	/* */
+}
 
 void SegmentationWindow::OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&)
 {
 	m_view->merge_selected_nodes();
 }
 
-void SegmentationWindow::OnMenuSegmentationSaveSegmentation(wxCommandEvent&)	/* */
+void SegmentationWindow::OnMenuSegmentationSaveSegmentation(wxCommandEvent&)
 {
 	wxFileDialog_Ptr dialog = construct_save_dialog(this, "Save Segmentation", "Image Partition Forest Files (*.ipf)|*.ipf|All Files|*.*");
 	if(dialog->ShowModal() == wxID_OK)
@@ -495,7 +495,7 @@ void SegmentationWindow::OnMenuSegmentationSaveSegmentation(wxCommandEvent&)	/* 
 		std::string path = wxString_to_string(dialog->GetPath());
 		VolumeIPFFile::save(path, m_model->volume_ipf());
 	}
-}	/* */
+}
 
 void SegmentationWindow::OnMenuSegmentationSegmentVolume(wxCommandEvent&)
 {
@@ -852,9 +852,9 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnMenuNavigationZoomOut)
 	EVT_MENU(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnMenuSegmentationCloneCurrentLayer)
 	EVT_MENU(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer)
-	EVT_MENU(MENUID_SEGMENTATION_LOADSEGMENTATION, SegmentationWindow::OnMenuSegmentationLoadSegmentation)	//*
+	EVT_MENU(MENUID_SEGMENTATION_LOADSEGMENTATION, SegmentationWindow::OnMenuSegmentationLoadSegmentation)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
-	EVT_MENU(MENUID_SEGMENTATION_SAVESEGMENTATION, SegmentationWindow::OnMenuSegmentationSaveSegmentation)	//*
+	EVT_MENU(MENUID_SEGMENTATION_SAVESEGMENTATION, SegmentationWindow::OnMenuSegmentationSaveSegmentation)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, SegmentationWindow::OnMenuSegmentationSplitNodeFinalizeSplit)
@@ -887,7 +887,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
-	EVT_UPDATE_UI(MENUID_SEGMENTATION_SAVESEGMENTATION, SegmentationWindow::OnUpdateForestNeeder)	//*
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_SAVESEGMENTATION, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeFinalizeSplit)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_REMOVESUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeRemoveSubgroup)

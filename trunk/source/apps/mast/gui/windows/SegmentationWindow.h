@@ -87,9 +87,9 @@ public:
 	void OnMenuNavigationZoomOut(wxCommandEvent&);
 	void OnMenuSegmentationCloneCurrentLayer(wxCommandEvent&);
 	void OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&);
-	void OnMenuSegmentationLoadSegmentation(wxCommandEvent&);	//*
+	void OnMenuSegmentationLoadSegmentation(wxCommandEvent&);
 	void OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&);
-	void OnMenuSegmentationSaveSegmentation(wxCommandEvent&);	//*
+	void OnMenuSegmentationSaveSegmentation(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeFinalizeSplit(wxCommandEvent&);

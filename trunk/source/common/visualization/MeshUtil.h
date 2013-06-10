@@ -61,11 +61,11 @@ Plane calculate_average_plane(const NodeLoop<Label>& nodeLoop, const std::vector
 		const Vector3d& v = nodes[nodeLoop.index(j)].position();
 		Vector3d n = (u-centre).cross(v-centre);
 		double area = n.length() / 2;	// the area of the triangle centre-u-v
-		if(area > MathConstants::SMALL_EPSILON)	//*
-		{	//*
+		if(area > MathConstants::SMALL_EPSILON)
+		{
 			n.normalize();
 			avgPlaneNormal += area * n;
-		}	//*
+		}
 	}
 	avgPlaneNormal.normalize();
 

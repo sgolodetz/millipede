@@ -122,29 +122,29 @@ SET(io_files_sources
 io/files/DataTableFile.cpp
 io/files/DICOMDIRFile.cpp
 io/files/VolumeChoiceFile.cpp
-io/files/VolumeIPFFile.cpp	###
+io/files/VolumeIPFFile.cpp
 )
 
 SET(io_files_headers
 io/files/DataTableFile.h
 io/files/DICOMDIRFile.h
 io/files/VolumeChoiceFile.h
-io/files/VolumeIPFFile.h	###
+io/files/VolumeIPFFile.h
 )
 
 ##
 SET(io_sections_sources
-io/sections/ImageBranchLayerSection.cpp	###
-io/sections/ImageLeafLayerSection.cpp	###
+io/sections/ImageBranchLayerSection.cpp
+io/sections/ImageLeafLayerSection.cpp
 io/sections/VolumeChoiceSection.cpp
-io/sections/VolumeIPFSection.cpp	###
+io/sections/VolumeIPFSection.cpp
 )
 
 SET(io_sections_headers
-io/sections/ImageBranchLayerSection.h	###
-io/sections/ImageLeafLayerSection.h	###
+io/sections/ImageBranchLayerSection.h
+io/sections/ImageLeafLayerSection.h
 io/sections/VolumeChoiceSection.h
-io/sections/VolumeIPFSection.h	###
+io/sections/VolumeIPFSection.h
 )
 
 ##

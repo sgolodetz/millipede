@@ -348,20 +348,20 @@ public:
 		m_nodes[n].set_parent(parent);
 	}
 
-	int size_x() const	/* */
+	int size_x() const
 	{
 		return m_sizeX;
-	}	/* */
+	}
 
-	int size_y() const	/* */
+	int size_y() const
 	{
 		return m_sizeY;
-	}	/* */
+	}
 
-	int size_z() const	/* */
+	int size_z() const
 	{
 		return m_sizeZ;
-	}	/* */
+	}
 		
 	//#################### PROTECTED METHODS ####################
 protected:

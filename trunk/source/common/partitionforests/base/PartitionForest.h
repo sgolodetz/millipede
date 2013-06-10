@@ -286,10 +286,10 @@ public:
 	
 	@param[in]	branchLayer	A branch layer to be added
 	*/
-	void add_branch_layer(BranchLayer_Ptr branchLayer)	/* */
+	void add_branch_layer(BranchLayer_Ptr branchLayer)
 	{
 		m_branchLayers.push_back(branchLayer);
-	}	/* */
+	}
 
 	/**
 	@brief	Adds a shared listener to be notified of changes to the partition forest.
@@ -590,11 +590,11 @@ public:
 	@param[in]	index	The index of the branch layer
 	@return	The branch layer with the specified index
 	*/
-	BranchLayer_Ptr branch_layer(int index) const	/* */
+	BranchLayer_Ptr branch_layer(int index) const
 	{
 		// Only the access specifier for this method was changed from private to public.
 		return m_branchLayers[index-1];
-	}	/* */
+	}
 
 	/**
 	@brief	Returns the node IDs of the children of the specified node.
@@ -644,10 +644,10 @@ public:
 
 	@return	The leaf layer
 	*/
-	LeafLayer_Ptr leaf_layer() const	/* */
+	LeafLayer_Ptr leaf_layer() const
 	{
 		return m_leafLayer;
-	}	/* */
+	}
 
 	/**
 	@brief	Returns the node ID of the parent of the specified node (if any).
