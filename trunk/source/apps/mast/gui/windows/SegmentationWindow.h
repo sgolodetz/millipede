@@ -99,6 +99,7 @@ public:
 	void OnMenuSegmentationUnzipSelectedNode(wxCommandEvent&);
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
 	void OnMenuSelectionSelectMarked(wxCommandEvent& e);
+	void OnMenuToolsCalculateForestStatistics(wxCommandEvent&);
 	void OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&);
 	void OnMenuToolsValidateFeatureSelection(wxCommandEvent&);
 	void OnMenuToolsVisualizeIn3D(wxCommandEvent&);

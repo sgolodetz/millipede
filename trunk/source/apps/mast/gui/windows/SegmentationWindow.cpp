@@ -18,6 +18,7 @@
 #include <mast/gui/components/selectionview/SelectionView.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/FeatureVolumesDialog.h>
+#include <mast/gui/dialogs/ForestStatisticsDialog.h>
 #include <mast/gui/dialogs/ManageFeatureSelectionsDialog.h>
 #include <mast/gui/dialogs/ValidateFeatureSelectionDialog.h>
 #include <mast/util/HelpController.h>
@@ -75,6 +76,7 @@ enum
 	MENUID_SELECTION_CLEARSELECTION,
 	MENUID_SELECTION_SELECTMARKED_BASE,
 	MENUID_SELECTION_SELECTMARKED_LAST = (MENUID_SELECTION_SELECTMARKED_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
+	MENUID_TOOLS_CALCULATEFORESTSTATISTICS,
 	MENUID_TOOLS_QUANTIFYFEATUREVOLUMES,
 	MENUID_TOOLS_VALIDATEFEATURESELECTION,
 	MENUID_TOOLS_VISUALIZEIN3D,
@@ -281,6 +283,7 @@ void SegmentationWindow::setup_menus()
 		}
 
 	wxMenu *toolsMenu = new wxMenu;
+	toolsMenu->Append(MENUID_TOOLS_CALCULATEFORESTSTATISTICS, wxT("&Calculate Forest Statistics..."));
 	toolsMenu->Append(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, wxT("&Quantify Feature Volumes...\tCtrl+F"));
 	toolsMenu->Append(MENUID_TOOLS_VALIDATEFEATURESELECTION, wxT("&Validate Feature Selection...\tCtrl+V"));
 	toolsMenu->Append(MENUID_TOOLS_VISUALIZEIN3D, wxT("Visualize in &3D...\tCtrl+3"));
@@ -529,6 +532,12 @@ void SegmentationWindow::OnMenuSelectionSelectMarked(wxCommandEvent& e)
 {
 	Feature feature = Feature(e.GetId() - (MENUID_SELECTION_SELECTMARKED_BASE+1));
 	m_model->selection()->replace_with_selection(m_model->active_multi_feature_selection()->selection(feature));
+}
+
+void SegmentationWindow::OnMenuToolsCalculateForestStatistics(wxCommandEvent&)
+{
+	ForestStatisticsDialog dialog(this, m_model->volume_ipf());
+	dialog.ShowModal();
 }
 
 void SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&)
@@ -828,6 +837,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain)
 	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnMenuSegmentationUnzipSelectedNode)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
+	EVT_MENU(MENUID_TOOLS_CALCULATEFORESTSTATISTICS, SegmentationWindow::OnMenuToolsCalculateForestStatistics)
 	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes)
 	EVT_MENU(MENUID_TOOLS_VALIDATEFEATURESELECTION, SegmentationWindow::OnMenuToolsValidateFeatureSelection)
 	EVT_MENU(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnMenuToolsVisualizeIn3D)
@@ -859,6 +869,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
+	EVT_UPDATE_UI(MENUID_TOOLS_CALCULATEFORESTSTATISTICS, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_VALIDATEFEATURESELECTION, SegmentationWindow::OnUpdateMenuToolsValidateFeatureSelection)
 	EVT_UPDATE_UI(MENUID_TOOLS_VISUALIZEIN3D, SegmentationWindow::OnUpdateForestNeeder)

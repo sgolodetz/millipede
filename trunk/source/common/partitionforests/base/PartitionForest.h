@@ -1349,6 +1349,39 @@ public:
 	}
 
 	/**
+	@brief	Finds the highest layer to which nodes will need to be unzipped when merging the specified nodes using non-sibling node merging.
+
+	@return	The highest layer to which an unzip will be needed, as described
+	*/
+	int nonsibling_merge_layer(const std::set<PFNodeID>& nodes) const
+	{
+		// Calculate the connected components of the nodes to be merged.
+		int layerIndex = nodes.begin()->layer();
+		std::set<int> indices;
+		for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+		{
+			indices.insert(it->index());
+		}
+		std::vector<std::set<int> > connectedComponents = find_connected_components(indices, layerIndex);
+
+		// Calculate the layer to which nodes will need to be unzipped for each component, and find the maximum.
+		int result = 0;
+		for(std::vector<std::set<int> >::const_iterator it=connectedComponents.begin(), iend=connectedComponents.end(); it!=iend; ++it)
+		{
+			const std::set<int>& component = *it;
+			if(component.size() == 1) continue;		// nothing to do
+
+			// Find the layer to which the nodes need to be unzipped.
+			int toLayer = find_common_ancestor_layer(component, layerIndex) - 1;	// i.e. the layer below the nodes' common ancestor
+
+			// If this is the highest such layer so far, record it.
+			if(toLayer > result) result = toLayer;
+		}
+
+		return result;
+	}
+
+	/**
 	@brief	Switches a node from being the child of one parent in the layer above to the child of another.
 
 	It is possible that moving the node may cause some of its old ancestors to become disconnected. If this happens,
