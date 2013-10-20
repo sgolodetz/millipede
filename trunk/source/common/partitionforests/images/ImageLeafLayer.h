@@ -1,6 +1,7 @@
 /***
  * millipede: ImageLeafLayer.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #ifndef H_MILLIPEDE_IMAGELEAFLAYER
@@ -347,6 +348,21 @@ public:
 		m_nodes[n].set_parent(parent);
 	}
 
+	int size_x() const
+	{
+		return m_sizeX;
+	}
+
+	int size_y() const
+	{
+		return m_sizeY;
+	}
+
+	int size_z() const
+	{
+		return m_sizeZ;
+	}
+		
 	//#################### PROTECTED METHODS ####################
 protected:
 	void initialise(const std::vector<NodeProperties>& nodeProperties, int sizeX, int sizeY, int sizeZ = 1)

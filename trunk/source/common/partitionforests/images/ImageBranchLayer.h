@@ -28,7 +28,7 @@ public:
 private:
 	typedef AdjacencyGraph<BranchProperties,int> GraphType;
 
-	//#################### NESTED CLASSES (EXCLUDING ITERATORS ####################
+	//#################### NESTED CLASSES (EXCLUDING ITERATORS) ####################
 private:
 	struct ForestLinks
 	{

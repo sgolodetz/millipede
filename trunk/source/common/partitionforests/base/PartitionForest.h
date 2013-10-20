@@ -1,6 +1,7 @@
 /***
  * millipede: PartitionForest.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #ifndef H_MILLIPEDE_PARTITIONFOREST
@@ -276,6 +277,19 @@ public:
 	*/
 	//@{
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	/**
+	@brief	Adds a new branch layer above the highest layer to the partition forest.
+	
+	This method should not be used for constructing a new partition forest. Its main use is in loading a saved 
+	partition forest from a *.ipf file.
+	
+	@param[in]	branchLayer	A branch layer to be added
+	*/
+	void add_branch_layer(BranchLayer_Ptr branchLayer)
+	{
+		m_branchLayers.push_back(branchLayer);
+	}
 
 	/**
 	@brief	Adds a shared listener to be notified of changes to the partition forest.
@@ -571,6 +585,18 @@ public:
 	}
 
 	/**
+	@brief	Returns the branch layer with the specified index in the partition forest.
+	
+	@param[in]	index	The index of the branch layer
+	@return	The branch layer with the specified index
+	*/
+	BranchLayer_Ptr branch_layer(int index) const
+	{
+		// Only the access specifier for this method was changed from private to public.
+		return m_branchLayers[index-1];
+	}
+
+	/**
 	@brief	Returns the node IDs of the children of the specified node.
 
 	If the node is in the leaf layer, it has no children, so the empty set is returned.
@@ -611,6 +637,16 @@ public:
 	int highest_layer() const
 	{
 		return static_cast<int>(m_branchLayers.size());
+	}
+
+	/**
+	@brief	Returns the leaf layer in the partition forest.
+
+	@return	The leaf layer
+	*/
+	LeafLayer_Ptr leaf_layer() const
+	{
+		return m_leafLayer;
 	}
 
 	/**
@@ -1421,11 +1457,6 @@ public:
 
 	//#################### PRIVATE METHODS ####################
 private:
-	BranchLayer_Ptr branch_layer(int index) const
-	{
-		return m_branchLayers[index-1];
-	}
-
 	BranchLayer_Ptr checked_branch_layer(int index) const
 	{
 		if(index >= 1 && index <= highest_layer()) return branch_layer(index);

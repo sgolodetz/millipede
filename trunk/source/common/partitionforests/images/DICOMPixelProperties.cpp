@@ -1,6 +1,7 @@
 /***
  * millipede: DICOMPixelProperties.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #include "DICOMPixelProperties.h"
@@ -49,9 +50,22 @@ unsigned char DICOMPixelProperties::grey_value() const
 }
 
 //#################### GLOBAL OPERATORS ####################
+std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs)
+{
+	char dummy;
+	int baseValue, greyValue;
+	short gradientMagnitudeValue;
+	is >> dummy >> baseValue >> dummy >> gradientMagnitudeValue >> dummy >> greyValue >> dummy;
+	rhs.m_baseValue = baseValue;
+	rhs.m_gradientMagnitudeValue = gradientMagnitudeValue;
+	rhs.m_greyValue = static_cast<unsigned char>(greyValue);
+	return is;
+}
+
 std::ostream& operator<<(std::ostream& os, const DICOMPixelProperties& rhs)
 {
-	os << '<' << rhs.base_value() << " | " << rhs.gradient_magnitude_value() << " | " << static_cast<int>(rhs.grey_value()) << '>';
+	// The whitespaces were removed from the output string!
+	os << '<' << rhs.base_value() << '|' << rhs.gradient_magnitude_value() << '|' << static_cast<int>(rhs.grey_value()) << '>';
 	return os;
 }
 

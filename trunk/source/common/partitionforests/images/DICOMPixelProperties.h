@@ -1,6 +1,7 @@
 /***
  * millipede: DICOMPixelProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #ifndef H_MILLIPEDE_DICOMPIXELPROPERTIES
@@ -14,6 +15,9 @@ namespace mp {
 
 class DICOMPixelProperties
 {
+	//#################### FRIENDS ####################
+	friend std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs);
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	// Note: Deliberately listed in non-increasing order of data size to try and minimize padding.
@@ -35,6 +39,7 @@ public:
 };
 
 //#################### GLOBAL OPERATORS ####################
+std::istream& operator>>(std::istream& is, DICOMPixelProperties& rhs);
 std::ostream& operator<<(std::ostream& os, const DICOMPixelProperties& rhs);
 
 }

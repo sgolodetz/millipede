@@ -1,6 +1,7 @@
 /***
  * millipede: SegmentationWindow.h
  * Copyright Stuart Golodetz, 2009. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #ifndef H_MILLIPEDE_SEGMENTATIONWINDOW
@@ -86,7 +87,9 @@ public:
 	void OnMenuNavigationZoomOut(wxCommandEvent&);
 	void OnMenuSegmentationCloneCurrentLayer(wxCommandEvent&);
 	void OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&);
+	void OnMenuSegmentationLoadSegmentation(wxCommandEvent&);
 	void OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&);
+	void OnMenuSegmentationSaveSegmentation(wxCommandEvent&);
 	void OnMenuSegmentationSegmentVolume(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeAddSubgroup(wxCommandEvent&);
 	void OnMenuSegmentationSplitNodeFinalizeSplit(wxCommandEvent&);

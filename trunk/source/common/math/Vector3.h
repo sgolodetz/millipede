@@ -1,13 +1,14 @@
 /***
  * millipede: Vector3.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #ifndef H_MILLIPEDE_VECTOR3
 #define H_MILLIPEDE_VECTOR3
 
 #include <cmath>
-#include <ostream>
+#include <iostream>
 
 #include <common/exceptions/Exception.h>
 #include "MathConstants.h"
@@ -333,6 +334,14 @@ bool operator<(const Vector3<T>& lhs, const Vector3<T>& rhs)
 	return	lhs.x < rhs.x ||
 			(lhs.x == rhs.x && lhs.y < rhs.y) ||
 			(lhs.x == rhs.x && lhs.y == rhs.y && lhs.z < rhs.z);
+}
+
+template <typename T>
+std::istream& operator>>(std::istream& is, Vector3<T>& rhs)
+{
+	char dummy;
+	is >> dummy >> rhs.x >> dummy >> rhs.y >> dummy >> rhs.z >> dummy; 
+	return is;
 }
 
 template <typename T>

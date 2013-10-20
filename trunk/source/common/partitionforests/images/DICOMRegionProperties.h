@@ -1,6 +1,7 @@
 /***
  * millipede: DICOMRegionProperties.h
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #ifndef H_MILLIPEDE_DICOMREGIONPROPERTIES
@@ -17,6 +18,9 @@ namespace mp {
 
 class DICOMRegionProperties
 {
+	//#################### FRIENDS ####################
+	friend std::istream& operator>>(std::istream& is, DICOMRegionProperties& rhs);
+	
 	//#################### PRIVATE VARIABLES ####################
 private:
 	Vector3d m_centroid;
@@ -39,9 +43,9 @@ public:
 	static DICOMRegionProperties combine_branch_properties(const std::vector<DICOMRegionProperties>& properties);
 	static DICOMRegionProperties combine_leaf_properties(const std::vector<std::pair<Vector3i,DICOMPixelProperties> >& properties);
 	static DICOMRegionProperties convert_from_leaf_properties(const std::pair<Vector3i,DICOMPixelProperties>& properties);
-	unsigned char max_grey_value() const;
+	int max_grey_value() const;
 	double mean_grey_value() const;
-	unsigned char min_grey_value() const;
+	int min_grey_value() const;
 	int voxel_count() const;
 	int x_max() const;
 	int x_min() const;
@@ -52,6 +56,7 @@ public:
 };
 
 //#################### GLOBAL OPERATORS ####################
+std::istream& operator>>(std::istream& is, DICOMRegionProperties& rhs);
 std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs);
 
 }

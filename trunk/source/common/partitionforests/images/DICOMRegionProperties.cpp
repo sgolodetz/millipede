@@ -1,6 +1,7 @@
 /***
  * millipede: DICOMRegionProperties.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
+ * Modified by Varduhi Yeghiazaryan, 2013.
  ***/
 
 #include "DICOMRegionProperties.h"
@@ -139,9 +140,9 @@ DICOMRegionProperties DICOMRegionProperties::convert_from_leaf_properties(const 
 	return ret;
 }
 
-unsigned char DICOMRegionProperties::max_grey_value() const		{ return m_maxGreyValue; }
+int DICOMRegionProperties::max_grey_value() const		{ return m_maxGreyValue; }
 double DICOMRegionProperties::mean_grey_value() const			{ return m_meanGreyValue; }
-unsigned char DICOMRegionProperties::min_grey_value() const		{ return m_minGreyValue; }
+int DICOMRegionProperties::min_grey_value() const		{ return m_minGreyValue; }
 int DICOMRegionProperties::voxel_count() const					{ return m_voxelCount; }
 int DICOMRegionProperties::x_max() const						{ return m_xMax; }
 int DICOMRegionProperties::x_min() const						{ return m_xMin; }
@@ -151,9 +152,45 @@ int DICOMRegionProperties::z_max() const						{ return m_zMax; }
 int DICOMRegionProperties::z_min() const						{ return m_zMin; }
 
 //#################### GLOBAL OPERATORS ####################
+std::istream& operator>>(std::istream& is, DICOMRegionProperties& rhs)
+{
+	char dummy;
+	int maxGreyValue, minGreyValue;
+	is	>> dummy >> dummy
+		>> rhs.m_centroid >> dummy
+		>> maxGreyValue >> dummy
+		>> rhs.m_meanGreyValue >> dummy
+		>> minGreyValue >> dummy
+		>> rhs.m_voxelCount >> dummy
+		>> rhs.m_xMax >> dummy
+		>> rhs.m_xMin >> dummy
+		>> rhs.m_yMax >> dummy
+		>> rhs.m_yMin >> dummy
+		>> rhs.m_zMax >> dummy
+		>> rhs.m_zMin
+		>> dummy >> dummy;
+	rhs.m_maxGreyValue = static_cast<unsigned char>(maxGreyValue);
+	rhs.m_minGreyValue = static_cast<unsigned char>(minGreyValue);
+	return is;
+}
+
 std::ostream& operator<<(std::ostream& os, const DICOMRegionProperties& rhs)
 {
-	os << "<<" << rhs.voxel_count() << " | " << rhs.mean_grey_value() << ">>";
+	// The behaviour of this method was altered by Varduhi Yeghiazaryan. The original method contained only one line which is now commented.
+	os 	<< "<<" 
+		<< rhs.centroid() << '|' 
+		<< rhs.max_grey_value() << '|' 
+		<< rhs.mean_grey_value() << '|' 
+		<< rhs.min_grey_value() << '|' 
+		<< rhs.voxel_count() << '|'
+		<< rhs.x_max() << '|'
+		<< rhs.x_min() << '|'
+		<< rhs.y_max() << '|'
+		<< rhs.y_min() << '|'
+		<< rhs.z_max() << '|'
+		<< rhs.z_min() 
+		<< ">>";
+//	os << "<<" << rhs.voxel_count() << " | " << rhs.mean_grey_value() << ">>";
 	return os;
 }
 
