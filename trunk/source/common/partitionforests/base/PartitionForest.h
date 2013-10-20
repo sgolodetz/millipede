@@ -349,6 +349,16 @@ public:
 	}
 
 	/**
+	@brief	Gets the forest's leaf layer.
+
+	@return	As described
+	*/
+	LeafLayer_Ptr leaf_layer() const
+	{
+		return m_leafLayer;
+	}
+
+	/**
 	@brief	Returns the listeners of the forest.
 
 	@return	As described

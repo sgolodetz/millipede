@@ -32,15 +32,15 @@ IPF_Ptr make_forestX(const ICommandManager_Ptr& manager)
 	std::set<PFNodeID> mergees;
 
 	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,2));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(1);
-		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,2));
+		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,3));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(2);
-		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,3));
+		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,1));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	// Make future forest operations undoable.
@@ -61,7 +61,7 @@ IPF_Ptr make_forestY(const ICommandManager_Ptr& manager)
 	std::set<PFNodeID> mergees;
 
 	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,3));
+		mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,3));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(1);
@@ -99,14 +99,15 @@ std::map<int,std::vector<int> > make_convergence_chains(const IPF_Ptr& ipf)
 
 const std::vector<int>& slow_chain(const std::vector<int>& lhs, const std::vector<int>& rhs)
 {
-	for(size_t i = 0, size = lhs.size(); i < size; ++i)
+	for(size_t i = 0; i < lhs.size() && i < rhs.size(); ++i)
 	{
 		if(lhs[i] > rhs[i]) return lhs;
 		else if(rhs[i] > lhs[i]) return rhs;
 	}
 
-	// If we get here, both chains are the same, so return either of them.
-	return lhs;
+	// If we get here, both chains have a common prefix. The "slower" merging of the two
+	// is then the shorter one, since the longer one carries on merging.
+	return lhs.size() < rhs.size() ? lhs : rhs;
 }
 
 std::map<int,std::vector<int> > slow_merge(const std::map<int,std::vector<int> >& lhs, const std::map<int,std::vector<int> >& rhs)
@@ -134,6 +135,59 @@ void output_convergence_chains(const std::map<int,std::vector<int> >& chains)
 	}
 }
 
+IPF_Ptr construct_slow_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
+{
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(*forestX->leaf_layer()));
+	for(SimpleImageLeafLayer::LeafNodeIterator it=leafLayer->leaf_nodes_begin(), iend=leafLayer->leaf_nodes_end(); it!=iend; ++it)
+	{
+		it->set_parent(-1);
+	}
+
+	IPF_Ptr result(new IPF(leafLayer));
+
+	std::map<int,std::vector<int> > chainsX = make_convergence_chains(forestX);
+	output_convergence_chains(chainsX);
+
+	std::map<int,std::vector<int> > chainsY = make_convergence_chains(forestY);
+	output_convergence_chains(chainsY);
+
+	std::map<int,std::vector<int> > chainsSlow = slow_merge(chainsX, chainsY);
+	output_convergence_chains(chainsSlow);
+
+	for(int i = 1; i <= forestX->highest_layer() || i <= forestY->highest_layer(); ++i)
+	{
+		result->clone_layer(result->highest_layer());
+
+		std::map<int,std::set<PFNodeID> > mergeSets;
+
+		size_t layerIndex = result->highest_layer();
+		//result->output(std::cout);
+		std::cout << "Layer: " << layerIndex << '\n';
+		for(IPF::BranchNodeConstIterator jt=result->branch_nodes_cbegin(layerIndex), jend=result->branch_nodes_cend(layerIndex); jt!=jend; ++jt)
+		{
+			std::cout << jt.index() << ' ' << jt->parent() << '\n';
+			const std::vector<int>& chain = chainsSlow[jt.index()];
+			if(layerIndex < chain.size())
+			{
+				mergeSets[chain[layerIndex]].insert(PFNodeID(layerIndex, jt.index()));
+			}
+		}
+
+		for(std::map<int,std::set<PFNodeID> >::const_iterator jt=mergeSets.begin(), jend=mergeSets.end(); jt!=jend; ++jt)
+		{
+			std::cout << "Merging ";
+			for(std::set<PFNodeID>::const_iterator kt=jt->second.begin(), kend=jt->second.end(); kt!=kend; ++kt)
+			{
+				std::cout << *kt << '/' << result->parent_of(*kt) << ' ';
+			}
+			std::cout << std::endl;
+			result->merge_sibling_nodes(jt->second);
+		}
+	}
+
+	return result;
+}
+
 int main()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
@@ -149,14 +203,10 @@ int main()
 	gvoX->output("Forest X");
 	gvoY->output("Forest Y");
 
-	std::map<int,std::vector<int> > chainsX = make_convergence_chains(forestX);
-	output_convergence_chains(chainsX);
-
-	std::map<int,std::vector<int> > chainsY = make_convergence_chains(forestY);
-	output_convergence_chains(chainsY);
-
-	std::map<int,std::vector<int> > chainsSlow = slow_merge(chainsX, chainsY);
-	output_convergence_chains(chainsSlow);
+	IPF_Ptr forestSlow = construct_slow_merged_ipf(forestX, forestY);
+	boost::shared_ptr<GVO> gvoSlow(new GVO(streamController, forestSlow));
+	forestSlow->add_shared_listener(gvoSlow);
+	gvoSlow->output("Forest Slow");
 
 	return 0;
 }
