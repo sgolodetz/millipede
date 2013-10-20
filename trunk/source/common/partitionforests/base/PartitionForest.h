@@ -349,6 +349,18 @@ public:
 	}
 
 	/**
+	@brief	Returns whether or not the forest contains a node with the specified ID.
+
+	@param[in]	node		The node to check
+	@return	As described
+	*/
+	bool has_node(const PFNodeID& node)
+	{
+		IForestLayer_Ptr layer = checked_forest_layer(node.layer());
+		return layer && layer->has_node(node.index());
+	}
+
+	/**
 	@brief	Gets the forest's leaf layer.
 
 	@return	As described

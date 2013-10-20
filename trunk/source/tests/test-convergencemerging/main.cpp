@@ -78,61 +78,108 @@ IPF_Ptr make_forestY(const ICommandManager_Ptr& manager)
 	return ipf;
 }
 
-std::map<int,std::vector<int> > make_convergence_chains(const IPF_Ptr& ipf)
-{
-	std::map<int,std::vector<int> > result;
-	for(IPF::LeafNodeConstIterator it=ipf->leaf_nodes_cbegin(), iend=ipf->leaf_nodes_cend(); it!=iend; ++it)
-	{
-		int leafIndex = it.index();
-		PFNodeID cur(0, leafIndex);
+typedef std::map<std::pair<int,int>,int> CommonAncestorMap;
 
-		std::vector<int>& chain = result[leafIndex];
-		chain.reserve(ipf->highest_layer() + 1);
-		while(cur != PFNodeID::invalid())
+void find_common_ancestor(const IPF_Ptr& ipf, int i, int j, CommonAncestorMap& commonAncestorMap)
+{
+	int curLayer = 0;
+	std::pair<int,int> initial = std::make_pair(i, j);
+	std::pair<int,int> cur = initial;
+	while(cur.first != -1 && cur.second != -1)
+	{
+		if(cur.first > cur.second)
 		{
-			chain.push_back(cur.index());
-			cur = ipf->parent_of(cur);
+			std::swap(cur.first, cur.second);
+		}
+		else if(cur.first == cur.second)
+		{
+			commonAncestorMap[initial] = curLayer;
+			return;
+		}
+
+		std::map<std::pair<int,int>,int>::const_iterator it = commonAncestorMap.find(cur);
+		if(it != commonAncestorMap.end())
+		{
+			commonAncestorMap[initial] = it->second;
+			return;
+		}
+
+		cur.first = ipf->parent_of(PFNodeID(curLayer, cur.first)).index();
+		cur.second = ipf->parent_of(PFNodeID(curLayer, cur.second)).index();
+		++curLayer;
+	}
+
+	commonAncestorMap[initial] = -1;
+}
+
+CommonAncestorMap make_common_ancestor_map(const IPF_Ptr& ipf)
+{
+	CommonAncestorMap result;
+
+	std::vector<int> leafIndices = ipf->leaf_layer()->node_indices();
+	for(size_t i=0, size=leafIndices.size(); i<size-1; ++i)
+	{
+		for(size_t j=i+1; j<size; ++j)
+		{
+			find_common_ancestor(ipf, (int)i, (int)j, result);
 		}
 	}
+
 	return result;
 }
 
-const std::vector<int>& slow_chain(const std::vector<int>& lhs, const std::vector<int>& rhs)
+CommonAncestorMap slow_merge_ancestor_map(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
 {
-	for(size_t i = 0; i < lhs.size() && i < rhs.size(); ++i)
-	{
-		if(lhs[i] > rhs[i]) return lhs;
-		else if(rhs[i] > lhs[i]) return rhs;
-	}
-
-	// If we get here, both chains have a common prefix. The "slower" merging of the two
-	// is then the shorter one, since the longer one carries on merging.
-	return lhs.size() < rhs.size() ? lhs : rhs;
-}
-
-std::map<int,std::vector<int> > slow_merge(const std::map<int,std::vector<int> >& lhs, const std::map<int,std::vector<int> >& rhs)
-{
-	std::map<int,std::vector<int> > result;
-	std::map<int,std::vector<int> >::const_iterator it = lhs.begin(), iend = lhs.end(), jt = rhs.begin(), jend = rhs.end();
+	CommonAncestorMap result;
+	CommonAncestorMap camX = make_common_ancestor_map(forestX);
+	CommonAncestorMap camY = make_common_ancestor_map(forestY);
+	CommonAncestorMap::const_iterator it = camX.begin(), iend = camX.end(), jt = camY.begin(), jend = camY.end();
 	while(it != iend && jt != jend)
 	{
-		result[it->first] = slow_chain(it->second, jt->second);
+		if(it->second > jt->second)
+		{
+			result.insert(*it);
+		}
+		else
+		{
+			result.insert(*jt);
+		}
 		++it, ++jt;
 	}
 	return result;
 }
 
-void output_convergence_chains(const std::map<int,std::vector<int> >& chains)
+CommonAncestorMap fast_merge_ancestor_map(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
 {
-	for(std::map<int,std::vector<int> >::const_iterator it=chains.begin(), iend=chains.end(); it!=iend; ++it)
+	CommonAncestorMap result;
+	CommonAncestorMap camX = make_common_ancestor_map(forestX);
+	CommonAncestorMap camY = make_common_ancestor_map(forestY);
+	CommonAncestorMap::const_iterator it = camX.begin(), iend = camX.end(), jt = camY.begin(), jend = camY.end();
+	while(it != iend && jt != jend)
 	{
-		std::cout << it->first << ": ";
-		for(std::vector<int>::const_iterator jt=it->second.begin(), jend=it->second.end(); jt!=jend; ++jt)
+		if(it->second < jt->second)
 		{
-			std::cout << *jt;
+			result.insert(*it);
 		}
-		std::cout << '\n';
+		else
+		{
+			result.insert(*jt);
+		}
+		++it, ++jt;
 	}
+	return result;
+}
+
+typedef std::map<int,std::vector<std::pair<int,int> > > MergeMap;
+
+MergeMap make_merge_map(const CommonAncestorMap& cam)
+{
+	MergeMap result;
+	for(CommonAncestorMap::const_iterator it=cam.begin(), iend=cam.end(); it!=iend; ++it)
+	{
+		result[it->second].push_back(it->first);
+	}
+	return result;
 }
 
 IPF_Ptr construct_slow_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
@@ -145,43 +192,70 @@ IPF_Ptr construct_slow_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY
 
 	IPF_Ptr result(new IPF(leafLayer));
 
-	std::map<int,std::vector<int> > chainsX = make_convergence_chains(forestX);
-	output_convergence_chains(chainsX);
+	MergeMap mm = make_merge_map(slow_merge_ancestor_map(forestX, forestY));
 
-	std::map<int,std::vector<int> > chainsY = make_convergence_chains(forestY);
-	output_convergence_chains(chainsY);
-
-	std::map<int,std::vector<int> > chainsSlow = slow_merge(chainsX, chainsY);
-	output_convergence_chains(chainsSlow);
-
-	for(int i = 1; i <= forestX->highest_layer() || i <= forestY->highest_layer(); ++i)
+	for(int i=1; i<=forestX->highest_layer() || i<=forestY->highest_layer(); ++i)
 	{
-		result->clone_layer(result->highest_layer());
+		result->clone_layer(i-1);
 
-		std::map<int,std::set<PFNodeID> > mergeSets;
-
-		size_t layerIndex = result->highest_layer();
-		//result->output(std::cout);
-		std::cout << "Layer: " << layerIndex << '\n';
-		for(IPF::BranchNodeConstIterator jt=result->branch_nodes_cbegin(layerIndex), jend=result->branch_nodes_cend(layerIndex); jt!=jend; ++jt)
+		const std::vector<std::pair<int,int> >& merges = mm[i];
+		for(size_t j=0; j<merges.size(); ++j)
 		{
-			std::cout << jt.index() << ' ' << jt->parent() << '\n';
-			const std::vector<int>& chain = chainsSlow[jt.index()];
-			if(layerIndex < chain.size())
+			PFNodeID lhs(0,merges[j].first), rhs(0,merges[j].second);
+			lhs = result->ancestor_of(lhs, i);
+			rhs = result->ancestor_of(rhs, i);
+			if(result->has_node(lhs) && result->has_node(rhs))
 			{
-				mergeSets[chain[layerIndex]].insert(PFNodeID(layerIndex, jt.index()));
+				std::set<PFNodeID> mergees;
+				mergees.insert(lhs);
+				mergees.insert(rhs);
+				result->merge_nonsibling_nodes(mergees);
 			}
 		}
+	}
 
-		for(std::map<int,std::set<PFNodeID> >::const_iterator jt=mergeSets.begin(), jend=mergeSets.end(); jt!=jend; ++jt)
+	return result;
+}
+
+IPF_Ptr construct_fast_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
+{
+	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(*forestX->leaf_layer()));
+	for(SimpleImageLeafLayer::LeafNodeIterator it=leafLayer->leaf_nodes_begin(), iend=leafLayer->leaf_nodes_end(); it!=iend; ++it)
+	{
+		it->set_parent(-1);
+	}
+
+	IPF_Ptr result(new IPF(leafLayer));
+
+	MergeMap mm = make_merge_map(fast_merge_ancestor_map(forestX, forestY));
+
+	/*for(MergeMap::const_iterator it=mm.begin(), iend=mm.end(); it!=iend; ++it)
+	{
+		std::cout << it->first << ": ";
+		for(std::vector<std::pair<int,int> >::const_iterator jt=it->second.begin(), jend=it->second.end(); jt!=jend; ++jt)
 		{
-			std::cout << "Merging ";
-			for(std::set<PFNodeID>::const_iterator kt=jt->second.begin(), kend=jt->second.end(); kt!=kend; ++kt)
+			std::cout << '(' << jt->first << ',' << jt->second << ") ";
+		}
+		std::cout << '\n';
+	}*/
+
+	for(int i=1; i<=forestX->highest_layer() || i<=forestY->highest_layer(); ++i)
+	{
+		result->clone_layer(i-1);
+
+		const std::vector<std::pair<int,int> >& merges = mm[i];
+		for(size_t j=0; j<merges.size(); ++j)
+		{
+			PFNodeID lhs(0,merges[j].first), rhs(0,merges[j].second);
+			lhs = result->ancestor_of(lhs, i);
+			rhs = result->ancestor_of(rhs, i);
+			if(result->has_node(lhs) && result->has_node(rhs))
 			{
-				std::cout << *kt << '/' << result->parent_of(*kt) << ' ';
+				std::set<PFNodeID> mergees;
+				mergees.insert(lhs);
+				mergees.insert(rhs);
+				result->merge_nonsibling_nodes(mergees);
 			}
-			std::cout << std::endl;
-			result->merge_sibling_nodes(jt->second);
 		}
 	}
 
@@ -207,6 +281,11 @@ int main()
 	boost::shared_ptr<GVO> gvoSlow(new GVO(streamController, forestSlow));
 	forestSlow->add_shared_listener(gvoSlow);
 	gvoSlow->output("Forest Slow");
+
+	IPF_Ptr forestFast = construct_fast_merged_ipf(forestX, forestY);
+	boost::shared_ptr<GVO> gvoFast(new GVO(streamController, forestFast));
+	forestFast->add_shared_listener(gvoFast);
+	gvoFast->output("Forest Fast");
 
 	return 0;
 }
