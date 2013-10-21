@@ -32,19 +32,11 @@ IPF_Ptr make_forestX(const ICommandManager_Ptr& manager)
 	std::set<PFNodeID> mergees;
 
 	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,3));
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,3));	mergees.insert(PFNodeID(1,4));	mergees.insert(PFNodeID(1,6));	mergees.insert(PFNodeID(1,7));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(1);
-		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,2));	mergees.insert(PFNodeID(2,4));	mergees.insert(PFNodeID(2,6));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(2);
-		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,5));	mergees.insert(PFNodeID(3,7));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(3);
-		mergees.insert(PFNodeID(4,0));	mergees.insert(PFNodeID(4,8));
+		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,2));	mergees.insert(PFNodeID(2,5));	mergees.insert(PFNodeID(2,8));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	// Make future forest operations undoable.
@@ -65,19 +57,11 @@ IPF_Ptr make_forestY(const ICommandManager_Ptr& manager)
 	std::set<PFNodeID> mergees;
 
 	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,5));	mergees.insert(PFNodeID(1,7));	mergees.insert(PFNodeID(1,8));
+		mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,4));	mergees.insert(PFNodeID(1,5));	mergees.insert(PFNodeID(1,7));	mergees.insert(PFNodeID(1,8));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(1);
-		mergees.insert(PFNodeID(2,2));	mergees.insert(PFNodeID(2,4));	mergees.insert(PFNodeID(2,5));	mergees.insert(PFNodeID(2,6));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(2);
-		mergees.insert(PFNodeID(3,1));	mergees.insert(PFNodeID(3,2));	mergees.insert(PFNodeID(3,3));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
-
-	ipf->clone_layer(3);
-		mergees.insert(PFNodeID(4,0));	mergees.insert(PFNodeID(4,1));
+		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,1));	mergees.insert(PFNodeID(2,3));	mergees.insert(PFNodeID(2,6));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	// Make future forest operations undoable.
@@ -229,7 +213,7 @@ IPF_Ptr construct_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY, con
 				nodes.insert(rhs.index());
 				if(result->are_connected(nodes, lhs.layer()))
 				{
-					std::cout << "Merging " << merges[j].first << " and " << merges[j].second << " at layer " << i << '\n';
+					//std::cout << "Merging " << merges[j].first << " and " << merges[j].second << " at layer " << i << '\n';
 					std::set<PFNodeID> mergees;
 					mergees.insert(lhs);
 					mergees.insert(rhs);
@@ -239,7 +223,7 @@ IPF_Ptr construct_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY, con
 				{
 					// If we can't yet merge the two nodes specified in this layer for
 					// connectedness reasons, we should try again at the next layer up.
-					std::cout << "Can't yet merge " << merges[j].first << " and " << merges[j].second << " at layer " << i << '\n';
+					//std::cout << "Can't yet merge " << merges[j].first << " and " << merges[j].second << " at layer " << i << '\n';
 					mm[i+1].push_back(merges[j]);
 				}
 			}
