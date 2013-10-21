@@ -60,9 +60,9 @@ IPF_Ptr make_forestY(const ICommandManager_Ptr& manager)
 		mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,4));	mergees.insert(PFNodeID(1,5));	mergees.insert(PFNodeID(1,7));	mergees.insert(PFNodeID(1,8));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
-	ipf->clone_layer(1);
+	/*ipf->clone_layer(1);
 		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,1));	mergees.insert(PFNodeID(2,3));	mergees.insert(PFNodeID(2,6));
-	ipf->merge_sibling_nodes(mergees);	mergees.clear();
+	ipf->merge_sibling_nodes(mergees);	mergees.clear();*/
 
 	// Make future forest operations undoable.
 	ipf->set_command_manager(manager);
@@ -101,7 +101,7 @@ void find_common_ancestor(const IPF_Ptr& ipf, int i, int j, CommonAncestorMap& c
 		++curLayer;
 	}
 
-	commonAncestorMap[initial] = -1;
+	commonAncestorMap[initial] = INT_MAX;
 }
 
 CommonAncestorMap make_common_ancestor_map(const IPF_Ptr& ipf)
@@ -186,7 +186,7 @@ IPF_Ptr construct_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY, con
 
 	MergeMap mm = make_merge_map(commonAncestorMap);
 
-	/*for(MergeMap::const_iterator it=mm.begin(), iend=mm.end(); it!=iend; ++it)
+	for(MergeMap::const_iterator it=mm.begin(), iend=mm.end(); it!=iend; ++it)
 	{
 		std::cout << it->first << ": ";
 		for(std::vector<std::pair<int,int> >::const_iterator jt=it->second.begin(), jend=it->second.end(); jt!=jend; ++jt)
@@ -194,7 +194,7 @@ IPF_Ptr construct_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY, con
 			std::cout << '(' << jt->first << ',' << jt->second << ") ";
 		}
 		std::cout << '\n';
-	}*/
+	}
 
 	for(int i=1; i<=forestX->highest_layer() || i<=forestY->highest_layer(); ++i)
 	{
