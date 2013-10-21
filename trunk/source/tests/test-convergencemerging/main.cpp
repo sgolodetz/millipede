@@ -32,15 +32,15 @@ IPF_Ptr make_forestX(const ICommandManager_Ptr& manager)
 	std::set<PFNodeID> mergees;
 
 	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,2));
+		mergees.insert(PFNodeID(1,0));	mergees.insert(PFNodeID(1,1));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(1);
-		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,3));
+		mergees.insert(PFNodeID(2,0));	mergees.insert(PFNodeID(2,2));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(2);
-		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,1));
+		mergees.insert(PFNodeID(3,0));	mergees.insert(PFNodeID(3,3));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	// Make future forest operations undoable.
@@ -61,7 +61,7 @@ IPF_Ptr make_forestY(const ICommandManager_Ptr& manager)
 	std::set<PFNodeID> mergees;
 
 	ipf->clone_layer(0);
-		mergees.insert(PFNodeID(1,1));	mergees.insert(PFNodeID(1,3));
+		mergees.insert(PFNodeID(1,2));	mergees.insert(PFNodeID(1,3));
 	ipf->merge_sibling_nodes(mergees);	mergees.clear();
 
 	ipf->clone_layer(1);
@@ -182,7 +182,7 @@ MergeMap make_merge_map(const CommonAncestorMap& cam)
 	return result;
 }
 
-IPF_Ptr construct_slow_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
+IPF_Ptr construct_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY, const CommonAncestorMap& commonAncestorMap)
 {
 	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(*forestX->leaf_layer()));
 	for(SimpleImageLeafLayer::LeafNodeIterator it=leafLayer->leaf_nodes_begin(), iend=leafLayer->leaf_nodes_end(); it!=iend; ++it)
@@ -192,42 +192,7 @@ IPF_Ptr construct_slow_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY
 
 	IPF_Ptr result(new IPF(leafLayer));
 
-	MergeMap mm = make_merge_map(slow_merge_ancestor_map(forestX, forestY));
-
-	for(int i=1; i<=forestX->highest_layer() || i<=forestY->highest_layer(); ++i)
-	{
-		result->clone_layer(i-1);
-
-		const std::vector<std::pair<int,int> >& merges = mm[i];
-		for(size_t j=0; j<merges.size(); ++j)
-		{
-			PFNodeID lhs(0,merges[j].first), rhs(0,merges[j].second);
-			lhs = result->ancestor_of(lhs, i);
-			rhs = result->ancestor_of(rhs, i);
-			if(result->has_node(lhs) && result->has_node(rhs))
-			{
-				std::set<PFNodeID> mergees;
-				mergees.insert(lhs);
-				mergees.insert(rhs);
-				result->merge_nonsibling_nodes(mergees);
-			}
-		}
-	}
-
-	return result;
-}
-
-IPF_Ptr construct_fast_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
-{
-	shared_ptr<SimpleImageLeafLayer> leafLayer(new SimpleImageLeafLayer(*forestX->leaf_layer()));
-	for(SimpleImageLeafLayer::LeafNodeIterator it=leafLayer->leaf_nodes_begin(), iend=leafLayer->leaf_nodes_end(); it!=iend; ++it)
-	{
-		it->set_parent(-1);
-	}
-
-	IPF_Ptr result(new IPF(leafLayer));
-
-	MergeMap mm = make_merge_map(fast_merge_ancestor_map(forestX, forestY));
+	MergeMap mm = make_merge_map(commonAncestorMap);
 
 	/*for(MergeMap::const_iterator it=mm.begin(), iend=mm.end(); it!=iend; ++it)
 	{
@@ -251,15 +216,37 @@ IPF_Ptr construct_fast_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY
 			rhs = result->ancestor_of(rhs, i);
 			if(result->has_node(lhs) && result->has_node(rhs))
 			{
-				std::set<PFNodeID> mergees;
-				mergees.insert(lhs);
-				mergees.insert(rhs);
-				result->merge_nonsibling_nodes(mergees);
+				std::set<int> nodes;
+				nodes.insert(lhs.index());
+				nodes.insert(rhs.index());
+				if(result->are_connected(nodes, lhs.layer()))
+				{
+					std::set<PFNodeID> mergees;
+					mergees.insert(lhs);
+					mergees.insert(rhs);
+					result->merge_sibling_nodes(mergees);
+				}
+				else
+				{
+					// If we can't yet merge the two nodes specified in this layer for
+					// connectedness reasons, we should try again at the next layer up.
+					mm[i+1].push_back(merges[j]);
+				}
 			}
 		}
 	}
 
 	return result;
+}
+
+IPF_Ptr construct_slow_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
+{
+	return construct_merged_ipf(forestX, forestY, slow_merge_ancestor_map(forestX, forestY));
+}
+
+IPF_Ptr construct_fast_merged_ipf(const IPF_Ptr& forestX, const IPF_Ptr& forestY)
+{
+	return construct_merged_ipf(forestX, forestY, fast_merge_ancestor_map(forestX, forestY));
 }
 
 int main()
