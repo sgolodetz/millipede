@@ -647,6 +647,110 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 	}
 }
 
+void forest_merging_test(const std::string& filename, const std::string& prefix)
+{
+	typedef itk::Image<unsigned char,2> UCImage;
+	typedef itk::ImageFileReader<UCImage> UCReader;
+
+	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
+	std::cout << "Loading input image ../resources/" << filename << "...\n";
+	UCReader::Pointer reader = UCReader::New();
+	reader->SetFileName("../resources/" + filename);
+	reader->Update();
+	UCImage::Pointer windowedImage = reader->GetOutput();
+
+	std::cout << "Preprocessing input image...\n";
+
+	// Cast the windowed image to make a dummy Hounsfield image.
+	typedef itk::Image<int,2> IntImage;
+	typedef itk::CastImageFilter<UCImage,IntImage> UC2IntCastFilter;
+	UC2IntCastFilter::Pointer uc2intCastFilter = UC2IntCastFilter::New();
+	uc2intCastFilter->SetInput(windowedImage);
+	uc2intCastFilter->Update();
+	IntImage::Pointer hounsfieldImage = uc2intCastFilter->GetOutput();
+
+	// Cast the windowed image to make its pixels real-valued.
+	typedef itk::Image<float,2> RealImage;
+	typedef itk::CastImageFilter<UCImage,RealImage> UC2RealCastFilter;
+	UC2RealCastFilter::Pointer uc2realCastFilter = UC2RealCastFilter::New();
+	uc2realCastFilter->SetInput(windowedImage);
+
+	const int N = 2;
+	double conductance[N] = {1.0,1.0};
+	int iterations[N] = {5,15};
+	double timeStep[N] = {0.125,0.125};
+	IPF_Ptr ipfs[N];
+	for(int i=0; i<N; ++i)
+	{
+		// Smooth this real image using anisotropic diffusion.
+		typedef itk::GradientAnisotropicDiffusionImageFilter<RealImage,RealImage> AnisotropicDiffusionFilter;
+		AnisotropicDiffusionFilter::Pointer adFilter = AnisotropicDiffusionFilter::New();
+		adFilter->SetInput(uc2realCastFilter->GetOutput());
+		adFilter->SetConductanceParameter(conductance[i]);
+		adFilter->SetNumberOfIterations(iterations[i]);
+		adFilter->SetTimeStep(timeStep[i]);
+
+		// Calculate the gradient magnitude of the smoothed image.
+		typedef itk::Image<short,2> GradientMagnitudeImage;
+		typedef itk::GradientMagnitudeImageFilter<RealImage,GradientMagnitudeImage> GradientMagnitudeFilter;
+		GradientMagnitudeFilter::Pointer gradientMagnitudeFilter = GradientMagnitudeFilter::New();
+		gradientMagnitudeFilter->SetInput(adFilter->GetOutput());
+		gradientMagnitudeFilter->SetUseImageSpacingOff();
+		gradientMagnitudeFilter->Update();
+		GradientMagnitudeImage::Pointer gradientMagnitudeImage = gradientMagnitudeFilter->GetOutput();
+
+		typedef MeijsterRoerdinkWatershed<GradientMagnitudeImage::PixelType,2> WS;
+
+		// Run the watershed algorithm on the gradient magnitude image.
+		std::cout << "Running watershed...\n";
+		WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
+		std::cout << "Layer 0 Node Count: " << ws.label_count() << '\n';
+
+		// Create the initial partition forest.
+		std::cout << "Creating initial partition forest...\n";
+		shared_ptr<DICOMImageLeafLayer> leafLayer(new DICOMImageLeafLayer(hounsfieldImage, windowedImage, gradientMagnitudeImage));
+		shared_ptr<DICOMImageBranchLayer> lowestBranchLayer = IPF::make_lowest_branch_layer(leafLayer, ws.calculate_groups());
+		IPF_Ptr ipf(new IPF(leafLayer, lowestBranchLayer));
+
+		// Create a rooted MST from the lowest branch layer.
+		std::cout << "Creating rooted MST...\n";
+		RootedMST<int> mst(*lowestBranchLayer);
+
+		// Iteratively run a waterfall pass on the MST until the forest is built.
+		boost::shared_ptr<IPFConstructionListener> listener(new IPFConstructionListener(ipf));
+		GolodetzWaterfallPass<int> pass;
+		pass.add_shared_listener(listener);
+		while(mst.node_count() != 1)
+		{
+			std::cout << "Cloning highest IPF layer...\n";
+			ipf->clone_layer(ipf->highest_layer());
+			std::cout << "Running waterfall pass...\n";
+			pass.run(mst);
+			std::cout << "Layer " << ipf->highest_layer() << " Node Count: " << mst.node_count() << '\n';
+		}
+
+		// Store the resulting IPF.
+		ipfs[i] = ipf;
+	}
+
+	std::cout << "Slow merging...\n";
+	IPF_Ptr slowIPF = slow_merge_forests(ipfs[0], ipfs[1]);
+
+	std::cout << "Fast merging...\n";
+	IPF_Ptr fastIPF = fast_merge_forests(ipfs[0], ipfs[1]);
+
+	std::cout << "Outputting mosaic images...\n";
+	IPF_Ptr outputIPFs[] = {ipfs[0], ipfs[1], slowIPF, fastIPF};
+	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
+	for(int i=0; i<4; ++i)
+	{
+		for(int j=0; j<=outputIPFs[i]->highest_layer(); ++j)
+		{
+			output_mosaic_image(outputIPFs[i], j, imageSize[0], imageSize[1], prefix + "-" + boost::lexical_cast<std::string>(i) + "-" + boost::lexical_cast<std::string>(j) + ".png");
+		}
+	}
+}
+
 int main()
 try
 {
@@ -662,7 +766,7 @@ try
 	//marcotegui_test();
 	//real_image_test<NichollsWaterfallPass>("../resources/test.bmp", "../resources/test-partition*.bmp");
 
-	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
+	/*real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NC.png", NichollsWaterfallPass<int>(true));
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NT.png");
@@ -675,7 +779,11 @@ try
 	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");*/
+
+	forest_merging_test("baboon.png", "baboon");
+	forest_merging_test("lena.png", "lena");
+	forest_merging_test("pepper.png", "pepper");
 
 	return 0;
 }

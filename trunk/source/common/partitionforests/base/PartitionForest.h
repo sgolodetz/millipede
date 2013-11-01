@@ -332,6 +332,21 @@ public:
 	}
 
 	/**
+	@brief	Returns a copy of the forest's leaf layer.
+
+	@return	As described
+	*/
+	shared_ptr<LeafLayerType> copy_leaf_layer() const
+	{
+		shared_ptr<LeafLayerType> result(new LeafLayerType(*m_leafLayer));
+		for(typename LeafLayerType::LeafNodeIterator it=result->leaf_nodes_begin(), iend=result->leaf_nodes_end(); it!=iend; ++it)
+		{
+			it->set_parent(-1);
+		}
+		return result;
+	}
+
+	/**
 	@brief	Finds the connected components of the specified nodes in the specified layer.
 
 	@param[in]	nodes		The indices of the nodes whose connected components are to be found
@@ -346,6 +361,16 @@ public:
 			ret.push_back(find_connected_component(nodes, layerIndex));
 		}
 		return ret;
+	}
+
+	/**
+	@brief	Gets the number of leaf nodes in the forest.
+
+	@return	As described
+	*/
+	int leaf_node_count() const
+	{
+		return static_cast<int>(m_leafLayer->node_indices().size());
 	}
 
 	/**

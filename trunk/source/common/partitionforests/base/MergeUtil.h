@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_MERGEUTIL
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <utility>
 #include <vector>
@@ -104,10 +105,12 @@ MergeLayerTable build_merge_layer_table(const shared_ptr<PartitionForest<LeafLay
 {
 	MergeLayerTable result;
 	int leafNodeCount = forest->leaf_node_count();
+	std::cout << "...Leaf node count: " << leafNodeCount << '\n';
 	for(int i=0; i<leafNodeCount-1; ++i)
 	{
 		for(int j=i+1; j<leafNodeCount; ++j)
 		{
+			std::cout << "...(" << i << ',' << j << ")\n";
 			find_merge_layer(forest, i, j, result);
 		}
 	}
@@ -174,9 +177,12 @@ merge_forests(const shared_ptr<PartitionForest<LeafLayerType,BranchLayerType> >&
 {
 	shared_ptr<PartitionForest<LeafLayerType,BranchLayerType> > result(new PartitionForest<LeafLayerType,BranchLayerType>(lhs->copy_leaf_layer()));
 
+	std::cout << "...Building merge table\n";
 	MergeTable mt = build_merge_table(mlt);
 	for(int i=1; i<=lhs->highest_layer() || i<=rhs->highest_layer(); ++i)
 	{
+		std::cout << "...Building layer " << i << '\n';
+
 		result->clone_layer(i-1);
 
 		const std::vector<std::pair<int,int> > merges = mt[i];
@@ -235,8 +241,11 @@ template <typename LeafLayerType, typename BranchLayerType>
 shared_ptr<PartitionForest<LeafLayerType,BranchLayerType> >
 slow_merge_forests(const shared_ptr<PartitionForest<LeafLayerType,BranchLayerType> >& lhs, const shared_ptr<PartitionForest<LeafLayerType,BranchLayerType> >& rhs)
 {
+	std::cout << "...Building left merge layer table\n";
 	MergeLayerTable ltable = build_merge_layer_table(lhs);
+	std::cout << "...Building right merge layer table\n";
 	MergeLayerTable rtable = build_merge_layer_table(rhs);
+	std::cout << "...Combining merge layer tables\n";
 	return merge_forests(lhs, rhs, combine_merge_layer_tables(ltable, rtable, MERGE_SLOW));
 }
 
