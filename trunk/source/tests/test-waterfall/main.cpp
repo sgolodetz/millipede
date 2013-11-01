@@ -17,7 +17,7 @@ using boost::shared_ptr;
 #include <itkImageFileWriter.h>
 
 #include <common/dicom/volumes/DICOMVolume.h>
-#include <common/partitionforests/base/PartitionForest.h>
+#include <common/partitionforests/base/MergeUtil.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
