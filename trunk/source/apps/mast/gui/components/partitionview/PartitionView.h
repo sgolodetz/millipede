@@ -36,6 +36,7 @@ typedef boost::shared_ptr<class PartitionCamera> PartitionCamera_Ptr;
 typedef boost::shared_ptr<const class PartitionCamera> PartitionCamera_CPtr;
 class PartitionCanvas;
 class PartitionOverlay;
+template <typename LeafLayer, typename BranchLayer, typename Feature> class PartitionModel;
 typedef boost::shared_ptr<class PartitionOverlayManager> PartitionOverlayManager_Ptr;
 typedef boost::shared_ptr<const class PartitionOverlayManager> PartitionOverlayManager_CPtr;
 
@@ -64,6 +65,8 @@ private:
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
+	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
+	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 public:
 	typedef boost::shared_ptr<NodeSplitManagerT> NodeSplitManager_Ptr;
 	typedef boost::shared_ptr<ParentSwitchManagerT> ParentSwitchManager_Ptr;
@@ -78,6 +81,7 @@ private:
 	struct NodeSplitManagerListener;
 	struct ParentSwitchManagerListener;
 	struct SelectionListener;
+	struct IPFListListener;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -94,9 +98,13 @@ private:
 	PartitionOverlayManager_Ptr m_overlayManager;
 	ParentSwitchManager_Ptr m_parentSwitchManager;
 	std::vector<Greyscale8SliceTextureSet_Ptr> m_partitionTextureSets;
+	typedef std::vector<Greyscale8SliceTextureSet_Ptr> TexSet;
+	std::vector<TexSet> *m_partitionTextureSetCache;
+	wxRadioBox * m_ipfchoice;
 
 	// Top left
 	wxButton *m_segmentVolumeButton;
+	wxPanel *m_topLeftPanel;
 
 	// Top right
 	wxChoice *m_multiFeatureSelectionChoice;
@@ -109,12 +117,14 @@ private:
 
 	// Middle right
 	PartitionCanvas *m_partitionCanvas;
+	wxPanel *m_ipfoptions;
 
 	// Bottom left
 	wxChoice *m_drawingToolChoice;
 
 	// Bottom right
 	wxSlider *m_layerSlider;
+	wxPanel *m_segOptions;
 
 	//#################### CONSTRUCTORS ####################
 public:
@@ -140,6 +150,7 @@ public:
 private:
 	void add_listeners();
 	void add_mfs_listener();
+	void add_ipf_options(unsigned n);
 	void calculate_canvas_size();
 	void create_dicom_textures();
 	void create_overlays();
@@ -165,6 +176,10 @@ private:
 	void refresh_canvases();
 	PartitionOverlay *selection_overlay() const;
 	void setup_drawing_tools();
+	void cache_partition_textures(unsigned i);
+	Job_Ptr cache_partition_textures_job(SliceOrientation ori, unsigned i, VolumeIPF_CPtr volumeIPF) const;
+	Job_Ptr reload_texture_job(SliceOrientation ori) const;
+	void use_partiton_textures(unsigned i);
 	void setup_gui(wxGLContext *context);
 	void update_sliders();
 	const DICOMVolumeChoice& volume_choice() const;
@@ -178,10 +193,17 @@ public:
 	void OnButtonViewXZ(wxCommandEvent&);
 	void OnButtonViewYZ(wxCommandEvent&);
 	void OnButtonVisualizeIn3D(wxCommandEvent&);
+	void OnButtonDiffUnion(wxCommandEvent&);
+	void OnButtonDiffAB(wxCommandEvent&);
+	void OnButtonDiffBA(wxCommandEvent&);
+	void OnButtonDiffDialog(wxCommandEvent&);
+	void OnButtonDiffIntersection(wxCommandEvent&);
+	void OnButtonSegmentMultiple(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ CHOICES ~~~~~~~~~~~~~~~~~~~~
 	void OnChoiceDrawingTool(wxCommandEvent&);
 	void OnChoiceMultiFeatureSelection(wxCommandEvent&);
+	void OnRadioChooseIPF(wxCommandEvent&);
 
 	//~~~~~~~~~~~~~~~~~~~~ SLIDERS ~~~~~~~~~~~~~~~~~~~~
 	void OnSliderX(wxScrollEvent&);

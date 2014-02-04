@@ -5,6 +5,8 @@
 
 #include "DialogUtil.h"
 
+#include <iostream>
+
 #include <fstream>
 
 #include <wx/msgdlg.h>

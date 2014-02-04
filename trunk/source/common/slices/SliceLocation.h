@@ -15,6 +15,10 @@ struct SliceLocation
 	//#################### PUBLIC VARIABLES ####################
 	int x, y, z, layer;
 
+	int getLayer() {
+		return layer;
+	}
+	
 	//#################### CONSTRUCTORS ####################
 	SliceLocation(int x_, int y_, int z_, int layer_);
 

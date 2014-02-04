@@ -33,7 +33,7 @@ template <> std::map<AbdominalFeature::Enum,RGBA32> feature_colour_map()
 	m.insert(std::make_pair(AORTA,				make_rgba32(255,0,0,50)));
 	m.insert(std::make_pair(INFERIOR_VENA_CAVA,	make_rgba32(0,0,255,50)));
 	m.insert(std::make_pair(KIDNEY,				make_rgba32(255,255,0,50)));
-	m.insert(std::make_pair(KIDNEY_LEFT,		make_rgba32(255,255,0,50)));
+	m.insert(std::make_pair(KIDNEY_LEFT,		make_rgba32(255,180,0,50)));
 	m.insert(std::make_pair(KIDNEY_RIGHT,		make_rgba32(255,255,0,50)));
 	m.insert(std::make_pair(LIVER,				make_rgba32(128,0,128,50)));
 	m.insert(std::make_pair(OTHER_ARTERY,		make_rgba32(128,0,0,50)));
@@ -42,6 +42,7 @@ template <> std::map<AbdominalFeature::Enum,RGBA32> feature_colour_map()
 	m.insert(std::make_pair(SPINAL_CORD,		make_rgba32(128,255,255,150)));
 	m.insert(std::make_pair(SPLEEN,				make_rgba32(0,255,0,50)));
 	m.insert(std::make_pair(VERTEBRA,			make_rgba32(192,255,255,100)));
+	//m.insert(std::make_pair(MARKER,			make_rgba32(0,255,0,100)));
 	return m;
 }
 
@@ -90,6 +91,7 @@ std::string feature_to_name(AbdominalFeature::Enum e)
 		case SPINAL_CORD:			return "Spinal Cord";
 		case SPLEEN:				return "Spleen";
 		case VERTEBRA:				return "Vertebra";
+	//	case MARKER:				return "Marker";
 		default:					return "";
 	}
 }
@@ -111,6 +113,7 @@ template <> AbdominalFeature::Enum name_to_feature(const std::string& name)
 	else if(name == "Spinal Cord")			return SPINAL_CORD;
 	else if(name == "Spleen")				return SPLEEN;
 	else if(name == "Vertebra")				return VERTEBRA;
+	//else if(name == "Marker")				return MARKER;
 	else									throw Exception("Unknown feature name");
 }
 

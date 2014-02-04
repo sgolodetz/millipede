@@ -12,6 +12,7 @@
 #include <common/jobs/SimpleJob.h>
 #include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include <common/util/ITKImageUtil.h>
+#include <common/util/EnumUtil.h>
 
 namespace mp {
 

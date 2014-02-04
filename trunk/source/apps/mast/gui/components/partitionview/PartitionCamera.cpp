@@ -50,6 +50,10 @@ void PartitionCamera::goto_layer(int layer)
 	set_slice_location(loc);
 }
 
+int PartitionCamera::getLayer() {
+	return m_sliceLocation.layer;
+}
+
 void PartitionCamera::goto_next_layer()
 {
 	SliceLocation loc = m_sliceLocation;

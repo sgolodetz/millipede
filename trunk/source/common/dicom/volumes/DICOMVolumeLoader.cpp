@@ -19,6 +19,7 @@ using boost::lexical_cast;
 #include <common/dicom/directories/DICOMDirectory.h>
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/exceptions/Exception.h>
+#include <common/exceptions/FileNotFoundException.h>
 
 namespace mp {
 
@@ -74,6 +75,24 @@ try
 		}
 		else return;
 
+		// Try to work around differences in case sensitivity between file
+		// systems. DICOM expects capitals, so try that first, and then try
+		// all lower case.
+		std::ifstream fs(imageFilename.c_str());
+		if(fs.fail()) {
+		  std::string imageFilenameLower = imageFilenames[i];
+		  //boost::to_lower(imageFilenameLower);
+		  
+		  std::transform(imageFilenameLower.begin(), imageFilenameLower.end(), imageFilenameLower.begin(), tolower);
+		  
+		  imageFilename = m_volumeChoice.filePrefix + imageFilenameLower;//boost::to_lower_copy(imageFilenames[i]);
+		  
+		  // Throw exception if neither exists
+		  std::ifstream fs2(imageFilename.c_str());
+		  if(fs2.fail()) throw FileNotFoundException(imageFilename);
+		}
+		
+		
 		// Load the image.
 		Reader::Pointer reader = Reader::New();
 		reader->SetFileName(imageFilename);

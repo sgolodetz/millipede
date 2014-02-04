@@ -6,6 +6,7 @@
 #include "SpinalCordIdentifier3D.h"
 
 #include <boost/bind.hpp>
+#include <iostream>
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/util/ITKImageUtil.h>
@@ -28,14 +29,18 @@ void SpinalCordIdentifier3D::execute_impl()
 {
 	set_status("Identifying spinal cord...");
 
+	std::cout << "Identifying the spinal cord..." << std::endl;
 	VolumeIPFMultiFeatureSelection_Ptr multiFeatureSelection = get_multi_feature_selection();
 
+	std::cout << "getting spine porperties" << std::endl;
 	// Step 1: Calculate the combined properties of all the nodes marked as part of the spine.
 	BranchProperties spineProperties = multiFeatureSelection->properties_of(AbdominalFeature::VERTEBRA);
 
+	std::cout << "filtering nodes" << std::endl;
 	// Step 2: Filter for spinal cord nodes based on the location of the spine.
 	std::list<PFNodeID> nodes = filter_branch_nodes(boost::bind(&SpinalCordIdentifier3D::is_spinal_cord, this, _1, _2, spineProperties));
 
+	std::cout << "idenitfying nodes" << std::endl;
 	// Step 3: Mark the resulting nodes as spinal cord (and unmark them as spine if necessary).
 	for(std::list<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
 	{

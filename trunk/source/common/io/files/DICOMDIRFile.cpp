@@ -9,10 +9,11 @@
 #include <boost/algorithm/string/trim.hpp>
 
 #include <gdcmDicomDir.h>
+//#include <gdcmFileSet.h>
+#include <gdcmDicomDirStudy.h>
 #include <gdcmDicomDirImage.h>
 #include <gdcmDicomDirPatient.h>
 #include <gdcmDicomDirSerie.h>
-#include <gdcmDicomDirStudy.h>
 
 #include <common/dicom/directories/PatientRecord.h>
 #include <common/dicom/directories/SeriesRecord.h>
@@ -31,6 +32,12 @@ DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 	// Load in the DICOMDIR.
 	gdcm::DicomDir dicomdir;
 	dicomdir.SetFileName(filename);
+	
+	//gdcm::ImageReader reader:
+	//reader.SetFilename( filename );
+	//reader.Read();
+
+	//file = reader.GetFile();
 
 	// MEMORY LEAK: The gdcm library leaks memory here (there's nothing obvious I can do about it besides document it unfortunately).
 	if(!dicomdir.Load())

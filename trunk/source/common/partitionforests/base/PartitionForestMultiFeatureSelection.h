@@ -7,6 +7,7 @@
 #define H_MILLIPEDE_PARTITIONFORESTMULTIFEATURESELECTION
 
 #include <map>
+#include <iostream>
 
 #include <common/commands/ListenerAlertingCommandSequenceGuard.h>
 #include "FeatureUtil.h"
@@ -222,20 +223,25 @@ public:
 
 	void identify_multi_feature_selection(const PartitionForestMultiFeatureSelection_CPtr& mfs)
 	{
+	//	std::cout << "identify_multi_feature_selection" << std::endl;
 		SequenceGuard guard(m_commandManager, "Identify Multi-Feature Selection", m_listeners);
+	//	std::cout << "  for loop" << std::endl;
 		for(typename std::map<Feature,PartitionForestSelection_Ptr>::const_iterator it=mfs->m_selections.begin(), iend=mfs->m_selections.end(); it!=iend; ++it)
 		{
+	//		std::cout << "    identify_selection" << it->first << std::endl;
 			identify_selection(it->second, it->first);
 		}
 	}
 
 	void identify_node(const PFNodeID& node, const Feature& feature)
 	{
+	//	std::cout << "identify_node()" << std::endl;
 		selection_internal(feature)->select_node(node);
 	}
 
 	void identify_selection(const PartitionForestSelection_CPtr& selection, const Feature& feature)
 	{
+	//	std::cout << "in identify_selection()" << std::endl; 
 		SequenceGuard guard(m_commandManager, "Identify Selection", m_listeners);	// only used in order to change the name of the command
 		PartitionForestSelection_Ptr oldSelection = selection_internal(feature);
 		PartitionForestSelection_Ptr newSelection(new PartitionForestSelectionT(m_forest));
@@ -274,15 +280,22 @@ public:
 
 	PartitionForestSelection_CPtr selection(const Feature& feature) const
 	{
+		//std::cout << "Finding selection " << feature << std::endl;
 		typename std::map<Feature,PartitionForestSelection_Ptr>::iterator it = m_selections.find(feature);
 		if(it == m_selections.end())
 		{
+		//	std::cout << "  In if" << std::endl;
 			PartitionForestSelection_Ptr selection(new PartitionForestSelectionT(m_forest));
+		//	std::cout << "  set_command_manager" << std::endl;
 			selection->set_command_manager(m_commandManager);
+		//	std::cout << "  add_weak_listener" << std::endl;
 			m_forest->add_weak_listener(selection);
+		//	std::cout << "  add_shared_listener" << std::endl;
 			selection->add_shared_listener(boost::shared_ptr<SelectionListener>(new SelectionListener(feature, m_listeners)));
+		//	std::cout << "  insert" << std::endl;
 			it = m_selections.insert(std::make_pair(feature, selection)).first;
 		}
+		//std::cout << "  return" << std::endl;
 		return it->second;
 	}
 

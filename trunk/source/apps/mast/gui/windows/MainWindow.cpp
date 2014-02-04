@@ -190,7 +190,7 @@ void MainWindow::OnCommonExit(wxCommandEvent&)
 
 void MainWindow::OnCommonOpenDICOMDIR(wxCommandEvent&)
 {
-	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open DICOMDIR", "DICOMDIR Files|DICOMDIR|All Files|*.*");
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open DICOMDIR", "DICOMDIR Files|DICOMDIR;dicomdir|All Files|*.*");
 	if(dialog->ShowModal() == wxID_OK)
 	{
 		std::string path = wxString_to_string(dialog->GetPath());
