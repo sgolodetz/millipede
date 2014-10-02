@@ -42,6 +42,7 @@ public:
 		// Add the statistics themselves.
 		add_nonsibling_percentages(forest);
 		add_layer_change_percentages(forest);
+		add_parent_switch_statistics(forest);
 
 		m_list->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
 		m_list->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
@@ -87,6 +88,40 @@ private:
 	void add_nonsibling_percentage(const std::string& which, int nonSiblings, int siblings)
 	{
 		add_percentage("Non-Sibling % (" + which + ")", (100.0 * nonSiblings) / (nonSiblings + siblings));
+	}
+
+	void add_number(const std::string& statistic, size_t number)
+	{
+		m_list->InsertItem(m_index, string_to_wxString(statistic));
+		m_list->SetItem(m_index, 1, string_to_wxString(boost::lexical_cast<std::string>(number)));
+		++m_index;
+	}
+
+	template <typename Forest>
+	void add_parent_switch_statistics(const boost::shared_ptr<Forest>& forest)
+	{
+		std::set<std::pair<PFNodeID,PFNodeID> > possibleParentSwitches;
+
+		// First, calculate all of the potential parent switches that can be performed.
+		for(int i=1, highestLayer=forest->highest_layer(); i<highestLayer; ++i)
+		{
+			for(typename Forest::NodeConstIterator jt=forest->nodes_cbegin(i), jend=forest->nodes_cend(i); jt!=jend; ++jt)
+			{
+				PFNodeID node(i, jt.index());
+				PFNodeID parent = forest->parent_of(node);
+				std::vector<int> adjNodes = forest->adjacent_nodes(node);
+				for(typename std::vector<int>::const_iterator kt=adjNodes.begin(), kend=adjNodes.end(); kt!=kend; ++kt)
+				{
+					PFNodeID adjNode(i, *kt);
+					PFNodeID adjParent = forest->parent_of(adjNode);
+					if(adjParent != parent) possibleParentSwitches.insert(std::make_pair(node, adjParent));
+				}
+			}
+		}
+
+		add_number("Possible Parent Switches", possibleParentSwitches.size());
+
+		// TODO
 	}
 
 	void add_percentage(const std::string& statistic, double percentage)
