@@ -97,10 +97,33 @@ private:
 		++m_index;
 	}
 
+	struct PossibleParentSwitch
+	{
+		PFNodeID node;
+		PFNodeID oldParent;
+		PFNodeID newParent;
+		mutable int commonAncestorLayer;
+
+		PossibleParentSwitch(const PFNodeID& node_, const PFNodeID& oldParent_, const PFNodeID& newParent_)
+		:	node(node_), oldParent(oldParent_), newParent(newParent_)
+		{}
+
+		bool operator<(const PossibleParentSwitch& rhs) const
+		{
+			return node < rhs.node || (node == rhs.node && newParent < rhs.newParent);
+		}
+	};
+
+	bool switch_disconnects(const PossibleParentSwitch& possibleParentSwitch, const PFNodeID& ancestor)
+	{
+		// TODO
+		return false;
+	}
+
 	template <typename Forest>
 	void add_parent_switch_statistics(const boost::shared_ptr<Forest>& forest)
 	{
-		std::set<std::pair<PFNodeID,PFNodeID> > possibleParentSwitches;
+		std::set<PossibleParentSwitch> possibleParentSwitches;
 
 		// First, calculate all of the potential parent switches that can be performed.
 		for(int i=1, highestLayer=forest->highest_layer(); i<highestLayer; ++i)
@@ -114,12 +137,40 @@ private:
 				{
 					PFNodeID adjNode(i, *kt);
 					PFNodeID adjParent = forest->parent_of(adjNode);
-					if(adjParent != parent) possibleParentSwitches.insert(std::make_pair(node, adjParent));
+					if(adjParent != parent) possibleParentSwitches.insert(PossibleParentSwitch(node, parent, adjParent));
 				}
 			}
 		}
 
 		add_number("Possible Parent Switches", possibleParentSwitches.size());
+
+		// Then, for each parent switch, calculate the common ancestor layer.
+		for(std::set<PossibleParentSwitch>::iterator it=possibleParentSwitches.begin(), iend=possibleParentSwitches.end(); it!=iend; ++it)
+		{
+			it->commonAncestorLayer = forest->find_common_ancestor_layer_and_new_chain(it->oldParent.index(), it->newParent.index(), it->oldParent.layer()).first;
+		}
+
+		// Finally, for each parent switch, walk up the ancestors of the node being moved until either (a) finding one that would be disconnected by the move, or (b) reaching
+		// the common ancestor layer. Record a histogram showing how many parent switches first disconnect an ancestor n links above the node being moved.
+		std::map<int,int> histogram;
+		for(std::set<PossibleParentSwitch>::const_iterator it=possibleParentSwitches.begin(), iend=possibleParentSwitches.end(); it!=iend; ++it)
+		{
+			bool done = false;
+			PFNodeID ancestor = it->oldParent;
+			while(ancestor != PFNodeID::invalid() && ancestor.layer() < it->commonAncestorLayer)
+			{
+				if(switch_disconnects(*it, ancestor))
+				{
+					++histogram[ancestor.layer() - it->node.layer()];
+					done = true;
+					break;
+				}
+
+				ancestor = forest->parent_of(ancestor);
+			}
+
+			if(!done) ++histogram[-1];
+		}
 
 		// TODO
 	}

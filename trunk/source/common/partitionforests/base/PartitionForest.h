@@ -1569,6 +1569,7 @@ private:
 		return layerIndex;
 	}
 
+public:
 	std::pair<int,Chain> find_common_ancestor_layer_and_new_chain(int oldParent, int newParent, int layerIndex) const
 	{
 		Chain newChain;
@@ -1587,6 +1588,7 @@ private:
 		return std::make_pair(layerIndex, newChain);
 	}
 
+private:
 	std::set<int> find_connected_component(std::set<int>& nodes, int layerIndex) const
 	{
 		assert(!nodes.empty());
