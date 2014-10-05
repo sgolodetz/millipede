@@ -6,6 +6,7 @@
 #ifndef H_MILLIPEDE_FORESTSTATISTICSDIALOG
 #define H_MILLIPEDE_FORESTSTATISTICSDIALOG
 
+#include <iterator>
 #include <sstream>
 
 #include <wx/button.h>
@@ -20,6 +21,25 @@ namespace mp {
 
 class ForestStatisticsDialog : public wxDialog
 {
+	//#################### NESTED TYPES ####################
+private:
+	struct PossibleParentSwitch
+	{
+		PFNodeID node;
+		PFNodeID oldParent;
+		PFNodeID newParent;
+		mutable int commonAncestorLayer;
+
+		PossibleParentSwitch(const PFNodeID& node_, const PFNodeID& oldParent_, const PFNodeID& newParent_)
+		:	node(node_), oldParent(oldParent_), newParent(newParent_)
+		{}
+
+		bool operator<(const PossibleParentSwitch& rhs) const
+		{
+			return node < rhs.node || (node == rhs.node && newParent < rhs.newParent);
+		}
+	};
+
 	//#################### PRIVATE VARIABLES ####################
 private:
 	int m_index;
@@ -97,29 +117,6 @@ private:
 		++m_index;
 	}
 
-	struct PossibleParentSwitch
-	{
-		PFNodeID node;
-		PFNodeID oldParent;
-		PFNodeID newParent;
-		mutable int commonAncestorLayer;
-
-		PossibleParentSwitch(const PFNodeID& node_, const PFNodeID& oldParent_, const PFNodeID& newParent_)
-		:	node(node_), oldParent(oldParent_), newParent(newParent_)
-		{}
-
-		bool operator<(const PossibleParentSwitch& rhs) const
-		{
-			return node < rhs.node || (node == rhs.node && newParent < rhs.newParent);
-		}
-	};
-
-	bool switch_disconnects(const PossibleParentSwitch& possibleParentSwitch, const PFNodeID& ancestor)
-	{
-		// TODO
-		return false;
-	}
-
 	template <typename Forest>
 	void add_parent_switch_statistics(const boost::shared_ptr<Forest>& forest)
 	{
@@ -159,7 +156,7 @@ private:
 			PFNodeID ancestor = it->oldParent;
 			while(ancestor != PFNodeID::invalid() && ancestor.layer() < it->commonAncestorLayer)
 			{
-				if(switch_disconnects(*it, ancestor))
+				if(switch_disconnects(*it, ancestor, forest))
 				{
 					++histogram[ancestor.layer() - it->node.layer()];
 					done = true;
@@ -172,7 +169,10 @@ private:
 			if(!done) ++histogram[-1];
 		}
 
-		// TODO
+		for(std::map<int,int>::const_iterator it=histogram.begin(), iend=histogram.end(); it!=iend; ++it)
+		{
+			add_percentage("Ancestor Disconnect % (" + boost::lexical_cast<std::string>(it->first) + ")", (100.0 * it->second) / possibleParentSwitches.size());
+		}
 	}
 
 	void add_percentage(const std::string& statistic, double percentage)
@@ -219,6 +219,39 @@ private:
 		}
 
 		add_nonsibling_percentage("Total", totalNonSiblings, totalSiblings);
+	}
+
+	template <typename Forest>
+	bool switch_disconnects(const PossibleParentSwitch& possibleParentSwitch, const PFNodeID& ancestor, const boost::shared_ptr<Forest>& forest)
+	{
+		// Find the descendants of the ancestor at the level of the node being moved.
+		std::set<PFNodeID> nodes;
+		nodes.insert(ancestor);
+
+		int layerIndex = ancestor.layer();
+		while(layerIndex != possibleParentSwitch.node.layer())
+		{
+			std::set<PFNodeID> newNodes;
+			for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+			{
+				std::set<PFNodeID> children = forest->children_of(*it);
+				std::copy(children.begin(), children.end(), std::inserter(newNodes, newNodes.begin()));
+			}
+			nodes = newNodes;
+			--layerIndex;
+		}
+		
+		// Remove the node being moved.
+		nodes.erase(possibleParentSwitch.node);
+
+		// Return whether or not the remaining nodes are still connected.
+		std::set<int> indices;
+		for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+		{
+			indices.insert(it->index());
+		}
+
+		return forest->are_connected(indices, layerIndex);
 	}
 };
 
