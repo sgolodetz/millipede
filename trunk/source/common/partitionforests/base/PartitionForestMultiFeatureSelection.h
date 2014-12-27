@@ -60,16 +60,16 @@ public:
 private:
 	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-		void command_sequence_execution_began(const std::string& description, int commandDepth)					{ multicast(bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
-		void command_sequence_execution_ended(const std::string& description, int commandDepth)					{ multicast(bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
-		void command_sequence_undo_began(const std::string& description, int commandDepth)						{ multicast(bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
-		void command_sequence_undo_ended(const std::string& description, int commandDepth)						{ multicast(bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
-		void feature_was_cleared(const Feature& feature, int commandDepth)										{ multicast(bind(&Listener::feature_was_cleared, _1, feature, commandDepth)); }
-		void modification_redone(const Modification& modification, const Feature& feature, int commandDepth)	{ multicast(bind(&Listener::modification_redone, _1, modification, feature, commandDepth)); }
-		void modification_undone(const Modification& modification, const Feature& feature, int commandDepth)	{ multicast(bind(&Listener::modification_undone, _1, modification, feature, commandDepth)); }
-		void multi_feature_selection_changed(int commandDepth)													{ multicast(bind(&Listener::multi_feature_selection_changed, _1, commandDepth)); }
-		void node_was_identified(const PFNodeID& node, const Feature& feature, int commandDepth)				{ multicast(bind(&Listener::node_was_identified, _1, node, feature, commandDepth)); }
-		void node_was_unidentified(const PFNodeID& node, const Feature& feature, int commandDepth)				{ multicast(bind(&Listener::node_was_unidentified, _1, node, feature, commandDepth)); }
+		void command_sequence_execution_began(const std::string& description, int commandDepth)					{ multicast(boost::bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
+		void command_sequence_execution_ended(const std::string& description, int commandDepth)					{ multicast(boost::bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
+		void command_sequence_undo_began(const std::string& description, int commandDepth)						{ multicast(boost::bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
+		void command_sequence_undo_ended(const std::string& description, int commandDepth)						{ multicast(boost::bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
+		void feature_was_cleared(const Feature& feature, int commandDepth)										{ multicast(boost::bind(&Listener::feature_was_cleared, _1, feature, commandDepth)); }
+		void modification_redone(const Modification& modification, const Feature& feature, int commandDepth)	{ multicast(boost::bind(&Listener::modification_redone, _1, modification, feature, commandDepth)); }
+		void modification_undone(const Modification& modification, const Feature& feature, int commandDepth)	{ multicast(boost::bind(&Listener::modification_undone, _1, modification, feature, commandDepth)); }
+		void multi_feature_selection_changed(int commandDepth)													{ multicast(boost::bind(&Listener::multi_feature_selection_changed, _1, commandDepth)); }
+		void node_was_identified(const PFNodeID& node, const Feature& feature, int commandDepth)				{ multicast(boost::bind(&Listener::node_was_identified, _1, node, feature, commandDepth)); }
+		void node_was_unidentified(const PFNodeID& node, const Feature& feature, int commandDepth)				{ multicast(boost::bind(&Listener::node_was_unidentified, _1, node, feature, commandDepth)); }
 	};
 
 	struct SelectionListener : PartitionForestSelectionT::Listener

@@ -245,19 +245,19 @@ public:
 private:
 	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-		void command_sequence_execution_began(const std::string& description, int commandDepth)			{ multicast(bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
-		void command_sequence_execution_ended(const std::string& description, int commandDepth)			{ multicast(bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
-		void command_sequence_undo_began(const std::string& description, int commandDepth)				{ multicast(bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
-		void command_sequence_undo_ended(const std::string& description, int commandDepth)				{ multicast(bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
-		void modification_redone(const Modification& modification, int commandDepth)					{ multicast(bind(&Listener::modification_redone, _1, modification, commandDepth)); }
-		void modification_undone(const Modification& modification, int commandDepth)					{ multicast(bind(&Listener::modification_undone, _1, modification, commandDepth)); }
-		void node_was_consolidated(const PFNodeID& node)												{ multicast(bind(&Listener::node_was_consolidated, _1, node)); }
-		void node_was_deconsolidated(const PFNodeID& node)												{ multicast(bind(&Listener::node_was_deconsolidated, _1, node)); }
-		void node_was_deselected(const PFNodeID& node, int commandDepth)								{ multicast(bind(&Listener::node_was_deselected, _1, node, commandDepth)); }
-		void node_was_selected(const PFNodeID& node, int commandDepth)									{ multicast(bind(&Listener::node_was_selected, _1, node, commandDepth)); }
-		void selection_changed(int commandDepth)														{ multicast(bind(&Listener::selection_changed, _1, commandDepth)); }
-		void selection_was_cleared(int commandDepth)													{ multicast(bind(&Listener::selection_was_cleared, _1, commandDepth)); }
-		void selection_was_replaced(const PartitionForestSelection_CPtr& selection, int commandDepth)	{ multicast(bind(&Listener::selection_was_replaced, _1, selection, commandDepth)); }
+		void command_sequence_execution_began(const std::string& description, int commandDepth)			{ multicast(boost::bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
+		void command_sequence_execution_ended(const std::string& description, int commandDepth)			{ multicast(boost::bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
+		void command_sequence_undo_began(const std::string& description, int commandDepth)				{ multicast(boost::bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
+		void command_sequence_undo_ended(const std::string& description, int commandDepth)				{ multicast(boost::bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
+		void modification_redone(const Modification& modification, int commandDepth)					{ multicast(boost::bind(&Listener::modification_redone, _1, modification, commandDepth)); }
+		void modification_undone(const Modification& modification, int commandDepth)					{ multicast(boost::bind(&Listener::modification_undone, _1, modification, commandDepth)); }
+		void node_was_consolidated(const PFNodeID& node)												{ multicast(boost::bind(&Listener::node_was_consolidated, _1, node)); }
+		void node_was_deconsolidated(const PFNodeID& node)												{ multicast(boost::bind(&Listener::node_was_deconsolidated, _1, node)); }
+		void node_was_deselected(const PFNodeID& node, int commandDepth)								{ multicast(boost::bind(&Listener::node_was_deselected, _1, node, commandDepth)); }
+		void node_was_selected(const PFNodeID& node, int commandDepth)									{ multicast(boost::bind(&Listener::node_was_selected, _1, node, commandDepth)); }
+		void selection_changed(int commandDepth)														{ multicast(boost::bind(&Listener::selection_changed, _1, commandDepth)); }
+		void selection_was_cleared(int commandDepth)													{ multicast(boost::bind(&Listener::selection_was_cleared, _1, commandDepth)); }
+		void selection_was_replaced(const PartitionForestSelection_CPtr& selection, int commandDepth)	{ multicast(boost::bind(&Listener::selection_was_replaced, _1, selection, commandDepth)); }
 	};
 
 	//#################### PRIVATE VARIABLES ####################

@@ -127,18 +127,18 @@ protected:
 private:
 	struct CompositeListener : CompositeListenerBase<Listener>
 	{
-		void command_sequence_execution_began(const std::string& description, int commandDepth)				{ multicast(bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
-		void command_sequence_execution_ended(const std::string& description, int commandDepth)				{ multicast(bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
-		void command_sequence_undo_began(const std::string& description, int commandDepth)					{ multicast(bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
-		void command_sequence_undo_ended(const std::string& description, int commandDepth)					{ multicast(bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
-		void forest_changed(int commandDepth)																{ multicast(bind(&Listener::forest_changed, _1, commandDepth)); }
-		void layer_was_cloned(int index)																	{ multicast(bind(&Listener::layer_was_cloned, _1, index)); }
-		void layer_was_deleted(int index)																	{ multicast(bind(&Listener::layer_was_deleted, _1, index)); }
-		void layer_was_undeleted(int index)																	{ multicast(bind(&Listener::layer_was_undeleted, _1, index)); }
-		void layer_will_be_deleted(int index)																{ multicast(bind(&Listener::layer_will_be_deleted, _1, index)); }
-		void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)		{ multicast(bind(&Listener::node_was_split, _1, node, results, commandDepth)); }
-		void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)	{ multicast(bind(&Listener::nodes_were_merged, _1, nodes, result, commandDepth)); }
-		void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)						{ multicast(bind(&Listener::nodes_will_be_merged, _1, nodes, commandDepth)); }
+		void command_sequence_execution_began(const std::string& description, int commandDepth)				{ multicast(boost::bind(&Listener::command_sequence_execution_began, _1, description, commandDepth)); }
+		void command_sequence_execution_ended(const std::string& description, int commandDepth)				{ multicast(boost::bind(&Listener::command_sequence_execution_ended, _1, description, commandDepth)); }
+		void command_sequence_undo_began(const std::string& description, int commandDepth)					{ multicast(boost::bind(&Listener::command_sequence_undo_began, _1, description, commandDepth)); }
+		void command_sequence_undo_ended(const std::string& description, int commandDepth)					{ multicast(boost::bind(&Listener::command_sequence_undo_ended, _1, description, commandDepth)); }
+		void forest_changed(int commandDepth)																{ multicast(boost::bind(&Listener::forest_changed, _1, commandDepth)); }
+		void layer_was_cloned(int index)																	{ multicast(boost::bind(&Listener::layer_was_cloned, _1, index)); }
+		void layer_was_deleted(int index)																	{ multicast(boost::bind(&Listener::layer_was_deleted, _1, index)); }
+		void layer_was_undeleted(int index)																	{ multicast(boost::bind(&Listener::layer_was_undeleted, _1, index)); }
+		void layer_will_be_deleted(int index)																{ multicast(boost::bind(&Listener::layer_will_be_deleted, _1, index)); }
+		void node_was_split(const PFNodeID& node, const std::set<PFNodeID>& results, int commandDepth)		{ multicast(boost::bind(&Listener::node_was_split, _1, node, results, commandDepth)); }
+		void nodes_were_merged(const std::set<PFNodeID>& nodes, const PFNodeID& result, int commandDepth)	{ multicast(boost::bind(&Listener::nodes_were_merged, _1, nodes, result, commandDepth)); }
+		void nodes_will_be_merged(const std::set<PFNodeID>& nodes, int commandDepth)						{ multicast(boost::bind(&Listener::nodes_will_be_merged, _1, nodes, commandDepth)); }
 	};
 
 	//#################### COMMANDS ####################

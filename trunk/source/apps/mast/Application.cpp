@@ -5,6 +5,10 @@
 
 #include "Application.h"
 
+#ifdef _MSC_VER
+  #pragma comment(linker, "/SUBSYSTEM:WINDOWS")
+#endif
+
 #ifdef __WXMAC__
 	#include <ApplicationServices/ApplicationServices.h>
 #endif
