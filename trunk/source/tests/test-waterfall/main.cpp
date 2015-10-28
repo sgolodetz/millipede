@@ -30,6 +30,212 @@ using namespace mp;
 typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
 typedef shared_ptr<IPF> IPF_Ptr;
 
+//#################### HELPER CLASSES ####################
+class OutputForestStatistics
+{
+	//#################### NESTED TYPES ####################
+private:
+	struct PossibleParentSwitch
+	{
+		PFNodeID node;
+		PFNodeID oldParent;
+		PFNodeID newParent;
+		mutable int commonAncestorLayer;
+
+		PossibleParentSwitch(const PFNodeID& node_, const PFNodeID& oldParent_, const PFNodeID& newParent_)
+		:	node(node_), oldParent(oldParent_), newParent(newParent_)
+		{}
+
+		bool operator<(const PossibleParentSwitch& rhs) const
+		{
+			return node < rhs.node || (node == rhs.node && newParent < rhs.newParent);
+		}
+	};
+
+	//#################### CONSTRUCTORS ####################
+public:
+	template <typename Forest>
+	OutputForestStatistics(const boost::shared_ptr<Forest>& forest)
+	{
+		// Output the statistics.
+		//output_nonsibling_percentages(forest);
+		output_layer_change_percentages(forest);
+		output_parent_switch_statistics(forest);
+	}
+
+	//#################### PRIVATE METHODS ####################
+private:
+	template <typename Forest>
+	void output_layer_change_percentages(const boost::shared_ptr<Forest>& forest)
+	{
+		std::map<int,int> histogram;
+		int count = 0;
+
+		for(int i=1, highestLayer=forest->highest_layer(); i<highestLayer; ++i)
+		{
+			for(typename Forest::EdgeConstIterator jt=forest->edges_cbegin(i), jend=forest->edges_cend(i); jt!=jend; ++jt)
+			{
+				std::set<PFNodeID> nodes;
+				nodes.insert(PFNodeID(i, jt->u));
+				nodes.insert(PFNodeID(i, jt->v));
+
+				int layerChange = forest->nonsibling_merge_layer(nodes) - i;
+				++histogram[layerChange];
+				++count;
+			}
+		}
+
+		for(std::map<int,int>::const_iterator it=histogram.begin(), iend=histogram.end(); it!=iend; ++it)
+		{
+			output_percentage("Layer Change % (" + boost::lexical_cast<std::string>(it->first) + ")", (100.0 * it->second) / count);
+		}
+	}
+
+	void output_nonsibling_percentage(const std::string& which, int nonSiblings, int siblings)
+	{
+		output_percentage("Non-Sibling % (" + which + ")", (100.0 * nonSiblings) / (nonSiblings + siblings));
+	}
+
+	void output_number(const std::string& statistic, size_t number)
+	{
+		std::cout << statistic << ": " << number << '\n';
+	}
+
+	template <typename Forest>
+	void output_parent_switch_statistics(const boost::shared_ptr<Forest>& forest)
+	{
+		std::set<PossibleParentSwitch> possibleParentSwitches;
+
+		// First, calculate all of the potential parent switches that can be performed.
+		for(int i=1, highestLayer=forest->highest_layer(); i<highestLayer; ++i)
+		{
+			for(typename Forest::NodeConstIterator jt=forest->nodes_cbegin(i), jend=forest->nodes_cend(i); jt!=jend; ++jt)
+			{
+				PFNodeID node(i, jt.index());
+				PFNodeID parent = forest->parent_of(node);
+				std::vector<int> adjNodes = forest->adjacent_nodes(node);
+				for(typename std::vector<int>::const_iterator kt=adjNodes.begin(), kend=adjNodes.end(); kt!=kend; ++kt)
+				{
+					PFNodeID adjNode(i, *kt);
+					PFNodeID adjParent = forest->parent_of(adjNode);
+					if(adjParent != parent) possibleParentSwitches.insert(PossibleParentSwitch(node, parent, adjParent));
+				}
+			}
+		}
+
+		output_number("Possible Parent Switches", possibleParentSwitches.size());
+
+		// Then, for each parent switch, calculate the common ancestor layer.
+		for(std::set<PossibleParentSwitch>::iterator it=possibleParentSwitches.begin(), iend=possibleParentSwitches.end(); it!=iend; ++it)
+		{
+			it->commonAncestorLayer = forest->find_common_ancestor_layer_and_new_chain(it->oldParent.index(), it->newParent.index(), it->oldParent.layer()).first;
+		}
+
+		// Finally, for each parent switch, walk up the ancestors of the node being moved until either (a) finding one that would be disconnected by the move, or (b) reaching
+		// the common ancestor layer. Record a histogram showing how many parent switches first disconnect an ancestor n links above the node being moved.
+		std::map<int,int> histogram;
+		for(std::set<PossibleParentSwitch>::const_iterator it=possibleParentSwitches.begin(), iend=possibleParentSwitches.end(); it!=iend; ++it)
+		{
+			bool done = false;
+			PFNodeID ancestor = it->oldParent;
+			while(ancestor != PFNodeID::invalid() && ancestor.layer() < it->commonAncestorLayer)
+			{
+				if(switch_disconnects(*it, ancestor, forest))
+				{
+					++histogram[ancestor.layer() - it->node.layer()];
+					done = true;
+					break;
+				}
+
+				ancestor = forest->parent_of(ancestor);
+			}
+
+			if(!done) ++histogram[-1];
+		}
+
+		for(std::map<int,int>::const_iterator it=histogram.begin(), iend=histogram.end(); it!=iend; ++it)
+		{
+			output_percentage("Ancestor Disconnect % (" + boost::lexical_cast<std::string>(it->first) + ")", (100.0 * it->second) / possibleParentSwitches.size());
+		}
+	}
+
+	void output_percentage(const std::string& statistic, double percentage)
+	{
+		std::ostringstream oss;
+		oss.setf(std::ios::fixed, std::ios::floatfield);
+		oss.precision(3);
+		oss << percentage;
+
+		std::cout << statistic << ": " << oss.str() << '\n';
+	}
+
+	/**
+	@brief	Outputs the percentage of the edges that do not share the same parent in each branch layer of the forest.
+
+	Combining the regions they join would require a non-sibling merge rather than a sibling merge.
+
+	@param[in]	forest	The forest for which to calculate non-sibling edge percentages.
+	*/
+	template <typename Forest>
+	void output_nonsibling_percentages(const boost::shared_ptr<Forest>& forest)
+	{
+		int totalNonSiblings = 0, totalSiblings = 0;
+
+		for(int i=1, highestLayer=forest->highest_layer(); i<highestLayer; ++i)
+		{
+			int layerNonSiblings = 0, layerSiblings = 0;
+
+			for(typename Forest::EdgeConstIterator jt=forest->edges_cbegin(i), jend=forest->edges_cend(i); jt!=jend; ++jt)
+			{
+				PFNodeID u(i, jt->u), v(i, jt->v);
+
+				if(forest->parent_of(u) == forest->parent_of(v)) ++layerSiblings;
+				else ++layerNonSiblings;
+			}
+
+			output_nonsibling_percentage("Layer " + boost::lexical_cast<std::string>(i), layerNonSiblings, layerSiblings);
+
+			totalNonSiblings += layerNonSiblings;
+			totalSiblings += layerSiblings;
+		}
+
+		output_nonsibling_percentage("Total", totalNonSiblings, totalSiblings);
+	}
+
+	template <typename Forest>
+	bool switch_disconnects(const PossibleParentSwitch& possibleParentSwitch, const PFNodeID& ancestor, const boost::shared_ptr<Forest>& forest)
+	{
+		// Find the descendants of the ancestor at the level of the node being moved.
+		std::set<PFNodeID> nodes;
+		nodes.insert(ancestor);
+
+		int layerIndex = ancestor.layer();
+		while(layerIndex != possibleParentSwitch.node.layer())
+		{
+			std::set<PFNodeID> newNodes;
+			for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+			{
+				std::set<PFNodeID> children = forest->children_of(*it);
+				std::copy(children.begin(), children.end(), std::inserter(newNodes, newNodes.begin()));
+			}
+			nodes = newNodes;
+			--layerIndex;
+		}
+
+		// Remove the node being moved.
+		nodes.erase(possibleParentSwitch.node);
+
+		// Return whether or not the remaining nodes are still connected.
+		std::set<int> indices;
+		for(std::set<PFNodeID>::const_iterator it=nodes.begin(), iend=nodes.end(); it!=iend; ++it)
+		{
+			indices.insert(it->index());
+		}
+
+		return forest->are_connected(indices, layerIndex);
+	}
+};
+
 //#################### HELPER FUNCTIONS ####################
 itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<const PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> >& ipf,
 													   int layerIndex, int width, int height)
@@ -638,16 +844,19 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 		std::cout << "Layer " << ipf->highest_layer() << " Node Count: " << mst.node_count() << '\n';
 	}
 
+	// Output relevant statistics for the partition forest.
+	OutputForestStatistics ofs(ipf);
+
 	// Output the mosaic images for each of the partition forest layers.
-	std::cout << "Outputting mosaic images...\n";
+	/*std::cout << "Outputting mosaic images...\n";
 	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
 	for(int i=0; i<=ipf->highest_layer(); ++i)
 	{
 		output_mosaic_image(ipf, i, imageSize[0], imageSize[1], outputSpecifier);
-	}
+	}*/
 }
 
-int main()
+int main(int argc, char *argv[])
 try
 {
 	//basic_test();
@@ -662,7 +871,7 @@ try
 	//marcotegui_test();
 	//real_image_test<NichollsWaterfallPass>("../resources/test.bmp", "../resources/test-partition*.bmp");
 
-	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
+	/*real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NC.png", NichollsWaterfallPass<int>(true));
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NT.png");
@@ -675,7 +884,9 @@ try
 	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");*/
+
+	real_image_test<NichollsWaterfallPass>(argv[1], "");
 
 	return 0;
 }
