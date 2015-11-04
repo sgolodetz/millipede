@@ -820,7 +820,7 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 	// Run the watershed algorithm on the gradient magnitude image.
 	std::cout << "Running watershed...\n";
 	WS ws(gradientMagnitudeImage, ITKImageUtil::make_4_connected_offsets());
-	std::cout << "Layer 0 Node Count: " << ws.label_count() << '\n';
+	std::cout << "Layer 1 Node Count: " << ws.label_count() << '\n';
 
 	// Create the initial partition forest.
 	std::cout << "Creating initial partition forest...\n";
@@ -835,13 +835,13 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 	// Iteratively run a waterfall pass on the MST until the forest is built.
 	boost::shared_ptr<IPFConstructionListener> listener(new IPFConstructionListener(ipf));
 	pass.add_shared_listener(listener);
-	while(mst.node_count() != 1 && ipf->highest_layer() <= 5)
+	while(mst.node_count() != 1 && ipf->highest_layer() < 5)
 	{
 		std::cout << "Cloning highest IPF layer...\n";
 		ipf->clone_layer(ipf->highest_layer());
 		std::cout << "Running waterfall pass...\n";
 		pass.run(mst);
-		std::cout << "Layer " << (ipf->highest_layer() - 1) << " Node Count: " << mst.node_count() << '\n';
+		std::cout << "Layer " << ipf->highest_layer() << " Node Count: " << mst.node_count() << '\n';
 	}
 
 	// Output relevant statistics for the partition forest.
