@@ -32,6 +32,8 @@ typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
 typedef shared_ptr<IPF> IPF_Ptr;
 typedef PartitionForestMultiFeatureSelection<DICOMImageLeafLayer,DICOMImageBranchLayer,int> MFS;
 typedef shared_ptr<MFS> MFS_Ptr;
+typedef PartitionForestSelection<DICOMImageLeafLayer,DICOMImageBranchLayer> PFS;
+typedef shared_ptr<PFS> PFS_Ptr;
 
 //#################### HELPER FUNCTIONS ####################
 itk::RGBPixel<unsigned char> feature_to_colour(int feature)
@@ -41,6 +43,7 @@ itk::RGBPixel<unsigned char> feature_to_colour(int feature)
 	{
 		case 1: p[0] = 255; p[1] = 0; p[2] = 0; break;
 		case 2: p[0] = 0; p[1] = 255; p[2] = 0; break;
+		case 3: p[0] = 0; p[1] = 0; p[2] = 255; break;
 		default:	 p[0] = p[1] = p[2] = 0; break;
 	}
 	return p;
@@ -773,8 +776,83 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 
 	// Construct a multi-feature selection for the forest.
 	MFS_Ptr mfs(new MFS(ipf));
-	mfs->identify_node(ipf->ancestor_of(PFNodeID(0,512*256+256), 3), 1);
-	mfs->identify_node(ipf->ancestor_of(PFNodeID(0,256*256+256), 3), 2);
+
+	// Label the aircraft.
+	int w = 500;
+	PFS_Ptr pfs(new PFS(ipf));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,100+200*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,135+185*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,160+205*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,160+225*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,123+212*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,122+223*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,157+187*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,164+174*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,177+188*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,182+198*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,204+190*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,189+215*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,191+222*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,368+209*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,323+225*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,277+233*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,241+185*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,221+233*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,319+212*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,396+232*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,250+159*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,177+167*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,181+161*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,258+196*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,130+267*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,222+206*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,233+219*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,236+201*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,204+165*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,253+217*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,264+207*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,269+219*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,425+192*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,402+179*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,288+205*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,300+205*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,206+249*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,207+262*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,260+171*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,282+165*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,308+172*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,460+232*w), 3));
+
+	mfs->identify_selection(pfs, 1);
+
+	std::set<PFNodeID> mergees(pfs->view_at_layer_cbegin(3), pfs->view_at_layer_cend(3));
+	ipf->merge_nonsibling_nodes(mergees);
+
+	pfs.reset(new PFS(ipf));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,58+182*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,49+233*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,80+207*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,119+241*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,150+247*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,176+247*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,348+186*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,364+257*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,419+249*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,3+240*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,452+205*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,497+203*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,468+265*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,187+240*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,209+242*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,222+256*w), 3));
+	pfs->select_node(ipf->ancestor_of(PFNodeID(0,245+258*w), 3));
+	//pfs->select_node(ipf->ancestor_of(PFNodeID(0,173+266*w), 3));
+	//pfs->select_node(ipf->ancestor_of(PFNodeID(0,257+272*w), 3));
+
+	mfs->identify_selection(pfs, 3);
+
+	mergees = std::set<PFNodeID>(pfs->view_at_layer_cbegin(3), pfs->view_at_layer_cend(3));
+	ipf->merge_nonsibling_nodes(mergees);
 
 #if 0
 	// Output the mosaic images for each of the partition forest layers.
