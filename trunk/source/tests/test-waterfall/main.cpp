@@ -18,6 +18,7 @@ using boost::shared_ptr;
 
 #include <common/dicom/volumes/DICOMVolume.h>
 #include <common/partitionforests/base/PartitionForest.h>
+#include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
 #include <common/partitionforests/images/DICOMImageBranchLayer.h>
 #include <common/partitionforests/images/DICOMImageLeafLayer.h>
 #include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
@@ -29,8 +30,125 @@ using namespace mp;
 
 typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
 typedef shared_ptr<IPF> IPF_Ptr;
+typedef PartitionForestMultiFeatureSelection<DICOMImageLeafLayer,DICOMImageBranchLayer,int> MFS;
+typedef shared_ptr<MFS> MFS_Ptr;
 
 //#################### HELPER FUNCTIONS ####################
+itk::RGBPixel<unsigned char> feature_to_colour(int feature)
+{
+	itk::RGBPixel<unsigned char> p;
+	switch(feature)
+	{
+		case 1: p[0] = 255; p[1] = 0; p[2] = 0; break;
+		case 2: p[0] = 0; p[1] = 255; p[2] = 0; break;
+		default:	 p[0] = p[1] = p[2] = 0; break;
+	}
+	return p;
+}
+
+itk::Image<itk::RGBPixel<unsigned char>,2>::Pointer make_feature_image(const IPF_Ptr& ipf, int layerIndex, const MFS_Ptr& mfs, int width, int height)
+{
+	typedef itk::Image<itk::RGBPixel<unsigned char>,2> Image;
+
+	Image::Pointer image = ITKImageUtil::make_image<itk::RGBPixel<unsigned char> >(width, height);
+
+	Image::IndexType index;
+	int n = 0;
+	for(index[1]=0; index[1]<height; ++index[1])
+		for(index[0]=0; index[0]<width; ++index[0])
+		{
+			PFNodeID ancestor = ipf->ancestor_of(PFNodeID(0, n), layerIndex);
+			std::vector<int> features = mfs->features_of(ancestor);
+
+			itk::RGBPixel<unsigned char> p;
+			if(layerIndex > 0) p[0] = p[1] = p[2] = static_cast<unsigned char>(ipf->branch_properties(ancestor).mean_grey_value());
+			else p[0] = p[1] = p[2] = ipf->leaf_properties(n).grey_value();
+
+			if(features.size() != 0) p = feature_to_colour(features[0]);
+
+			image->SetPixel(index, p);
+			++n;
+		}
+
+	return image;
+}
+
+itk::Image<itk::RGBPixel<unsigned char>,2>::Pointer
+make_feature_image_with_boundaries(const boost::shared_ptr<const PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> >& ipf, int layerIndex,
+								   const MFS_Ptr& mfs, int width, int height)
+{
+	typedef itk::Image<PFNodeID,2> AncestorImage;
+	typedef itk::Image<itk::RGBPixel<unsigned char>,2> MosaicImage;
+	typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
+
+	// Create an image of the ancestors of the pixels in the specified layer.
+	AncestorImage::Pointer ancestorImage = ITKImageUtil::make_image<PFNodeID>(width, height);
+
+	AncestorImage::IndexType ancestorIndex;
+	int n = 0;
+	for(ancestorIndex[1]=0; ancestorIndex[1]<height; ++ancestorIndex[1])
+		for(ancestorIndex[0]=0; ancestorIndex[0]<width; ++ancestorIndex[0])
+		{
+			ancestorImage->SetPixel(ancestorIndex, ipf->ancestor_of(PFNodeID(0, n), layerIndex));
+			++n;
+		}
+
+	// Set up an iterator to traverse the ancestor image, whilst allowing us to access the neighbours of each pixel.
+	typedef itk::ConstShapedNeighborhoodIterator<AncestorImage> ConstShapedNeighbourhoodIteratorType;
+	AncestorImage::SizeType radius = {{1,1}};
+	ConstShapedNeighbourhoodIteratorType it(radius, ancestorImage, ancestorImage->GetLargestPossibleRegion());
+	std::vector<AncestorImage::OffsetType> offsets = ITKImageUtil::make_4_connected_offsets();
+	for(size_t k=0, size=offsets.size(); k<size; ++k)
+	{
+		it.ActivateOffset(offsets[k]);
+	}
+
+	// Set up a boundary condition that makes pixels beyond the boundary equal to those on it. This is the
+	// right boundary condition here, because the idea is to mark pixels as boundaries when they have an
+	// adjacent neighbour with a different ancestor. We don't want there to be spurious boundaries on the
+	// borders of the image, so we need to make sure that the pixels beyond the image have the same ancestors
+	// as their respective neighbours within it.
+	itk::ZeroFluxNeumannBoundaryCondition<AncestorImage> condition;
+	it.OverrideBoundaryCondition(&condition);
+
+	// Create the mosaic image by traversing the ancestor image. We mark boundaries where appropriate, and
+	// obtain the non-boundary mosaic values from the properties of the ancestor nodes.
+	MosaicImage::Pointer mosaicImage = ITKImageUtil::make_image<itk::RGBPixel<unsigned char> >(width, height);
+
+	for(it.GoToBegin(); !it.IsAtEnd(); ++it)
+	{
+		bool regionBoundary = false;
+		for(ConstShapedNeighbourhoodIteratorType::ConstIterator jt=it.Begin(), jend=it.End(); jt!=jend; ++jt)
+		{
+			if(jt.Get() != it.GetCenterPixel())
+			{
+				regionBoundary = true;
+				break;
+			}
+		}
+
+		PFNodeID ancestor = it.GetCenterPixel();
+		itk::RGBPixel<unsigned char> p;
+
+		if(regionBoundary)
+		{
+			p[0] = p[1] = p[2] = std::numeric_limits<unsigned char>::max();
+		}
+		else
+		{
+			if(layerIndex > 0) p[0] = p[1] = p[2] = static_cast<unsigned char>(ipf->branch_properties(ancestor).mean_grey_value());
+			else p[0] = p[1] = p[2] = ipf->leaf_properties(ancestor.index()).grey_value();
+
+			std::vector<int> features = mfs->features_of(ancestor);
+			if(features.size() != 0) p = feature_to_colour(features[0]);
+		}
+
+		mosaicImage->SetPixel(it.GetIndex(), p);
+	}
+
+	return mosaicImage;
+}
+
 itk::Image<unsigned char,2>::Pointer make_mosaic_image(const boost::shared_ptr<const PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> >& ipf,
 													   int layerIndex, int width, int height)
 {
@@ -128,6 +246,21 @@ make_mosaic_image_with_boundaries(const boost::shared_ptr<const PartitionForest<
 	}
 
 	return mosaicImage;
+}
+
+void output_feature_image(const IPF_Ptr& ipf, int layerIndex, const MFS_Ptr& mfs, int width, int height, std::string outputSpecifier)
+{
+	typedef itk::Image<itk::RGBPixel<unsigned char>,2> Image;
+	Image::Pointer image = layerIndex > 0 ?
+		make_feature_image_with_boundaries(ipf, layerIndex, mfs, width, height) :
+		make_feature_image(ipf, layerIndex, mfs, width, height);
+
+	typedef itk::ImageFileWriter<Image> Writer;
+	Writer::Pointer writer = Writer::New();
+	writer->SetInput(image);
+	boost::replace_all(outputSpecifier, "*", boost::lexical_cast<std::string>(layerIndex));
+	writer->SetFileName("../resources/" + outputSpecifier);
+	writer->Update();
 }
 
 void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int height, std::string outputSpecifier)
@@ -638,6 +771,12 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 		std::cout << "Layer " << ipf->highest_layer() << " Node Count: " << mst.node_count() << '\n';
 	}
 
+	// Construct a multi-feature selection for the forest.
+	MFS_Ptr mfs(new MFS(ipf));
+	mfs->identify_node(ipf->ancestor_of(PFNodeID(0,512*256+256), 3), 1);
+	mfs->identify_node(ipf->ancestor_of(PFNodeID(0,256*256+256), 3), 2);
+
+#if 0
 	// Output the mosaic images for each of the partition forest layers.
 	std::cout << "Outputting mosaic images...\n";
 	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
@@ -645,9 +784,18 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 	{
 		output_mosaic_image(ipf, i, imageSize[0], imageSize[1], outputSpecifier);
 	}
+#else
+	// Output the feature images for each of the partition forest layers.
+	std::cout << "Outputting feature images...\n";
+	IntImage::SizeType imageSize = hounsfieldImage->GetLargestPossibleRegion().GetSize();
+	for(int i=0; i<=ipf->highest_layer(); ++i)
+	{
+		output_feature_image(ipf, i, mfs, imageSize[0], imageSize[1], outputSpecifier);
+	}
+#endif
 }
 
-int main()
+int main(int argc, char *argv[])
 try
 {
 	//basic_test();
@@ -662,7 +810,7 @@ try
 	//marcotegui_test();
 	//real_image_test<NichollsWaterfallPass>("../resources/test.bmp", "../resources/test-partition*.bmp");
 
-	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
+	/*real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NC.png", NichollsWaterfallPass<int>(true));
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NT.png");
@@ -675,7 +823,13 @@ try
 	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");*/
+
+#if 0
+	real_image_test<NichollsWaterfallPass>(argv[1], std::string(argv[1]) + "-*.png");
+#else
+	real_image_test<NichollsWaterfallPass>(argv[1], std::string(argv[1]) + "-FI-*.png");
+#endif
 
 	return 0;
 }
