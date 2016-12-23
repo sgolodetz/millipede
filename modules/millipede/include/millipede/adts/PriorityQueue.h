@@ -9,7 +9,7 @@
 #include <map>
 #include <vector>
 
-#include <millipede/exceptions/Exception.h>
+#include "../exceptions/Exception.h"
 
 namespace mp {
 

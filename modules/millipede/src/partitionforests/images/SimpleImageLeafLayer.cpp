@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SimpleImageLeafLayer.h"
+#include "partitionforests/images/SimpleImageLeafLayer.h"
 
 namespace mp {
 

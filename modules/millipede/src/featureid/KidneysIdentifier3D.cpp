@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "KidneysIdentifier3D.h"
+#include "featureid/KidneysIdentifier3D.h"
 
 #include <boost/bind.hpp>
 

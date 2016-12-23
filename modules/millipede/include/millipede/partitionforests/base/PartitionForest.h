@@ -15,12 +15,12 @@
 #include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 
-#include <millipede/commands/BasicCommandManager.h>
-#include <millipede/commands/Command.h>
-#include <millipede/commands/ListenerAlertingCommandSequenceGuard.h>
-#include <millipede/exceptions/Exception.h>
-#include <millipede/io/util/OSSWrapper.h>
-#include <millipede/listeners/CompositeListenerBase.h>
+#include "../../commands/BasicCommandManager.h"
+#include "../../commands/Command.h"
+#include "../../commands/ListenerAlertingCommandSequenceGuard.h"
+#include "../../exceptions/Exception.h"
+#include "../../io/util/OSSWrapper.h"
+#include "../../listeners/CompositeListenerBase.h"
 #include "IForestLayer.h"
 #include "PFNodeID.h"
 

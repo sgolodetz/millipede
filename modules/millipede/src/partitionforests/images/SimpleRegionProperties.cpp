@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SimpleRegionProperties.h"
+#include "partitionforests/images/SimpleRegionProperties.h"
 
 #include <ostream>
 

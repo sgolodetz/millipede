@@ -3,14 +3,14 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SpleenIdentifier3D.h"
+#include "featureid/SpleenIdentifier3D.h"
 
 #include <climits>
 
 #include <boost/bind.hpp>
 
-#include <millipede/dicom/volumes/DICOMVolume.h>
-#include <millipede/util/ITKImageUtil.h>
+#include "dicom/volumes/DICOMVolume.h"
+#include "util/ITKImageUtil.h"
 
 namespace mp {
 

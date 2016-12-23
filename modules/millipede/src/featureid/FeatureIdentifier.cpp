@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "FeatureIdentifier.h"
+#include "featureid/FeatureIdentifier.h"
 
 #include <boost/bind.hpp>
 

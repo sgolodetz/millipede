@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include <millipede/math/Vector3.h>
+#include "../../math/Vector3.h"
 #include "DICOMPixelProperties.h"
 
 namespace mp {

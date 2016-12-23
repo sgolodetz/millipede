@@ -3,9 +3,9 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "AbdominalFeature.h"
+#include "partitionforests/images/AbdominalFeature.h"
 
-#include <millipede/exceptions/Exception.h>
+#include "exceptions/Exception.h"
 
 namespace mp {
 

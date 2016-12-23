@@ -15,8 +15,8 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 
-#include <millipede/exceptions/Exception.h>
-#include <millipede/io/util/OSSWrapper.h>
+#include "../exceptions/Exception.h"
+#include "../io/util/OSSWrapper.h"
 #include "WeightedEdge.h"
 
 namespace mp {

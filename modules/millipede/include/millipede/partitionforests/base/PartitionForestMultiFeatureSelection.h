@@ -8,7 +8,7 @@
 
 #include <map>
 
-#include <millipede/commands/ListenerAlertingCommandSequenceGuard.h>
+#include "../../commands/ListenerAlertingCommandSequenceGuard.h"
 #include "FeatureUtil.h"
 #include "PartitionForestSelection.h"
 

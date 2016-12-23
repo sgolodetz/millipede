@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DICOMRegionProperties.h"
+#include "partitionforests/images/DICOMRegionProperties.h"
 
 #include <climits>
 #include <ostream>

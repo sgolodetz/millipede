@@ -3,15 +3,15 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "MultiFeatureIdentifier3D.h"
+#include "featureid/MultiFeatureIdentifier3D.h"
 
-#include "AortaIdentifier3D.h"
-#include "KidneysIdentifier3D.h"
-#include "LiverIdentifier3D.h"
-#include "RibsIdentifier3D.h"
-#include "SpinalCordIdentifier3D.h"
-#include "SpineIdentifier3D.h"
-#include "SpleenIdentifier3D.h"
+#include "featureid/AortaIdentifier3D.h"
+#include "featureid/KidneysIdentifier3D.h"
+#include "featureid/LiverIdentifier3D.h"
+#include "featureid/RibsIdentifier3D.h"
+#include "featureid/SpinalCordIdentifier3D.h"
+#include "featureid/SpineIdentifier3D.h"
+#include "featureid/SpleenIdentifier3D.h"
 
 namespace mp {
 

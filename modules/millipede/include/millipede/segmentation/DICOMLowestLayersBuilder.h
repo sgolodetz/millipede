@@ -6,11 +6,11 @@
 #ifndef H_MILLIPEDE_DICOMLOWESTLAYERSBUILDER
 #define H_MILLIPEDE_DICOMLOWESTLAYERSBUILDER
 
-#include <millipede/jobs/DataHook.h>
-#include <millipede/jobs/SimpleJob.h>
-#include <millipede/partitionforests/base/PartitionForest.h>
-#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
-#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include "../jobs/DataHook.h"
+#include "../jobs/SimpleJob.h"
+#include "../partitionforests/base/PartitionForest.h"
+#include "../partitionforests/images/DICOMImageBranchLayer.h"
+#include "../partitionforests/images/DICOMImageLeafLayer.h"
 #include "DICOMSegmentationOptions.h"
 
 namespace mp {

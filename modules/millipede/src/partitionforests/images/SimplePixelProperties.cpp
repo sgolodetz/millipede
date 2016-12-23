@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SimplePixelProperties.h"
+#include "partitionforests/images/SimplePixelProperties.h"
 
 #include <ostream>
 

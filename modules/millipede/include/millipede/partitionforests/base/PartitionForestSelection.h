@@ -13,7 +13,7 @@
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <millipede/io/util/LineIO.h>
+#include "../../io/util/LineIO.h"
 #include "PartitionForest.h"
 
 namespace mp {

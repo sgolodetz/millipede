@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DICOMImageLeafLayer.h"
+#include "partitionforests/images/DICOMImageLeafLayer.h"
 
 namespace mp {
 

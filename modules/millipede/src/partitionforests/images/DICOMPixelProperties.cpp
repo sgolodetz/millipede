@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DICOMPixelProperties.h"
+#include "partitionforests/images/DICOMPixelProperties.h"
 
 #include <ostream>
 

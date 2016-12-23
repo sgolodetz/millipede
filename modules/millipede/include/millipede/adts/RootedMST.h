@@ -13,7 +13,7 @@
 #include <boost/any.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <millipede/util/NullType.h>
+#include "../util/NullType.h"
 #include "AdjacencyGraph.h"
 #include "PriorityQueue.h"
 

@@ -3,14 +3,14 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "LiverIdentifier3D.h"
+#include "featureid/LiverIdentifier3D.h"
 
 #include <climits>
 
 #include <boost/bind.hpp>
 
-#include <millipede/dicom/volumes/DICOMVolume.h>
-#include <millipede/util/ITKImageUtil.h>
+#include "dicom/volumes/DICOMVolume.h"
+#include "util/ITKImageUtil.h"
 
 namespace mp {
 
