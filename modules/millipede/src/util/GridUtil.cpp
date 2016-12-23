@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "GridUtil.h"
+#include "util/GridUtil.h"
 
 namespace mp {
 

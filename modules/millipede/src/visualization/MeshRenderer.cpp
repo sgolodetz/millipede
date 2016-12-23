@@ -6,8 +6,8 @@
 #include <cassert>
 #include <climits>
 
-#include "MeshRenderer.h"
-#include "MeshUtil.h"
+#include "visualization/MeshRenderer.h"
+#include "visualization/MeshUtil.h"
 
 namespace mp {
 

@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "DICOMVolumeChoice.h"
+#include "dicom/volumes/DICOMVolumeChoice.h"
 
 #include <sstream>
 

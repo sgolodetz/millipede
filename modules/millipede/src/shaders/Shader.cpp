@@ -3,13 +3,13 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "Shader.h"
+#include "shaders/Shader.h"
 
 #include <algorithm>
 #include <fstream>
 #include <sstream>
 
-#include <millipede/exceptions/Exception.h>
+#include "exceptions/Exception.h"
 
 namespace mp {
 

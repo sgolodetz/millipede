@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-#include <millipede/util/ITKImageUtil.h>
+#include "../../util/ITKImageUtil.h"
 
 namespace mp {
 
@@ -19,4 +19,3 @@ template <typename Feature> Feature name_to_feature(const std::string& name);
 }
 
 #endif
-

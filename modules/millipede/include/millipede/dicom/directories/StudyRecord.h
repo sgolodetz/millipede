@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-#include <millipede/adts/Map.h>
+#include "../../adts/Map.h"
 
 namespace mp {
 

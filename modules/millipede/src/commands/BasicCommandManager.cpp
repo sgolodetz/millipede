@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "BasicCommandManager.h"
+#include "commands/BasicCommandManager.h"
 
 namespace mp {
 

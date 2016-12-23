@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "Edge.h"
+#include "adts/Edge.h"
 
 namespace mp {
 

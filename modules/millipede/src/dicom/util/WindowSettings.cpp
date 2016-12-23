@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "WindowSettings.h"
+#include "dicom/util/WindowSettings.h"
 
 namespace mp {
 

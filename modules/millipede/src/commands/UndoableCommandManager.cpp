@@ -3,12 +3,12 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "UndoableCommandManager.h"
+#include "commands/UndoableCommandManager.h"
 
 #include <deque>
 
-#include <millipede/exceptions/Exception.h>
-#include "SequenceCommand.h"
+#include "commands/SequenceCommand.h"
+#include "exceptions/Exception.h"
 
 namespace mp {
 

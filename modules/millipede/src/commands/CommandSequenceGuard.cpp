@@ -3,9 +3,9 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CommandSequenceGuard.h"
+#include "commands/CommandSequenceGuard.h"
 
-#include "ICommandManager.h"
+#include "commands/ICommandManager.h"
 
 namespace mp {
 

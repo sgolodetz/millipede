@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <millipede/dicom/util/WindowSettings.h>
+#include "../util/WindowSettings.h"
 
 namespace mp {
 

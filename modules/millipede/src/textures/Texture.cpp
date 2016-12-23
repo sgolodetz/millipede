@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "Texture.h"
+#include "textures/Texture.h"
 
 #ifndef GL_CLAMP_TO_EDGE
 	#define GL_CLAMP_TO_EDGE 0x812F		// this wrapping mode is only defined in OpenGL 1.2, so it's not necessarily in the header (unfortunately)

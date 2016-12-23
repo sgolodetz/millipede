@@ -3,11 +3,11 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SubvolumeToVolumeIndexMapper.h"
+#include "segmentation/SubvolumeToVolumeIndexMapper.h"
 
 #include <itkIndex.h>
 
-#include <millipede/util/GridUtil.h>
+#include "util/GridUtil.h"
 
 namespace mp {
 

@@ -3,11 +3,11 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "DICOMVolume.h"
+#include "dicom/volumes/DICOMVolume.h"
 
 #include <itkIntensityWindowingImageFilter.h>
 
-#include <millipede/dicom/util/WindowSettings.h>
+#include "dicom/util/WindowSettings.h"
 
 namespace mp {
 

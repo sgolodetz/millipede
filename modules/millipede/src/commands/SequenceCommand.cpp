@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SequenceCommand.h"
+#include "commands/SequenceCommand.h"
 
 namespace mp {
 

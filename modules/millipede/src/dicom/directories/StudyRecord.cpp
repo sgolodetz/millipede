@@ -3,13 +3,13 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "StudyRecord.h"
+#include "dicom/directories/StudyRecord.h"
 
 #include <cassert>
 #include <sstream>
 
-#include <millipede/exceptions/Exception.h>
-#include "SeriesRecord.h"
+#include "dicom/directories/SeriesRecord.h"
+#include "exceptions/Exception.h"
 
 namespace mp {
 

@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "DICOMDIRFile.h"
+#include "io/files/DICOMDIRFile.h"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/trim.hpp>
@@ -14,10 +14,10 @@
 #include <gdcmDicomDirSerie.h>
 #include <gdcmDicomDirStudy.h>
 
-#include <millipede/dicom/directories/PatientRecord.h>
-#include <millipede/dicom/directories/SeriesRecord.h>
-#include <millipede/dicom/directories/StudyRecord.h>
-#include <millipede/exceptions/Exception.h>
+#include "dicom/directories/PatientRecord.h"
+#include "dicom/directories/SeriesRecord.h"
+#include "dicom/directories/StudyRecord.h"
+#include "exceptions/Exception.h"
 
 namespace mp {
 

@@ -3,9 +3,9 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SliceLocation.h"
+#include "slices/SliceLocation.h"
 
-#include <millipede/exceptions/Exception.h>
+#include "exceptions/Exception.h"
 
 namespace mp {
 

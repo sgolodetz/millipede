@@ -3,12 +3,12 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "PatientRecord.h"
+#include "dicom/directories/PatientRecord.h"
 
 #include <cassert>
 
-#include <millipede/exceptions/Exception.h>
-#include "StudyRecord.h"
+#include "dicom/directories/StudyRecord.h"
+#include "exceptions/Exception.h"
 
 namespace mp {
 

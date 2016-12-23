@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "Greyscale8ImageTexture.h"
+#include "textures/Greyscale8ImageTexture.h"
 
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkResampleImageFilter.h>

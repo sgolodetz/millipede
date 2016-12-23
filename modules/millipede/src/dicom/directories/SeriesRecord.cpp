@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "SeriesRecord.h"
+#include "dicom/directories/SeriesRecord.h"
 
 namespace mp {
 

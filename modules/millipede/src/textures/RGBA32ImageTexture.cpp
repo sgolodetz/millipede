@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "RGBA32ImageTexture.h"
+#include "textures/RGBA32ImageTexture.h"
 
 #include <itkVectorLinearInterpolateImageFunction.h>
 #include <itkVectorResampleImageFilter.h>

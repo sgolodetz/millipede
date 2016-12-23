@@ -3,9 +3,9 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "TextureFactory.h"
+#include "textures/TextureFactory.h"
 
-#include <millipede/exceptions/Exception.h>
+#include "exceptions/Exception.h"
 
 namespace mp {
 

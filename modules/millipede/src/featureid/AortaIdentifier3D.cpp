@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "AortaIdentifier3D.h"
+#include "featureid/AortaIdentifier3D.h"
 
 #include <cassert>
 

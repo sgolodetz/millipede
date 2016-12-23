@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "SimpleJob.h"
+#include "jobs/SimpleJob.h"
 
 namespace mp {
 

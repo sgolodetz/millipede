@@ -3,16 +3,16 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "VolumeChoiceSection.h"
+#include "io/sections/VolumeChoiceSection.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/tuple/tuple.hpp>
 using boost::bad_lexical_cast;
 using boost::lexical_cast;
 
-#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
-#include <millipede/io/util/FieldIO.h>
-#include <millipede/io/util/LineIO.h>
+#include "dicom/volumes/DICOMVolumeChoice.h"
+#include "io/util/FieldIO.h"
+#include "io/util/LineIO.h"
 
 namespace mp {
 

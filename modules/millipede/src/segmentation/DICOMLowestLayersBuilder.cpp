@@ -3,16 +3,16 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DICOMLowestLayersBuilder.h"
+#include "segmentation/DICOMLowestLayersBuilder.h"
 
 #include <itkCastImageFilter.h>
 #include <itkGradientAnisotropicDiffusionImageFilter.h>
 #include <itkGradientMagnitudeImageFilter.h>
 
-#include <millipede/dicom/volumes/DICOMVolume.h>
-#include <millipede/exceptions/Exception.h>
-#include <millipede/segmentation/watershed/MeijsterRoerdinkWatershed.h>
-#include <millipede/util/ITKImageUtil.h>
+#include "dicom/volumes/DICOMVolume.h"
+#include "exceptions/Exception.h"
+#include "segmentation/watershed/MeijsterRoerdinkWatershed.h"
+#include "util/ITKImageUtil.h"
 
 namespace mp {
 

@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CubeFaceDesignator.h"
+#include "visualization/CubeFaceDesignator.h"
 
 namespace mp {
 

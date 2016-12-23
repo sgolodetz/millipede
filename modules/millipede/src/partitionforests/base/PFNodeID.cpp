@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "PFNodeID.h"
+#include "partitionforests/base/PFNodeID.h"
 
 #include <iostream>
 

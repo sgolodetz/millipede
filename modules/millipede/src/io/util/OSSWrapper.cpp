@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "OSSWrapper.h"
+#include "io/util/OSSWrapper.h"
 
 namespace mp {
 

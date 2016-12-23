@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "MainThreadJobQueue.h"
+#include "jobs/MainThreadJobQueue.h"
 
 namespace mp {
 

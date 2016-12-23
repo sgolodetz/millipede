@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "PolylineRasterizer.h"
+#include "graphics/PolylineRasterizer.h"
 
 #include <algorithm>
 #include <cassert>
@@ -15,7 +15,7 @@
 #include <boost/optional.hpp>
 #include <boost/utility.hpp>
 
-#include <millipede/math/NumericUtil.h>
+#include "math/NumericUtil.h"
 
 namespace {
 

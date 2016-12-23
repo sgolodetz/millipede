@@ -3,12 +3,12 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "DICOMDirectory.h"
+#include "dicom/directories/DICOMDirectory.h"
 
-#include <millipede/exceptions/Exception.h>
-#include "PatientRecord.h"
-#include "SeriesRecord.h"
-#include "StudyRecord.h"
+#include "dicom/directories/PatientRecord.h"
+#include "dicom/directories/SeriesRecord.h"
+#include "dicom/directories/StudyRecord.h"
+#include "exceptions/Exception.h"
 
 namespace mp {
 

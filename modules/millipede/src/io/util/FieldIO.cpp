@@ -3,15 +3,15 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "FieldIO.h"
+#include "io/util/FieldIO.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 using boost::bad_lexical_cast;
 using boost::lexical_cast;
 
-#include <millipede/exceptions/Exception.h>
-#include "LineIO.h"
+#include "exceptions/Exception.h"
+#include "io/util/LineIO.h"
 
 namespace mp {
 

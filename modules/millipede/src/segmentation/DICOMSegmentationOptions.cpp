@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DICOMSegmentationOptions.h"
+#include "segmentation/DICOMSegmentationOptions.h"
 
 namespace mp {
 

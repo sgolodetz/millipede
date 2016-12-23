@@ -3,11 +3,11 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "Job.h"
+#include "jobs/Job.h"
 
 #include <boost/bind.hpp>
 
-#include "MainThreadJobQueue.h"
+#include "jobs/MainThreadJobQueue.h"
 
 namespace mp {
 

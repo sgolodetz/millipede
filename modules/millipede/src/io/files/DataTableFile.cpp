@@ -3,14 +3,14 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DataTableFile.h"
+#include "io/files/DataTableFile.h"
 
 #include <fstream>
 
 #include <boost/algorithm/string/replace.hpp>
 
-#include <millipede/exceptions/Exception.h>
-#include <millipede/util/DataTable.h>
+#include "exceptions/Exception.h"
+#include "util/DataTable.h"
 
 namespace mp {
 

@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "MeshRendererCreator.h"
+#include "visualization/MeshRendererCreator.h"
 
 namespace mp {
 

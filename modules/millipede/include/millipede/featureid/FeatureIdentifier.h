@@ -11,12 +11,12 @@
 	#pragma warning(disable:4250)
 #endif
 
-#include <millipede/jobs/DataHook.h>
-#include <millipede/jobs/Job.h>
-#include <millipede/partitionforests/images/AbdominalFeature.h>
-#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
-#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
-#include <millipede/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
+#include "../jobs/DataHook.h"
+#include "../jobs/Job.h"
+#include "../partitionforests/images/AbdominalFeature.h"
+#include "../partitionforests/images/DICOMImageBranchLayer.h"
+#include "../partitionforests/images/DICOMImageLeafLayer.h"
+#include "../partitionforests/images/VolumeIPFMultiFeatureSelection.h"
 
 namespace mp {
 

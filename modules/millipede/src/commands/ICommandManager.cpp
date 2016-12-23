@@ -3,10 +3,10 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "ICommandManager.h"
+#include "commands/ICommandManager.h"
 
-#include <millipede/exceptions/Exception.h>
-#include "Command.h"
+#include "commands/Command.h"
+#include "exceptions/Exception.h"
 
 namespace mp {
 

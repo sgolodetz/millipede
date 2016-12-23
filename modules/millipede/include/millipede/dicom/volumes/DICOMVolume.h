@@ -10,7 +10,7 @@
 
 #include <itkImage.h>
 
-#include <millipede/math/Vector3.h>
+#include "../../math/Vector3.h"
 
 namespace mp {
 

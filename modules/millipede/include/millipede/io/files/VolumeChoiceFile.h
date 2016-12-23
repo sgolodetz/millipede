@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_VOLUMECHOICEFILE
 #define H_MILLIPEDE_VOLUMECHOICEFILE
 
-#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
+#include "../../dicom/volumes/DICOMVolumeChoice.h"
 
 namespace mp {
 

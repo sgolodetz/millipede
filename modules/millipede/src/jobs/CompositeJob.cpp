@@ -3,11 +3,11 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "CompositeJob.h"
+#include "jobs/CompositeJob.h"
 
 #include <boost/bind.hpp>
 
-#include "MainThreadJobQueue.h"
+#include "jobs/MainThreadJobQueue.h"
 
 namespace mp {
 

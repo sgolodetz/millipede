@@ -11,8 +11,8 @@
 
 #include <boost/optional.hpp>
 
-#include <millipede/ogl/WrappedGL.h>
-#include <millipede/util/ITKImageUtil.h>
+#include "../ogl/WrappedGL.h"
+#include "../util/ITKImageUtil.h"
 #include "Mesh.h"
 
 namespace mp {

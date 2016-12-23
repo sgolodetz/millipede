@@ -3,11 +3,11 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "LineIO.h"
+#include "io/util/LineIO.h"
 
 #include <boost/algorithm/string/trim.hpp>
 
-#include <millipede/exceptions/Exception.h>
+#include "exceptions/Exception.h"
 
 namespace mp {
 

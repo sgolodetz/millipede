@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "Command.h"
+#include "commands/Command.h"
 
 namespace mp {
 

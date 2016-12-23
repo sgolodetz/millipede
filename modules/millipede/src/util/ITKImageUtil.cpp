@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "ITKImageUtil.h"
+#include "util/ITKImageUtil.h"
 
 namespace mp {
 

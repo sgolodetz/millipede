@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "RGB24ImageTexture.h"
+#include "textures/RGB24ImageTexture.h"
 
 #include <itkVectorLinearInterpolateImageFunction.h>
 #include <itkVectorResampleImageFilter.h>

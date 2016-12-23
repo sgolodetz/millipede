@@ -12,8 +12,8 @@
 
 #include <itkImage.h>
 
-#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
-#include <millipede/jobs/SimpleJob.h>
+#include "DICOMVolumeChoice.h"
+#include "../../jobs/SimpleJob.h"
 
 namespace mp {
 

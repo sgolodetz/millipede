@@ -6,8 +6,8 @@
 #ifndef H_MILLIPEDE_AORTAIDENTIFIER3D
 #define H_MILLIPEDE_AORTAIDENTIFIER3D
 
-#include <millipede/jobs/SimpleJob.h>
 #include "FeatureIdentifier.h"
+#include "../jobs/SimpleJob.h"
 
 namespace mp {
 

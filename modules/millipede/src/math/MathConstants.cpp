@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "MathConstants.h"
+#include "math/MathConstants.h"
 
 namespace mp {
 

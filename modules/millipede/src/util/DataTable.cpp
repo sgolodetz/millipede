@@ -3,7 +3,7 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "DataTable.h"
+#include "util/DataTable.h"
 
 #include <cassert>
 

@@ -11,7 +11,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <millipede/ogl/WrappedGL.h>
+#include "../ogl/WrappedGL.h"
 
 namespace mp {
 

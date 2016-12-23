@@ -3,12 +3,12 @@
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
-#include "VolumeChoiceFile.h"
+#include "io/files/VolumeChoiceFile.h"
 
 #include <fstream>
 
-#include <millipede/exceptions/Exception.h>
-#include <millipede/io/sections/VolumeChoiceSection.h>
+#include "exceptions/Exception.h"
+#include "io/sections/VolumeChoiceSection.h"
 
 namespace mp {
 

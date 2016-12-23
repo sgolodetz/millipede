@@ -3,9 +3,9 @@
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include "ShaderProgram.h"
+#include "shaders/ShaderProgram.h"
 
-#include <millipede/exceptions/Exception.h>
+#include "exceptions/Exception.h"
 
 namespace mp {
 

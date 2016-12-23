@@ -6,8 +6,8 @@
 #ifndef H_MILLIPEDE_MESHRENDERERCREATOR
 #define H_MILLIPEDE_MESHRENDERERCREATOR
 
-#include <millipede/jobs/DataHook.h>
-#include <millipede/jobs/SimpleJob.h>
+#include "../jobs/DataHook.h"
+#include "../jobs/SimpleJob.h"
 #include "MeshRenderer.h"
 
 namespace mp {
