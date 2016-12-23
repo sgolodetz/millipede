@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_SPLEENIDENTIFIER3D
 #define H_MILLIPEDE_SPLEENIDENTIFIER3D
 
-#include <common/jobs/SimpleJob.h>
+#include <millipede/jobs/SimpleJob.h>
 #include "FeatureIdentifier.h"
 
 namespace mp {

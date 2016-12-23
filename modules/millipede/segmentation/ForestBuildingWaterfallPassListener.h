@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_FORESTBUILDINGWATERFALLPASSLISTENER
 #define H_MILLIPEDE_FORESTBUILDINGWATERFALLPASSLISTENER
 
-#include <common/partitionforests/base/PartitionForest.h>
+#include <millipede/partitionforests/base/PartitionForest.h>
 #include "SubvolumeToVolumeIndexMapper.h"
 
 namespace mp {

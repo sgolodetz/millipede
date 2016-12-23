@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include <common/partitionforests/base/FeatureUtil.h>
-#include <common/util/EnumUtil.h>
+#include <millipede/partitionforests/base/FeatureUtil.h>
+#include <millipede/util/EnumUtil.h>
 
 namespace mp {
 

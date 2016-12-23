@@ -8,10 +8,10 @@
 
 #include <itkImage.h>
 
-#include <common/jobs/DataHook.h>
-#include <common/jobs/SimpleJob.h>
-#include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/jobs/DataHook.h>
+#include <millipede/jobs/SimpleJob.h>
+#include <millipede/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace mp {
 

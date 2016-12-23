@@ -9,12 +9,12 @@
 #include <itkShapedNeighborhoodIterator.h>
 #include <itkZeroFluxNeumannBoundaryCondition.h>
 
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/DataHook.h>
-#include <common/jobs/SimpleJob.h>
-#include <common/partitionforests/images/VolumeIPF.h>
-#include <common/slices/SliceOrientation.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/DataHook.h>
+#include <millipede/jobs/SimpleJob.h>
+#include <millipede/partitionforests/images/VolumeIPF.h>
+#include <millipede/slices/SliceOrientation.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace mp {
 

@@ -7,7 +7,7 @@
 
 #include <boost/algorithm/string/trim.hpp>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

@@ -6,8 +6,8 @@
 #ifndef H_MILLIPEDE_MARCOTEGUIWATERFALLPASS
 #define H_MILLIPEDE_MARCOTEGUIWATERFALLPASS
 
-#include <common/adts/PriorityQueue.h>
-#include <common/util/NullType.h>
+#include <millipede/adts/PriorityQueue.h>
+#include <millipede/util/NullType.h>
 #include "GolodetzWaterfallPass.h"
 
 namespace mp {

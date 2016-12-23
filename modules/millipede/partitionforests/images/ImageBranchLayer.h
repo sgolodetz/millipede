@@ -8,9 +8,9 @@
 
 #include <set>
 
-#include <common/adts/AdjacencyGraph.h>
-#include <common/io/util/OSSWrapper.h>
-#include <common/partitionforests/base/IForestLayer.h>
+#include <millipede/adts/AdjacencyGraph.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/partitionforests/base/IForestLayer.h>
 
 namespace mp {
 

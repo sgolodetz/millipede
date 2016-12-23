@@ -14,9 +14,9 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
-#include <common/io/util/OSSWrapper.h>
-#include <common/math/Vector2.h>
-#include <common/partitionforests/base/PartitionForestSelection.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/math/Vector2.h>
+#include <millipede/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
 

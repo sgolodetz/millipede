@@ -9,8 +9,8 @@
 
 #include <boost/bind.hpp>
 
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace mp {
 

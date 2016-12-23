@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

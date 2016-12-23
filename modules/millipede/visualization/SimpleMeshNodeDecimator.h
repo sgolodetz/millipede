@@ -8,7 +8,7 @@
 
 #include <boost/optional.hpp>
 
-#include <common/adts/PriorityQueue.h>
+#include <millipede/adts/PriorityQueue.h>
 #include "Mesh.h"
 #include "MeshNodeDecimator.h"
 #include "MeshUtil.h"

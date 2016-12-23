@@ -8,9 +8,9 @@
 
 #include <set>
 
-#include <common/exceptions/Exception.h>
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/SimpleJob.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/SimpleJob.h>
 #include "MeshBuildingData.h"
 
 namespace mp {

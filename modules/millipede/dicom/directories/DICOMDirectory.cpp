@@ -5,7 +5,7 @@
 
 #include "DICOMDirectory.h"
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "PatientRecord.h"
 #include "SeriesRecord.h"
 #include "StudyRecord.h"

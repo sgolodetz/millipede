@@ -12,7 +12,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <common/adts/WeightedEdge.h>
+#include <millipede/adts/WeightedEdge.h>
 
 namespace mp {
 

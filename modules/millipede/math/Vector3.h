@@ -9,7 +9,7 @@
 #include <cmath>
 #include <ostream>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "MathConstants.h"
 #include "NumericUtil.h"
 

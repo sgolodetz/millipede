@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <set>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "SourcedLabel.h"
 
 namespace mp {

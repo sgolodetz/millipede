@@ -7,7 +7,7 @@
 
 #include <itkIndex.h>
 
-#include <common/util/GridUtil.h>
+#include <millipede/util/GridUtil.h>
 
 namespace mp {
 

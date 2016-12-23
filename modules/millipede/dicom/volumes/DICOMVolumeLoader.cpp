@@ -16,9 +16,9 @@ using boost::lexical_cast;
 #include <itkMetaDataObject.h>
 #include <itkRegionOfInterestImageFilter.h>
 
-#include <common/dicom/directories/DICOMDirectory.h>
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/exceptions/Exception.h>
+#include <millipede/dicom/directories/DICOMDirectory.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

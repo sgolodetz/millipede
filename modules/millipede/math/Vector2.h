@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "NumericUtil.h"
 
 namespace mp {

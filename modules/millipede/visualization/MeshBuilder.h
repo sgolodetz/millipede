@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include <common/jobs/CompositeJob.h>
+#include <millipede/jobs/CompositeJob.h>
 #include "CubeFaceGenerator.h"
 #include "CubeInternalGenerator.h"
 #include "CubeTriangleGenerator.h"

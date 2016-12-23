@@ -9,7 +9,7 @@
 #include <list>
 #include <vector>
 
-#include <common/math/Vector2.h>
+#include <millipede/math/Vector2.h>
 
 namespace mp {
 

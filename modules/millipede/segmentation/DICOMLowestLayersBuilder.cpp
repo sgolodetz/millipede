@@ -9,10 +9,10 @@
 #include <itkGradientAnisotropicDiffusionImageFilter.h>
 #include <itkGradientMagnitudeImageFilter.h>
 
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/exceptions/Exception.h>
-#include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/segmentation/watershed/MeijsterRoerdinkWatershed.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace mp {
 

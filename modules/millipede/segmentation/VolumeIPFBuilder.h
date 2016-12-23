@@ -8,16 +8,16 @@
 
 #include <itkRegionOfInterestImageFilter.h>
 
-#include <common/adts/RootedMST.h>
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositeJob.h>
-#include <common/jobs/DataHook.h>
-#include <common/partitionforests/images/VolumeIPF.h>
-#include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
-#include <common/segmentation/waterfall/MarcoteguiWaterfallPass.h>
-#include <common/segmentation/waterfall/NichollsWaterfallPass.h>
-#include <common/util/GridUtil.h>
+#include <millipede/adts/RootedMST.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/CompositeJob.h>
+#include <millipede/jobs/DataHook.h>
+#include <millipede/partitionforests/images/VolumeIPF.h>
+#include <millipede/segmentation/waterfall/GolodetzWaterfallPass.h>
+#include <millipede/segmentation/waterfall/MarcoteguiWaterfallPass.h>
+#include <millipede/segmentation/waterfall/NichollsWaterfallPass.h>
+#include <millipede/util/GridUtil.h>
 #include "ForestBuildingWaterfallPassListener.h"
 #include "SubvolumeToVolumeIndexMapper.h"
 

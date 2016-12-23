@@ -8,9 +8,9 @@
 
 #include <map>
 
-#include <common/exceptions/Exception.h>
-#include <common/io/util/OSSWrapper.h>
-#include <common/util/NullType.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/util/NullType.h>
 
 namespace mp {
 

@@ -9,8 +9,8 @@
 #include <itkIndex.h>
 #include <itkSize.h>
 
-#include <common/partitionforests/base/PartitionForest.h>
-#include <common/util/GridUtil.h>
+#include <millipede/partitionforests/base/PartitionForest.h>
+#include <millipede/util/GridUtil.h>
 
 namespace mp {
 

@@ -5,7 +5,7 @@
 
 #include "AbdominalFeature.h"
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

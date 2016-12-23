@@ -10,7 +10,7 @@
 using boost::bad_lexical_cast;
 using boost::lexical_cast;
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "LineIO.h"
 
 namespace mp {

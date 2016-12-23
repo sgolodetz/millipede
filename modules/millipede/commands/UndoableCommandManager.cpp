@@ -7,7 +7,7 @@
 
 #include <deque>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "SequenceCommand.h"
 
 namespace mp {

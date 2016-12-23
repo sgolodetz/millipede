@@ -13,7 +13,7 @@
 #include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
 
-#include <common/slices/SliceOrientation.h>
+#include <millipede/slices/SliceOrientation.h>
 
 namespace mp {
 

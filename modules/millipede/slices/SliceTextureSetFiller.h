@@ -8,11 +8,11 @@
 
 #include <itkExtractImageFilter.h>
 
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositeJob.h>
-#include <common/jobs/DataHook.h>
-#include <common/jobs/SimpleJob.h>
-#include <common/textures/TextureFactory.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/CompositeJob.h>
+#include <millipede/jobs/DataHook.h>
+#include <millipede/jobs/SimpleJob.h>
+#include <millipede/textures/TextureFactory.h>
 #include "SliceTextureSet.h"
 
 namespace mp {

@@ -8,7 +8,7 @@
 #include <cassert>
 #include <sstream>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "SeriesRecord.h"
 
 namespace mp {

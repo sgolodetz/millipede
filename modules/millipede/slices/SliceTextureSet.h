@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include <common/textures/ITKImageTexture.h>
+#include <millipede/textures/ITKImageTexture.h>
 #include "SliceOrientation.h"
 
 namespace mp {

@@ -8,8 +8,8 @@
 
 #include <boost/bind.hpp>
 
-#include <common/adts/RootedMST.h>
-#include <common/listeners/CompositeListenerBase.h>
+#include <millipede/adts/RootedMST.h>
+#include <millipede/listeners/CompositeListenerBase.h>
 
 namespace mp {
 

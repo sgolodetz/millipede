@@ -15,7 +15,7 @@
 #include <boost/optional.hpp>
 #include <boost/utility.hpp>
 
-#include <common/math/NumericUtil.h>
+#include <millipede/math/NumericUtil.h>
 
 namespace {
 

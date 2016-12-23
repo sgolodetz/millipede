@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <common/dicom/directories/DICOMDirectory.h>
+#include <millipede/dicom/directories/DICOMDirectory.h>
 
 namespace mp {
 

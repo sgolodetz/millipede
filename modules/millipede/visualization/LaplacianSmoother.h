@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_LAPLACIANSMOOTHER
 #define H_MILLIPEDE_LAPLACIANSMOOTHER
 
-#include <common/io/util/OSSWrapper.h>
+#include <millipede/io/util/OSSWrapper.h>
 #include "MeshTransformer.h"
 #include "MeshUtil.h"
 

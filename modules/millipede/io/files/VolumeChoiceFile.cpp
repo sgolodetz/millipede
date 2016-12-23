@@ -7,8 +7,8 @@
 
 #include <fstream>
 
-#include <common/exceptions/Exception.h>
-#include <common/io/sections/VolumeChoiceSection.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/io/sections/VolumeChoiceSection.h>
 
 namespace mp {
 

@@ -5,7 +5,7 @@
 
 #include "ICommandManager.h"
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "Command.h"
 
 namespace mp {

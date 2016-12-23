@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include <common/ogl/WrappedGL.h>
+#include <millipede/ogl/WrappedGL.h>
 #include "Shader.h"
 
 namespace mp {

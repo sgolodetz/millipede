@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_VOLUMEIPFSELECTION
 #define H_MILLIPEDE_VOLUMEIPFSELECTION
 
-#include <common/partitionforests/base/PartitionForestSelection.h>
+#include <millipede/partitionforests/base/PartitionForestSelection.h>
 #include "VolumeIPF.h"
 
 namespace mp {

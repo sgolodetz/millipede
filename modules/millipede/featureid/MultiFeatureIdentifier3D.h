@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_MULTIFEATUREIDENTIFIER3D
 #define H_MILLIPEDE_MULTIFEATUREIDENTIFIER3D
 
-#include <common/jobs/CompositeJob.h>
+#include <millipede/jobs/CompositeJob.h>
 #include "FeatureIdentifier.h"
 
 namespace mp {

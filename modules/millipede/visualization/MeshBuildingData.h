@@ -8,7 +8,7 @@
 
 #include <itkImage.h>
 
-#include <common/jobs/DataHook.h>
+#include <millipede/jobs/DataHook.h>
 #include "CubeTable.h"
 #include "GlobalNodeTable.h"
 #include "MeshTriangle.h"

@@ -23,8 +23,8 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkShapedNeighborhoodIterator.h>
 
-#include <common/adts/DisjointSetForest.h>
-#include <common/exceptions/Exception.h>
+#include <millipede/adts/DisjointSetForest.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

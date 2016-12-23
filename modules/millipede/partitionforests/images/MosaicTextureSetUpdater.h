@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-#include <common/jobs/SimpleJob.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/jobs/SimpleJob.h>
+#include <millipede/util/ITKImageUtil.h>
 #include "VolumeIPF.h"
 
 namespace mp {

@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_MESHDECIMATOR
 #define H_MILLIPEDE_MESHDECIMATOR
 
-#include <common/adts/PriorityQueue.h>
+#include <millipede/adts/PriorityQueue.h>
 #include "MeshTransformer.h"
 #include "MeshUtil.h"
 #include "SimpleMeshNodeDecimator.h"

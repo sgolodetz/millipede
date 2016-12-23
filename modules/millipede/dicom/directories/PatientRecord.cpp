@@ -7,7 +7,7 @@
 
 #include <cassert>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "StudyRecord.h"
 
 namespace mp {

@@ -10,7 +10,7 @@
 
 #include <boost/optional.hpp>
 
-#include <common/math/Plane.h>
+#include <millipede/math/Plane.h>
 #include "MeshNode.h"
 #include "MeshTriangle.h"
 #include "NodeLoop.h"

@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_CUBEFACEDESIGNATOR
 #define H_MILLIPEDE_CUBEFACEDESIGNATOR
 
-#include <common/util/EnumUtil.h>
+#include <millipede/util/EnumUtil.h>
 
 namespace mp {
 

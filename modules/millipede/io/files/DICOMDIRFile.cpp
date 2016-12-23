@@ -14,10 +14,10 @@
 #include <gdcmDicomDirSerie.h>
 #include <gdcmDicomDirStudy.h>
 
-#include <common/dicom/directories/PatientRecord.h>
-#include <common/dicom/directories/SeriesRecord.h>
-#include <common/dicom/directories/StudyRecord.h>
-#include <common/exceptions/Exception.h>
+#include <millipede/dicom/directories/PatientRecord.h>
+#include <millipede/dicom/directories/SeriesRecord.h>
+#include <millipede/dicom/directories/StudyRecord.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

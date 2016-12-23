@@ -5,7 +5,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 
 namespace mp {
 

@@ -9,8 +9,8 @@
 
 #include <boost/algorithm/string/replace.hpp>
 
-#include <common/exceptions/Exception.h>
-#include <common/util/DataTable.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/util/DataTable.h>
 
 namespace mp {
 

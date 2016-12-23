@@ -13,9 +13,9 @@
 
 #include <boost/utility.hpp>
 
-#include <common/adts/Edge.h>
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/SimpleJob.h>
+#include <millipede/adts/Edge.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/SimpleJob.h>
 #include "FanTriangulator.h"
 #include "NodeLoop.h"
 #include "SchroederTriangulator.h"

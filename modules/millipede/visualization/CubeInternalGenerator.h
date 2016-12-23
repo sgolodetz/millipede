@@ -6,8 +6,8 @@
 #ifndef H_MILLIPEDE_CUBEINTERNALGENERATOR
 #define H_MILLIPEDE_CUBEINTERNALGENERATOR
 
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/SimpleJob.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/SimpleJob.h>
 #include "MeshBuildingData.h"
 
 namespace mp {

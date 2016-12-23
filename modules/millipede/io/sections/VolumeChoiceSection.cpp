@@ -10,9 +10,9 @@
 using boost::bad_lexical_cast;
 using boost::lexical_cast;
 
-#include <common/dicom/volumes/DICOMVolumeChoice.h>
-#include <common/io/util/FieldIO.h>
-#include <common/io/util/LineIO.h>
+#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
+#include <millipede/io/util/FieldIO.h>
+#include <millipede/io/util/LineIO.h>
 
 namespace mp {
 
