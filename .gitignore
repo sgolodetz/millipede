@@ -3,6 +3,6 @@ install/
 libraries/boost_1_56_0/
 libraries/boost-setup/
 libraries/gdcm-1.2.5/
-libraries/ITK-3.14.0/
+libraries/ITK-4.10.1/
 libraries/wxWidgets-2.8.10/
 libraries/*.log

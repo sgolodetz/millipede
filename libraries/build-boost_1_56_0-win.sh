@@ -9,19 +9,19 @@ then
   exit 1
 fi
 
-echo "[spaint] Building Boost 1.56.0 for $1"
+echo "[millipede] Building Boost 1.56.0 for $1"
 
 if [ -d boost_1_56_0 ]
 then
-  echo "[spaint] ...Skipping build (already built)"
+  echo "[millipede] ...Skipping build (already built)"
   exit
 fi
 
 if [ -d boost-setup ]
 then
-  echo "[spaint] ...Skipping archive extraction (already extracted)"
+  echo "[millipede] ...Skipping archive extraction (already extracted)"
 else
-  echo "[spaint] ...Extracting archive..."
+  echo "[millipede] ...Extracting archive..."
   /bin/rm -fR tmp
   mkdir tmp
   cd tmp
@@ -35,17 +35,17 @@ cd boost-setup
 
 if [ -e b2 ]
 then
-  echo "[spaint] ...Skipping bootstrapping (b2 already exists)"
+  echo "[millipede] ...Skipping bootstrapping (b2 already exists)"
 else
-  echo "[spaint] ...Bootstrapping..."
+  echo "[millipede] ...Bootstrapping..."
   cmd //c "bootstrap.bat > $LOG"
 fi
 
-echo "[spaint] ...Running build..."
+echo "[millipede] ...Running build..."
 cmd //c "b2 -j2 --libdir=..\boost_1_56_0\lib --includedir=..\boost_1_56_0\include --abbreviate-paths --with-chrono --with-date_time --with-filesystem --with-program_options --with-regex --with-serialization --with-test --with-thread --with-timer --build-type=complete --layout=tagged toolset=$1 architecture=x86 address-model=64 install >> $LOG"
 
-echo "[spaint] ...Fixing headers..."
+echo "[millipede] ...Fixing headers..."
 perl -ibak -pe 's/SPT<void>/SPT<const void>/g' ../boost_1_56_0/include/boost/serialization/shared_ptr_helper.hpp
 rm ../boost_1_56_0/include/boost/serialization/shared_ptr_helper.hppbak
 
-echo "[spaint] ...Finished building Boost 1.56.0."
+echo "[millipede] ...Finished building Boost 1.56.0."
