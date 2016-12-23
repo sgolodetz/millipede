@@ -8,11 +8,11 @@
 
 #include <vector>
 
-#include "../../adts/WeightedEdge.h>
-#include "../../exceptions/Exception.h>
-#include "../../math/Vector3.h>
-#include "../../util/GridUtil.h>
-#include "../base/IForestLayer.h>
+#include "../../adts/WeightedEdge.h"
+#include "../../exceptions/Exception.h"
+#include "../../math/Vector3.h"
+#include "../../util/GridUtil.h"
+#include "../base/IForestLayer.h"
 
 namespace mp {
 

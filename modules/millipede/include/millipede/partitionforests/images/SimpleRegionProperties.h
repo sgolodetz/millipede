@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include <millipede/math/Vector3.h>
+#include "../../math/Vector3.h"
 #include "SimplePixelProperties.h"
 
 namespace mp {

@@ -14,7 +14,7 @@ SET(targetname millipede)
 
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
 #INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseGDCM.cmake)
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseITK.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseITK.cmake)
 
 #############################
 # Specify the project files #

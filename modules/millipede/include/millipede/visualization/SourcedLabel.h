@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_SOURCEDLABEL
 #define H_MILLIPEDE_SOURCEDLABEL
 
-#include <millipede/math/Vector3.h>
+#include "../math/Vector3.h"
 
 namespace mp {
 

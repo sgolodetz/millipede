@@ -8,7 +8,7 @@
 
 #include <itkSize.h>
 
-#include <millipede/dicom/util/WindowSettings.h>
+#include "../dicom/util/WindowSettings.h"
 
 namespace mp {
 
