@@ -1,0 +1,69 @@
+wxWidgets 2.8.10 Setup Instructions
+Last Updated by Stuart Golodetz on 17/07/10
+-------------------------------------------
+
+1. Extract wxWidgets-2.8.10.tar.gz into the libraries directory.
+
+	On Windows:
+
+	a) Just extract it using something like the shareware version of WinRAR.
+
+	On Linux or Mac OS X:
+
+	a) Change to the libraries directory.
+	b) Run "tar xzf setup/wxWidgets-2.8.10/wxWidgets-2.8.10.tar.gz".
+
+2. Build wxWidgets with OpenGL support enabled.
+
+	On Windows:
+
+	a) In libraries/wxWidgets-2.8.10/include/wx/msw/setup.h:
+		- Change #define wxUSE_GLCANVAS to 1 (it's 0 by default).
+	b) In libraries/wxWidgets-2.8.10/build/msw, run:
+		"nmake -f makefile.vc UNICODE=0 SHARED=0 BUILD=debug MONOLITHIC=0 USE_OPENGL=1"
+	c) Repeat step (b) with BUILD=release.
+
+	On Linux:
+
+	a) Make subdirectories of libraries/wxWidgets-2.8.10 called e.g. build28d and build28 (for the debug and release builds, respectively).
+	b) From within build28d, run:
+		"../configure --enable-debug --disable-shared --with-opengl"
+	c) Still within build28d, run "make".
+	d) From within build28, run:
+		"../configure --disable-shared --with-opengl"
+	e) Still within build28, run "make".
+
+	On Mac OS X:
+
+	You have to do essentially the same as for Linux, but with some special tweaks:
+
+	1) Add the appropriate SDK when configuring in steps (b) and (d), e.g. for Snow Leopard:
+
+	--with-macosx-sdk=/Developer/SDKs/MacOSX10.6.sdk
+
+	2) On Snow Leopard, you need to explicitly set the architecture to i386, as described here:
+
+	http://wiki.wxwidgets.org/Development:_wxMac#Building_under_10.6_Snow_Leopard
+
+	The key bit is:
+
+	arch_flags="-arch i386"
+	../configure CFLAGS="$arch_flags" CXXFLAGS="$arch_flags" CPPFLAGS="$arch_flags" LDFLAGS="$arch_flags" OBJCFLAGS="$arch_flags" OBJCXXFLAGS="$arch_flags" ...
+
+	For a debug build, then:
+
+	arch_flags="-arch i386"
+	../configure CFLAGS="$arch_flags" CXXFLAGS="$arch_flags" CPPFLAGS="$arch_flags" LDFLAGS="$arch_flags" OBJCFLAGS="$arch_flags" OBJCXXFLAGS="$arch_flags" --enable-debug --disable-shared --with-opengl
+
+	And for a release build:
+
+	arch_flags="-arch i386"
+	../configure CFLAGS="$arch_flags" CXXFLAGS="$arch_flags" CPPFLAGS="$arch_flags" LDFLAGS="$arch_flags" OBJCFLAGS="$arch_flags" OBJCXXFLAGS="$arch_flags" --disable-shared --with-opengl
+
+Notes:
+
+* On Windows, the correct environment variables need to be set when you're building wxWidgets (or nmake won't be found).
+  - To ensure this, run the "Visual Studio 200{5/8} Command Prompt" shortcut to get your command prompt.
+* On Windows, you need to set wxWidgets_CONFIGURATION to msw and wxWidgets_USE_REL_AND_DBG to true in CMake.
+* On non-Windows platforms, you'll be asked by CMake to specify the location of wx-config when generating your own project files
+  - This is at libraries/wxWidgets-2.8.10/build28d/wx-config for a debug build, and libraries/wxWidgets-2.8.10/build28/wx-config for a release one

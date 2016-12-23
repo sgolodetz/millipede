@@ -1,0 +1,48 @@
+ITK 3.14.0 Setup Instructions
+Last Updated by Stuart Golodetz on 17/07/10
+-------------------------------------------
+
+1. Create an ITK-3.14.0 subdirectory in the libraries directory.
+
+2. Extract InsightToolkit-3.14.0.tar.gz into the ITK-3.14.0 directory.
+
+	On Windows:
+
+	a) Just extract it using something like the shareware version of WinRAR.
+
+	On Linux or Mac OS X:
+
+	a) Change to the libraries/ITK-3.14.0 directory.
+	b) Run "tar xzf ../setup/ITK-3.14.0/InsightToolkit-3.14.0.tar.gz".
+
+3. Rename the new InsightToolkit-3.14.0 subdirectory of ITK-3.14.0 to 'source'.
+
+4. Configure ITK using CMake and then build it.
+
+	On Windows:
+
+	a) Use the CMake GUI. Set the source directory to that in the ITK-3.14.0 directory, and the build directory to a sibling of source called 'build' (this doesn't need to exist yet). The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and build called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building ITK, I recommend:
+
+BUILD_DOXYGEN		OFF
+BUILD_EXAMPLES		OFF
+BUILD_SHARED_LIBS	OFF
+BUILD_TESTING		OFF
+ITK_USE_KWSTYLE		OFF
+
+	b) The created solution (ITK.sln) will be in the build directory. Open it, set the solution configuration to Release, and build the ALL_BUILD project.
+	c) If desired, you can create a separate debug build tree by repeating steps (a) and (b) using different directory names. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug'. In (b), the solution configuration should this time be set to Debug rather than Release.
+
+	On Linux:
+
+	a) Make a subdirectory of ITK-3.14.0 called build (this will be a sibling of the source directory) and change to it.
+	b) Run "ccmake ../source" and set the options as per the instructions for Windows above.
+	c) Run "make".
+	d) If desired, you can create a separate debug build tree by repeating steps (a)-(c) using different directory names and CMAKE_BUILD_TYPE set to 'Debug'. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug', then do the same as before.
+
+	On Mac OS X:
+
+	- Mostly the same as for Linux, except for changing two options in ccmake:
+
+		1) Set CMAKE_OSX_SYSROOT to the appropriate SDK, e.g. /Developer/SDKs/MacOSX10.6.sdk for Snow Leopard.
+		2) Set CMAKE_OSX_ARCHITECTURES to i386.
+

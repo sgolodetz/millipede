@@ -1,0 +1,11 @@
+millipede Todos
+===============
+
+* Upgrade Watershed to support 4/6-connected as well as 8/26-connected.
+* Import the fixes to Waterfall and make sure they're correct.
+* Import the IPF code.
+  - But tidy it up - it's a bit of a mess at the moment.
+* Implement MAST (the Millipede Automatic Segmentation Tool).
+  - Base it on FAST.
+  - Allow 3D volumes to be viewed from each of the three main directions.
+* Add proper doc comments.

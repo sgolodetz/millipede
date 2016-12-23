@@ -1,0 +1,59 @@
+GDCM 1.2.5 Setup Instructions
+Last Updated by Stuart Golodetz on 17/07/10
+-------------------------------------------
+
+1. Create a gdcm-1.2.5 subdirectory in the libraries directory.
+
+2. Extract gdcm-1.2.5.tar.gz into the gdcm-1.2.5 directory.
+
+	On Windows:
+
+	a) Just extract it using something like the shareware version of WinRAR.
+
+	On Linux or Mac OS X:
+
+	a) Change to the libraries/gdcm-1.2.5 directory.
+	b) Run "tar xzf ../setup/gdcm-1.2.5/gdcm-1.2.5.tar.gz".
+
+3. Rename the new gdcm-1.2.5 subdirectory of gdcm-1.2.5 to 'source'.
+
+4. Configure GDCM using CMake and then build it.
+
+	On Windows:
+
+	a) Use the CMake GUI. Set the source directory to that in the gdcm-1.2.5 directory, and the build directory to a sibling of source called 'build' (this doesn't need to exist yet). The install directory (i.e. CMAKE_INSTALL_PREFIX) should be set to a sibling of source and build called 'install'. Then just keep changing the options and configuring until you can generate a Visual Studio solution. In particular, if this is the first time you're building GDCM, I recommend:
+
+BUILD_TESTING		OFF
+GDCM_BUILD_EXAMPLES	OFF
+GDCM_BUILD_SHARED_LIBS	OFF
+
+	b) The created solution (GDCM.sln) will be in the build directory. Open it, set the solution configuration to Release, and build the ALL_BUILD project.
+	c) If desired, you can create a separate debug build tree by repeating steps (a) and (b) using different directory names. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug'. In (b), the solution configuration should this time be set to Debug rather than Release.
+
+	On Linux:
+
+	a) Make a subdirectory of gdcm-1.2.5 called build (this will be a sibling of the source directory) and change to it.
+	b) Run "ccmake ../source" and set the options as per the instructions for Windows above (except for GDCM_BUILD_SHARED_LIBS, which should be set to ON).
+	c) Run "make".
+	d) If desired, you can create a separate debug build tree by repeating steps (a)-(c) using different directory names and CMAKE_BUILD_TYPE set to 'Debug'. In other words, replace the 'build' directory with 'build-debug' and the 'install' directory with 'install-debug', then do the same as before.
+
+	On Mac OS X:
+
+	- Mostly the same as for Linux, except for changing two options in ccmake:
+
+		1) Set CMAKE_OSX_SYSROOT to the appropriate SDK, e.g. /Developer/SDKs/MacOSX10.6.sdk for Snow Leopard.
+		2) Set CMAKE_OSX_ARCHITECTURES to i386.
+
+5. On non-Windows platforms, you may additionally need to run "make install". This will put all the shared object files (dynamic libraries) in gdcm-1.2.5/install (or gdcm-1.2.5/install-debug, for the debug build). These may need to be copied to /usr/lib/ so that executables can find them.
+
+***
+Troubleshooting Note:
+
+If this isn't possible (for example if you're using a computer on which you don't have root access), then you'll have to do it the annoying way using LD_LIBRARY_PATH. For example, you can run the test program test-gdcm-1.2.5 from within the millipede/install/bin/tests/test-gdcm-1.2.5/bin directory by doing:
+
+LD_LIBRARY_PATH=../../../../../libraries/gdcm-1.2.5/install/lib:$LD_LIBRARY_PATH ./test-gdcm-1.2.5
+
+Alternatively you can just set the LD_LIBRARY_PATH using export.
+
+Note: To simplify this process (since the whole situation described is bound to occur), I've actually added a script file to run the program correctly. To invoke it, just run the program using "./test-gdcm-1.2.5.sh" (you'll first need to make it executable after each build using "chmod 755 test-gdcm-1.2.5.sh"). This is still clearly not the preferable way of doing things on a computer to which you have root access. If you happen to be working on an OUCL computer, I suggest asking Ian if he could install the libraries into /usr/lib for you.
+***
