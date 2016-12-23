@@ -1,1 +1,0 @@
-/users/irina/tex/ouclprgsc.cls
