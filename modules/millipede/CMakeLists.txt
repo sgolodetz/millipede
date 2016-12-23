@@ -1,8 +1,24 @@
-# CMakeLists.txt for common
+########################################
+# CMakeLists.txt for modules/millipede #
+########################################
 
-##########################################
-# Specify the project files by directory #
-##########################################
+###########################
+# Specify the target name #
+###########################
+
+SET(targetname millipede)
+
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
+#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseGDCM.cmake)
+#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseITK.cmake)
+
+#############################
+# Specify the project files #
+#############################
 
 ##
 SET(adts_sources
@@ -381,59 +397,61 @@ visualization/VisualizationOptions.h
 
 SET(sources
 ${adts_sources}
-${commands_sources}
-${dicom_directories_sources}
-${dicom_util_sources}
-${dicom_volumes_sources}
-${featureid_sources}
-${graphics_sources}
-${io_files_sources}
-${io_sections_sources}
-${io_util_sources}
-${jobs_sources}
-${math_sources}
-${ogl_c_sources}
-${partitionforests_base_sources}
-${partitionforests_images_sources}
-${segmentation_sources}
-${shaders_sources}
-${slices_sources}
-${textures_sources}
-${util_sources}
-${visualization_sources}
 )
+#${commands_sources}
+#${dicom_directories_sources}
+#${dicom_util_sources}
+#${dicom_volumes_sources}
+#${featureid_sources}
+#${graphics_sources}
+#${io_files_sources}
+#${io_sections_sources}
+#${io_util_sources}
+#${jobs_sources}
+#${math_sources}
+#${ogl_c_sources}
+#${partitionforests_base_sources}
+#${partitionforests_images_sources}
+#${segmentation_sources}
+#${shaders_sources}
+#${slices_sources}
+#${textures_sources}
+#${util_sources}
+#${visualization_sources}
+#)
 
 SET(headers
 ${adts_headers}
-${commands_headers}
-${dicom_directories_headers}
-${dicom_util_headers}
-${dicom_volumes_headers}
-${exceptions_headers}
-${featureid_headers}
-${graphics_headers}
-${io_files_headers}
-${io_sections_headers}
-${io_util_headers}
-${jobs_headers}
-${listeners_headers}
-${math_headers}
-${partitionforests_base_headers}
-${partitionforests_graphviz_headers}
-${partitionforests_images_headers}
-${ogl_headers}
-${segmentation_headers}
-${segmentation_waterfall_headers}
-${segmentation_watershed_headers}
-${shaders_headers}
-${slices_headers}
-${textures_headers}
-${util_headers}
-${visualization_headers}
 )
+#${commands_headers}
+#${dicom_directories_headers}
+#${dicom_util_headers}
+#${dicom_volumes_headers}
+#${exceptions_headers}
+#${featureid_headers}
+#${graphics_headers}
+#${io_files_headers}
+#${io_sections_headers}
+#${io_util_headers}
+#${jobs_headers}
+#${listeners_headers}
+#${math_headers}
+#${partitionforests_base_headers}
+#${partitionforests_graphviz_headers}
+#${partitionforests_images_headers}
+#${ogl_headers}
+#${segmentation_headers}
+#${segmentation_waterfall_headers}
+#${segmentation_watershed_headers}
+#${shaders_headers}
+#${slices_headers}
+#${textures_headers}
+#${util_headers}
+#${visualization_headers}
+#)
 
 SET(templates
-${io_util_templates}
+#${io_util_templates}
 )
 
 #############################
@@ -540,37 +558,20 @@ SOURCE_GROUP(util\\.h FILES ${util_headers})
 SOURCE_GROUP(visualization\\.cpp FILES ${visualization_sources})
 SOURCE_GROUP(visualization\\.h FILES ${visualization_headers})
 
-################################
-# Specify the libraries to use #
-################################
-
-INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseGDCM.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
-
 ###############################
 # Specify the necessary paths #
 ###############################
 
-INCLUDE_DIRECTORIES(${millipede_SOURCE_DIR})
-
-####################################
-# Specify preprocessor definitions #
-####################################
-
-IF(MSVC_IDE)
-	# Prevent the deprecation warnings that VC++ arbitrarily decides to produce for C Standard Library functions
-	ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
-ENDIF(MSVC_IDE)
+INCLUDE_DIRECTORIES(include/millipede)
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/lib/common)
-ADD_LIBRARY(common ${sources} ${headers} ${templates})
-IF(MSVC_IDE)
-	# A hack to get around the "Debug" and "Release" directories Visual Studio tries to add
-    SET_TARGET_PROPERTIES(common PROPERTIES PREFIX "../")
-    SET_TARGET_PROPERTIES(common PROPERTIES IMPORT_PREFIX "../")
-ENDIF(MSVC_IDE)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetLibTarget.cmake)
+
+#############################
+# Specify things to install #
+#############################
+
+INSTALL(TARGETS ${targetname} DESTINATION lib)
