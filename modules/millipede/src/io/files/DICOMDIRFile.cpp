@@ -29,7 +29,7 @@ DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 	DICOMDirectory_Ptr ret(new DICOMDirectory);
 
 	// Load in the DICOMDIR.
-	gdcm::DicomDir dicomdir;
+	gdcm1::DicomDir dicomdir;
 	dicomdir.SetFileName(filename);
 
 	// MEMORY LEAK: The gdcm library leaks memory here (there's nothing obvious I can do about it besides document it unfortunately).
@@ -39,13 +39,13 @@ DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 	}
 
 	// Add the patients to the directory.
-	for(gdcm::DicomDirPatient *patient=dicomdir.GetFirstPatient(); patient!=NULL; patient=dicomdir.GetNextPatient())
+	for(gdcm1::DicomDirPatient *patient=dicomdir.GetFirstPatient(); patient!=NULL; patient=dicomdir.GetNextPatient())
 	{
 		std::string patientsName = patient->GetEntryValue(0x0010, 0x0010);
 		PatientRecord_Ptr patientRecord(new PatientRecord(patientsName));
 
 		// Add the studies to the patient record.
-		for(gdcm::DicomDirStudy *study=patient->GetFirstStudy(); study!=NULL; study=patient->GetNextStudy())
+		for(gdcm1::DicomDirStudy *study=patient->GetFirstStudy(); study!=NULL; study=patient->GetNextStudy())
 		{
 			std::string studyDescription = study->GetEntryValue(0x0008, 0x1030);
 			std::string studyID = study->GetEntryValue(0x0020, 0x0010);
@@ -57,14 +57,14 @@ DICOMDirectory_Ptr DICOMDIRFile::load(const std::string& filename)
 			StudyRecord_Ptr studyRecord(new StudyRecord(studyDescription, studyID, studyInstanceUID));
 
 			// Add the series to the study record.
-			for(gdcm::DicomDirSerie *serie=study->GetFirstSerie(); serie!=NULL; serie=study->GetNextSerie())
+			for(gdcm1::DicomDirSerie *serie=study->GetFirstSerie(); serie!=NULL; serie=study->GetNextSerie())
 			{
 				std::string seriesNumber = serie->GetEntryValue(0x0020, 0x0011);
 				boost::trim(seriesNumber);
 				SeriesRecord_Ptr seriesRecord(new SeriesRecord(seriesNumber));
 
 				// Add the image filenames to the series record.
-				for(gdcm::DicomDirImage *image=serie->GetFirstImage(); image!=NULL; image=serie->GetNextImage())
+				for(gdcm1::DicomDirImage *image=serie->GetFirstImage(); image!=NULL; image=serie->GetNextImage())
 				{
 					std::string referencedFileID = image->GetEntryValue(0x0004, 0x1500);
 					boost::replace_all(referencedFileID, "\\", "/");

@@ -31,8 +31,17 @@ fi
 
 cd gdcm-1.2.5
 
-echo "[millipede] ...Fixing bug..."
-perl -ibak -pe 's/\*fp == NULL/!fp/g' src/gdcmFile.cxx
+if [ ! -f HACKED ]
+then
+  echo "[millipede] ...Applying hacks..."
+  perl -ibak -pe 's/\*fp == NULL/!fp/g' src/gdcmFile.cxx
+  (find . -exec grep -l 'namespace gdcm' {} \;) 2>&1 | grep -v 'directory' | while read f; do perl -ibak -pe 's/namespace gdcm/namespace gdcm1/g' "$f"; done
+  (find . -exec grep -l 'gdcm::' {} \;) 2>&1 | grep -v 'directory' | while read f; do perl -ibak -pe 's/gdcm::/gdcm1::/g' "$f"; done
+
+  touch HACKED
+else
+  echo "[millipede] ...Skipping hacks (already applied)"
+fi
 
 if [ -d build ]
 then
