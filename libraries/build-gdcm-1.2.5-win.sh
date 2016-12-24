@@ -57,8 +57,20 @@ else
   #cmd //c "msbuild /p:Configuration=Debug ITK.sln >> $LOG 2>&1"
 
   echo "[millipede] ...Running Release build..."
-  #cmd //c "msbuild /p:Configuration=Release GDCM.sln >> $LOG 2>&1"
-  cmd //c "msbuild /p:Configuration=Release GDCM.sln"
+  cmd //c "msbuild /p:Configuration=Release GDCM.sln >> $LOG 2>&1"
+
+  cd ..
+fi
+
+if [ -d installed ]
+then
+  echo "[millipede] ...Skipping install (already installed)"
+else
+  cd build
+
+  echo "[millipede] ...Installing..."
+  #cmd //c "msbuild /p:Configuration=Debug INSTALL.vcxproj >> $LOG 2>&1"
+  cmd //c "msbuild /p:Configuration=Release INSTALL.vcxproj >> $LOG 2>&1"
 
   cd ..
 fi
