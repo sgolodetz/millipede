@@ -10,21 +10,21 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <common/commands/UndoableCommandManager.h>
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/dicom/volumes/DICOMVolumeChoice.h>
-#include <common/partitionforests/base/PartitionForestMFSManager.h>
-#include <common/partitionforests/images/LabelImageCreator.h>
-#include <common/partitionforests/images/VolumeIPF.h>
-#include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
-#include <common/partitionforests/images/VolumeIPFSelection.h>
-#include <common/segmentation/DICOMLowestLayersBuilder.h>
-#include <common/segmentation/VolumeIPFBuilder.h>
-#include <common/util/ITKImageUtil.h>
-#include <common/visualization/LaplacianSmoother.h>
-#include <common/visualization/MeshBuilder.h>
-#include <common/visualization/MeshDecimator.h>
-#include <common/visualization/MeshRendererCreator.h>
+#include <millipede/commands/UndoableCommandManager.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
+#include <millipede/partitionforests/base/PartitionForestMFSManager.h>
+#include <millipede/partitionforests/images/LabelImageCreator.h>
+#include <millipede/partitionforests/images/VolumeIPF.h>
+#include <millipede/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
+#include <millipede/partitionforests/images/VolumeIPFSelection.h>
+#include <millipede/segmentation/DICOMLowestLayersBuilder.h>
+#include <millipede/segmentation/VolumeIPFBuilder.h>
+#include <millipede/util/ITKImageUtil.h>
+#include <millipede/visualization/LaplacianSmoother.h>
+#include <millipede/visualization/MeshBuilder.h>
+#include <millipede/visualization/MeshDecimator.h>
+#include <millipede/visualization/MeshRendererCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/SegmentDICOMVolumeDialog.h>
 #include <mast/gui/dialogs/VisualizeIn3DDialog.h>

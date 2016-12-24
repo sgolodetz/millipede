@@ -8,16 +8,16 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <common/ogl/WrappedGL.h>
+#include <millipede/ogl/WrappedGL.h>
 
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
 
-#include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/partitionforests/images/DICOMImageBranchLayer.h>
-#include <common/partitionforests/images/DICOMImageLeafLayer.h>
-#include <common/slices/SliceLocation.h>
-#include <common/slices/SliceTextureSet.h>
+#include <millipede/partitionforests/images/AbdominalFeature.h>
+#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
+#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/slices/SliceLocation.h>
+#include <millipede/slices/SliceTextureSet.h>
 #include <mast/models/PartitionModel.h>
 #include "NodeSplitManager.h"
 #include "ParentSwitchManager.h"

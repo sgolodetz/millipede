@@ -14,9 +14,9 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 
-#include <common/io/files/DataTableFile.h>
-#include <common/partitionforests/base/PartitionForestMFSManager.h>
-#include <common/util/DataTable.h>
+#include <millipede/io/files/DataTableFile.h>
+#include <millipede/partitionforests/base/PartitionForestMFSManager.h>
+#include <millipede/util/DataTable.h>
 #include <mast/util/StringConversion.h>
 #include "DialogUtil.h"
 

@@ -5,7 +5,7 @@
 
 #include "PartitionOverlay.h"
 
-#include <common/textures/Texture.h>
+#include <millipede/textures/Texture.h>
 
 namespace mp {
 

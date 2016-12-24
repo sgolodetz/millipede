@@ -7,8 +7,8 @@
 
 #include <boost/optional.hpp>
 
-#include <common/exceptions/Exception.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace {
 

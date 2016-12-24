@@ -18,7 +18,7 @@ using boost::shared_ptr;
 #include <wx/stattext.h>
 #include <wx/treectrl.h>
 
-#include <common/dicom/volumes/DICOMVolumeChoice.h>
+#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
 
 namespace mp {
 

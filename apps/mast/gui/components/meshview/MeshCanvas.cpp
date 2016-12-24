@@ -8,8 +8,8 @@
 #include <wx/checkbox.h>
 #include <wx/slider.h>
 
-#include <common/shaders/ShaderProgram.h>
-#include <common/visualization/MeshRenderer.h>
+#include <millipede/shaders/ShaderProgram.h>
+#include <millipede/visualization/MeshRenderer.h>
 #include "MeshView.h"
 #include "SphereMeshCamera.h"
 

@@ -10,9 +10,9 @@
 #include <wx/menu.h>
 #include <wx/sizer.h>
 
-#include <common/commands/UndoableCommandManager.h>
-#include <common/featureid/MultiFeatureIdentifier3D.h>
-#include <common/featureid/SpineIdentifier3D.h>
+#include <millipede/commands/UndoableCommandManager.h>
+#include <millipede/featureid/MultiFeatureIdentifier3D.h>
+#include <millipede/featureid/SpineIdentifier3D.h>
 #include <mast/gui/components/partitionview/PartitionCamera.h>
 #include <mast/gui/components/partitionview/PartitionView.h>
 #include <mast/gui/components/selectionview/SelectionView.h>

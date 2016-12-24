@@ -6,11 +6,11 @@
 #ifndef H_MILLIPEDE_IPFOVERLAYTOOLS
 #define H_MILLIPEDE_IPFOVERLAYTOOLS
 
-#include <common/partitionforests/images/VolumeIPF.h>
-#include <common/slices/SliceLocation.h>
-#include <common/slices/SliceOrientation.h>
-#include <common/textures/RGBA32ImageTexture.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/partitionforests/images/VolumeIPF.h>
+#include <millipede/slices/SliceLocation.h>
+#include <millipede/slices/SliceOrientation.h>
+#include <millipede/textures/RGBA32ImageTexture.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace mp {
 

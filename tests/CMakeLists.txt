@@ -1,4 +1,6 @@
-# CMakeLists.txt for tests
+######################################
+# CMakeLists.txt for millipede/tests #
+######################################
 
 ADD_SUBDIRECTORY(test-adjacencygraph)
 ADD_SUBDIRECTORY(test-boost_1_39_0)

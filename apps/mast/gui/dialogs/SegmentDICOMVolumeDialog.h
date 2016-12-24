@@ -8,7 +8,7 @@
 
 #include <wx/textctrl.h>
 
-#include <common/segmentation/DICOMSegmentationOptions.h>
+#include <millipede/segmentation/DICOMSegmentationOptions.h>
 #include "SegmentVolumeDialog.h"
 
 namespace mp {

@@ -6,14 +6,14 @@
 #ifndef H_MILLIPEDE_SEGMENTATIONWINDOW
 #define H_MILLIPEDE_SEGMENTATIONWINDOW
 
-#include <common/ogl/WrappedGL.h>
+#include <millipede/ogl/WrappedGL.h>
 
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 
-#include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/partitionforests/images/DICOMImageBranchLayer.h>
-#include <common/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/partitionforests/images/AbdominalFeature.h>
+#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
+#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
 #include <mast/models/PartitionModel.h>
 
 namespace mp {

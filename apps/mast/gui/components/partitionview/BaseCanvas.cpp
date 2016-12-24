@@ -5,10 +5,10 @@
 
 #include "BaseCanvas.h"
 
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/exceptions/Exception.h>
-#include <common/slices/SliceTextureSet.h>
-#include <common/textures/Texture.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/slices/SliceTextureSet.h>
+#include <millipede/textures/Texture.h>
 #include "PartitionCamera.h"
 #include "PartitionView.h"
 

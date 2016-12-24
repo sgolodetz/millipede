@@ -6,7 +6,7 @@
 #ifndef H_MILLIPEDE_SPHEREMESHCAMERA
 #define H_MILLIPEDE_SPHEREMESHCAMERA
 
-#include <common/math/Vector3.h>
+#include <millipede/math/Vector3.h>
 #include "MeshCamera.h"
 
 namespace mp {

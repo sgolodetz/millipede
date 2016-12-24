@@ -13,7 +13,7 @@
 #include <wx/listctrl.h>
 #include <wx/sizer.h>
 
-#include <common/math/NumericUtil.h>
+#include <millipede/math/NumericUtil.h>
 #include <mast/models/PartitionModel.h>
 #include <mast/util/StringConversion.h>
 

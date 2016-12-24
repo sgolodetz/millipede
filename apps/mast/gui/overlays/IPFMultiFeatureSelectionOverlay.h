@@ -6,8 +6,8 @@
 #ifndef H_MILLIPEDE_IPFMULTIFEATURESELECTIONOVERLAY
 #define H_MILLIPEDE_IPFMULTIFEATURESELECTIONOVERLAY
 
-#include <common/partitionforests/base/PartitionForestSelection.h>
-#include <common/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
+#include <millipede/partitionforests/base/PartitionForestSelection.h>
+#include <millipede/partitionforests/images/VolumeIPFMultiFeatureSelection.h>
 #include "IPFOverlayTools.h"
 #include "PartitionOverlay.h"
 

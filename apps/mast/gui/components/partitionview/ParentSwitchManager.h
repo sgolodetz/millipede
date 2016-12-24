@@ -6,10 +6,10 @@
 #ifndef H_MILLIPEDE_PARENTSWITCHMANAGER
 #define H_MILLIPEDE_PARENTSWITCHMANAGER
 
-#include <common/commands/ListenerAlertingCommandSequenceGuard.h>
-#include <common/exceptions/Exception.h>
-#include <common/listeners/CompositeListenerBase.h>
-#include <common/partitionforests/base/PartitionForestSelection.h>
+#include <millipede/commands/ListenerAlertingCommandSequenceGuard.h>
+#include <millipede/exceptions/Exception.h>
+#include <millipede/listeners/CompositeListenerBase.h>
+#include <millipede/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
 

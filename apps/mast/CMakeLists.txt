@@ -1,14 +1,24 @@
-# CMakeLists.txt for apps/mast
+################################
+# CMakeLists.txt for apps/mast #
 
-############################
-# Specify the project name #
-############################
+###########################
+# Specify the target name #
+###########################
 
 SET(targetname mast)
 
-##########################################
-# Specify the project files by directory #
-##########################################
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${millipede_SOURCE_DIR}/cmake/UseBoost.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/UseGDCM.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/UseITK.cmake)
+#INCLUDE(${millipede_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
+
+#############################
+# Specify the project files #
+#############################
 
 ##
 SET(mast_sources
@@ -176,9 +186,6 @@ ${models_headers}
 ${util_headers}
 )
 
-SET(templates
-)
-
 #############################
 # Specify the source groups #
 #############################
@@ -225,82 +232,77 @@ SOURCE_GROUP(models\\.h FILES ${models_headers})
 SOURCE_GROUP(util\\.cpp FILES ${util_sources})
 SOURCE_GROUP(util\\.h FILES ${util_headers})
 
-################################
-# Specify the libraries to use #
-################################
-
-INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseGDCM.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseWxWidgets.cmake)
-
-###############################
-# Specify the necessary paths #
-###############################
+##########################################
+# Specify additional include directories #
+##########################################
 
 INCLUDE_DIRECTORIES(
-${millipede_SOURCE_DIR}
-${millipede_SOURCE_DIR}/apps
+${PROJECT_SOURCE_DIR}
+${PROJECT_SOURCE_DIR}/apps
 )
+
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/modules/millipede/include)
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/bin/apps/${targetname}/bin)
-ADD_EXECUTABLE(${targetname} ${sources} ${headers})
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetAppTarget.cmake)
+
+#SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${millipede_BINARY_DIR}/bin/apps/${targetname}/bin)
+#ADD_EXECUTABLE(${targetname} ${sources} ${headers})
 IF(MSVC_IDE)
 	# A hack to get around the "Debug" and "Release" directories Visual Studio tries to add
-	SET_TARGET_PROPERTIES(${targetname} PROPERTIES PREFIX "../")
-	SET_TARGET_PROPERTIES(${targetname} PROPERTIES IMPORT_PREFIX "../")
+	#SET_TARGET_PROPERTIES(${targetname} PROPERTIES PREFIX "../")
+	#SET_TARGET_PROPERTIES(${targetname} PROPERTIES IMPORT_PREFIX "../")
 
 	# Make Visual Studio use the correct subsystem when linking, and make the program large address aware
 	SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
-ELSE(MSVC_IDE)
+#ELSE()
 	# Disable the annoying deprecation warnings - they're obscuring any real issues
-	SET_TARGET_PROPERTIES(${targetname} PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
-ENDIF(MSVC_IDE)
+	#SET_TARGET_PROPERTIES(${targetname} PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
+ENDIF()
 
 #################################
 # Specify the libraries to link #
 #################################
 
-TARGET_LINK_LIBRARIES(${targetname} common)
-INCLUDE(${millipede_SOURCE_DIR}/LinkBoost.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/LinkWxWidgets.cmake)
+TARGET_LINK_LIBRARIES(${targetname} millipede)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkBoost.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkITK.cmake)
+#INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 
 ##########################
 # Specify resource files #
 ##########################
 
-SET(resources
-phong.frag
-phong.vert
-testvolume1.vcf
-testvolume2.vcf
-)
+#SET(resources
+#phong.frag
+#phong.vert
+#testvolume1.vcf
+#testvolume2.vcf
+#)
 
 #########################################
 # Copy resource files to the build tree #
 #########################################
 
-FOREACH(resource ${resources})
-	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
-ENDFOREACH(resource)
+#FOREACH(resource ${resources})
+#	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
+#ENDFOREACH(resource)
 
 #####################################
 # Copy help files to the build tree #
 #####################################
 
-CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.chm ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.chm COPYONLY)
-CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.htb ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.htb COPYONLY)
+#CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.chm ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.chm COPYONLY)
+#CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.htb ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.htb COPYONLY)
 
 #############################
 # Specify things to install #
 #############################
 
-INSTALL(TARGETS ${targetname} DESTINATION bin/apps/${targetname}/bin)
-INSTALL(FILES ${resources} DESTINATION bin/apps/${targetname}/resources)
-INSTALL(FILES ${millipede_SOURCE_DIR}/../help/millipede.chm DESTINATION bin/apps/${targetname}/resources)
-INSTALL(FILES ${millipede_SOURCE_DIR}/../help/millipede.htb DESTINATION bin/apps/${targetname}/resources)
+#INSTALL(TARGETS ${targetname} DESTINATION bin/apps/${targetname}/bin)
+#INSTALL(FILES ${resources} DESTINATION bin/apps/${targetname}/resources)
+#INSTALL(FILES ${millipede_SOURCE_DIR}/../help/millipede.chm DESTINATION bin/apps/${targetname}/resources)
+#INSTALL(FILES ${millipede_SOURCE_DIR}/../help/millipede.htb DESTINATION bin/apps/${targetname}/resources)

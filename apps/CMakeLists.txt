@@ -1,3 +1,5 @@
-# CMakeLists.txt for apps
+#####################################
+# CMakeLists.txt for millipede/apps #
+#####################################
 
 ADD_SUBDIRECTORY(mast)

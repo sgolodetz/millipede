@@ -13,13 +13,13 @@
 // FIXME: ITK headers have to come *after* the wxWidgets headers above or linker errors result -- I'm not sure why (possibly an ANSI/Unicode issue).
 #include <itkImageFileReader.h>
 
-#include <common/dicom/volumes/DICOMVolumeChoice.h>
-#include <common/dicom/volumes/DICOMVolumeLoader.h>
-#include <common/io/files/DICOMDIRFile.h>
-#include <common/io/files/VolumeChoiceFile.h>
-#include <common/visualization/LaplacianSmoother.h>
-#include <common/visualization/MeshBuilder.h>
-#include <common/visualization/MeshRendererCreator.h>
+#include <millipede/dicom/volumes/DICOMVolumeChoice.h>
+#include <millipede/dicom/volumes/DICOMVolumeLoader.h>
+#include <millipede/io/files/DICOMDIRFile.h>
+#include <millipede/io/files/VolumeChoiceFile.h>
+#include <millipede/visualization/LaplacianSmoother.h>
+#include <millipede/visualization/MeshBuilder.h>
+#include <millipede/visualization/MeshRendererCreator.h>
 #include <mast/gui/dialogs/DialogUtil.h>
 #include <mast/gui/dialogs/VolumeChooserDialog.h>
 #include <mast/gui/windows/VisualizationWindow.h>

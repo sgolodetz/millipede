@@ -11,7 +11,7 @@
 #include <wx/slider.h>
 #include <wx/stattext.h>
 
-#include <common/visualization/MeshRenderer.h>
+#include <millipede/visualization/MeshRenderer.h>
 #include <mast/util/StringConversion.h>
 #include "MeshCanvas.h"
 #include "SphereMeshCamera.h"

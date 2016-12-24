@@ -13,9 +13,9 @@
 
 #include <itkSize.h>
 
-#include <common/listeners/CompositeListenerBase.h>
-#include <common/slices/SliceLocation.h>
-#include <common/slices/SliceOrientation.h>
+#include <millipede/listeners/CompositeListenerBase.h>
+#include <millipede/slices/SliceLocation.h>
+#include <millipede/slices/SliceOrientation.h>
 
 namespace mp {
 

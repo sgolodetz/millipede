@@ -14,12 +14,12 @@
 #include <wx/slider.h>
 #include <wx/stattext.h>
 
-#include <common/commands/ListenerAlertingCommandSequenceGuard.h>
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/partitionforests/base/PartitionForestTouchListener.h>
-#include <common/partitionforests/images/MosaicImageCreator.h>
-#include <common/partitionforests/images/MosaicTextureSetUpdater.h>
-#include <common/slices/SliceTextureSetFiller.h>
+#include <millipede/commands/ListenerAlertingCommandSequenceGuard.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/partitionforests/base/PartitionForestTouchListener.h>
+#include <millipede/partitionforests/images/MosaicImageCreator.h>
+#include <millipede/partitionforests/images/MosaicTextureSetUpdater.h>
+#include <millipede/slices/SliceTextureSetFiller.h>
 #include <mast/drawingtools/BoxDrawingTool.h>
 #include <mast/drawingtools/LassoDrawingTool.h>
 #include <mast/drawingtools/LineLoopDrawingTool.h>

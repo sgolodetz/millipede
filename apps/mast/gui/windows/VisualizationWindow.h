@@ -12,12 +12,12 @@
 
 #include <itkVector.h>
 
-#include <common/ogl/WrappedGL.h>
+#include <millipede/ogl/WrappedGL.h>
 
 #include <wx/frame.h>
 #include <wx/glcanvas.h>
 
-#include <common/math/Vector3.h>
+#include <millipede/math/Vector3.h>
 
 namespace mp {
 

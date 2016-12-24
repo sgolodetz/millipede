@@ -8,7 +8,7 @@
 
 #include <boost/bind.hpp>
 
-#include <common/listeners/CompositeListenerBase.h>
+#include <millipede/listeners/CompositeListenerBase.h>
 
 namespace mp {
 

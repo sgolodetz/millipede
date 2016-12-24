@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include <common/partitionforests/images/VolumeIPF.h>
+#include <millipede/partitionforests/images/VolumeIPF.h>
 #include "IPFOverlayTools.h"
 #include "PartitionOverlay.h"
 

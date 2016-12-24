@@ -16,11 +16,11 @@ using boost::lexical_cast;
 #include <wx/msgdlg.h>
 #include <wx/sizer.h>
 
-#include <common/dicom/directories/PatientRecord.h>
-#include <common/dicom/directories/SeriesRecord.h>
-#include <common/dicom/directories/StudyRecord.h>
-#include <common/io/files/DICOMDIRFile.h>
-#include <common/io/files/VolumeChoiceFile.h>
+#include <millipede/dicom/directories/PatientRecord.h>
+#include <millipede/dicom/directories/SeriesRecord.h>
+#include <millipede/dicom/directories/StudyRecord.h>
+#include <millipede/io/files/DICOMDIRFile.h>
+#include <millipede/io/files/VolumeChoiceFile.h>
 #include <mast/util/StringConversion.h>
 #include "DialogUtil.h"
 

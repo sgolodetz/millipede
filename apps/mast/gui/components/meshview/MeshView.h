@@ -10,12 +10,12 @@
 
 #include <itkVector.h>
 
-#include <common/ogl/WrappedGL.h>
+#include <millipede/ogl/WrappedGL.h>
 
 #include <wx/glcanvas.h>
 #include <wx/panel.h>
 
-#include <common/math/Vector3.h>
+#include <millipede/math/Vector3.h>
 
 //#################### FORWARD DECLARATIONS ####################
 class wxCheckBox;

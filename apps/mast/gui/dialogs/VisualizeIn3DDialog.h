@@ -10,7 +10,7 @@
 
 #include <wx/dialog.h>
 
-#include <common/visualization/VisualizationOptions.h>
+#include <millipede/visualization/VisualizationOptions.h>
 
 //#################### FORWARD DECLARATIONS ####################
 class wxCheckBox;

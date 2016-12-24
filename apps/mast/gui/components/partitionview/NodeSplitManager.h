@@ -8,8 +8,8 @@
 
 #include <list>
 
-#include <common/listeners/CompositeListenerBase.h>
-#include <common/partitionforests/base/PartitionForestSelection.h>
+#include <millipede/listeners/CompositeListenerBase.h>
+#include <millipede/partitionforests/base/PartitionForestSelection.h>
 
 namespace mp {
 

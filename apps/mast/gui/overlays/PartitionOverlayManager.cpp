@@ -5,7 +5,7 @@
 
 #include "PartitionOverlayManager.h"
 
-#include <common/exceptions/Exception.h>
+#include <millipede/exceptions/Exception.h>
 #include "PartitionOverlay.h"
 using namespace mp;
 

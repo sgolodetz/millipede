@@ -5,7 +5,7 @@
 
 #include "LineLoopDrawingTool.h"
 
-#include <common/ogl/WrappedGL.h>
+#include <millipede/ogl/WrappedGL.h>
 
 namespace mp {
 

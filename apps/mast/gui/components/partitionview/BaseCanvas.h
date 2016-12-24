@@ -8,12 +8,12 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <common/math/Vector2.h>
-#include <common/math/Vector3.h>
-#include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/partitionforests/images/DICOMImageBranchLayer.h>
-#include <common/partitionforests/images/DICOMImageLeafLayer.h>
-#include <common/slices/SliceTextureSet.h>
+#include <millipede/math/Vector2.h>
+#include <millipede/math/Vector3.h>
+#include <millipede/partitionforests/images/AbdominalFeature.h>
+#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
+#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/slices/SliceTextureSet.h>
 #include <mast/gui/components/canvas/Canvas.h>
 #include <mast/models/PartitionModel.h>
 

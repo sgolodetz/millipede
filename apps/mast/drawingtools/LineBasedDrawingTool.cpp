@@ -10,9 +10,9 @@
 
 #include <boost/utility.hpp>
 
-#include <common/graphics/PolylineRasterizer.h>
-#include <common/ogl/WrappedGL.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/graphics/PolylineRasterizer.h>
+#include <millipede/ogl/WrappedGL.h>
+#include <millipede/util/ITKImageUtil.h>
 
 namespace mp {
 

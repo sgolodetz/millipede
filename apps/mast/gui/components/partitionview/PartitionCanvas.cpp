@@ -5,7 +5,7 @@
 
 #include "PartitionCanvas.h"
 
-#include <common/math/NumericUtil.h>
+#include <millipede/math/NumericUtil.h>
 #include <mast/gui/overlays/PartitionOverlayManager.h>
 #include "PartitionCamera.h"
 

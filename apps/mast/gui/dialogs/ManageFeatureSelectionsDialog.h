@@ -21,9 +21,9 @@
 #include <wx/stattext.h>
 #include <wx/textdlg.h>
 
-#include <common/io/util/LineIO.h>
-#include <common/io/util/OSSWrapper.h>
-#include <common/partitionforests/base/PartitionForestMFSManager.h>
+#include <millipede/io/util/LineIO.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/partitionforests/base/PartitionForestMFSManager.h>
 #include <mast/util/StringConversion.h>
 #include "DialogUtil.h"
 

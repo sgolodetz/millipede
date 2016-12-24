@@ -10,9 +10,9 @@
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 
-#include <common/exceptions/FileNotFoundException.h>
-#include <common/jobs/Job.h>
-#include <common/jobs/MainThreadJobQueue.h>
+#include <millipede/exceptions/FileNotFoundException.h>
+#include <millipede/jobs/Job.h>
+#include <millipede/jobs/MainThreadJobQueue.h>
 #include <mast/util/StringConversion.h>
 
 namespace mp {
