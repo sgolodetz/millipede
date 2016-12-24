@@ -6,14 +6,16 @@
 LOG=../../build-wxWidgets-3.1.0.log
 
 # Check that valid parameters have been specified.
-if [ $# -ne 1 ] || ([ "$1" != "Visual Studio 11 Win64" ] && [ "$1" != "Visual Studio 12 Win64" ])
-then
-  echo "Usage: build-wxWidgets-3.1.0-win.sh {Visual Studio 11 Win64|Visual Studio 12 Win64}"
-  exit 1
-fi
+#if [ $# -ne 1 ] || ([ "$1" != "Visual Studio 11 Win64" ] && [ "$1" != "Visual Studio 12 Win64" ])
+#then
+#  echo "Usage: build-wxWidgets-3.1.0-win.sh {Visual Studio 11 Win64|Visual Studio 12 Win64}"
+#  exit 1
+#fi
+# TODO
 
 # Build wxWidgets.
-echo "[millipede] Building wxWidgets 3.1.0 for $1"
+#echo "[millipede] Building wxWidgets 3.1.0 for $1"
+echo "[millipede] Building wxWidgets 3.1.0"
 
 if [ -d wxWidgets-3.1.0 ]
 then
@@ -21,10 +23,10 @@ then
 else
   echo "[millipede] ...Extracting archive..."
   /bin/rm -fR tmp
-  mkdir tmp
-  cd tmp
-  unzip ../setup/wxWidgets-3.1.0/wxWidgets-3.1.0.zip > /dev/null 2>&1
-  cd ..
+  mkdir -p tmp/wxWidgets-3.1.0
+  cd tmp/wxWidgets-3.1.0
+  unzip ../../setup/wxWidgets-3.1.0/wxWidgets-3.1.0.zip > /dev/null 2>&1
+  cd ../..
   mv tmp/wxWidgets-3.1.0 .
   rmdir tmp
 fi
