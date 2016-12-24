@@ -8,11 +8,11 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
-#include <gdcmDicomDir.h>
-#include <gdcmDicomDirImage.h>
-#include <gdcmDicomDirPatient.h>
-#include <gdcmDicomDirSerie.h>
-#include <gdcmDicomDirStudy.h>
+#include <gdcm-1.2/gdcmDicomDir.h>
+#include <gdcm-1.2/gdcmDicomDirImage.h>
+#include <gdcm-1.2/gdcmDicomDirPatient.h>
+#include <gdcm-1.2/gdcmDicomDirSerie.h>
+#include <gdcm-1.2/gdcmDicomDirStudy.h>
 
 #include "dicom/directories/PatientRecord.h"
 #include "dicom/directories/SeriesRecord.h"

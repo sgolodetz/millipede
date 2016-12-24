@@ -51,7 +51,7 @@ else
   cd build
 
   echo "[millipede] ...Configuring using CMake..."
-  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. > $LOG 2>&1
+  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../installed -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. > $LOG 2>&1
 
   #echo "[millipede] ...Running Debug build..."
   #cmd //c "msbuild /p:Configuration=Debug ITK.sln >> $LOG 2>&1"
