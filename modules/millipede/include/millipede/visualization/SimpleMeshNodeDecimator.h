@@ -107,7 +107,7 @@ public:
 
 	bool valid() const
 	{
-		return m_details;	// implicitly converted to bool
+		return m_details != boost::none;
 	}
 
 	//#################### PRIVATE METHODS ####################

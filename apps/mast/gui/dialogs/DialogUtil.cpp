@@ -29,7 +29,7 @@ wxFileDialog_Ptr construct_open_dialog(wxWindow *parent, const std::string& capt
 {
 	return wxFileDialog_Ptr(new wxFileDialog(parent, string_to_wxString(caption), string_to_wxString(defaultDir),
 							string_to_wxString(defaultFilename), string_to_wxString(wildcard),
-							wxOPEN));
+							wxFD_OPEN));
 }
 
 wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& caption, const std::string& wildcard,
@@ -37,7 +37,7 @@ wxFileDialog_Ptr construct_save_dialog(wxWindow *parent, const std::string& capt
 {
 	return wxFileDialog_Ptr(new wxFileDialog(parent, string_to_wxString(caption), string_to_wxString(defaultDir),
 							string_to_wxString(defaultFilename), string_to_wxString(wildcard),
-							wxSAVE | wxOVERWRITE_PROMPT));
+							wxFD_SAVE | wxFD_OVERWRITE_PROMPT));
 }
 
 bool execute_with_progress_dialog(const Job_Ptr& job, wxWindow *parent, const std::string& caption, bool canAbort)

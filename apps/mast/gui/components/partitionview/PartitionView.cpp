@@ -961,7 +961,7 @@ void PartitionView::OnSliderZoom(wxScrollEvent&)
 //~~~~~~~~~~~~~~~~~~~~ UI UPDATES ~~~~~~~~~~~~~~~~~~~~
 void PartitionView::OnUpdateForestNeeder(wxUpdateUIEvent& e)
 {
-	e.Enable(m_model->volume_ipf());
+	e.Enable(m_model->volume_ipf().get() != NULL);
 }
 
 void PartitionView::OnUpdateSliderLayer(wxUpdateUIEvent& e)

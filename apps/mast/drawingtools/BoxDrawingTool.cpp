@@ -13,7 +13,7 @@ namespace mp {
 //#################### PUBLIC METHODS ####################
 bool BoxDrawingTool::has_started() const
 {
-	return m_anchor_Pixels;
+	return m_anchor_Pixels != boost::none;
 }
 
 void BoxDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& p_Coords)

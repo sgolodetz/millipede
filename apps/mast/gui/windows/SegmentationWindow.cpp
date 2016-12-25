@@ -745,7 +745,7 @@ void SegmentationWindow::OnUpdateMenuToolsValidateFeatureSelection(wxUpdateUIEve
 
 void SegmentationWindow::OnUpdateForestNeeder(wxUpdateUIEvent& e)
 {
-	e.Enable(m_model->volume_ipf());
+	e.Enable(m_model->volume_ipf().get() != NULL);
 }
 
 void SegmentationWindow::OnUpdateNonEmptySelectionNeeder(wxUpdateUIEvent& e)

@@ -14,7 +14,7 @@ SET(targetname mast)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseGDCM.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseITK.cmake)
-#INCLUDE(${millipede_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
 
 #############################
 # Specify the project files #
@@ -270,7 +270,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(${targetname} millipede)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkITK.cmake)
-#INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 
 ##########################
 # Specify resource files #
