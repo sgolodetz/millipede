@@ -1,20 +1,18 @@
 #! /bin/bash -e
 
 # Check that nmake is on the system path.
-#../require-nmake.sh
+../require-nmake.sh
 
-LOG=../../build-wxWidgets-3.1.0.log
+LOG=../../../build-wxWidgets-3.1.0.log
 
-# Check that valid parameters have been specified.
-#if [ $# -ne 1 ] || ([ "$1" != "Visual Studio 11 Win64" ] && [ "$1" != "Visual Studio 12 Win64" ])
-#then
-#  echo "Usage: build-wxWidgets-3.1.0-win.sh {Visual Studio 11 Win64|Visual Studio 12 Win64}"
-#  exit 1
-#fi
-# TODO
+# Check that no parameters have been specified.
+if [ $# -ne 0 ]
+then
+  echo "Usage: build-wxWidgets-3.1.0-win.sh"
+  exit 1
+fi
 
 # Build wxWidgets.
-#echo "[millipede] Building wxWidgets 3.1.0 for $1"
 echo "[millipede] Building wxWidgets 3.1.0"
 
 if [ -d wxWidgets-3.1.0 ]
@@ -31,26 +29,20 @@ else
   rmdir tmp
 fi
 
-exit
 cd wxWidgets-3.1.0
 
-#if [ -d build ]
-#then
-#  echo "[millipede] ...Skipping build (already built)"
-#else
-#  mkdir build
-#  cd build
+echo "[millipede] ...Applying hacks..."
+perl -ibak -pe 's/WXWIN_COMPATIBILITY_2_8 0/WXWIN_COMPATIBILITY_2_8 1/g' include/wx/msw/setup.h
+perl -ibak -pe 's/wxUSE_UNICODE 1/wxUSE_UNICODE 0/g' include/wx/msw/setup.h
 
-#  echo "[millipede] ...Configuring using CMake..."
-#  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install -DBUILD_DOXYGEN=OFF -DBUILD_EXAMPLES=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DITK_USE_KWSTYLE=OFF -G "$1" .. > $LOG 2>&1
+cd build/msw
 
-  #echo "[millipede] ...Running Debug build..."
-  #cmd //c "msbuild /p:Configuration=Debug ITK.sln >> $LOG 2>&1"
+echo "[millipede] ...Running Debug build..."
+echo '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" && nmake -f makefile.vc SHARED=0 BUILD=debug MONOLITHIC=0 USE_OPENGL=1' > temp.bat
+cmd //c "temp.bat > $LOG 2>&1"
 
-#  echo "[millipede] ...Running Release build..."
-#  cmd //c "msbuild /p:Configuration=Release ITK.sln >> $LOG 2>&1"
-
-#  cd ..
-#fi
+echo "[millipede] ...Running Release build..."
+echo '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" && nmake -f makefile.vc SHARED=0 BUILD=release MONOLITHIC=0 USE_OPENGL=1' > temp.bat
+cmd //c "temp.bat >> $LOG 2>&1"
 
 echo "[millipede] ...Finished building wxWidgets-3.1.0."
