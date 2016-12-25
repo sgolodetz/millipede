@@ -1,7 +1,7 @@
 #! /bin/bash -e
 
 # Check that nmake is on the system path.
-../require-nmake.sh
+#../require-nmake.sh
 
 LOG=../../../build-wxWidgets-3.1.0.log
 
@@ -38,11 +38,11 @@ perl -ibak -pe 's/wxUSE_UNICODE 1/wxUSE_UNICODE 0/g' include/wx/msw/setup.h
 cd build/msw
 
 echo "[millipede] ...Running Debug build..."
-echo '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" && nmake -f makefile.vc SHARED=0 BUILD=debug MONOLITHIC=0 USE_OPENGL=1' > temp.bat
+echo '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64 && nmake -f makefile.vc SHARED=0 BUILD=debug MONOLITHIC=0 USE_OPENGL=1' > temp.bat
 cmd //c "temp.bat > $LOG 2>&1"
 
 echo "[millipede] ...Running Release build..."
-echo '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" && nmake -f makefile.vc SHARED=0 BUILD=release MONOLITHIC=0 USE_OPENGL=1' > temp.bat
+echo '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64 && nmake -f makefile.vc SHARED=0 BUILD=release MONOLITHIC=0 USE_OPENGL=1' > temp.bat
 cmd //c "temp.bat >> $LOG 2>&1"
 
 echo "[millipede] ...Finished building wxWidgets-3.1.0."
