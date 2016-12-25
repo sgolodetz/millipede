@@ -269,6 +269,7 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(${targetname} millipede)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkBoost.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkGDCM.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkITK.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 
