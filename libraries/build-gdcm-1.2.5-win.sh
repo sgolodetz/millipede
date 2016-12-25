@@ -50,26 +50,22 @@ else
   mkdir build
   cd build
 
-  echo "[millipede] ...Configuring using CMake..."
-  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../installed -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. > $LOG 2>&1
+  echo "[millipede] ...Configuring for Debug configuration using CMake..."
+  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install-debug -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. > $LOG 2>&1
 
-  #echo "[millipede] ...Running Debug build..."
-  #cmd //c "msbuild /p:Configuration=Debug GDCM.sln >> $LOG 2>&1"
+  echo "[millipede] ...Building Debug configuration..."
+  cmd //c "msbuild /p:Configuration=Debug GDCM.sln >> $LOG 2>&1"
 
-  echo "[millipede] ...Running Release build..."
+  echo "[millipede] ...Installing Debug configuration..."
+  cmd //c "msbuild /p:Configuration=Debug INSTALL.vcxproj >> $LOG 2>&1"
+
+  echo "[millipede] ...Configuring for Release configuration using CMake..."
+  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install-release -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. >> $LOG 2>&1
+
+  echo "[millipede] ...Building Release configuration..."
   cmd //c "msbuild /p:Configuration=Release GDCM.sln >> $LOG 2>&1"
 
-  cd ..
-fi
-
-if [ -d installed ]
-then
-  echo "[millipede] ...Skipping install (already installed)"
-else
-  cd build
-
-  echo "[millipede] ...Installing..."
-  #cmd //c "msbuild /p:Configuration=Debug INSTALL.vcxproj >> $LOG 2>&1"
+  echo "[millipede] ...Installing Release configuration..."
   cmd //c "msbuild /p:Configuration=Release INSTALL.vcxproj >> $LOG 2>&1"
 
   cd ..
