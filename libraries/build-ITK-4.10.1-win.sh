@@ -41,8 +41,8 @@ else
   echo "[millipede] ...Configuring using CMake..."
   cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install -DBUILD_DOXYGEN=OFF -DBUILD_EXAMPLES=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DITK_USE_KWSTYLE=OFF -G "$1" .. > $LOG 2>&1
 
-  #echo "[millipede] ...Running Debug build..."
-  #cmd //c "msbuild /p:Configuration=Debug ITK.sln >> $LOG 2>&1"
+  echo "[millipede] ...Running Debug build..."
+  cmd //c "msbuild /p:Configuration=Debug ITK.sln >> $LOG 2>&1"
 
   echo "[millipede] ...Running Release build..."
   cmd //c "msbuild /p:Configuration=Release ITK.sln >> $LOG 2>&1"

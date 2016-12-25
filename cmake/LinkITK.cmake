@@ -2,4 +2,4 @@
 # LinkITK.cmake #
 #################
 
-TARGET_LINK_LIBRARIES(${targetname} ITKAlgorithms ITKCommon ITKIO)
+TARGET_LINK_LIBRARIES(${targetname} ITKCommon)
