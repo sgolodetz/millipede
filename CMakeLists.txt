@@ -33,7 +33,7 @@ ENDIF()
 
 ADD_SUBDIRECTORY(modules)
 
-OPTION(BUILD_APPS "Build the applications?" OFF)
+OPTION(BUILD_APPS "Build the applications?" ON)
 OPTION(BUILD_TESTS "Build the tests?" OFF)
 
 IF(BUILD_APPS)
