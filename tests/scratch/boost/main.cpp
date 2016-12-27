@@ -1,5 +1,5 @@
 /***
- * test-boost_1_39_0: main.cpp
+ * scratchtest_boost: main.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 

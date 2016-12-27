@@ -152,6 +152,7 @@ protected:
 
 		typedef itk::ExtractImageFilter<Image,Image> Extractor;
 		typename Extractor::Pointer extractor = Extractor::New();
+		extractor->SetDirectionCollapseToGuess();
 		extractor->SetInput(scaledImage);
 
 		itk::Index<2> partialMins = {{floor(scaleX * minX), floor(scaleY * minY)}};

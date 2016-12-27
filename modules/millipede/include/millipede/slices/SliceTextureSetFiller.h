@@ -50,6 +50,7 @@ private:
 
 			typedef itk::ExtractImageFilter<Image3D,Image2D> Extractor;
 			typename Extractor::Pointer extractor = Extractor::New();
+			extractor->SetDirectionCollapseToGuess();
 			extractor->SetInput(volumeImageHook->get());
 
 			typename Image3D::IndexType index;

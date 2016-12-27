@@ -2,18 +2,14 @@
 # CMakeLists.txt for millipede/tests #
 ######################################
 
-ADD_SUBDIRECTORY(test-adjacencygraph)
-ADD_SUBDIRECTORY(test-boost_1_39_0)
-ADD_SUBDIRECTORY(test-disjointsetforest)
-ADD_SUBDIRECTORY(test-gdcm-1.2.5)
-ADD_SUBDIRECTORY(test-ITK-3.14.0)
-ADD_SUBDIRECTORY(test-jobs)
-ADD_SUBDIRECTORY(test-meshbuilder)
-ADD_SUBDIRECTORY(test-partitionforest)
-ADD_SUBDIRECTORY(test-polylinerasterizer)
-ADD_SUBDIRECTORY(test-priorityqueue)
-ADD_SUBDIRECTORY(test-rootedmst)
-ADD_SUBDIRECTORY(test-vector3)
-ADD_SUBDIRECTORY(test-waterfall)
-ADD_SUBDIRECTORY(test-watershed)
-ADD_SUBDIRECTORY(test-wxWidgets-2.8.10)
+OPTION(BUILD_SCRATCHTESTS "Build the scratch tests?" ON)
+
+IF(BUILD_SCRATCHTESTS)
+  ADD_SUBDIRECTORY(scratch)
+ENDIF()
+
+#OPTION(BUILD_UNITTESTS "Build the unit tests?" ON)
+
+#IF(BUILD_UNITTESTS)
+  #ADD_SUBDIRECTORY(unit)
+#ENDIF()

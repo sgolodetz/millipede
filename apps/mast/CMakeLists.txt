@@ -277,20 +277,20 @@ INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 # Specify resource files #
 ##########################
 
-#SET(resources
-#phong.frag
-#phong.vert
-#testvolume1.vcf
-#testvolume2.vcf
-#)
+SET(resources
+phong.frag
+phong.vert
+testvolume1.vcf
+testvolume2.vcf
+)
 
 #########################################
 # Copy resource files to the build tree #
 #########################################
 
-#FOREACH(resource ${resources})
-#	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
-#ENDFOREACH(resource)
+FOREACH(resource ${resources})
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
+ENDFOREACH(resource)
 
 #####################################
 # Copy help files to the build tree #
