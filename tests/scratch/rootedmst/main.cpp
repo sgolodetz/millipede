@@ -1,14 +1,14 @@
 /***
- * test-rootedmst: main.cpp
+ * scratchtest_rootedmst: main.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
 #include <iostream>
 
-#include <common/adts/RootedMST.h>
-#include <common/partitionforests/images/DICOMImageLeafLayer.h>
-#include <common/partitionforests/images/SimpleImageLeafLayer.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/adts/RootedMST.h>
+#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/partitionforests/images/SimpleImageLeafLayer.h>
+#include <millipede/util/ITKImageUtil.h>
 using namespace mp;
 
 void adjacency_graph_mst()
