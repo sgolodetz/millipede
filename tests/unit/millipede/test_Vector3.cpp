@@ -1,13 +1,10 @@
-/***
- * test-vector3: main.cpp
- * Copyright Stuart Golodetz, 2010. All rights reserved.
- ***/
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
 
-#define BOOST_TEST_MODULE Vector3 Test
-#include <boost/test/included/unit_test.hpp>
-
-#include <common/math/Vector3.h>
+#include <millipede/math/Vector3.h>
 using namespace mp;
+
+BOOST_AUTO_TEST_SUITE(test_Vector3)
 
 BOOST_AUTO_TEST_CASE(constructor_test)
 {
@@ -169,3 +166,5 @@ BOOST_AUTO_TEST_CASE(dot_test)
 }
 
 // TODO
+
+BOOST_AUTO_TEST_SUITE_END()

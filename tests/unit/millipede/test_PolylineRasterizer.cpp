@@ -1,13 +1,10 @@
-/***
- * test-polylinerasterizer: main.cpp
- * Copyright Stuart Golodetz, 2010. All rights reserved.
- ***/
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
 
-#define BOOST_TEST_MODULE PolylineRasterizer Test
-#include <boost/test/included/unit_test.hpp>
-
-#include <common/graphics/PolylineRasterizer.h>
+#include <millipede/graphics/PolylineRasterizer.h>
 using namespace mp;
+
+BOOST_AUTO_TEST_SUITE(test_PolylineRasterizer)
 
 BOOST_AUTO_TEST_CASE(rectangle_test)
 {
@@ -44,3 +41,5 @@ BOOST_AUTO_TEST_CASE(tricky_test)
 	std::vector<Vector2i> output = rasterize_polyline(input);
 	// TODO: Check the output.
 }
+
+BOOST_AUTO_TEST_SUITE_END()

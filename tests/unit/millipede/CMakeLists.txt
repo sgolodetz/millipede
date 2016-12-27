@@ -14,7 +14,9 @@ SET(suitename millipede)
 
 SET(testnames
 DisjointSetForest
+PolylineRasterizer
 PriorityQueue
+Vector3
 )
 
 FOREACH(testname ${testnames})
