@@ -110,7 +110,6 @@ void MeshView::setup_gui(wxGLContext *context)
 	SetBackgroundColour(wxColour(240,240,240));
 
 	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 5, 5);
-	SetSizer(sizer);
 
 	int attribList[] =
 	{
@@ -231,7 +230,7 @@ void MeshView::setup_gui(wxGLContext *context)
 		cameraControlsSizer->Add(eyeControls);
 	sizer->Add(cameraControls, 0, wxALIGN_CENTRE_HORIZONTAL|wxBOTTOM, BORDER_SIZE);
 
-	sizer->Fit(this);
+	SetSizerAndFit(sizer);
 }
 
 //#################### EVENT HANDLERS ####################

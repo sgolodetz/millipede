@@ -9,6 +9,8 @@
 	#include <ApplicationServices/ApplicationServices.h>
 #endif
 
+#include <itkTextOutput.h>
+
 #include <mast/gui/windows/MainWindow.h>
 #include <mast/util/HelpController.h>
 
@@ -26,6 +28,9 @@ bool Application::OnInit()
 #endif
 
 	HelpController::instance().initialize();
+
+	// Send all ITK logging output to the console.
+	itk::OutputWindow::SetInstance(itk::TextOutput::New());
 
 	MainWindow *window = new MainWindow("MAST - Millipede Automatic Segmentation Tool");
 	window->Show();

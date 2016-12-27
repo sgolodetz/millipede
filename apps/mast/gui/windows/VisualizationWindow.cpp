@@ -20,14 +20,13 @@ VisualizationWindow::VisualizationWindow(wxWindow *parent, const std::string& ti
 	SetBackgroundColour(wxColour(240,240,240));
 
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	SetSizer(sizer);
 
 	Show();
 
 	MeshView *view = new MeshView(this, meshRenderer, meshScale, context);
 	sizer->Add(view, 0, wxALIGN_CENTRE_HORIZONTAL);
 
-	sizer->Fit(this);
+	SetSizerAndFit(sizer);
 	CenterOnScreen();
 }
 
