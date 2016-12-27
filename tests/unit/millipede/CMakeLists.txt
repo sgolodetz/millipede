@@ -14,6 +14,7 @@ SET(suitename millipede)
 
 SET(testnames
 DisjointSetForest
+PriorityQueue
 )
 
 FOREACH(testname ${testnames})
@@ -24,11 +25,7 @@ SET(targetname "unittest_${suitename}_${testname}")
 # Specify the libraries to use #
 ################################
 
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseArrayFire.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseCUDA.cmake)
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseInfiniTAM.cmake)
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseOpenMP.cmake)
 
 #############################
 # Specify the project files #
@@ -62,8 +59,6 @@ INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetUnitTestTarget.cmake)
 
 TARGET_LINK_LIBRARIES(${targetname} millipede)
 
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkArrayFire.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkBoost.cmake)
-#INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkInfiniTAM.cmake)
 
 ENDFOREACH()

@@ -1,15 +1,12 @@
-/***
- * test-priorityqueue: main.cpp
- * Copyright Stuart Golodetz, 2010. All rights reserved.
- ***/
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
 
-#define BOOST_TEST_MODULE PriorityQueue Test
-#include <boost/test/included/unit_test.hpp>
-
-#include <common/adts/PriorityQueue.h>
+#include <millipede/adts/PriorityQueue.h>
 using namespace mp;
 
 typedef	PriorityQueue<std::string, double, int, std::greater<double> > PQ;
+
+BOOST_AUTO_TEST_SUITE(test_PriorityQueue)
 
 BOOST_AUTO_TEST_CASE(clear_test)
 {
@@ -123,3 +120,5 @@ BOOST_AUTO_TEST_CASE(update_key_test)
 	pq.pop();
 		BOOST_CHECK_EQUAL(pq.empty(), true);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
