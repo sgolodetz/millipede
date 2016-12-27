@@ -256,7 +256,7 @@ IF(MSVC_IDE)
 	#SET_TARGET_PROPERTIES(${targetname} PROPERTIES PREFIX "../")
 	#SET_TARGET_PROPERTIES(${targetname} PROPERTIES IMPORT_PREFIX "../")
 
-	# Make Visual Studio use the correct subsystem when linking, and make the program large address aware
+	# Make Visual Studio use the correct subsystem when linking, and make the program large address aware.
 	SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
 #ELSE()
 	# Disable the annoying deprecation warnings - they're obscuring any real issues

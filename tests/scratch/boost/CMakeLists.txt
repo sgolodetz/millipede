@@ -43,3 +43,9 @@ INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 #################################
 
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkBoost.cmake)
+
+#############################
+# Specify things to install #
+#############################
+
+INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)

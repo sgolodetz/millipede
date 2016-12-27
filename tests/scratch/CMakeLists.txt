@@ -3,3 +3,4 @@
 ####################################
 
 ADD_SUBDIRECTORY(boost)
+ADD_SUBDIRECTORY(wxWidgets)

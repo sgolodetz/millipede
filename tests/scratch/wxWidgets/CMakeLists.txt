@@ -1,10 +1,18 @@
-# CMakeLists.txt for tests/test-wxWidgets-2.8.10
+########################################
+# CMakeLists.txt for scratch/wxWidgets #
+########################################
 
 ############################
-# Specify the project name #
+# Specify the target name #
 ############################
 
-SET(targetname test-wxWidgets-2.8.10)
+SET(targetname scratchtest_wxWidgets)
+
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
 
 #############################
 # Specify the project files #
@@ -29,20 +37,20 @@ MyGLCanvas.h
 SOURCE_GROUP(.cpp FILES ${sources})
 SOURCE_GROUP(.h FILES ${headers})
 
-################################
-# Specify the libraries to use #
-################################
+##########################################
+# Specify additional include directories #
+##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/UseWxWidgets.cmake)
+# None needed
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 
 IF(MSVC_IDE)
-	# Make Visual Studio use the correct subsystem when linking
+	# Make Visual Studio use the correct subsystem when linking.
 	SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 ENDIF(MSVC_IDE)
 
@@ -50,7 +58,7 @@ ENDIF(MSVC_IDE)
 # Specify the libraries to link #
 #################################
 
-INCLUDE(${millipede_SOURCE_DIR}/LinkWxWidgets.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 
 #############################
 # Specify things to install #
