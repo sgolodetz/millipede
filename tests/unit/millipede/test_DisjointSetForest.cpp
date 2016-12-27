@@ -1,13 +1,10 @@
-/***
- * test-disjointsetforest: main.cpp
- * Copyright Stuart Golodetz, 2009. All rights reserved.
- ***/
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
 
-#define BOOST_TEST_MODULE DisjointSetForest Test
-#include <boost/test/included/unit_test.hpp>
-
-#include <common/adts/DisjointSetForest.h>
+#include <millipede/adts/DisjointSetForest.h>
 using namespace mp;
+
+BOOST_AUTO_TEST_SUITE(test_DisjointSetForest)
 
 BOOST_AUTO_TEST_CASE(add_element_test)
 {
@@ -84,3 +81,5 @@ BOOST_AUTO_TEST_CASE(union_sets_test)
 		BOOST_CHECK_EQUAL(dsf.value_of(9), "m");
 		BOOST_CHECK_EQUAL(dsf.value_of(84), "g");
 }
+
+BOOST_AUTO_TEST_SUITE_END()
