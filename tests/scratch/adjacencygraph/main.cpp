@@ -1,12 +1,12 @@
 /***
- * test-adjacencygraph: main.cpp
+ * scratchtest_adjacencygraph: main.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
 #include <algorithm>
 #include <iostream>
 
-#include <common/adts/AdjacencyGraph.h>
+#include <millipede/adts/AdjacencyGraph.h>
 using namespace mp;
 
 void output_edges(const std::vector<WeightedEdge<int> >& edges)
