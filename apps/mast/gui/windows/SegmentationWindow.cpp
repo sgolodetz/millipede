@@ -153,7 +153,6 @@ void SegmentationWindow::setup_gui(wxGLContext *context)
 	SetBackgroundColour(wxColour(240,240,240));
 
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	SetSizer(sizer);
 
 	Show();
 
@@ -164,7 +163,7 @@ void SegmentationWindow::setup_gui(wxGLContext *context)
 
 	sizer->Add(new SelectionView<LeafLayer,BranchLayer,Feature>(this, m_model), 0, wxALIGN_CENTRE_HORIZONTAL);
 
-	sizer->Fit(this);
+	SetSizerAndFit(sizer);
 	CenterOnScreen();
 }
 

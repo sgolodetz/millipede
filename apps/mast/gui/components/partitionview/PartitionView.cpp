@@ -754,7 +754,6 @@ void PartitionView::setup_gui(wxGLContext *context)
 	SetBackgroundColour(wxColour(240,240,240));
 
 	wxFlexGridSizer *sizer = new wxFlexGridSizer(3, 3, 10, 10);
-	SetSizer(sizer);
 
 	int attribList[] =
 	{
@@ -859,7 +858,7 @@ void PartitionView::setup_gui(wxGLContext *context)
 		bottomRightSizer->Add(m_layerSlider, 0, wxALIGN_CENTRE);
 	sizer->Add(bottomRightSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
 
-	sizer->Fit(this);
+	SetSizerAndFit(sizer);
 }
 
 void PartitionView::update_sliders()
