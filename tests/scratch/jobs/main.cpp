@@ -1,5 +1,5 @@
 /***
- * test-jobs: main.cpp
+ * scratchtest_jobs: main.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
@@ -8,11 +8,11 @@
 
 #include <boost/thread.hpp>
 
-#include <common/io/util/OSSWrapper.h>
-#include <common/jobs/CompositeJob.h>
-#include <common/jobs/DataHook.h>
-#include <common/jobs/MainThreadJobQueue.h>
-#include <common/jobs/SimpleJob.h>
+#include <millipede/io/util/OSSWrapper.h>
+#include <millipede/jobs/CompositeJob.h>
+#include <millipede/jobs/DataHook.h>
+#include <millipede/jobs/MainThreadJobQueue.h>
+#include <millipede/jobs/SimpleJob.h>
 using namespace mp;
 
 //#################### TEST 1 ####################
