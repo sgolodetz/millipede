@@ -296,8 +296,8 @@ ENDFOREACH(resource)
 # Copy help files to the build tree #
 #####################################
 
-#CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.chm ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.chm COPYONLY)
-#CONFIGURE_FILE(${millipede_SOURCE_DIR}/../help/millipede.htb ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.htb COPYONLY)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/help/millipede.chm ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.chm COPYONLY)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/help/millipede.htb ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/millipede.htb COPYONLY)
 
 #############################
 # Specify things to install #
