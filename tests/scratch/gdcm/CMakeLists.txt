@@ -1,10 +1,18 @@
-# CMakeLists.txt for tests/test-gdcm-1.2.5
+###################################
+# CMakeLists.txt for scratch/gdcm #
+###################################
 
-############################
-# Specify the project name #
-############################
+###########################
+# Specify the target name #
+###########################
 
-SET(targetname test-gdcm-1.2.5)
+SET(targetname scratchtest_gdcm)
+
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseGDCM.cmake)
 
 #############################
 # Specify the project files #
@@ -16,25 +24,25 @@ SET(sources main.cpp)
 # Specify the source groups #
 #############################
 
-SOURCE_GROUP(.cpp FILES ${sources})
+SOURCE_GROUP(sources FILES ${sources})
 
-################################
-# Specify the libraries to use #
-################################
+##########################################
+# Specify additional include directories #
+##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/UseGDCM.cmake)
+# None needed
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 
 #################################
 # Specify the libraries to link #
 #################################
 
-INCLUDE(${millipede_SOURCE_DIR}/LinkGDCM.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkGDCM.cmake)
 
 ##########################
 # Specify resource files #
