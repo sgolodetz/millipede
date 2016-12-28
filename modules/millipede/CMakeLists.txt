@@ -456,105 +456,32 @@ ${io_util_templates}
 # Specify the source groups #
 #############################
 
-##
-SOURCE_GROUP(adts\\.cpp FILES ${adts_sources})
-SOURCE_GROUP(adts\\.h FILES ${adts_headers})
-
-##
-SOURCE_GROUP(commands\\.cpp FILES ${commands_sources})
-SOURCE_GROUP(commands\\.h FILES ${commands_headers})
-
-##
-SOURCE_GROUP(dicom\\directories\\.cpp FILES ${dicom_directories_sources})
-SOURCE_GROUP(dicom\\directories\\.h FILES ${dicom_directories_headers})
-
-##
-SOURCE_GROUP(dicom\\util\\.cpp FILES ${dicom_util_sources})
-SOURCE_GROUP(dicom\\util\\.h FILES ${dicom_util_headers})
-
-##
-SOURCE_GROUP(dicom\\volumes\\.cpp FILES ${dicom_volumes_sources})
-SOURCE_GROUP(dicom\\volumes\\.h FILES ${dicom_volumes_headers})
-
-##
-SOURCE_GROUP(exceptions\\.h FILES ${exceptions_headers})
-
-##
-SOURCE_GROUP(featureid\\.cpp FILES ${featureid_sources})
-SOURCE_GROUP(featureid\\.h FILES ${featureid_headers})
-
-##
-SOURCE_GROUP(graphics\\.cpp FILES ${graphics_sources})
-SOURCE_GROUP(graphics\\.h FILES ${graphics_headers})
-
-##
-SOURCE_GROUP(io\\files\\.cpp FILES ${io_files_sources})
-SOURCE_GROUP(io\\files\\.h FILES ${io_files_headers})
-
-##
-SOURCE_GROUP(io\\sections\\.cpp FILES ${io_sections_sources})
-SOURCE_GROUP(io\\sections\\.h FILES ${io_sections_headers})
-
-##
-SOURCE_GROUP(io\\util\\.cpp FILES ${io_util_sources})
-SOURCE_GROUP(io\\util\\.h FILES ${io_util_headers})
-SOURCE_GROUP(io\\util\\.tpp FILES ${io_util_templates})
-
-##
-SOURCE_GROUP(jobs\\.cpp FILES ${jobs_sources})
-SOURCE_GROUP(jobs\\.h FILES ${jobs_headers})
-
-##
-SOURCE_GROUP(listeners\\.h FILES ${listeners_headers})
-
-##
-SOURCE_GROUP(math\\.cpp FILES ${math_sources})
-SOURCE_GROUP(math\\.h FILES ${math_headers})
-
-##
-SOURCE_GROUP(ogl\\.c FILES ${ogl_c_sources})
-SOURCE_GROUP(ogl\\.h FILES ${ogl_headers})
-
-##
-SOURCE_GROUP(partitionforests\\base\\.cpp FILES ${partitionforests_base_sources})
-SOURCE_GROUP(partitionforests\\base\\.h FILES ${partitionforests_base_headers})
-
-##
-SOURCE_GROUP(partitionforests\\graphviz\\.h FILES ${partitionforests_graphviz_headers})
-
-##
-SOURCE_GROUP(partitionforests\\images\\.cpp FILES ${partitionforests_images_sources})
-SOURCE_GROUP(partitionforests\\images\\.h FILES ${partitionforests_images_headers})
-
-##
-SOURCE_GROUP(segmentation\\.cpp FILES ${segmentation_sources})
-SOURCE_GROUP(segmentation\\.h FILES ${segmentation_headers})
-
-##
-SOURCE_GROUP(segmentation\\waterfall\\.h FILES ${segmentation_waterfall_headers})
-
-##
-SOURCE_GROUP(segmentation\\watershed\\.h FILES ${segmentation_watershed_headers})
-
-##
-SOURCE_GROUP(shaders\\.cpp FILES ${shaders_sources})
-SOURCE_GROUP(shaders\\.h FILES ${shaders_headers})
-
-##
-SOURCE_GROUP(slices\\.cpp FILES ${slices_sources})
-SOURCE_GROUP(slices\\.h FILES ${slices_headers})
-
-##
-SOURCE_GROUP(textures\\.cpp FILES ${textures_sources})
-SOURCE_GROUP(textures\\.h FILES ${textures_headers})
-
-##
-SOURCE_GROUP(util\\.cpp FILES ${util_sources})
-SOURCE_GROUP(util\\.h FILES ${util_headers})
-
-##
-SOURCE_GROUP(visualization\\.cpp FILES ${visualization_sources})
-SOURCE_GROUP(visualization\\.h FILES ${visualization_headers})
+SOURCE_GROUP(adts FILES ${adts_sources} ${adts_headers})
+SOURCE_GROUP(commands FILES ${commands_sources} ${commands_headers})
+SOURCE_GROUP(dicom\\directories FILES ${dicom_directories_sources} ${dicom_directories_headers})
+SOURCE_GROUP(dicom\\util FILES ${dicom_util_sources} ${dicom_util_headers})
+SOURCE_GROUP(dicom\\volumes FILES ${dicom_volumes_sources} ${dicom_volumes_headers})
+SOURCE_GROUP(exceptions FILES ${exceptions_headers})
+SOURCE_GROUP(featureid FILES ${featureid_sources} ${featureid_headers})
+SOURCE_GROUP(graphics FILES ${graphics_sources} ${graphics_headers})
+SOURCE_GROUP(io\\files FILES ${io_files_sources} ${io_files_headers})
+SOURCE_GROUP(io\\sections FILES ${io_sections_sources} ${io_sections_headers})
+SOURCE_GROUP(io\\util FILES ${io_util_sources} ${io_util_headers} ${io_util_templates})
+SOURCE_GROUP(jobs FILES ${jobs_sources} ${jobs_headers})
+SOURCE_GROUP(listeners FILES ${listeners_headers})
+SOURCE_GROUP(math FILES ${math_sources} ${math_headers})
+SOURCE_GROUP(ogl FILES ${ogl_c_sources} ${ogl_headers})
+SOURCE_GROUP(partitionforests\\base FILES ${partitionforests_base_sources} ${partitionforests_base_headers})
+SOURCE_GROUP(partitionforests\\graphviz FILES ${partitionforests_graphviz_headers})
+SOURCE_GROUP(partitionforests\\images FILES ${partitionforests_images_sources} ${partitionforests_images_headers})
+SOURCE_GROUP(segmentation FILES ${segmentation_sources} ${segmentation_headers})
+SOURCE_GROUP(segmentation\\waterfall FILES ${segmentation_waterfall_headers})
+SOURCE_GROUP(segmentation\\watershed FILES ${segmentation_watershed_headers})
+SOURCE_GROUP(shaders FILES ${shaders_sources} ${shaders_headers})
+SOURCE_GROUP(slices FILES ${slices_sources} ${slices_headers})
+SOURCE_GROUP(textures FILES ${textures_sources} ${textures_headers})
+SOURCE_GROUP(util FILES ${util_sources} ${util_headers})
+SOURCE_GROUP(visualization FILES ${visualization_sources} ${visualization_headers})
 
 ###############################
 # Specify the necessary paths #
