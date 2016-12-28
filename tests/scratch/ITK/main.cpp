@@ -1,5 +1,5 @@
 /***
- * test-ITK-3.14.0: main.cpp
+ * scratchtest_ITK: main.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
@@ -22,7 +22,7 @@ int main()
 
 	typedef itk::Image<unsigned char> UCImageType;
 	typedef itk::Image<float> RealImageType;
-	typedef itk::Image<unsigned long> LabelledImageType;
+	typedef itk::Image<itk::IdentifierType> LabelledImageType;
 	typedef itk::Image<RGBPixelType> RGBImageType;
 
 	typedef itk::ImageFileReader<UCImageType> UCFileReader;
@@ -34,7 +34,7 @@ int main()
 
 	typedef itk::GradientMagnitudeImageFilter<RealImageType,RealImageType> GradientMagnitude;
 	typedef itk::WatershedImageFilter<RealImageType> Watershed;
-	typedef itk::Functor::ScalarToRGBPixelFunctor<unsigned long> ColourMapFunctor;
+	typedef itk::Functor::ScalarToRGBPixelFunctor<itk::IdentifierType> ColourMapFunctor;
 	typedef itk::UnaryFunctorImageFilter<LabelledImageType,RGBImageType,ColourMapFunctor> ColourMapper;
 	typedef itk::ImageFileWriter<RGBImageType> RGBFileWriter;
 

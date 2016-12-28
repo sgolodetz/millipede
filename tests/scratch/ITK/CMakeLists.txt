@@ -1,10 +1,19 @@
-# CMakeLists.txt for tests/test-ITK-3.14.0
+##################################
+# CMakeLists.txt for scratch/ITK #
+##################################
 
-############################
-# Specify the project name #
-############################
+###########################
+# Specify the target name #
+###########################
 
-SET(targetname test-ITK-3.14.0)
+SET(targetname scratchtest_ITK)
+
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseITK.cmake)
 
 #############################
 # Specify the project files #
@@ -16,26 +25,25 @@ SET(sources main.cpp)
 # Specify the source groups #
 #############################
 
-SOURCE_GROUP(.cpp FILES ${sources})
+SOURCE_GROUP(sources FILES ${sources})
 
-################################
-# Specify the libraries to use #
-################################
+##########################################
+# Specify additional include directories #
+##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
+# None needed
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 
 #################################
 # Specify the libraries to link #
 #################################
 
-INCLUDE(${millipede_SOURCE_DIR}/LinkITK.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkITK.cmake)
 
 ##########################
 # Specify resource files #
