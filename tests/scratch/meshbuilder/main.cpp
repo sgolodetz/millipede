@@ -1,14 +1,14 @@
 /***
- * test-meshbuilder: main.cpp
+ * scratchtest_meshbuilder: main.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
-#include <common/partitionforests/images/AbdominalFeature.h>
-#include <common/util/ITKImageUtil.h>
-#include <common/visualization/LaplacianSmoother.h>
-#include <common/visualization/MeshBuilder.h>
-#include <common/visualization/MeshDecimator.h>
-#include <common/visualization/MeshRenderer.h>
+#include <millipede/partitionforests/images/AbdominalFeature.h>
+#include <millipede/util/ITKImageUtil.h>
+#include <millipede/visualization/LaplacianSmoother.h>
+#include <millipede/visualization/MeshBuilder.h>
+#include <millipede/visualization/MeshDecimator.h>
+#include <millipede/visualization/MeshRenderer.h>
 using namespace mp;
 
 //#################### TYPEDEFS ####################
