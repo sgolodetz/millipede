@@ -1,10 +1,19 @@
-# CMakeLists.txt for tests/test-partitionforest
+##############################################
+# CMakeLists.txt for scratch/partitionforest #
+##############################################
 
-############################
-# Specify the project name #
-############################
+###########################
+# Specify the target name #
+###########################
 
-SET(targetname test-partitionforest)
+SET(targetname scratchtest_partitionforest)
+
+################################
+# Specify the libraries to use #
+################################
+
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseITK.cmake)
 
 #############################
 # Specify the project files #
@@ -16,32 +25,25 @@ SET(sources main.cpp)
 # Specify the source groups #
 #############################
 
-SOURCE_GROUP(.cpp FILES ${sources})
+SOURCE_GROUP(sources FILES ${sources})
 
-################################
-# Specify the libraries to use #
-################################
+##########################################
+# Specify additional include directories #
+##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/UseBoost.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/UseITK.cmake)
-
-###############################
-# Specify the necessary paths #
-###############################
-
-INCLUDE_DIRECTORIES(${millipede_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/modules/millipede/include)
 
 ##########################################
 # Specify the target and where to put it #
 ##########################################
 
-INCLUDE(${millipede_SOURCE_DIR}/SetTestTarget.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 
 #################################
 # Specify the libraries to link #
 #################################
 
-TARGET_LINK_LIBRARIES(${targetname} common)
+TARGET_LINK_LIBRARIES(${targetname} millipede)
 
 ##########################
 # Specify resource files #

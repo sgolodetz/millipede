@@ -1,5 +1,5 @@
 /***
- * test-partitionforest: main.cpp
+ * scratchtest_partitionforest: main.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
@@ -8,13 +8,13 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-#include <common/adts/RootedMST.h>
-#include <common/commands/UndoableCommandManager.h>
-#include <common/partitionforests/base/PartitionForestMultiFeatureSelection.h>
-#include <common/partitionforests/base/PartitionForestTouchListener.h>
-#include <common/partitionforests/graphviz/PartitionForestGraphvizOutputter.h>
-#include <common/partitionforests/images/SimpleImageBranchLayer.h>
-#include <common/partitionforests/images/SimpleImageLeafLayer.h>
+#include <millipede/adts/RootedMST.h>
+#include <millipede/commands/UndoableCommandManager.h>
+#include <millipede/partitionforests/base/PartitionForestMultiFeatureSelection.h>
+#include <millipede/partitionforests/base/PartitionForestTouchListener.h>
+#include <millipede/partitionforests/graphviz/PartitionForestGraphvizOutputter.h>
+#include <millipede/partitionforests/images/SimpleImageBranchLayer.h>
+#include <millipede/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
 
 //#################### ENUMERATIONS ####################
