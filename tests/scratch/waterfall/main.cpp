@@ -1,5 +1,5 @@
 /***
- * test-waterfall: main.cpp
+ * scratchtest_waterfall: main.cpp
  * Copyright Stuart Golodetz, 2010. All rights reserved.
  ***/
 
@@ -16,15 +16,15 @@ using boost::shared_ptr;
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-#include <common/dicom/volumes/DICOMVolume.h>
-#include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/DICOMImageBranchLayer.h>
-#include <common/partitionforests/images/DICOMImageLeafLayer.h>
-#include <common/segmentation/waterfall/GolodetzWaterfallPass.h>
-#include <common/segmentation/waterfall/MarcoteguiWaterfallPass.h>
-#include <common/segmentation/waterfall/NichollsWaterfallPass.h>
-#include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/dicom/volumes/DICOMVolume.h>
+#include <millipede/partitionforests/base/PartitionForest.h>
+#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
+#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/segmentation/waterfall/GolodetzWaterfallPass.h>
+#include <millipede/segmentation/waterfall/MarcoteguiWaterfallPass.h>
+#include <millipede/segmentation/waterfall/NichollsWaterfallPass.h>
+#include <millipede/segmentation/watershed/MeijsterRoerdinkWatershed.h>
+#include <millipede/util/ITKImageUtil.h>
 using namespace mp;
 
 typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
