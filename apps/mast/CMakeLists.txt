@@ -15,6 +15,7 @@ SET(targetname mast)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseGDCM.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseITK.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/UseOpenGL.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
 
 #############################
@@ -272,6 +273,7 @@ TARGET_LINK_LIBRARIES(${targetname} millipede)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkBoost.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkGDCM.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkITK.cmake)
+INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkOpenGL.cmake)
 INCLUDE(${millipede_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 
 ##########################

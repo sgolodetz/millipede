@@ -16,5 +16,3 @@ IF(wxWidgets_FOUND)
 ELSE(wxWidgets_FOUND)
 	MESSAGE(FATAL_ERROR "wxWidgets not found.")
 ENDIF(wxWidgets_FOUND)
-
-FIND_PACKAGE(OpenGL)

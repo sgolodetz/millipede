@@ -12,6 +12,7 @@ SET(targetname scratchtest_wxWidgets)
 # Specify the libraries to use #
 ################################
 
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseOpenGL.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
 
 #############################
@@ -58,6 +59,7 @@ ENDIF(MSVC_IDE)
 # Specify the libraries to link #
 #################################
 
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkOpenGL.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkWxWidgets.cmake)
 
 #############################
