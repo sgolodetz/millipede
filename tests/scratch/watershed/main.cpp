@@ -1,5 +1,5 @@
 /***
- * test-watershed: main.cpp
+ * scratchtest_watershed: main.cpp
  * Copyright Stuart Golodetz, 2009. All rights reserved.
  ***/
 
@@ -16,11 +16,11 @@ using boost::shared_ptr;
 #include <itkImageFileWriter.h>
 #include <itkScalarToRGBPixelFunctor.h>
 
-#include <common/partitionforests/base/PartitionForest.h>
-#include <common/partitionforests/images/DICOMImageBranchLayer.h>
-#include <common/partitionforests/images/DICOMImageLeafLayer.h>
-#include <common/segmentation/watershed/MeijsterRoerdinkWatershed.h>
-#include <common/util/ITKImageUtil.h>
+#include <millipede/partitionforests/base/PartitionForest.h>
+#include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
+#include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/segmentation/watershed/MeijsterRoerdinkWatershed.h>
+#include <millipede/util/ITKImageUtil.h>
 using namespace mp;
 
 //#################### TEST FUNCTIONS ####################
