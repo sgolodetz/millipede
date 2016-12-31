@@ -27,6 +27,13 @@ using boost::shared_ptr;
 #include <millipede/util/ITKImageUtil.h>
 using namespace mp;
 
+#include <srgutil/filesystem/PathFinder.h>
+using namespace srgutil;
+
+//#################### NAMESPACE ALIASES ####################
+namespace bf = boost::filesystem;
+
+//#################### TYPEDEFS ####################
 typedef PartitionForest<DICOMImageLeafLayer,DICOMImageBranchLayer> IPF;
 typedef shared_ptr<IPF> IPF_Ptr;
 
@@ -137,11 +144,14 @@ void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int heig
 		make_mosaic_image_with_boundaries(ipf, layerIndex, width, height) :
 		make_mosaic_image(ipf, layerIndex, width, height);
 
+  const bf::path outputDir = find_subdir_from_executable("output");
+  bf::create_directories(outputDir);
+
 	typedef itk::ImageFileWriter<Image> Writer;
 	Writer::Pointer writer = Writer::New();
 	writer->SetInput(image);
 	boost::replace_all(outputSpecifier, "*", boost::lexical_cast<std::string>(layerIndex));
-	writer->SetFileName("../resources/" + outputSpecifier);
+	writer->SetFileName((outputDir / outputSpecifier).string());
 	writer->Update();
 }
 
@@ -570,9 +580,10 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 	typedef itk::ImageFileReader<UCImage> UCReader;
 
 	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
-	std::cout << "Loading input image ../resources/" << filename << "...\n";
+	std::cout << "Loading input image resources/" << filename << "...\n";
+  const bf::path resourcesDir = find_subdir_from_executable("resources");
 	UCReader::Pointer reader = UCReader::New();
-	reader->SetFileName("../resources/" + filename);
+	reader->SetFileName((resourcesDir / filename).string());
 	reader->Update();
 	UCImage::Pointer windowedImage = reader->GetOutput();
 
