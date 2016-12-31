@@ -23,6 +23,11 @@ using boost::shared_ptr;
 #include <millipede/util/ITKImageUtil.h>
 using namespace mp;
 
+#include <srgutil/filesystem/PathFinder.h>
+using namespace srgutil;
+
+namespace bf = boost::filesystem;
+
 //#################### TEST FUNCTIONS ####################
 void basic_test()
 {
@@ -171,9 +176,13 @@ void real_image_test()
 	typedef itk::Image<unsigned char,2> UCImage;
 	typedef itk::ImageFileReader<UCImage> UCReader;
 
+	const bf::path outputDir = find_subdir_from_executable("output");
+	const bf::path resourcesDir = find_subdir_from_executable("resources");
+	bf::create_directories(outputDir);
+
 	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
 	UCReader::Pointer reader = UCReader::New();
-	reader->SetFileName("../resources/test.bmp");
+	reader->SetFileName((resourcesDir / "test.bmp").string());
 	reader->Update();
 	UCImage::Pointer windowedImage = reader->GetOutput();
 
@@ -226,7 +235,7 @@ void real_image_test()
 	typedef itk::ImageFileWriter<RGBImage> Writer;
 	Writer::Pointer writer = Writer::New();
 	writer->SetInput(colourMapper->GetOutput());
-	writer->SetFileName("../resources/output.bmp");
+	writer->SetFileName((outputDir / "output.bmp").string());
 	writer->Update();
 
 	// Create the initial partition forest.

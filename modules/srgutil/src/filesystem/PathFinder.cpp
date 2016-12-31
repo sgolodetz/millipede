@@ -1,5 +1,5 @@
 /**
- * smgutil: PathFinder.cpp
+ * srgutil: PathFinder.cpp
  * Copyright Stuart Golodetz, 2016. All rights reserved.
  */
 
@@ -16,7 +16,7 @@
   #include <mach-o/dyld.h>
 #endif
 
-namespace smgutil {
+namespace srgutil {
 
 boost::filesystem::path find_executable()
 {

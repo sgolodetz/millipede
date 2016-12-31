@@ -1,12 +1,12 @@
 ######################################
-# CMakeLists.txt for modules/smgutil #
+# CMakeLists.txt for modules/srgutil #
 ######################################
 
 ###########################
 # Specify the target name #
 ###########################
 
-SET(targetname smgutil)
+SET(targetname srgutil)
 
 ################################
 # Specify the libraries to use #
@@ -24,7 +24,7 @@ src/filesystem/PathFinder.cpp
 )
 
 SET(filesystem_headers
-include/smgutil/filesystem/PathFinder.h
+include/srgutil/filesystem/PathFinder.h
 )
 
 #################################################################
@@ -49,7 +49,7 @@ SOURCE_GROUP(filesystem FILES ${filesystem_sources} ${filesystem_headers})
 # Specify additional include directories #
 ##########################################
 
-INCLUDE_DIRECTORIES(include/smgutil)
+INCLUDE_DIRECTORIES(include/srgutil)
 
 ##########################################
 # Specify the target and where to put it #

@@ -3,6 +3,6 @@
 ########################################
 
 ADD_SUBDIRECTORY(millipede)
-ADD_SUBDIRECTORY(smgutil)
+ADD_SUBDIRECTORY(srgutil)
 
 # Note: Ordering is important on Linux!

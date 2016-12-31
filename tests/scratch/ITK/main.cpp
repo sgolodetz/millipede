@@ -16,8 +16,10 @@ using boost::lexical_cast;
 #include "itkUnaryFunctorImageFilter.h"
 #include "itkWatershedImageFilter.h"
 
-#include <smgutil/filesystem/PathFinder.h>
-using namespace smgutil;
+#include <srgutil/filesystem/PathFinder.h>
+using namespace srgutil;
+
+namespace bf = boost::filesystem;
 
 int main()
 {
@@ -41,7 +43,9 @@ int main()
 	typedef itk::UnaryFunctorImageFilter<LabelledImageType,RGBImageType,ColourMapFunctor> ColourMapper;
 	typedef itk::ImageFileWriter<RGBImageType> RGBFileWriter;
 
-	const boost::filesystem::path resourcesDir = find_subdir_from_executable("resources");
+  const bf::path outputDir = find_subdir_from_executable("output");
+	const bf::path resourcesDir = find_subdir_from_executable("resources");
+	bf::create_directories(outputDir);
 
 	// Set up the file reader.
 	UCFileReader::Pointer reader = UCFileReader::New();
@@ -67,7 +71,7 @@ int main()
 	// Set up the file writer to write the diffusion results to file.
 	UCFileWriter::Pointer diffusionWriter = UCFileWriter::New();
 	diffusionWriter->SetInput(rescaler->GetOutput());
-	diffusionWriter->SetFileName((resourcesDir / "test-diffusion.bmp").string());
+	diffusionWriter->SetFileName((outputDir / "test-diffusion.bmp").string());
 	diffusionWriter->Update();
 
 	// Set up the gradient magnitude filter.
@@ -91,7 +95,7 @@ int main()
 
 		RGBFileWriter::Pointer watershedWriter = RGBFileWriter::New();
 		watershedWriter->SetInput(colourMapper->GetOutput());
-		watershedWriter->SetFileName((resourcesDir / ("test-watershed-" + lexical_cast<std::string,int>(i) + ".bmp")).string());
+		watershedWriter->SetFileName((outputDir / ("test-watershed-" + lexical_cast<std::string,int>(i) + ".bmp")).string());
 		try
 		{
 			watershedWriter->Update();

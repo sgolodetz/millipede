@@ -31,7 +31,7 @@ SOURCE_GROUP(sources FILES ${sources})
 # Specify additional include directories #
 ##########################################
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/modules/smgutil/include)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/modules/srgutil/include)
 
 ##########################################
 # Specify the target and where to put it #
@@ -43,7 +43,7 @@ INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 # Specify the libraries to link #
 #################################
 
-TARGET_LINK_LIBRARIES(${targetname} smgutil)
+TARGET_LINK_LIBRARIES(${targetname} srgutil)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkBoost.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkITK.cmake)
 
@@ -51,7 +51,7 @@ INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkITK.cmake)
 # Copy resource files to the build tree #
 #########################################
 
-ADD_CUSTOM_COMMAND(TARGET ${targetname} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${targetname}>/resources")
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/CopyResources.cmake)
 
 #############################
 # Specify things to install #

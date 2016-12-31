@@ -1,14 +1,14 @@
 /**
- * smgutil: PathFinder.h
+ * srgutil: PathFinder.h
  * Copyright Stuart Golodetz, 2016. All rights reserved.
  */
 
-#ifndef H_SMGUTIL_PATHFINDER
-#define H_SMGUTIL_PATHFINDER
+#ifndef H_SRGUTIL_PATHFINDER
+#define H_SRGUTIL_PATHFINDER
 
 #include <boost/filesystem.hpp>
 
-namespace smgutil {
+namespace srgutil {
 
 /**
  * \brief Finds the path to the current executable.
