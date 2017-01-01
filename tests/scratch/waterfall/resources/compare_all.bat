@@ -4,6 +4,10 @@ REM #########################################################
 REM Compare the waterfall partition outputs using ImageMagick
 REM #########################################################
 
+FOR %%f IN (*partition*.png) DO (
+	convert %%f -define png:color-type=2 %%f
+)
+
 FOR %%f IN (*partition*G.png) DO (
 	FOR /F "delims=-. tokens=1,2,3" %%a IN ('echo %%f') DO (
 		echo %%a %%b %%c
