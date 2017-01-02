@@ -12,11 +12,18 @@
 #include <gdcm-1.2/gdcmDicomDirSerie.h>
 #include <gdcm-1.2/gdcmDicomDirStudy.h>
 
+#include <srgutil/filesystem/PathFinder.h>
+using namespace srgutil;
+
+namespace bf = boost::filesystem;
+
 int main()
 {
+	const bf::path resourcesDir = find_subdir_from_executable("resources");
+
 	// Load in the example DICOMDIR.
 	gdcm1::DicomDir dicomdir;
-	dicomdir.SetFileName("../resources/DICOMDIR");
+	dicomdir.SetFileName((resourcesDir / "DICOMDIR").string());
 	if(dicomdir.Load())
 	{
 		std::cout << "Successfully loaded DICOMDIR\n";

@@ -12,6 +12,7 @@ SET(targetname scratchtest_gdcm)
 # Specify the libraries to use #
 ################################
 
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseGDCM.cmake)
 
 #############################
@@ -30,7 +31,7 @@ SOURCE_GROUP(sources FILES ${sources})
 # Specify additional include directories #
 ##########################################
 
-# None needed
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/modules/srgutil/include)
 
 ##########################################
 # Specify the target and where to put it #
@@ -42,28 +43,20 @@ INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetScratchTestTarget.cmake)
 # Specify the libraries to link #
 #################################
 
+TARGET_LINK_LIBRARIES(${targetname} srgutil)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkBoost.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/LinkGDCM.cmake)
-
-##########################
-# Specify resource files #
-##########################
-
-SET(resources DICOMDIR)
 
 #########################################
 # Copy resource files to the build tree #
 #########################################
 
-FOREACH(resource ${resources})
-	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${resource} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../resources/${resource} COPYONLY)
-ENDFOREACH(resource)
-
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/test-gdcm-1.2.5.sh ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test-gdcm-1.2.5.sh COPYONLY)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/CopyResources.cmake)
 
 #############################
 # Specify things to install #
 #############################
 
-INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
-INSTALL(FILES ${resources} DESTINATION bin/tests/${targetname}/resources)
-INSTALL(FILES test-gdcm-1.2.5.sh DESTINATION bin/tests/${targetname}/bin)
+#INSTALL(TARGETS ${targetname} DESTINATION bin/tests/${targetname}/bin)
+#INSTALL(FILES ${resources} DESTINATION bin/tests/${targetname}/resources)
+#INSTALL(FILES test-gdcm-1.2.5.sh DESTINATION bin/tests/${targetname}/bin)
