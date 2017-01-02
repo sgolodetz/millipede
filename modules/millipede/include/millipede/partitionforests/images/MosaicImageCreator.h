@@ -146,23 +146,32 @@ private:
 		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
 		itk::Index<3> size = ITKImageUtil::make_index_from_size(volumeSize);
 
-		itk::Index<3> index;
-		for(index[2]=0; index[2]<size[2]; ++index[2])
-			for(index[1]=0; index[1]<size[1]; ++index[1])
-				for(index[0]=0; index[0]<size[0]; ++index[0])
-				{
-					int n = m_volumeIPF->leaf_of_position(index);
+		int pixelCount = size[0] * size[1] * size[2];
 
-					unsigned char mosaicValue;
-					if(m_layerIndex > 0)
-					{
-						PFNodeID ancestor = m_volumeIPF->ancestor_of(PFNodeID(0,n), m_layerIndex);
-						mosaicValue = static_cast<unsigned char>(m_volumeIPF->branch_properties(ancestor).mean_grey_value());
-					}
-					else mosaicValue = m_volumeIPF->leaf_properties(n).grey_value();
+#ifdef WITH_OPENMP
+		#pragma omp parallel for
+#endif
+		for(int i = 0; i < pixelCount; ++i)
+		{
+			// i = z * size[0] * size[1] + y * size[0] + x
+			int z = i / (size[0] * size[1]);
+			int tmp = i - z * size[0] * size[1];
+			int y = tmp / size[0];
+			int x = tmp - y * size[0];
+			itk::Index<3> index = {{x, y, z}};
 
-					mosaicImage->SetPixel(index, mosaicValue);
-				}
+			int n = m_volumeIPF->leaf_of_position(index);
+
+			unsigned char mosaicValue;
+			if(m_layerIndex > 0)
+			{
+				PFNodeID ancestor = m_volumeIPF->ancestor_of(PFNodeID(0,n), m_layerIndex);
+				mosaicValue = static_cast<unsigned char>(m_volumeIPF->branch_properties(ancestor).mean_grey_value());
+			}
+			else mosaicValue = m_volumeIPF->leaf_properties(n).grey_value();
+
+			mosaicImage->SetPixel(index, mosaicValue);
+		}
 
 		m_mosaicImageHook.set(mosaicImage);
 	}
