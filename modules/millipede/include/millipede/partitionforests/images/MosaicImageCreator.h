@@ -66,13 +66,21 @@ private:
 		// Note: An index has signed values, whereas a size has unsigned ones. Doing this avoids signed/unsigned mismatch warnings.
 		itk::Index<3> size = ITKImageUtil::make_index_from_size(volumeSize);
 
-		itk::Index<3> p;
-		for(p[2]=0; p[2]<size[2]; ++p[2])
-			for(p[1]=0; p[1]<size[1]; ++p[1])
-				for(p[0]=0; p[0]<size[0]; ++p[0])
-				{
-					ancestorImage->SetPixel(p, m_volumeIPF->node_of(m_layerIndex, p));
-				}
+		int pixelCount = size[0] * size[1] * size[2];
+
+#ifdef WITH_OPENMP
+		#pragma omp parallel for
+#endif
+		for(int i = 0; i < pixelCount; ++i)
+		{
+			// i = z * size[0] * size[1] + y * size[0] + x
+			int z = i / (size[0] * size[1]);
+			int tmp = i - z * size[0] * size[1];
+			int y = tmp / size[0];
+			int x = tmp - y * size[0];
+			itk::Index<3> p = {{x, y, z}};
+			ancestorImage->SetPixel(p, m_volumeIPF->node_of(m_layerIndex, p));
+		}
 
 		// Set up an iterator to traverse the ancestor image, whilst allowing us to access the neighbours of each pixel.
 		// The neighbours in this case are used only to determine whether or not a pixel is on a boundary, and as such are

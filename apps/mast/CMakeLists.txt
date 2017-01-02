@@ -12,11 +12,12 @@ SET(targetname mast)
 # Specify the libraries to use #
 ################################
 
-INCLUDE(${millipede_SOURCE_DIR}/cmake/UseBoost.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/cmake/UseGDCM.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/cmake/UseITK.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/cmake/UseOpenGL.cmake)
-INCLUDE(${millipede_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseBoost.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseGDCM.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseITK.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseOpenGL.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseOpenMP.cmake)
+INCLUDE(${PROJECT_SOURCE_DIR}/cmake/UseWxWidgets.cmake)
 
 #############################
 # Specify the project files #
