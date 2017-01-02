@@ -7,7 +7,6 @@
 
 #include <itkCastImageFilter.h>
 #include <itkIntensityWindowingImageFilter.h>
-#include <itkJoinSeriesImageFilter.h>
 
 #include "dicom/util/WindowSettings.h"
 
