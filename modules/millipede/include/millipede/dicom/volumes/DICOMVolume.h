@@ -26,6 +26,7 @@ public:
 		UNSUPPORTED_MODALITY,
 		CT,
 		MR,
+		STANDALONE,
 	};
 
 	//#################### TYPEDEFS ####################
@@ -40,10 +41,12 @@ public:
 private:
 	BaseImagePointer m_baseImage;
 	Modality m_modality;
+	WindowedImagePointer m_windowedImage; // only cached for standalone images
 
 	//#################### CONSTRUCTORS ####################
 public:
 	DICOMVolume(const BaseImagePointer& baseImage, Modality modality);
+	explicit DICOMVolume(const WindowedImagePointer& windowedImage);
 
 	//#################### PUBLIC METHODS ####################
 public:

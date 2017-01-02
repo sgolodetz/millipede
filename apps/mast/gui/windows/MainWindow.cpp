@@ -256,8 +256,23 @@ try
 	Reader::Pointer reader = Reader::New();
 	reader->SetFileName(path);
 	reader->Update();
+	Image::Pointer image = reader->GetOutput();
 
 	// Construct a dummy DICOM volume from the image.
+	DICOMVolume_Ptr volume(new DICOMVolume(image));
+
+	// Construct a dummy DICOM volume choice.
+	itk::Size<3> size = image->GetLargestPossibleRegion().GetSize();
+	DICOMVolumeChoice volumeChoice("", "Patient", "Study", "Series", 0, 0, 0, size[0], size[1], size[2], WindowSettings());
+
+	// Create a model from the loaded volume.
+	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
+	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
+	PartitionModel_Ptr model(new PartitionModelT(volume, volumeChoice));
+
+	// Create a window for the user to interact with the new model.
+	std::string caption = "MAST Segmentation - " + path;
+	new SegmentationWindow(this, caption, model);
 }
 catch(std::exception& e)
 {
