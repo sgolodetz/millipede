@@ -23,14 +23,17 @@ class MosaicImageCreator : public SimpleJob
 {
 	//#################### TYPEDEFS ####################
 private:
+	typedef itk::Image<PFNodeID,3> AncestorImage;
 	typedef itk::Image<unsigned char,3> MosaicImage;
 	typedef VolumeIPF<LeafLayer,BranchLayer> VolumeIPFT;
 	typedef boost::shared_ptr<const VolumeIPFT> VolumeIPF_CPtr;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
+	boost::shared_ptr<DataHook<AncestorImage::Pointer> > m_inputAncestorImageHook;
 	int m_layerIndex;
 	DataHook<MosaicImage::Pointer> m_mosaicImageHook;
+	DataHook<AncestorImage::Pointer> m_outputAncestorImageHook;
 	SliceOrientation m_sliceOrientation;
 	VolumeIPF_CPtr m_volumeIPF;
 	bool m_withBoundaries;
@@ -38,7 +41,7 @@ private:
 	//#################### CONSTRUCTORS ####################
 public:
 	MosaicImageCreator(const VolumeIPF_CPtr& volumeIPF, int layerIndex, SliceOrientation sliceOrientation, bool withBoundaries)
-	:	m_layerIndex(layerIndex), m_sliceOrientation(sliceOrientation), m_volumeIPF(volumeIPF), m_withBoundaries(withBoundaries)
+	:	m_inputAncestorImageHook(new DataHook<AncestorImage::Pointer>), m_layerIndex(layerIndex), m_sliceOrientation(sliceOrientation), m_volumeIPF(volumeIPF), m_withBoundaries(withBoundaries)
 	{}
 
 	//#################### PUBLIC METHODS ####################
@@ -48,17 +51,25 @@ public:
 		return m_mosaicImageHook;
 	}
 
+	const DataHook<AncestorImage::Pointer>& get_output_ancestor_image_hook() const
+	{
+		return m_outputAncestorImageHook;
+	}
+
 	int length() const
 	{
 		return 1;
+	}
+
+	void set_input_ancestor_image_hook(const DataHook<AncestorImage::Pointer>& inputAncestorImageHook) const
+	{
+		*m_inputAncestorImageHook = inputAncestorImageHook;
 	}
 
 	//#################### PRIVATE METHODS ####################
 private:
 	void execute_boundaries()
 	{
-		typedef itk::Image<PFNodeID,3> AncestorImage;
-
 		// Create an image containing the ancestors of the leaves corresponding to the pixels in the specified layer of the forest.
 		itk::Size<3> volumeSize = m_volumeIPF->volume_size();
 		AncestorImage::Pointer ancestorImage = ITKImageUtil::make_image<PFNodeID>(volumeSize);
@@ -79,8 +90,17 @@ private:
 			int y = tmp / size[0];
 			int x = tmp - y * size[0];
 			itk::Index<3> p = {{x, y, z}};
-			ancestorImage->SetPixel(p, m_volumeIPF->node_of(m_layerIndex, p));
+			if(m_inputAncestorImageHook->empty())
+			{
+				ancestorImage->SetPixel(p, m_volumeIPF->node_of(m_layerIndex, p));
+			}
+			else
+			{
+				ancestorImage->SetPixel(p, m_volumeIPF->parent_of(m_inputAncestorImageHook->get()->GetPixel(p)));
+			}
 		}
+
+		m_outputAncestorImageHook.set(ancestorImage);
 
 		// Set up an iterator to traverse the ancestor image, whilst allowing us to access the neighbours of each pixel.
 		// The neighbours in this case are used only to determine whether or not a pixel is on a boundary, and as such are

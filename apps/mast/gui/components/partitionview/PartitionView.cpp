@@ -544,13 +544,18 @@ Job_Ptr PartitionView::fill_partition_textures_job(SliceOrientation ori) const
 	VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
 	int highestLayer = volumeIPF->highest_layer();
 
+	typedef MosaicImageCreator<LeafLayer,BranchLayer> MIC;
+	std::vector<MIC*> mosaicImageCreators;
+
 	CompositeJob_Ptr job(new CompositeJob);
 	for(int layer=1; layer<=highestLayer; ++layer)
 	{
-		typedef MosaicImageCreator<LeafLayer,BranchLayer> MIC;
 		typedef SliceTextureSetFiller<unsigned char> TSF;
 
 		MIC *mosaicImageCreator = new MIC(volumeIPF, layer, ori, true);
+		if(!mosaicImageCreators.empty()) mosaicImageCreator->set_input_ancestor_image_hook(mosaicImageCreators.back()->get_output_ancestor_image_hook());
+		mosaicImageCreators.push_back(mosaicImageCreator);
+
 		TSF *textureSetFiller = new TSF(ori, volumeIPF->volume_size(), m_partitionTextureSets[layer-1]);
 		textureSetFiller->set_volume_image_hook(mosaicImageCreator->get_mosaic_image_hook());
 

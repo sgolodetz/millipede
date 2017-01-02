@@ -48,7 +48,7 @@ public:
 	*/
 	bool empty() const
 	{
-		return *m_data != boost::none;
+		return *m_data == boost::none;
 	}
 
 	/**
