@@ -17,6 +17,11 @@ using boost::shared_ptr;
 #include <millipede/partitionforests/images/SimpleImageLeafLayer.h>
 using namespace mp;
 
+#include <srgutil/filesystem/PathFinder.h>
+using namespace srgutil;
+
+namespace bf = boost::filesystem;
+
 //#################### ENUMERATIONS ####################
 enum SimpleFeature
 {
@@ -376,6 +381,9 @@ IPF_Ptr small_ipf(const ICommandManager_Ptr& manager)
 	return ipf;
 }
 
+//#################### GLOBAL VARIABLES ####################
+const bf::path outputDir = find_subdir_from_executable("output");
+
 //#################### TESTS ####################
 void feature_selection_test()
 {
@@ -426,7 +434,9 @@ void graphviz_thesis_layercloning()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-layercloning", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-layercloning").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf));
 	ipf->add_shared_listener(gvo);
 	gvo->output("Initial forest");
@@ -437,7 +447,9 @@ void graphviz_thesis_layerdeletion()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-layerdeletion", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-layerdeletion").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf));
 	ipf->add_shared_listener(gvo);
 	gvo->output("Initial forest");
@@ -457,7 +469,9 @@ void graphviz_thesis_layerwasundeleted()
 	selection->select_node(PFNodeID(1,3));
 	selection->select_node(PFNodeID(0,6));
 
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-layerwasundeleted", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-selection-layerwasundeleted").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
 	selection->add_shared_listener(gvo);
 	gvo->output("Initial forest");
@@ -476,7 +490,9 @@ void graphviz_thesis_layerwillbedeleted()
 	selection->select_node(PFNodeID(3,0));
 	selection->select_node(PFNodeID(1,2));
 
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-layerwillbedeleted", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-selection-layerwillbedeleted").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
 	selection->add_shared_listener(gvo);
 	gvo->output("Initial forest");
@@ -494,7 +510,9 @@ void graphviz_thesis_nodeselection()
 	selection->select_node(PFNodeID(3,0));
 	selection->deselect_node(PFNodeID(0,3));
 
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-nodeselection", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-selection-nodeselection").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
 	gvo->set_consolidation_interest(true);
 	selection->add_shared_listener(gvo);
@@ -516,7 +534,9 @@ void graphviz_thesis_nodewassplit()
 	selection->select_node(PFNodeID(1,2));
 	selection->select_node(PFNodeID(1,3));
 
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-nodewassplit", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-selection-nodewassplit").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
 	selection->add_shared_listener(gvo);
 	gvo->output("Initial forest");
@@ -541,7 +561,9 @@ void graphviz_thesis_nodesplitting()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-nodesplitting", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-nodesplitting").string(), 'a')
+	);
 	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
 	ipf->add_shared_listener(gvo);
@@ -569,7 +591,9 @@ void graphviz_thesis_nodeswillbemerged()
 	selection->select_node(PFNodeID(1,2));
 	selection->select_node(PFNodeID(1,3));
 
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-selection-nodeswillbemerged", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-selection-nodeswillbemerged").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, selection));
 	selection->add_shared_listener(gvo);
 	gvo->output("Initial forest");
@@ -585,7 +609,9 @@ void graphviz_thesis_nonsiblingnodemerging()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = other_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-nonsiblingnodemerging", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-nonsiblingnodemerging").string(), 'a')
+	);
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf));
 	gvo->set_depth_interest(1);
 	ipf->add_shared_listener(gvo);
@@ -603,7 +629,9 @@ void graphviz_thesis_parentswitching()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = other_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-parentswitch", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-parentswitch").string(), 'a')
+	);
 	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
 	gvo->set_depth_interest(1);
@@ -616,7 +644,9 @@ void graphviz_thesis_siblingnodemerging()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-siblingnodemerging", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-siblingnodemerging").string(), 'a')
+	);
 	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
 	ipf->add_shared_listener(gvo);
@@ -632,7 +662,9 @@ void graphviz_thesis_unzipping()
 {
 	ICommandManager_Ptr manager(new UndoableCommandManager);
 	IPF_Ptr ipf = default_ipf(manager);
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-unzipping", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-unzipping").string(), 'a')
+	);
 	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
 	gvo->set_depth_interest(1);
@@ -647,7 +679,9 @@ void graphviz_thesis_zipping()
 	IPF_Ptr ipf = default_ipf(manager);
 	ipf->unzip_node(PFNodeID(0,5), 3);
 
-	boost::shared_ptr<GVO::StreamController> streamController(new GVO::FileSequenceStreamController("../resources/ipfs-forest-zipping", 'a'));
+	boost::shared_ptr<GVO::StreamController> streamController(
+		new GVO::FileSequenceStreamController((outputDir / "ipfs-forest-zipping").string(), 'a')
+	);
 	boost::shared_ptr<GVO::NodePositioner> nodePositioner(new GVO::Grid2DNodePositioner(ipf, 3, 3));
 	boost::shared_ptr<GVO> gvo(new GVO(streamController, ipf, boost::none, nodePositioner));
 	gvo->set_depth_interest(1);
@@ -882,7 +916,10 @@ void unzip_zip_test()
 }
 
 int main()
+try
 {
+	bf::create_directories(outputDir);
+
 	//feature_selection_test();
 	//graphviz_test();
 
@@ -909,4 +946,9 @@ int main()
 	//touch_listener_test();
 	//unzip_zip_test();
 	return 0;
+}
+catch(std::exception& e)
+{
+	std::cerr << e.what() << '\n';
+	return EXIT_FAILURE;
 }

@@ -155,7 +155,9 @@ public:
 			{
 				std::ostringstream oss;
 				oss << m_stem + '-' << m_suffix << '-' << name << ".gv";
-				boost::shared_ptr<std::ofstream> stream(new std::ofstream(oss.str().c_str()));
+				std::string filename = oss.str();
+				boost::shared_ptr<std::ofstream> stream(new std::ofstream(filename.c_str()));
+				if(!*stream) throw Exception("Could not open file: " + filename);
 				it = m_streams.insert(std::make_pair(name, stream)).first;
 			}
 			return *it->second;
