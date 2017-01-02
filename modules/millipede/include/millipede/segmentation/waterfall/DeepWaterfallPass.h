@@ -18,7 +18,15 @@ class DeepWaterfallPass : public WaterfallPass<EdgeWeight>
 {
 	//#################### PRIVATE VARIABLES ####################
 private:
-	bool m_haveMerged;
+	int m_mergeCount;
+	int m_mergeLimit;
+	int m_remainingLayers;
+
+	//#################### CONSTRUCTORS ####################
+public:
+	explicit DeepWaterfallPass(int waterfallLayerLimit)
+	: m_remainingLayers(waterfallLayerLimit - 2)
+	{}
 
 	//#################### PUBLIC METHODS ####################
 public:
@@ -34,10 +42,12 @@ public:
 			}
 		}
 
-		// Merge an edge with that lowest weight.
-		m_haveMerged = false;
+		// Merge some of the edges with the lowest weight, whilst avoiding converging too quickly.
+		m_mergeCount = 0;
+		m_mergeLimit = static_cast<int>(ceil((mst.node_count() - 1) / static_cast<double>(m_remainingLayers)));
 		run_sub(mst, mst.tree_root(), lowestWeight);
 
+		--m_remainingLayers;
 		return mst;
 	}
 
@@ -58,10 +68,10 @@ private:
 			// Merge any descending edges whose weight is the lowest weight.
 			for(std::list<int>::const_iterator it = results.begin(), iend = results.end(); it != iend; ++it)
 			{
-				if(!m_haveMerged && mst.edge_weight(parent, *it) == lowestWeight)
+				if(m_mergeCount < m_mergeLimit && mst.edge_weight(parent, *it) == lowestWeight)
 				{
 					parent = this->merge_nodes(mst, parent, *it);
-					m_haveMerged = true;
+					++m_mergeCount;
 				}
 			}
 		}

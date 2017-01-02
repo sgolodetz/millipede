@@ -230,7 +230,7 @@ private:
 				switch(base->m_segmentationOptions.waterfallAlgorithm)
 				{
 					case SegmentationOptions::WATERFALLALGORITHM_DEEP:
-						waterfallPasses[i].reset(new DeepWaterfallPass<int>);
+						waterfallPasses[i].reset(new DeepWaterfallPass<int>(base->m_segmentationOptions.waterfallLayerLimit));
 						break;
 					case SegmentationOptions::WATERFALLALGORITHM_GOLODETZ:
 						waterfallPasses[i].reset(new GolodetzWaterfallPass<int>);
