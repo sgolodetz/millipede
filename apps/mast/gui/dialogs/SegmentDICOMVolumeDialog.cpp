@@ -90,7 +90,7 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	sizer->Add(waterfallSizer);
 
 	waterfallSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("Waterfall Layer Limit:")), 0, wxALIGN_CENTRE_VERTICAL);
-	m_waterfallLayerLimit = new wxSpinCtrl(panel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 5);
+	m_waterfallLayerLimit = new wxSpinCtrl(panel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 200, 5);
 	waterfallSizer->Add(m_waterfallLayerLimit, 0, wxALIGN_CENTRE_VERTICAL);
 
 	sizer->Fit(panel);

@@ -55,7 +55,7 @@ std::istream& operator>>(std::istream& is, PFNodeID& rhs)
 	char dummy;
 	int layer, index;
 	is >> dummy >> layer >> dummy >> index >> dummy;
-	rhs.m_layer = static_cast<signed char>(layer);
+	rhs.m_layer = layer;
 	rhs.m_index = index;
 	return is;
 }
