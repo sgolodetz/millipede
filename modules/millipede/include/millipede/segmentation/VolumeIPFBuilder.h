@@ -14,6 +14,7 @@
 #include <millipede/jobs/CompositeJob.h>
 #include <millipede/jobs/DataHook.h>
 #include <millipede/partitionforests/images/VolumeIPF.h>
+#include <millipede/segmentation/waterfall/DeepWaterfallPass.h>
 #include <millipede/segmentation/waterfall/GolodetzWaterfallPass.h>
 #include <millipede/segmentation/waterfall/MarcoteguiWaterfallPass.h>
 #include <millipede/segmentation/waterfall/NichollsWaterfallPass.h>
@@ -228,6 +229,9 @@ private:
 			{
 				switch(base->m_segmentationOptions.waterfallAlgorithm)
 				{
+					case SegmentationOptions::WATERFALLALGORITHM_DEEP:
+						waterfallPasses[i].reset(new DeepWaterfallPass<int>);
+						break;
 					case SegmentationOptions::WATERFALLALGORITHM_GOLODETZ:
 						waterfallPasses[i].reset(new GolodetzWaterfallPass<int>);
 						break;

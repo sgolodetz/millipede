@@ -20,6 +20,7 @@ using boost::shared_ptr;
 #include <millipede/partitionforests/base/PartitionForest.h>
 #include <millipede/partitionforests/images/DICOMImageBranchLayer.h>
 #include <millipede/partitionforests/images/DICOMImageLeafLayer.h>
+#include <millipede/segmentation/waterfall/DeepWaterfallPass.h>
 #include <millipede/segmentation/waterfall/GolodetzWaterfallPass.h>
 #include <millipede/segmentation/waterfall/MarcoteguiWaterfallPass.h>
 #include <millipede/segmentation/waterfall/NichollsWaterfallPass.h>
@@ -144,8 +145,8 @@ void output_mosaic_image(const IPF_Ptr& ipf, int layerIndex, int width, int heig
 		make_mosaic_image_with_boundaries(ipf, layerIndex, width, height) :
 		make_mosaic_image(ipf, layerIndex, width, height);
 
-  const bf::path outputDir = find_subdir_from_executable("output");
-  bf::create_directories(outputDir);
+	const bf::path outputDir = find_subdir_from_executable("output");
+	bf::create_directories(outputDir);
 
 	typedef itk::ImageFileWriter<Image> Writer;
 	Writer::Pointer writer = Writer::New();
@@ -235,6 +236,7 @@ void comparison_test()
 	RootedMST<int> mst(graph);
 
 	// Run a waterfall pass on the MST.
+	//DeepWaterfallPass<int> pass;
 	GolodetzWaterfallPass<int> pass;
 	//MarcoteguiWaterfallPass<int> pass;
 	//NichollsWaterfallPass<int> pass;
@@ -581,7 +583,7 @@ void real_image_test(const std::string& filename, const std::string& outputSpeci
 
 	// Read in the image (when debugging in VC++, it may be necessary to set the working directory to "$(TargetDir)").
 	std::cout << "Loading input image resources/" << filename << "...\n";
-  const bf::path resourcesDir = find_subdir_from_executable("resources");
+	const bf::path resourcesDir = find_subdir_from_executable("resources");
 	UCReader::Pointer reader = UCReader::New();
 	reader->SetFileName((resourcesDir / filename).string());
 	reader->Update();
@@ -662,7 +664,7 @@ int main()
 try
 {
 	//basic_test();
-	//comparison_test();
+	comparison_test();
 	//golodetz_test_A();
 	//golodetz_test_B();
 	//golodetz_test_F();
@@ -673,7 +675,7 @@ try
 	//marcotegui_test();
 	//real_image_test<NichollsWaterfallPass>("../resources/test.bmp", "../resources/test-partition*.bmp");
 
-	real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
+	/*real_image_test<GolodetzWaterfallPass>("baboon.png", "baboon-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("baboon.png", "baboon-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NC.png", NichollsWaterfallPass<int>(true));
 	real_image_test<NichollsWaterfallPass>("baboon.png", "baboon-partition-*-NT.png");
@@ -686,7 +688,7 @@ try
 	real_image_test<GolodetzWaterfallPass>("pepper.png", "pepper-partition-*-G.png");
 	real_image_test<MarcoteguiWaterfallPass>("pepper.png", "pepper-partition-*-M.png");
 	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NC.png", NichollsWaterfallPass<int>(true));
-	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");
+	real_image_test<NichollsWaterfallPass>("pepper.png", "pepper-partition-*-NT.png");*/
 
 	return 0;
 }

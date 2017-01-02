@@ -286,6 +286,7 @@ include/millipede/segmentation/VolumeIPFBuilder.h
 
 ##
 SET(segmentation_waterfall_headers
+include/millipede/segmentation/waterfall/DeepWaterfallPass.h
 include/millipede/segmentation/waterfall/GolodetzWaterfallPass.h
 include/millipede/segmentation/waterfall/MarcoteguiWaterfallPass.h
 include/millipede/segmentation/waterfall/NichollsWaterfallPass.h

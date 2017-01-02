@@ -74,6 +74,7 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 
 	// Set up the radio box to choose between different waterfall algorithms.
 	wxString waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_COUNT];
+	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_DEEP] = wxT("Use &Deep Waterfall Algorithm");
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_GOLODETZ] = wxT("Use &Golodetz Waterfall Algorithm");
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_MARCOTEGUI] = wxT("Use &Marcotegui Waterfall Algorithm");
 	waterfallStrings[DICOMSegmentationOptions::WATERFALLALGORITHM_NICHOLLS_CORRECT] = wxT("Use Nicholls Waterfall Algorithm (&Correct)");
@@ -89,7 +90,7 @@ wxPanel *SegmentDICOMVolumeDialog::create_advanced_page(wxWindow *parent)
 	sizer->Add(waterfallSizer);
 
 	waterfallSizer->Add(new wxStaticText(panel, wxID_ANY, wxT("Waterfall Layer Limit:")), 0, wxALIGN_CENTRE_VERTICAL);
-	m_waterfallLayerLimit = new wxSpinCtrl(panel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 5);
+	m_waterfallLayerLimit = new wxSpinCtrl(panel, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 5);
 	waterfallSizer->Add(m_waterfallLayerLimit, 0, wxALIGN_CENTRE_VERTICAL);
 
 	sizer->Fit(panel);
