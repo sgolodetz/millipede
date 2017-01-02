@@ -41,7 +41,6 @@ public:
 private:
 	BaseImagePointer m_baseImage;
 	Modality m_modality;
-	WindowedImagePointer m_windowedImage; // only cached for standalone images
 
 	//#################### CONSTRUCTORS ####################
 public:

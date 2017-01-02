@@ -15,11 +15,11 @@ namespace mp {
 
 //#################### CONSTRUCTORS ####################
 DICOMVolume::DICOMVolume(const BaseImagePointer& baseImage, Modality modality)
-:	m_baseImage(baseImage), m_modality(modality), m_windowedImage(NULL)
+:	m_baseImage(baseImage), m_modality(modality)
 {}
 
 DICOMVolume::DICOMVolume(const WindowedImagePointer& windowedImage)
-: m_modality(STANDALONE), m_windowedImage(windowedImage)
+: m_modality(STANDALONE)
 {
 	typedef itk::CastImageFilter<WindowedImage,BaseImage> CastFilter;
 	CastFilter::Pointer castFilter = CastFilter::New();
@@ -64,9 +64,15 @@ double DICOMVolume::voxel_size_mm3() const
 
 DICOMVolume::WindowedImagePointer DICOMVolume::windowed_image(const WindowSettings& windowSettings) const
 {
-	if(m_windowedImage)
+	if(m_modality == STANDALONE)
 	{
-		return m_windowedImage;
+		typedef itk::CastImageFilter<BaseImage,WindowedImage> CastFilter;
+
+		CastFilter::Pointer castFilter = CastFilter::New();
+		castFilter->SetInput(m_baseImage);
+		castFilter->Update();
+
+		return castFilter->GetOutput();
 	}
 	else
 	{

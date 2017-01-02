@@ -263,7 +263,7 @@ try
 
 	// Construct a dummy DICOM volume choice.
 	itk::Size<3> size = image->GetLargestPossibleRegion().GetSize();
-	DICOMVolumeChoice volumeChoice("", "Patient", "Study", "Series", 0, 0, 0, size[0], size[1], size[2], WindowSettings());
+	DICOMVolumeChoice volumeChoice("N/A", "N/A", "N/A", "N/A", 0, 0, 0, size[0], size[1], size[2], WindowSettings());
 
 	// Create a model from the loaded volume.
 	typedef PartitionModel<DICOMImageLeafLayer,DICOMImageBranchLayer,AbdominalFeature::Enum> PartitionModelT;
