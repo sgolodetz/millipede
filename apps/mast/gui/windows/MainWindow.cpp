@@ -46,6 +46,7 @@ enum
 	MENUID_FILE_OPENDICOMDIR,
 	MENUID_FILE_OPENVOLUMECHOICE,
 	MENUID_HELP_ABOUT,
+	MENUID_TOOLS_OPENSTANDALONE2DIMAGE,
 	MENUID_TOOLS_VISUALIZESTANDALONE3DIMAGE,
 };
 
@@ -156,6 +157,7 @@ void MainWindow::setup_menus()
 	toolsMenu->Append(wxID_ANY, wxT("&Anonymize Directory Tree...\tCtrl+A"));
 	toolsMenu->Append(wxID_ANY, wxT("&Replace Volume Choice Section...\tCtrl+R"));
 #endif
+	toolsMenu->Append(MENUID_TOOLS_OPENSTANDALONE2DIMAGE, wxT("Open Standalone &2D Image...\tCtrl+2"));
 	toolsMenu->Append(MENUID_TOOLS_VISUALIZESTANDALONE3DIMAGE, wxT("Visualize Standalone &3D Image...\tCtrl+3"));
 
 	wxMenu *helpMenu = new wxMenu;
@@ -240,10 +242,32 @@ void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 	wxMessageBox(string_to_wxString(oss.str()), wxT("About MAST"), wxOK|wxCENTRE, this);
 }
 
+void MainWindow::OnMenuToolsOpenStandalone2DImage(wxCommandEvent&)
+try
+{
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone 2D Image", "PNG (*.png)|*.png|All Files|*.*");
+	if(dialog->ShowModal() != wxID_OK) return;
+
+	std::string path = wxString_to_string(dialog->GetPath());
+
+	// Load the image.
+	typedef itk::Image<unsigned char,3> Image;
+	typedef itk::ImageFileReader<Image> Reader;
+	Reader::Pointer reader = Reader::New();
+	reader->SetFileName(path);
+	reader->Update();
+
+	// Construct a dummy DICOM volume from the image.
+}
+catch(std::exception& e)
+{
+	wxMessageBox(string_to_wxString(e.what()), wxT("Error"), wxOK|wxICON_ERROR|wxCENTRE, this);
+}
+
 void MainWindow::OnMenuToolsVisualizeStandalone3DImage(wxCommandEvent&)
 try
 {
-	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone Image", "MetaIO Image Files (*.mhd)|*.mhd");
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone 3D Image", "MetaIO Image Files (*.mhd)|*.mhd");
 	if(dialog->ShowModal() != wxID_OK) return;
 
 	std::string path = wxString_to_string(dialog->GetPath());
@@ -314,6 +338,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 	EVT_MENU(MENUID_FILE_OPENDICOMDIR, MainWindow::OnCommonOpenDICOMDIR)
 	EVT_MENU(MENUID_FILE_OPENVOLUMECHOICE, MainWindow::OnCommonOpenVolumeChoice)
 	EVT_MENU(MENUID_HELP_ABOUT, MainWindow::OnMenuHelpAbout)
+	EVT_MENU(MENUID_TOOLS_OPENSTANDALONE2DIMAGE, MainWindow::OnMenuToolsOpenStandalone2DImage)
 	EVT_MENU(MENUID_TOOLS_VISUALIZESTANDALONE3DIMAGE, MainWindow::OnMenuToolsVisualizeStandalone3DImage)
 END_EVENT_TABLE()
 
