@@ -32,20 +32,24 @@ public:
 public:
 	RootedMST<EdgeWeight>& run(RootedMST<EdgeWeight>& mst)
 	{
-		// Find the weight of the lowest-weighted edge(s) in the MST.
-		EdgeWeight lowestWeight = INT_MAX;
-		for(typename RootedMST<EdgeWeight>::EdgeConstIterator it = mst.edges_cbegin(), iend = mst.edges_cend(); it != iend; ++it)
-		{
-			if(it->weight < lowestWeight)
-			{
-				lowestWeight = it->weight;
-			}
-		}
-
-		// Merge some of the edges with the lowest weight, whilst avoiding converging too quickly.
 		m_mergeCount = 0;
 		m_mergeLimit = static_cast<int>(ceil((mst.node_count() - 1) / static_cast<double>(m_remainingLayers)));
-		run_sub(mst, mst.tree_root(), lowestWeight);
+
+		while(mst.node_count() != 1 && m_mergeCount < m_mergeLimit)
+		{
+			// Find the weight of the lowest-weighted edge(s) in the MST.
+			EdgeWeight lowestWeight = INT_MAX;
+			for(typename RootedMST<EdgeWeight>::EdgeConstIterator it = mst.edges_cbegin(), iend = mst.edges_cend(); it != iend; ++it)
+			{
+				if(it->weight < lowestWeight)
+				{
+					lowestWeight = it->weight;
+				}
+			}
+
+			// Merge some of the edges with the lowest weight, whilst avoiding converging too quickly.
+			run_sub(mst, mst.tree_root(), lowestWeight);
+		}
 
 		--m_remainingLayers;
 		return mst;
