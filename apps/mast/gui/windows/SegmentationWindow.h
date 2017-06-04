@@ -97,6 +97,7 @@ public:
 	void OnMenuSegmentationSwitchParentSetNewParent(wxCommandEvent&);
 	void OnMenuSegmentationSwitchParentStartAgain(wxCommandEvent&);
 	void OnMenuSegmentationUnzipSelectedNode(wxCommandEvent&);
+	void OnMenuSegmentationUnzipSelection(wxCommandEvent&);
 	void OnMenuSelectionClearSelection(wxCommandEvent&);
 	void OnMenuSelectionSelectMarked(wxCommandEvent& e);
 	void OnMenuToolsQuantifyFeatureVolumes(wxCommandEvent&);

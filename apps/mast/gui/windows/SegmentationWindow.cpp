@@ -72,6 +72,7 @@ enum
 	MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT,
 	MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN,
 	MENUID_SEGMENTATION_UNZIPSELECTEDNODE,
+	MENUID_SEGMENTATION_UNZIPSELECTION,
 	MENUID_SELECTION_CLEARSELECTION,
 	MENUID_SELECTION_SELECTMARKED_BASE,
 	MENUID_SELECTION_SELECTMARKED_LAST = (MENUID_SELECTION_SELECTMARKED_BASE+1) + 50,	// reserve enough IDs for 50 different feature types
@@ -229,6 +230,7 @@ void SegmentationWindow::setup_menus()
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
 	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, wxT("&Unzip Selected Node...\tCtrl+Shift+U"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTION, wxT("Unzip Selection...\tCtrl+Alt+Shift+U"));
 	segmentationMenu->AppendSeparator();
 	wxMenu *switchParentMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(switchParentMenu, wxT("Switch &Parent"));
@@ -517,6 +519,11 @@ void SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain(wxCommandEvent
 void SegmentationWindow::OnMenuSegmentationUnzipSelectedNode(wxCommandEvent&)
 {
 	m_view->unzip_selected_node();
+}
+
+void SegmentationWindow::OnMenuSegmentationUnzipSelection(wxCommandEvent&)
+{
+	m_view->unzip_selection();
 }
 
 void SegmentationWindow::OnMenuSelectionClearSelection(wxCommandEvent&)
@@ -826,6 +833,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain)
 	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnMenuSegmentationUnzipSelectedNode)
+	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTION, SegmentationWindow::OnMenuSegmentationUnzipSelection)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
 	EVT_MENU(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnMenuToolsQuantifyFeatureVolumes)
 	EVT_MENU(MENUID_TOOLS_VALIDATEFEATURESELECTION, SegmentationWindow::OnMenuToolsValidateFeatureSelection)
@@ -857,6 +865,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_QUANTIFYFEATUREVOLUMES, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_TOOLS_VALIDATEFEATURESELECTION, SegmentationWindow::OnUpdateMenuToolsValidateFeatureSelection)

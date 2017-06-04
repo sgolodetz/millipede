@@ -8,6 +8,7 @@
 
 #include <climits>
 #include <deque>
+#include <map>
 #include <queue>
 #include <set>
 
@@ -1155,6 +1156,14 @@ public:
 		chains.front().pop_back();
 
 		return chains;
+	}
+
+	/**
+	@brief	TODO
+	*/
+	void unzip_nodes(const std::map<int,std::set<PFNodeID> >& nodesByDepth, int toLayer, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
+	{
+		// TODO
 	}
 
 	/**

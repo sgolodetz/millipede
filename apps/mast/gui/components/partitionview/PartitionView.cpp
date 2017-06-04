@@ -446,6 +446,30 @@ void PartitionView::unzip_selected_node()
 	}
 }
 
+void PartitionView::unzip_selection()
+{
+	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
+
+	int highestLayer = m_model->volume_ipf()->highest_layer();
+	int lowestLayer = 1;
+
+	typedef PartitionModelT::VolumeIPFSelectionT::NodeConstIterator Iter;
+	for(Iter it = selection->nodes_cbegin(), iend = selection->nodes_cend(); it != iend; ++it)
+	{
+		lowestLayer = std::max(lowestLayer, it->layer() + 1);
+	}
+
+	long toLayer = wxGetNumberFromUser(wxT(""), wxT("To Layer:"), wxT("Unzip Selection"), highestLayer, lowestLayer, highestLayer, this);
+
+	if(toLayer != -1)
+	{
+		std::map<int,std::set<PFNodeID> > nodesByDepth;
+		// TODO
+		m_model->volume_ipf()->unzip_nodes(nodesByDepth, toLayer);
+		m_camera->goto_layer(toLayer);
+	}
+}
+
 //#################### PRIVATE METHODS ####################
 void PartitionView::add_listeners()
 {

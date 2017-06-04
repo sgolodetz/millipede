@@ -135,6 +135,7 @@ public:
 	const NodeSplitManager_Ptr& node_split_manager();
 	const ParentSwitchManager_Ptr& parent_switch_manager();
 	void unzip_selected_node();
+	void unzip_selection();
 
 	//#################### PRIVATE METHODS ####################
 private:
