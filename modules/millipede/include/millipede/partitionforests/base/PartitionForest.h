@@ -1188,29 +1188,79 @@ public:
 		std::map<PFNodeID,Chain> chains;
 
 		// Unzip the nodes, starting with those lowest in the hierarchy.
-		std::map<int,std::set<PFNodeID> >::const_iterator it = nodesByDepth.begin();
-		int layer = it->first;
-		std::set<PFNodeID> curs = it->second;
+		int layer = nodesByDepth.begin()->first;
+		std::set<PFNodeID> curs = nodesByDepth.begin()->second;
 		while(layer < toLayer)
 		{
 			// Group the current nodes by parent.
-			// TODO
+			std::map<PFNodeID,std::set<int> > parentToSelectedChildMap;
+			for(std::set<PFNodeID>::const_iterator it = curs.begin(), iend = curs.end(); it != iend; ++it)
+			{
+				parentToSelectedChildMap[parent_of(*it)].insert(it->index());
+			}
 
 			// Split each parent node in turn.
-			// TODO
+			std::set<PFNodeID> result;
+			for(std::map<PFNodeID,std::set<int> >::const_iterator it = parentToSelectedChildMap.begin(), iend = parentToSelectedChildMap.end();
+			    it != iend; ++it)
+			{
+				const PFNodeID& parent = it->first;
+				const std::set<int>& selectedChildren = it->second;
+
+				// Determine the unselected children of the parent node.
+				BranchLayer_Ptr parentLayer = branch_layer(parent.layer());
+				const std::set<int>& children = parentLayer->node_children(parent.index());
+				std::set<int> unselectedChildren;
+				std::set_difference(
+					children.begin(), children.end(),
+					selectedChildren.begin(), selectedChildren.end(),
+					std::inserter(unselectedChildren, unselectedChildren.begin())
+				);
+
+				// Separately calculate the connected components of the selected and unselected children.
+				// Calculate the connected components of the selected and unselected children.
+				const int childLayer = parent.layer() - 1;
+				std::vector<std::set<int> > connectedComponents = find_connected_components(selectedChildren, childLayer);
+				std::vector<std::set<int> > ccsUnselected = find_connected_components(unselectedChildren, childLayer);
+				std::copy(ccsUnselected.begin(), ccsUnselected.end(), std::back_inserter(connectedComponents));
+
+				// Split the parent node and store the results.
+				std::set<PFNodeID> intermediateResult = split_node(parent, connectedComponents, DONT_CHECK_PRECONDITIONS);
+				std::copy(intermediateResult.begin(), intermediateResult.end(), std::inserter(result, result.begin()));
+			}
 
 			// Prepend each existing chain with its head node's parent, and remove that parent from the split results.
-			// TODO
+			for(std::map<PFNodeID,Chain>::iterator it=chains.begin(), iend=chains.end(); it!=iend; ++it)
+			{
+				PFNodeID h = it->second.front();	// each chain is non-empty by construction
+				PFNodeID p = parent_of(h);
+				it->second.push_front(p);
+				result.erase(p);
+			}
 
 			// Add a new singleton chain for each remaining node in the split results.
-			// TODO
+			for(std::set<PFNodeID>::const_iterator it=result.begin(), iend=result.end(); it!=iend; ++it)
+			{
+				Chain chain;
+				chain.push_back(*it);
+				chains.insert(std::make_pair(*it, chain));
+			}
 
 			// Update the current nodes and the layer.
-			// TODO (current nodes)
+			std::set<PFNodeID> parents;
+			for(std::set<PFNodeID>::const_iterator it = curs.begin(), iend = curs.end(); it != iend; ++it)
+			{
+				parents.insert(parent_of(*it));
+			}
+			curs = parents;
 			++layer;
 
 			// Add in any new nodes whose layer we have now reached.
-			// TODO
+			std::map<int,std::set<PFNodeID> >::const_iterator it = nodesByDepth.find(layer);
+			if(it != nodesByDepth.end())
+			{
+				std::copy(it->second.begin(), it->second.end(), std::inserter(curs, curs.begin()));
+			}
 		}
 
 		return chains;
