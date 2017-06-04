@@ -1161,9 +1161,59 @@ public:
 	/**
 	@brief	TODO
 	*/
-	void unzip_nodes(const std::map<int,std::set<PFNodeID> >& nodesByDepth, int toLayer, CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
+	std::map<PFNodeID,Chain> unzip_nodes(const std::map<int,std::set<PFNodeID> >& nodesByDepth, int toLayer,
+	                                     CheckPreconditions checkPreconditions = CHECK_PRECONDITIONS)
 	{
-		// TODO
+		if(checkPreconditions)
+		{
+			// Check that all of the specified nodes are valid and that the specified layer is above every node.
+			for(std::map<int,std::set<PFNodeID> >::const_iterator it = nodesByDepth.begin(), iend = nodesByDepth.end(); it != iend; ++it)
+			{
+				for(std::set<PFNodeID>::const_iterator jt = it->second.begin(), jend = it->second.end(); jt != jend; ++jt)
+				{
+					const PFNodeID& node = *jt;
+					IForestLayer_Ptr layer = checked_forest_layer(node.layer());
+					if(!layer || !layer->has_node(node.index())) throw Exception(OSSWrapper() << "Invalid node: " << node);
+
+					if(toLayer < node.layer()) throw Exception(OSSWrapper() << "Invalid layer: " << toLayer);
+				}
+			}
+
+			// Check that the specified layer is within the forest.
+			if(toLayer > highest_layer()) throw Exception(OSSWrapper() << "Invalid layer: " << toLayer);
+		}
+
+		SequenceGuard guard(m_commandManager, "Unzip Nodes", m_listeners);
+
+		std::map<PFNodeID,Chain> chains;
+
+		// Unzip the nodes, starting with those lowest in the hierarchy.
+		std::map<int,std::set<PFNodeID> >::const_iterator it = nodesByDepth.begin();
+		int layer = it->first;
+		std::set<PFNodeID> curs = it->second;
+		while(layer < toLayer)
+		{
+			// Group the current nodes by parent.
+			// TODO
+
+			// Split each parent node in turn.
+			// TODO
+
+			// Prepend each existing chain with its head node's parent, and remove that parent from the split results.
+			// TODO
+
+			// Add a new singleton chain for each remaining node in the split results.
+			// TODO
+
+			// Update the current nodes and the layer.
+			// TODO (current nodes)
+			++layer;
+
+			// Add in any new nodes whose layer we have now reached.
+			// TODO
+		}
+
+		return chains;
 	}
 
 	/**

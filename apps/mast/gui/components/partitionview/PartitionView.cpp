@@ -464,7 +464,11 @@ void PartitionView::unzip_selection()
 	if(toLayer != -1)
 	{
 		std::map<int,std::set<PFNodeID> > nodesByDepth;
-		// TODO
+		for(Iter it = selection->nodes_cbegin(), iend = selection->nodes_cend(); it != iend; ++it)
+		{
+			nodesByDepth[it->layer()].insert(*it);
+		}
+
 		m_model->volume_ipf()->unzip_nodes(nodesByDepth, toLayer);
 		m_camera->goto_layer(toLayer);
 	}
