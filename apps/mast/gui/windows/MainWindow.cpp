@@ -245,7 +245,7 @@ void MainWindow::OnMenuHelpAbout(wxCommandEvent&)
 void MainWindow::OnMenuToolsOpenStandalone2DImage(wxCommandEvent&)
 try
 {
-	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone 2D Image", "Image Files (*.jpg;*.png)|*.jpg;*.png|All Files|*.*");
+	wxFileDialog_Ptr dialog = construct_open_dialog(this, "Open Standalone 2D Image", "Image Files (*.bmp;*.jpg;*.png)|*.bmp;*.jpg;*.png|All Files|*.*");
 	if(dialog->ShowModal() != wxID_OK) return;
 
 	std::string path = wxString_to_string(dialog->GetPath());
