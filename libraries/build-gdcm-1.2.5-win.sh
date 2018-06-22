@@ -6,14 +6,20 @@
 LOG=../../build-gdcm-1.2.5.log
 
 # Check that valid parameters have been specified.
-if [ $# -ne 1 ] || ([ "$1" != "Visual Studio 11 Win64" ] && [ "$1" != "Visual Studio 12 Win64" ])
+SCRIPT_NAME=`basename "$0"`
+
+if [ $# -ne 1 ] || ([ "$1" != "11" ] && [ "$1" != "12" ] && [ "$1" != "14" ] && [ "$1" != "15" ])
 then
-  echo "Usage: build-gdcm-1.2.5-win.sh {Visual Studio 11 Win64|Visual Studio 12 Win64}"
+  echo "Usage: $SCRIPT_NAME {11|12|14|15}"
   exit 1
 fi
 
+# Determine the CMake generator and Visual Studio toolset to use.
+CMAKE_GENERATOR=`../determine-cmakegenerator.sh $1`
+VS_TOOLSET_STRING=`../determine-vstoolsetstring.sh $1`
+
 # Build GDCM.
-echo "[millipede] Building GDCM 1.2.5 for $1"
+echo "[millipede] Building GDCM 1.2.5 for $CMAKE_GENERATOR"
 
 if [ -d gdcm-1.2.5 ]
 then
@@ -51,7 +57,7 @@ else
   cd build
 
   echo "[millipede] ...Configuring for Debug configuration using CMake..."
-  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install-debug -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. > $LOG 2>&1
+  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install-debug -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$CMAKE_GENERATOR" $VS_TOOLSET_STRING .. > $LOG 2>&1
 
   echo "[millipede] ...Building Debug configuration..."
   cmd //c "msbuild /p:Configuration=Debug GDCM.sln >> $LOG 2>&1"
@@ -60,7 +66,7 @@ else
   cmd //c "msbuild /p:Configuration=Debug INSTALL.vcxproj >> $LOG 2>&1"
 
   echo "[millipede] ...Configuring for Release configuration using CMake..."
-  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install-release -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$1" .. >> $LOG 2>&1
+  cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=../install-release -DBUILD_TESTING=OFF -DGDCM_BUILD_EXAMPLES=OFF -DGDCM_BUILD_SHARED_LIBS=OFF -G "$CMAKE_GENERATOR" $VS_TOOLSET_STRING .. >> $LOG 2>&1
 
   echo "[millipede] ...Building Release configuration..."
   cmd //c "msbuild /p:Configuration=Release GDCM.sln >> $LOG 2>&1"
