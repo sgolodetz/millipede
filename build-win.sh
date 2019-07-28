@@ -15,7 +15,7 @@ cd libraries
 ./build-boost_1_58_0-win.sh "$1"
 ./build-gdcm-1.2.5-win.sh "$1"
 ./build-ITK-4.10.1-win.sh "$1"
-#./build-wxWidgets-3.1.0-win.sh
+./build-wxWidgets-3.1.0-win.sh "$1"
 cd ..
 
 # Build millipede itself.
