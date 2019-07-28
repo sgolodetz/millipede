@@ -450,6 +450,9 @@ void PartitionView::unzip_selection()
 {
 	PartitionModelT::VolumeIPFSelection_CPtr selection = m_model->selection();
 
+	// Determine the highest and lowest layers to which it is possible to unzip.
+	// The highest layer possible is simply the highest layer in the forest.
+	// The lowest layer possible is that above the highest node being unzipped.
 	int highestLayer = m_model->volume_ipf()->highest_layer();
 	int lowestLayer = 1;
 
@@ -459,17 +462,23 @@ void PartitionView::unzip_selection()
 		lowestLayer = std::max(lowestLayer, it->layer() + 1);
 	}
 
+	// Ask the user to choose the layer to which to unzip, within the range mentioned.
 	long toLayer = wxGetNumberFromUser(wxT(""), wxT("To Layer:"), wxT("Unzip Selection"), highestLayer, lowestLayer, highestLayer, this);
 
+	// If the user chose a layer:
 	if(toLayer != -1)
 	{
+		// Group the nodes in the selection by depth.
 		std::map<int,std::set<PFNodeID> > nodesByDepth;
 		for(Iter it = selection->nodes_cbegin(), iend = selection->nodes_cend(); it != iend; ++it)
 		{
 			nodesByDepth[it->layer()].insert(*it);
 		}
 
+		// Perform the unzip.
 		m_model->volume_ipf()->unzip_nodes(nodesByDepth, toLayer);
+
+		// Switch the view to the layer the user chose, so as to best see the results of the unzip.
 		m_camera->goto_layer(toLayer);
 	}
 }
