@@ -58,6 +58,8 @@ then
   if [ "$OSXVERSION" -ge 13 ]
   then
     STDLIBFLAGS='cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"'
+  else
+    STDLIBFLAGS=''
   fi
 else
   STDLIBFLAGS='cxxflags="-std=c++11"'
