@@ -42,11 +42,13 @@ cd build/msw
 
 if [ "$1" == "15" ]
 then
-  # TODO: Make this work for Visual Studio 2017 Professional as well.
   if [ -d /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/Community ]
   then
-    #VSCMDPROMPT='"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"'
     VSCMDPROMPT='"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64'
+  else
+    # TODO: Make this work for Visual Studio 2017 Professional as well.
+    echo "Error: Visual Studio 2017 Professional support not yet enabled"
+    exit 1
   fi
 else
   VSCMDPROMPT='"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
