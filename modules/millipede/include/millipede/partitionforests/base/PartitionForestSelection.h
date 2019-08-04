@@ -214,7 +214,7 @@ public:
 				const PFNodeID& node = *m_nodeIt;
 				if(node.layer() > m_viewLayer)
 				{
-					m_descendants = m_base->descendants_in_layer(node, m_viewLayer);
+					m_descendants = m_base->m_forest->descendants_in_layer(node, m_viewLayer);
 				}
 			}
 		}
@@ -705,24 +705,6 @@ private:
 		}
 
 		m_listeners->node_was_deconsolidated(node);
-	}
-
-	std::list<PFNodeID> descendants_in_layer(const PFNodeID& node, int layerIndex) const
-	{
-		assert(node.layer() > layerIndex);
-
-		std::set<PFNodeID> children = m_forest->children_of(node);
-		if(node.layer() != layerIndex+1)
-		{
-			std::list<PFNodeID> descendants;
-			for(std::set<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
-			{
-				std::list<PFNodeID> result = descendants_in_layer(*it, layerIndex);
-				descendants.splice(descendants.end(), result);
-			}
-			return descendants;
-		}
-		else return std::list<PFNodeID>(children.begin(), children.end());
 	}
 
 	std::list<PFNodeID> descendants_in_representation(const PFNodeID& node) const

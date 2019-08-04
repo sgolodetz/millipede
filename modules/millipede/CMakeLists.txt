@@ -220,6 +220,7 @@ include/millipede/ogl/WrappedGL.h
 
 ##
 SET(partitionforests_base_sources
+src/partitionforests/base/PartitionForestCut.cpp
 src/partitionforests/base/PFNodeID.cpp
 )
 
@@ -227,6 +228,7 @@ SET(partitionforests_base_headers
 include/millipede/partitionforests/base/FeatureUtil.h
 include/millipede/partitionforests/base/IForestLayer.h
 include/millipede/partitionforests/base/PartitionForest.h
+include/millipede/partitionforests/base/PartitionForestCut.h
 include/millipede/partitionforests/base/PartitionForestMFSManager.h
 include/millipede/partitionforests/base/PartitionForestMultiFeatureSelection.h
 include/millipede/partitionforests/base/PartitionForestSelection.h

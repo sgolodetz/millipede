@@ -605,6 +605,36 @@ public:
 	}
 
 	/**
+	@brief Finds the descendants of a node in the specified layer.
+
+	@param[in]	node		The ID of the node
+	@param[in]	layerIndex	The layer in which to find the relevant descendants of the node
+	@pre
+		-	layerIndex < node.layer() <= highest_layer()
+	@throw Exception
+		-	If the precondition is violated
+		-	If the specified ID does not refer to a valid node
+	@return The descendants of the node in the specified layer
+	*/
+	std::list<PFNodeID> descendants_in_layer(const PFNodeID& node, int layerIndex) const
+	{
+		assert(node.layer() > layerIndex);
+
+		std::set<PFNodeID> children = children_of(node);
+		if(node.layer() != layerIndex+1)
+		{
+			std::list<PFNodeID> descendants;
+			for(std::set<PFNodeID>::const_iterator it=children.begin(), iend=children.end(); it!=iend; ++it)
+			{
+				std::list<PFNodeID> result = descendants_in_layer(*it, layerIndex);
+				descendants.splice(descendants.end(), result);
+			}
+			return descendants;
+		}
+		else return std::list<PFNodeID>(children.begin(), children.end());
+	}
+
+	/**
 	@brief	Returns the index of the highest layer in the partition forest.
 
 	@return	The index of the highest layer, as described
@@ -1166,8 +1196,7 @@ public:
 	simply performing several single-node unzips in succession, are (i) to avoid wastefully
 	splitting the same ancestor nodes multiple times, and (ii) to avoid separating each
 	individual node being unzipped into a separate chain. For more details, see the paper
-	"Simpler Editing of Graph-Based Segmentation Hierarchies using Zipping Algorithms",
-	which was published in Pattern Recognition in 2017.
+	"Simpler Editing of Graph-Based Segmentation Hierarchies using Zipping Algorithms".
 
 	@note	This method executes a command sequence (which can be atomically undone, if an UndoableCommandManager
 			has been previously installed using set_command_manager()).
