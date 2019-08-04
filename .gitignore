@@ -1,6 +1,6 @@
 build/
 install/
-libraries/boost_1_39_0/
+libraries/boost_1_56_0/
 libraries/boost-setup/
 libraries/gdcm-1.2.5/
 libraries/ITK-3.14.0/
