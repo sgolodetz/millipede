@@ -24,6 +24,7 @@
 #include <mast/drawingtools/LassoDrawingTool.h>
 #include <mast/drawingtools/LineLoopDrawingTool.h>
 #include <mast/gui/dialogs/DialogUtil.h>
+#include <mast/gui/dialogs/TugNodeDialog.h>
 #include <mast/gui/overlays/HighlightNodesOverlay.h>
 #include <mast/gui/overlays/IPFMultiFeatureSelectionOverlay.h>
 #include <mast/gui/overlays/IPFSelectionOverlay.h>
@@ -312,6 +313,27 @@ struct PartitionView::SelectionListener : PartitionModelT::VolumeIPFSelectionT::
 	}
 };
 
+struct PartitionView::TugNodeManagerListener : TugNodeManager<LeafLayer,BranchLayer>::Listener
+{
+	PartitionView *base;
+
+	explicit TugNodeManagerListener(PartitionView *base_)
+	:	base(base_)
+	{}
+
+	void tug_node_manager_changed()
+	{
+		const TugNodeManager_Ptr& tugNodeManager = base->tug_node_manager();
+		if(tugNodeManager && tugNodeManager->active())
+		{
+			base->camera()->goto_layer(tugNodeManager->atomic_layer());
+		}
+
+		base->recreate_tug_node_overlay();
+		base->refresh_canvases();
+	}
+};
+
 //#################### CONSTRUCTORS ####################
 PartitionView::PartitionView(wxWindow *parent, const PartitionModel_Ptr& model, const ICommandManager_Ptr& commandManager, wxGLContext *context)
 :	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(100,100)),
@@ -372,6 +394,20 @@ void PartitionView::fit_image_to_view()
 	m_dicomCanvas->fit_image_to_canvas();
 }
 
+void PartitionView::flood_selected_node()
+{
+	int layerIndex = m_camera->slice_location().layer;
+	PFNodeID node = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+
+	long toLayer = wxGetNumberFromUser(wxT(""), wxT("To Layer:"), wxT("Flood Selected Node"), 1, 1, node.layer() - 1, this);
+
+	if(toLayer != -1)
+	{
+		m_model->volume_ipf()->flood_node(node, toLayer);
+		m_camera->goto_layer(node.layer() - 1);
+	}
+}
+
 wxGLContext *PartitionView::get_context() const
 {
 	return m_dicomCanvas->GetContext();
@@ -429,6 +465,38 @@ const PartitionView::NodeSplitManager_Ptr& PartitionView::node_split_manager()
 const PartitionView::ParentSwitchManager_Ptr& PartitionView::parent_switch_manager()
 {
 	return m_parentSwitchManager;
+}
+
+const PartitionView::TugNodeManager_Ptr& PartitionView::tug_node_manager()
+{
+	return m_tugNodeManager;
+}
+
+void PartitionView::tug_selected_node()
+{
+	int layerIndex = m_camera->slice_location().layer;
+	PFNodeID node = *m_model->selection()->view_at_layer_cbegin(layerIndex);
+	m_tugNodeManager->set_node(node);
+
+	// Display a dialog to ask the user for the atomic layer and layer offset.
+	TugNodeDialog dialog(
+		this, node.layer(), m_tugNodeManager->atomic_layer(), m_tugNodeManager->to_layer_offset(),
+		boost::bind(&TugNodeManagerT::set_atomic_layer, m_tugNodeManager, _1),
+		boost::bind(&TugNodeManagerT::set_to_layer_offset, m_tugNodeManager, _1),
+		boost::bind(&TugNodeManagerT::set_tug_mode, m_tugNodeManager, _1)
+	);
+
+	if(dialog.ShowModal() == wxID_OK)
+	{
+		const int toLayer = m_tugNodeManager->to_layer();
+		m_tugNodeManager->perform_tug();
+		m_camera->goto_layer(toLayer);
+	}
+	else
+	{
+		m_tugNodeManager->reset();
+		m_camera->goto_layer(layerIndex);
+	}
 }
 
 void PartitionView::unzip_selected_node()
@@ -498,6 +566,10 @@ void PartitionView::add_listeners()
 	m_parentSwitchManager.reset(new ParentSwitchManagerT(m_model->volume_ipf(), m_model->selection(), m_commandManager));
 	m_model->volume_ipf()->add_weak_listener(m_parentSwitchManager);
 	m_parentSwitchManager->add_shared_listener(boost::shared_ptr<ParentSwitchManagerListener>(new ParentSwitchManagerListener(this)));
+
+	m_tugNodeManager.reset(new TugNodeManagerT(m_model->volume_ipf(), m_model->selection()));
+	m_model->volume_ipf()->add_weak_listener(m_tugNodeManager);
+	m_tugNodeManager->add_shared_listener(boost::shared_ptr<TugNodeManagerListener>(new TugNodeManagerListener(this)));
 }
 
 void PartitionView::add_mfs_listener()
@@ -533,6 +605,7 @@ void PartitionView::create_overlays()
 	m_overlayManager->insert_overlay_at_top("IPFSelection", selection_overlay());
 	m_overlayManager->insert_overlay_at_top("NodeSplit", node_split_overlay());
 	m_overlayManager->insert_overlay_at_top("ParentSwitch", parent_switch_overlay());
+	m_overlayManager->insert_overlay_at_top("TugNode", tug_node_overlay());
 }
 
 void PartitionView::create_partition_textures()
@@ -751,6 +824,7 @@ void PartitionView::recreate_overlays()
 	recreate_node_split_overlay();
 	recreate_parent_switch_overlay();
 	recreate_selection_overlay();
+	recreate_tug_node_overlay();
 }
 
 void PartitionView::recreate_parent_switch_overlay()
@@ -761,6 +835,11 @@ void PartitionView::recreate_parent_switch_overlay()
 void PartitionView::recreate_selection_overlay()
 {
 	m_overlayManager->replace_overlay("IPFSelection", selection_overlay());
+}
+
+void PartitionView::recreate_tug_node_overlay()
+{
+	m_overlayManager->replace_overlay("TugNode", tug_node_overlay());
 }
 
 void PartitionView::refresh_canvases()
@@ -901,6 +980,21 @@ void PartitionView::setup_gui(wxGLContext *context)
 	sizer->Add(bottomRightSizer, 0, wxALIGN_CENTRE_HORIZONTAL);
 
 	SetSizerAndFit(sizer);
+}
+
+PartitionOverlay *PartitionView::tug_node_overlay() const
+{
+	PartitionModelT::VolumeIPF_CPtr volumeIPF = m_model->volume_ipf();
+	if(volumeIPF && m_tugNodeManager && m_tugNodeManager->active())
+	{
+		NodeHighlightSets nhs;
+		nhs.push_back(std::make_pair(m_tugNodeManager->adjacent_nodes(), ITKImageUtil::make_rgba32(0,0,255,50)));
+
+		SliceLocation loc = m_camera->slice_location();
+		SliceOrientation ori = m_camera->slice_orientation();
+		return new HighlightNodesOverlay(nhs, volumeIPF, loc, ori);
+	}
+	else return NULL;
 }
 
 void PartitionView::update_sliders()

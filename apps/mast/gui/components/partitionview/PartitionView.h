@@ -21,6 +21,7 @@
 #include <mast/models/PartitionModel.h>
 #include "NodeSplitManager.h"
 #include "ParentSwitchManager.h"
+#include "TugNodeManager.h"
 
 //#################### FORWARD DECLARATIONS ####################
 class wxButton;
@@ -64,9 +65,11 @@ private:
 	typedef PartitionModel<LeafLayer,BranchLayer,Feature> PartitionModelT;
 	typedef boost::shared_ptr<PartitionModelT> PartitionModel_Ptr;
 	typedef boost::shared_ptr<const PartitionModelT> PartitionModel_CPtr;
+	typedef TugNodeManager<LeafLayer,BranchLayer> TugNodeManagerT;
 public:
 	typedef boost::shared_ptr<NodeSplitManagerT> NodeSplitManager_Ptr;
 	typedef boost::shared_ptr<ParentSwitchManagerT> ParentSwitchManager_Ptr;
+	typedef boost::shared_ptr<TugNodeManagerT> TugNodeManager_Ptr;
 
 	//#################### LISTENERS ####################
 private:
@@ -78,6 +81,7 @@ private:
 	struct NodeSplitManagerListener;
 	struct ParentSwitchManagerListener;
 	struct SelectionListener;
+	struct TugNodeManagerListener;
 
 	//#################### PRIVATE VARIABLES ####################
 private:
@@ -94,6 +98,7 @@ private:
 	PartitionOverlayManager_Ptr m_overlayManager;
 	ParentSwitchManager_Ptr m_parentSwitchManager;
 	std::vector<Greyscale8SliceTextureSet_Ptr> m_partitionTextureSets;
+	TugNodeManager_Ptr m_tugNodeManager;
 
 	// Top left
 	wxButton *m_segmentVolumeButton;
@@ -127,6 +132,7 @@ public:
 	void clone_current_layer();
 	void delete_current_layer();
 	void fit_image_to_view();
+	void flood_selected_node();
 	wxGLContext *get_context() const;
 	void goto_slice();
 	void merge_selected_nodes();
@@ -134,6 +140,8 @@ public:
 	PartitionModel_CPtr model() const;
 	const NodeSplitManager_Ptr& node_split_manager();
 	const ParentSwitchManager_Ptr& parent_switch_manager();
+	const TugNodeManager_Ptr& tug_node_manager();
+	void tug_selected_node();
 	void unzip_selected_node();
 	void unzip_selection();
 
@@ -163,10 +171,12 @@ private:
 	void recreate_overlays();
 	void recreate_parent_switch_overlay();
 	void recreate_selection_overlay();
+	void recreate_tug_node_overlay();
 	void refresh_canvases();
 	PartitionOverlay *selection_overlay() const;
 	void setup_drawing_tools();
 	void setup_gui(wxGLContext *context);
+	PartitionOverlay *tug_node_overlay() const;
 	void update_sliders();
 	const DICOMVolumeChoice& volume_choice() const;
 	void zoom_to_fit();

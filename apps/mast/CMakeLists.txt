@@ -88,6 +88,7 @@ gui/components/partitionview/ParentSwitchManager.h
 gui/components/partitionview/PartitionCamera.h
 gui/components/partitionview/PartitionCanvas.h
 gui/components/partitionview/PartitionView.h
+gui/components/partitionview/TugNodeManager.h
 )
 
 ##
@@ -99,6 +100,7 @@ gui/components/selectionview/SelectionView.h
 SET(gui_dialogs_sources
 gui/dialogs/DialogUtil.cpp
 gui/dialogs/SegmentDICOMVolumeDialog.cpp
+gui/dialogs/TugNodeDialog.cpp
 gui/dialogs/VisualizeIn3DDialog.cpp
 gui/dialogs/VolumeChooserDialog.cpp
 )
@@ -109,6 +111,7 @@ gui/dialogs/FeatureVolumesDialog.h
 gui/dialogs/ManageFeatureSelectionsDialog.h
 gui/dialogs/SegmentDICOMVolumeDialog.h
 gui/dialogs/SegmentVolumeDialog.h
+gui/dialogs/TugNodeDialog.h
 gui/dialogs/ValidateFeatureSelectionDialog.h
 gui/dialogs/VisualizeIn3DDialog.h
 gui/dialogs/VolumeChooserDialog.h

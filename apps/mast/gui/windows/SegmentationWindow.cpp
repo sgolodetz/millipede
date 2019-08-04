@@ -61,6 +61,7 @@ enum
 	MENUID_NAVIGATION_ZOOMOUT,
 	MENUID_SEGMENTATION_CLONECURRENTLAYER,
 	MENUID_SEGMENTATION_DELETECURRENTLAYER,
+	MENUID_SEGMENTATION_FLOODSELECTEDNODE,
 	MENUID_SEGMENTATION_MERGESELECTEDNODES,
 	MENUID_SEGMENTATION_SEGMENTVOLUME,
 	MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP,
@@ -71,6 +72,7 @@ enum
 	MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD,
 	MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT,
 	MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN,
+	MENUID_SEGMENTATION_TUGSELECTEDNODE,
 	MENUID_SEGMENTATION_UNZIPSELECTEDNODE,
 	MENUID_SEGMENTATION_UNZIPSELECTION,
 	MENUID_SELECTION_CLEARSELECTION,
@@ -229,8 +231,10 @@ void SegmentationWindow::setup_menus()
 		splitNodeMenu->AppendSeparator();
 		splitNodeMenu->Append(MENUID_SEGMENTATION_SPLITNODE_STARTAGAIN, wxT("&Start Again"));
 	segmentationMenu->AppendSeparator();
+	segmentationMenu->Append(MENUID_SEGMENTATION_FLOODSELECTEDNODE, wxT("&Flood Selected Node...\tCtrl+Alt+Shift+F"));
 	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, wxT("&Unzip Selected Node...\tCtrl+Shift+U"));
 	segmentationMenu->Append(MENUID_SEGMENTATION_UNZIPSELECTION, wxT("Unzip Selection...\tCtrl+Alt+Shift+U"));
+	segmentationMenu->Append(MENUID_SEGMENTATION_TUGSELECTEDNODE, wxT("&Tug Selected Node...\tCtrl+Shift+T"));
 	segmentationMenu->AppendSeparator();
 	wxMenu *switchParentMenu = new wxMenu;
 	segmentationMenu->AppendSubMenu(switchParentMenu, wxT("Switch &Parent"));
@@ -457,6 +461,11 @@ void SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer(wxCommandEvent&)
 	m_view->delete_current_layer();
 }
 
+void SegmentationWindow::OnMenuSegmentationFloodSelectedNode(wxCommandEvent&)
+{
+	m_view->flood_selected_node();
+}
+
 void SegmentationWindow::OnMenuSegmentationMergeSelectedNodes(wxCommandEvent&)
 {
 	m_view->merge_selected_nodes();
@@ -514,6 +523,11 @@ void SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent(wxCommandEve
 void SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain(wxCommandEvent&)
 {
 	m_view->parent_switch_manager()->reset();
+}
+
+void SegmentationWindow::OnMenuSegmentationTugSelectedNode(wxCommandEvent&)
+{
+	m_view->tug_selected_node();
 }
 
 void SegmentationWindow::OnMenuSegmentationUnzipSelectedNode(wxCommandEvent&)
@@ -822,6 +836,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnMenuNavigationZoomOut)
 	EVT_MENU(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnMenuSegmentationCloneCurrentLayer)
 	EVT_MENU(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnMenuSegmentationDeleteCurrentLayer)
+	EVT_MENU(MENUID_SEGMENTATION_FLOODSELECTEDNODE, SegmentationWindow::OnMenuSegmentationFloodSelectedNode)
 	EVT_MENU(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnMenuSegmentationMergeSelectedNodes)
 	EVT_MENU(MENUID_SEGMENTATION_SEGMENTVOLUME, SegmentationWindow::OnMenuSegmentationSegmentVolume)
 	EVT_MENU(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnMenuSegmentationSplitNodeAddSubgroup)
@@ -832,6 +847,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnMenuSegmentationSwitchParentSetChild)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnMenuSegmentationSwitchParentSetNewParent)
 	EVT_MENU(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnMenuSegmentationSwitchParentStartAgain)
+	EVT_MENU(MENUID_SEGMENTATION_TUGSELECTEDNODE, SegmentationWindow::OnMenuSegmentationTugSelectedNode)
 	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnMenuSegmentationUnzipSelectedNode)
 	EVT_MENU(MENUID_SEGMENTATION_UNZIPSELECTION, SegmentationWindow::OnMenuSegmentationUnzipSelection)
 	EVT_MENU(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnMenuSelectionClearSelection)
@@ -855,6 +871,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_NAVIGATION_ZOOMOUT, SegmentationWindow::OnUpdateMenuNavigationZoomOut)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_CLONECURRENTLAYER, SegmentationWindow::OnUpdateForestNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_DELETECURRENTLAYER, SegmentationWindow::OnUpdateMenuSegmentationDeleteCurrentLayer)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_FLOODSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_MERGESELECTEDNODES, SegmentationWindow::OnUpdateMenuSegmentationMergeSelectedNodes)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_ADDSUBGROUP, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeAddSubgroup)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SPLITNODE_FINALIZESPLIT, SegmentationWindow::OnUpdateMenuSegmentationSplitNodeFinalizeSplit)
@@ -864,6 +881,7 @@ BEGIN_EVENT_TABLE(SegmentationWindow, wxFrame)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETCHILD, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_SETNEWPARENT, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentSetNewParent)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_SWITCHPARENT_STARTAGAIN, SegmentationWindow::OnUpdateMenuSegmentationSwitchParentStartAgain)
+	EVT_UPDATE_UI(MENUID_SEGMENTATION_TUGSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonLowestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTEDNODE, SegmentationWindow::OnUpdateSingleNonHighestNodeSelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SEGMENTATION_UNZIPSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
 	EVT_UPDATE_UI(MENUID_SELECTION_CLEARSELECTION, SegmentationWindow::OnUpdateNonEmptySelectionNeeder)
